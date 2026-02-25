@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerControler : MonoBehaviour
 {
     public bool cardPlayed;
-    public bool actionDone;
+    public bool actionDone, manualEnd;
     private bool isMoving, isAttacking;
     public GameObject player;
     public MouseManager mouseManager;
@@ -13,7 +13,9 @@ public class PlayerControler : MonoBehaviour
     public GameObject playedCard;
     public Card playedCardScript;
     private Vector3 playerHexCords;
-    private int moveLeft;
+    private int moveLeft, targetsLeft;
+    private int range;
+    private bool isTargetTile, isTargetEnemy;
 
     public int topEnergy, bottomEnergy;
 
@@ -29,54 +31,76 @@ public class PlayerControler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isMoving)
+
+    }
+
+    public void TileClicked(GameObject tile)
+    {
+        if (isTargetTile)
         {
+            
             playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
             Vector3 clickedObjectHex = mapManager.GetPosInHexCords(clickedTile.transform.position);
-            
+
             if (mapManager.GetDistanceTo(clickedObjectHex, playerHexCords) <= moveLeft)
             {
                 player.transform.position = mapManager.HexToPos(clickedObjectHex);
                 moveLeft -= Mathf.RoundToInt(mapManager.GetDistanceTo(clickedObjectHex, playerHexCords));
             }
-            if (moveLeft == 0)
+            if (moveLeft == 0 || manualEnd)
             {
-                isMoving = false;
-                actionDone = true;
-                playedCardScript.currentStep++;
+                ActionDone();
+
             }
         }
+        else if (isTargetEnemy)
+        {
+            //find enemy at clicked tile
+        }
+    }
+    public void EnemyClicked(GameObject enemy)
+    {
         if (isAttacking)
         {
-            playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
             Vector3 clickedObjectHex = mapManager.GetPosInHexCords(clickedTile.transform.position);
-            
-            if (mapManager.GetDistanceTo(clickedObjectHex, playerHexCords) <= moveLeft)
+            if (mapManager.GetDistanceTo(clickedObjectHex, playerHexCords) <= range)
             {
-                player.transform.position = mapManager.HexToPos(clickedObjectHex);
-                moveLeft -= Mathf.RoundToInt(mapManager.GetDistanceTo(clickedObjectHex, playerHexCords));
+                //add detection if enemy is in hex
+                //add damage (also maby conditions)
+                //reduce number of targets
             }
-            if (moveLeft == 0)
+            if (targetsLeft == 0)
             {
-                isMoving = false;
-                actionDone = true;
+                ActionDone();
             }
         }
+
+    }
+
+    public void ActionDone()
+    {
+        isMoving = false;
+        isAttacking = false;
+        manualEnd = false;
+        actionDone = true;
+        playedCardScript.currentStep++;
     }
 
     public void MoveX(int moveValue, bool isJump = false)
     {
         actionDone = false;
         isMoving = true;
+        isTargetTile = true;
         moveLeft = moveValue;
 
     }
 
-    public void AttackX(int attackValue, int range = 1, int targets = 1)
+    public void AttackX(int attackValue, int attackRange = 1, int targets = 1)
     {
         actionDone = false;
         isMoving = true;
-        moveLeft = attackValue;
+        targetsLeft = targets;
+        range = attackRange;
 
     }
 }

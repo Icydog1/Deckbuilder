@@ -13,4 +13,10 @@ public class UIButton : MonoBehaviour
     {
         
     }
+
+    public virtual void Activate()
+    {
+        Debug.Log("Base UI Activated");
+    }
+
 }

@@ -35,6 +35,7 @@ public class Card : MonoBehaviour
             if (isTopPlayed && !isPlaying)
             {
                 isPlaying = true;
+                currentStep = 0;
                 StartCoroutine(PlayTop());
                 mouseManager.clickedObject = null;
 
@@ -42,7 +43,8 @@ public class Card : MonoBehaviour
             if (isBottomPlayed && !isPlaying)
             {
                 isPlaying = true;
-                PlayBottom();
+                currentStep = 0;
+                StartCoroutine(PlayBottom());
                 mouseManager.clickedObject = null;
 
             }
@@ -56,7 +58,7 @@ public class Card : MonoBehaviour
         {
             isTopPlayed = true;
             playerControler.topEnergy -= topCost;
-            IsPlayed();
+            SetPlayed();
         }
         else
         {
@@ -69,7 +71,7 @@ public class Card : MonoBehaviour
         {
             isBottomPlayed = true;
             playerControler.bottomEnergy -= bottomCost;
-            IsPlayed();
+            SetPlayed();
         }
         else
         {
@@ -77,9 +79,10 @@ public class Card : MonoBehaviour
         }
     }
 
-    public void IsPlayed()
+    public void SetPlayed()
     {
         isCurrentCard = true;
+        playerControler.cardPlayed = true;
         playerControler.playedCard = gameObject;
         playerControler.playedCardScript = gameObject.GetComponent<Card>();
     }
@@ -103,6 +106,7 @@ public class Card : MonoBehaviour
         isPlaying = false;
         isTopPlayed = false;
         isBottomPlayed = false;
+        playerControler.cardPlayed = false;
         deckManager.DiscardCard(gameObject);
         mouseManager.MouseOffObject(transform.position.z, gameObject);
         Debug.Log("done playing");

@@ -142,7 +142,7 @@ public class MouseManager : MonoBehaviour
     {
 
         clickedObject = selectedObject;
-        if (clickedObject.GetComponent<Dragable>() != null && !dragableClicked)
+        if (clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.cardPlayed == false)
         {
             dragableClicked = true;
             StartCoroutine(ShortFirstClick());
@@ -188,6 +188,7 @@ public class MouseManager : MonoBehaviour
         }
         if (clickedObject.GetComponent<UIButton>())
         {
+            clickedObject.GetComponent<UIButton>().Activate();
         }
         if (!dragableClicked)
         {
