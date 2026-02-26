@@ -9,7 +9,7 @@ public class CameraScript : MonoBehaviour
     private float xSpeed, ySpeed, camSpeed = 3;
     private float maxZoom = 500, minZoom = 1f;
     private Camera cam;
-    public float standardHeight = 1600, standardWidth = 900, screenHeight, screenWidth, heightRatio, widthRatio, zoom;
+    public float standardHeight = 900, standardWidth = 1600, screenHeight, screenWidth, heightRatio, widthRatio, zoom;
     public float FOVHeight, FOVWidth;
 
 

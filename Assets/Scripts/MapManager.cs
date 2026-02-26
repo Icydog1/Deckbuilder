@@ -1,8 +1,5 @@
 using Unity.VisualScripting;
-using UnityEditorInternal;
 using UnityEngine;
-using static Unity.Collections.AllocatorManager;
-using static UnityEditor.PlayerSettings;
 
 public class MapManager : MonoBehaviour
 {
@@ -42,6 +39,7 @@ public class MapManager : MonoBehaviour
         //retunes a vector 3 which is the cordinaets in hex cordinates
         float xComponent = pos.x - targetPos.x;
         float yComponent = pos.y - targetPos.y;
+        //Debug.Log(-xComponent + "," + -yComponent + " start pos");
         float tilesUp = yComponent / tileYDistance;
         float tilesRight = xComponent / tileXDistance;
         tilesUp = Mathf.Round(tilesUp * 2) / 2;
@@ -125,6 +123,12 @@ public class MapManager : MonoBehaviour
         return new Vector3(upLeft, up, upRight);
     }
 
+    public Vector2 PosWithHexOffset(Vector2 startPos, Vector3 Hexoffset)
+    {
+        Vector2 regularOffset = HexToPos(Hexoffset);
+        //Debug.Log(Hexoffset + "Hexoffset, " + regularOffset + "regularOffset");
+        return startPos + regularOffset;
+    }
     public Vector2 HexToPos(Vector3 hexPos)
     {
         float xComponent;
@@ -135,7 +139,14 @@ public class MapManager : MonoBehaviour
         return new Vector2(xComponent, yComponent);
     }
 
-    public int GetDistanceTo(Vector3 startHexPos, Vector3 endHexPos)
+    public int GetDistanceTo(Vector2 startPos, Vector2 endPos)
+    {
+        Vector3 cordsBetween = GetDisanceInHexCordsTo(startPos, endPos);
+        //Debug.Log(cordsBetween + "cordsBetween");
+        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
+
+    }
+    public int GetDistanceToHex(Vector3 startHexPos, Vector3 endHexPos)
     {
         Vector3 cordsBetween = GetDisanceInHexCordsTo(HexToPos(startHexPos), HexToPos(endHexPos));
         //Debug.Log(cordsBetween + "cordsBetween");

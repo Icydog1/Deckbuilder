@@ -6,7 +6,7 @@ public class Card : MonoBehaviour
     protected PlayerControler playerControler;
     protected MouseManager mouseManager;
     protected DeckManager deckManager;
-
+    public GameObject topGlow, bottomGlow;
     protected bool isCurrentCard;
     protected int topCost, bottomCost;
     protected bool isTopPlayed, isBottomPlayed;
@@ -20,6 +20,8 @@ public class Card : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        topGlow = transform.Find("Top Glow").gameObject;
+        bottomGlow = transform.Find("Bottom Glow").gameObject;
         // base class code runs
     }
 
@@ -36,6 +38,7 @@ public class Card : MonoBehaviour
             {
                 isPlaying = true;
                 currentStep = 0;
+                topGlow.SetActive(true);
                 StartCoroutine(PlayTop());
                 mouseManager.clickedObject = null;
 
@@ -44,6 +47,8 @@ public class Card : MonoBehaviour
             {
                 isPlaying = true;
                 currentStep = 0;
+                bottomGlow.SetActive(true);
+
                 StartCoroutine(PlayBottom());
                 mouseManager.clickedObject = null;
 
@@ -81,37 +86,40 @@ public class Card : MonoBehaviour
 
     public void SetPlayed()
     {
+        deckManager.PlayCard(gameObject);
         isCurrentCard = true;
         playerControler.cardPlayed = true;
         playerControler.playedCard = gameObject;
         playerControler.playedCardScript = gameObject.GetComponent<Card>();
     }
 
-
-
-    public virtual IEnumerator PlayTop()
-    {
-        Debug.Log("Baseclass top played");
-        yield return null;
-    }
-
-    public virtual IEnumerator PlayBottom()
-    {
-        Debug.Log("Baseclass bottom played");
-        yield return null;
-
-    }
     public void DonePlaying()
     {
         isPlaying = false;
         isTopPlayed = false;
         isBottomPlayed = false;
         playerControler.cardPlayed = false;
+        topGlow.SetActive(false);
+        bottomGlow.SetActive(false);
         deckManager.DiscardCard(gameObject);
         mouseManager.MouseOffObject(transform.position.z, gameObject);
-        Debug.Log("done playing");
+        //Debug.Log("done playing");
         currentStep = 0;
     }
+
+    public virtual IEnumerator PlayTop()
+    {
+        Debug.Log("Warning Baseclass top played");
+        yield return null;
+    }
+
+    public virtual IEnumerator PlayBottom()
+    {
+        Debug.Log("Warning Baseclass bottom played");
+        yield return null;
+
+    }
+
 
     
 

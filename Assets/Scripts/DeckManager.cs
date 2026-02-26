@@ -5,12 +5,13 @@ public class DeckManager : MonoBehaviour
 {
     public GameManager gameManager;
 
-    public GameObject hand, deck, discard;
-    public List<GameObject> deckContents, handContents, discardContents = new List<GameObject>();
+    public GameObject hand, deck, discard, play;
+    public List<GameObject> deckContents, handContents, discardContents, playContents = new List<GameObject>();
     public List<GameObject> masterDeck, startingDeck = new List<GameObject>();
     private List<List<GameObject>> posibleCardLocations = new List<List<GameObject>>();
-    private float relativeSpaceBetweenCards = 0.2f;
+    private float relativeSpaceBetweenCards = 1.0f;
     private float handSize;
+    private float startHandSize = 5;
     private CameraScript cameraScript;
 
 
@@ -36,6 +37,7 @@ public class DeckManager : MonoBehaviour
         posibleCardLocations.Add(deckContents);
         posibleCardLocations.Add(handContents);
         posibleCardLocations.Add(discardContents);
+        posibleCardLocations.Add(playContents);
 
 
 
@@ -46,6 +48,23 @@ public class DeckManager : MonoBehaviour
     {
 
 
+    }
+
+    public void PlayCard(GameObject card)
+    {
+        MoveTo(card, play);
+    }
+
+    public void DrawNewHand()
+    {
+        foreach(GameObject card in handContents)
+        {
+            DiscardCard(card);
+        }
+        for (int i = 0; i < startHandSize; i++)
+        {
+            DrawCard();
+        }
     }
 
     public void DrawCard()
@@ -80,7 +99,7 @@ public class DeckManager : MonoBehaviour
         GetListByName(location.name.ToLower() + "Contents").Add(card);
         card.transform.SetParent(location.transform);
         card.transform.position = location.transform.position;
-        if (location == hand)
+        if (location == hand || location == play)
         {
             card.gameObject.SetActive(true);
         }

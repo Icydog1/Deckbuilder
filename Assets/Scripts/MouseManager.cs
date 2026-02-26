@@ -1,13 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.Tilemaps;
-using static UnityEditor.PlayerSettings;
 
 public class MouseManager : MonoBehaviour
 {
@@ -54,10 +47,26 @@ public class MouseManager : MonoBehaviour
             mouseDown = false;
             MouseReleased();
         }
-        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null)
+        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && clickedObject.GetComponent<Card>() != null && playerControler.cardPlayed == false)
         {
             //Debug.Log(worldMousePos);
             clickedObject.transform.position = new Vector3(worldMousePos.x, worldMousePos.y, clickedObject.transform.position.z);
+            if (mousePos.y > topPlayLine * Screen.height)
+            {
+                clickedObject.GetComponent<Card>().topGlow.SetActive(true);
+                clickedObject.GetComponent<Card>().bottomGlow.SetActive(false);
+            }
+            else if (mousePos.y > bottomPlayLine * Screen.height)
+            {
+                clickedObject.GetComponent<Card>().bottomGlow.SetActive(true);
+                clickedObject.GetComponent<Card>().topGlow.SetActive(false);
+
+            }
+            else
+            {
+                clickedObject.GetComponent<Card>().topGlow.SetActive(false);
+                clickedObject.GetComponent<Card>().bottomGlow.SetActive(false);
+            }
         }
 
 
@@ -184,7 +193,7 @@ public class MouseManager : MonoBehaviour
 
         if (clickedObject.GetComponent<Tile>())
         {
-            playerControler.clickedTile = clickedObject;
+            playerControler.TileClicked(clickedObject);
         }
         if (clickedObject.GetComponent<UIButton>())
         {
