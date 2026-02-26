@@ -6,13 +6,14 @@ public class DeckManager : MonoBehaviour
     public GameManager gameManager;
 
     public GameObject hand, deck, discard, play;
-    public List<GameObject> deckContents, handContents, discardContents, playContents = new List<GameObject>();
     public List<GameObject> masterDeck, startingDeck = new List<GameObject>();
+    public List<GameObject> deckContents, handContents, discardContents, playContents = new List<GameObject>();
     private List<List<GameObject>> posibleCardLocations = new List<List<GameObject>>();
-    private float relativeSpaceBetweenCards = 1.0f;
-    private float handSize;
-    private float startHandSize = 5;
+    private float relativeSpaceBetweenCards = 0.4f;
+    private int handSize;
+    private int startHandSize = 5;
     private CameraScript cameraScript;
+    private MouseManager mouseManager;
 
 
 
@@ -23,12 +24,16 @@ public class DeckManager : MonoBehaviour
     void Start()
     {
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
+        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
 
+        //Debug.Log(deck.transform.childCount);
         if (startingDeck.Count == 0)
         {
             for (int i = 0; i < deck.transform.childCount; i++)
             {
                 startingDeck.Add(deck.transform.GetChild(i).gameObject);
+                Debug.Log(deck.transform.GetChild(i).gameObject);
+
             }
         }
         deckContents = new List<GameObject>(startingDeck);
@@ -57,9 +62,11 @@ public class DeckManager : MonoBehaviour
 
     public void DrawNewHand()
     {
-        foreach(GameObject card in handContents)
+        int cardsInHand = handSize;
+        for (int i = 0; i < cardsInHand; i++)
         {
-            DiscardCard(card);
+            DiscardFirstCard();
+            //Debug.Log("card Discarded");
         }
         for (int i = 0; i < startHandSize; i++)
         {
@@ -127,11 +134,15 @@ public class DeckManager : MonoBehaviour
 
     public void UpdateHand()
     {
-        float spaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthRatio;
+        float spaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
         handSize = handContents.Count;
         foreach (GameObject card in handContents)
         {
-            card.transform.position = hand.transform.position + Vector3.left * ((handSize - 1) / 2 - handContents.IndexOf(card)) * spaceBetweenCards;
+            card.transform.position = hand.transform.position + Vector3.left * (((float)handSize - 1) / 2 - handContents.IndexOf(card)) * spaceBetweenCards;
+            if (card.transform.localScale != Vector3.one)
+            {
+                card.transform.position = card.transform.position + new Vector3(0, mouseManager.selectedCardHeightIncrease, 0) * cameraScript.zoom;
+            }
         }
 
     }

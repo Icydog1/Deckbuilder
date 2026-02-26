@@ -5,8 +5,8 @@ public class PlayerControler : MonoBehaviour
     public bool cardPlayed;
     public bool actionDone, manualEnd;
     private bool isMoving, isAttacking;
-    public GameObject player;
-    public MouseManager mouseManager;
+    private GameObject player;
+    private MouseManager mouseManager;
     private MapManager mapManager;
     public GameObject clickedTile;
     public GameObject playedCard;

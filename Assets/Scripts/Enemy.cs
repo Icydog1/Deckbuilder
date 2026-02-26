@@ -47,7 +47,7 @@ public class Enemy : MonoBehaviour
             if (distanceToPlayer > 1)
             {
                 //Debug.Log(distanceToPlayer + "distanceToPlayer");
-                Debug.Log(relativeHexPosToPlayer + "posToPlayer");
+                //Debug.Log(relativeHexPosToPlayer + "posToPlayer");
                 if (Mathf.Abs(relativeHexPosToPlayer.x) > Mathf.Abs(relativeHexPosToPlayer.y) && Mathf.Abs(relativeHexPosToPlayer.x) > Mathf.Abs(relativeHexPosToPlayer.z))
                 {
                     transform.position = mapManager.PosWithHexOffset(transform.position, -new Vector3(1, 0, 0) * Mathf.Sign(relativeHexPosToPlayer.x));

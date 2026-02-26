@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-    public List<Enemy> EnemiesScripts = new List<Enemy>();
+    //public List<Enemy> EnemiesScripts = new List<Enemy>();
     public List<GameObject> Enemies = new List<GameObject>();
     private PlayerControler playerControler;
     private DeckManager deckManager;
@@ -19,16 +19,15 @@ public class TurnManager : MonoBehaviour
         player = GameObject.Find("Player");
         playerControler = player.GetComponent<PlayerControler>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+
+        turnOrder.Add(player);
+        currentTurn = player;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (currentTurn.GetComponent<Enemy>())
-        {
-            currentEnemyTurnScript = currentTurn.GetComponent<Enemy>();
-            enemyTurn = true;
-        }
+
     }
 
     public void NextTurn()
@@ -41,6 +40,16 @@ public class TurnManager : MonoBehaviour
         else
         {
             currentTurn = turnOrder[turnOrder.IndexOf(currentTurn) + 1];
+            if (currentTurn.GetComponent<Enemy>())
+            {
+                currentEnemyTurnScript = currentTurn.GetComponent<Enemy>();
+                enemyTurn = true;
+            }
+            if (currentTurn == player)
+            {
+                playerTurn = true;
+            }
+
         }
     }
 

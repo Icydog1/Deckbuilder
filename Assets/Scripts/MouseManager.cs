@@ -17,6 +17,7 @@ public class MouseManager : MonoBehaviour
     private PlayerControler playerControler;
     private CameraScript cameraScript;
     private DeckManager deckManager;
+    public float selectedCardHeightIncrease = 0.25f;
 
 
 
@@ -46,6 +47,11 @@ public class MouseManager : MonoBehaviour
         {
             mouseDown = false;
             MouseReleased();
+        }
+        if (selectedObject != null && selectedObject.GetComponent<Card>() != null && selectedObject.transform.localScale == Vector3.one)
+        {
+            selectedObject.transform.localScale = new Vector3 (2,2,1);
+            selectedObject.transform.position = selectedObject.transform.position + new Vector3(0, selectedCardHeightIncrease, 0) * cameraScript.zoom;
         }
         if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && clickedObject.GetComponent<Card>() != null && playerControler.cardPlayed == false)
         {
@@ -101,6 +107,11 @@ public class MouseManager : MonoBehaviour
         {
             newObject.GetComponent<SpriteRenderer>().color = Color.black;
         }
+        if (newObject.GetComponent<Card>())
+        {
+            newObject.transform.localScale = new Vector3(1, 1, 1);
+            newObject.transform.position = newObject.transform.position - new Vector3(0, selectedCardHeightIncrease, 0) * cameraScript.zoom;
+        }
         if (mouseOver.Count == 0)
         {
             //Debug.Log(selectedObject + "off");
@@ -151,7 +162,7 @@ public class MouseManager : MonoBehaviour
     {
 
         clickedObject = selectedObject;
-        if (clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.cardPlayed == false)
+        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.cardPlayed == false)
         {
             dragableClicked = true;
             StartCoroutine(ShortFirstClick());
@@ -189,20 +200,22 @@ public class MouseManager : MonoBehaviour
             }
             dragableClicked = false;
         }
+        if (clickedObject != null)
+        {
+            if (clickedObject.GetComponent<Tile>())
+            {
+                playerControler.TileClicked(clickedObject);
+            }
+            if (clickedObject.GetComponent<UIButton>())
+            {
+                clickedObject.GetComponent<UIButton>().Activate();
+            }
+            if (!dragableClicked)
+            {
+                clickedObject = null;
+            }
+        }
 
-
-        if (clickedObject.GetComponent<Tile>())
-        {
-            playerControler.TileClicked(clickedObject);
-        }
-        if (clickedObject.GetComponent<UIButton>())
-        {
-            clickedObject.GetComponent<UIButton>().Activate();
-        }
-        if (!dragableClicked)
-        {
-            clickedObject = null;
-        }
     }
 }
 
