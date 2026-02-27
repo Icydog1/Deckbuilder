@@ -111,8 +111,8 @@ public class MapManager : MonoBehaviour
             killSwitch--;
             if (killSwitch < 0)
             {
-
-                Debug.Log(tilesUp + "," + tilesRight + "timed out");
+                Debug.Log(tilesUp + " up, " + tilesRight + " right, timed out");
+                Debug.Log(xComponent + " original x, " + yComponent + " original y");
                 tilesUp = 0;
                 tilesRight = 0;
             }

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Linq;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -10,13 +11,18 @@ public class Enemy : MonoBehaviour
     protected bool isMyTurn;
     protected float distanceToPlayer;
     protected Vector3 relativeHexPosToPlayer;
-    //protected List<> movesets
+    protected string[] movesets;
+    protected string currentMove;
+
+    public int maxHealth, health;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Start()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
+        turnManager.turnOrder.Add(gameObject);
+        health = maxHealth;
     }
 
     // Update is called once per frame
@@ -27,10 +33,14 @@ public class Enemy : MonoBehaviour
 
     public void StartOfTurn()
     {
-        //distanceToPlayer = mapManager.GetDistanceTo(transform.position, playerControler.transform.position);
-        //relativeHexPosToPlayer = mapManager.GetDisanceInHexCordsTo(transform.position, playerControler.transform.position);
+        currentMove = movesets[Random.Range(0, movesets.Length)];
+        Invoke(currentMove, 0);
     }
 
+    public void EndTurn()
+    {
+        turnManager.NextTurn();
+    }
     public void MoveHex(Vector3 hexDirections)
     {
 
@@ -78,4 +88,8 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void AttackedForX(int attackValue)
+    {
+        health -= attackValue;
+    }
 }

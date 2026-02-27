@@ -8,15 +8,16 @@ public class PlayerControler : MonoBehaviour
     private GameObject player;
     private MouseManager mouseManager;
     private MapManager mapManager;
-    public GameObject clickedTile;
+    public GameObject clickedTile, clickedEnemy;
     public GameObject playedCard;
     public Card playedCardScript;
     private Vector3 playerHexCords;
-    private int moveLeft, targetsLeft;
+    private int moveLeft, targetsLeft, attackDamageValue;
     private int range;
     private bool isTargetATile, isTargetAEnemy;
 
     public int topEnergy, bottomEnergy;
+    public int maxHealth = 100, health;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,6 +26,7 @@ public class PlayerControler : MonoBehaviour
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         player = GameObject.Find("Player");
 
+        health = maxHealth;
     }
 
     // Update is called once per frame
@@ -53,28 +55,30 @@ public class PlayerControler : MonoBehaviour
             if (moveLeft == 0)
             {
                 ActionDone();
+                Debug.Log("Done Moving");
             }
-        }
-        else if (isTargetAEnemy)
-        {
-            //find enemy at clicked tile
         }
     }
     public void EnemyClicked(GameObject enemy)
     {
-        if (isAttacking)
+        clickedEnemy = enemy;
+        if (isTargetAEnemy)
         {
-            Vector3 clickedObjectHex = mapManager.GetPosInHexCords(clickedTile.transform.position);
-            Vector2 clickedTileCords = clickedTile.transform.position;
-            if (mapManager.GetDistanceTo(clickedTileCords, playerHexCords) <= range)
+            if (isAttacking)
             {
-                //add detection if enemy is in hex
-                //add damage (also maby conditions)
-                //reduce number of targets
-            }
-            if (targetsLeft == 0)
-            {
-                ActionDone();
+                Vector3 clickedObjectHex = mapManager.GetPosInHexCords(clickedEnemy.transform.position);
+                Vector2 clickedEnemyCords = clickedEnemy.transform.position;
+                //sometimes doent work
+                if (mapManager.GetDistanceTo(clickedEnemyCords, playerHexCords) <= range)
+                {
+                    clickedEnemy.GetComponent<Enemy>().AttackedForX(attackDamageValue);
+                    targetsLeft--;
+                }
+                if (targetsLeft == 0)
+                {
+                    ActionDone();
+                    Debug.Log("Done Attacking");
+                }
             }
         }
 
@@ -86,6 +90,8 @@ public class PlayerControler : MonoBehaviour
         isAttacking = false;
         manualEnd = false;
         actionDone = true;
+        isTargetATile = false;
+        isTargetAEnemy = false;
         playedCardScript.currentStep++;
     }
 
@@ -95,14 +101,14 @@ public class PlayerControler : MonoBehaviour
         isMoving = true;
         isTargetATile = true;
         moveLeft = moveValue;
-        isTargetATile = true;
     }
 
     public void AttackX(int attackValue, int attackRange = 1, int targets = 1)
     {
         actionDone = false;
-        isMoving = true;
+        isAttacking = true;
         targetsLeft = targets;
+        attackDamageValue = attackValue;
         range = attackRange;
         isTargetAEnemy = true;
 
@@ -110,7 +116,7 @@ public class PlayerControler : MonoBehaviour
 
     public void AttackedForX(int attackValue)
     {
-
+        health -= attackValue;
     }
 
 }

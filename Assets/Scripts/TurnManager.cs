@@ -9,18 +9,23 @@ public class TurnManager : MonoBehaviour
     private PlayerControler playerControler;
     private DeckManager deckManager;
     private GameObject player;
+    private GameObject newRoundMarker;
     public GameObject currentTurn;
     public Enemy currentEnemyTurnScript;
     public List<GameObject> turnOrder = new List<GameObject>();
     public bool endOfRound, playerTurn, enemyTurn;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         player = GameObject.Find("Player");
         playerControler = player.GetComponent<PlayerControler>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-
+        newRoundMarker = GameObject.Find("NewRoundMarker");
+        turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
+    }
+    private void Start()
+    {
         currentTurn = player;
     }
 
@@ -32,10 +37,13 @@ public class TurnManager : MonoBehaviour
 
     public void NextTurn()
     {
+        playerTurn = false;
+        enemyTurn = false;
+        endOfRound = false;
         if (turnOrder.IndexOf(currentTurn) + 1 == turnOrder.Count)
         {
-            NextRound();
             endOfRound = true;
+            NextRound();
         }
         else
         {
@@ -43,6 +51,8 @@ public class TurnManager : MonoBehaviour
             if (currentTurn.GetComponent<Enemy>())
             {
                 currentEnemyTurnScript = currentTurn.GetComponent<Enemy>();
+                currentEnemyTurnScript.StartOfTurn();
+                //currentEnemyTurnScript.isMyTurn = true;
                 enemyTurn = true;
             }
             if (currentTurn == player)
@@ -55,8 +65,9 @@ public class TurnManager : MonoBehaviour
 
     public void NextRound()
     {
-        deckManager.DrawNewHand();
         currentTurn = turnOrder[0];
+        deckManager.DrawNewHand();
+        NextTurn();
     }
 
 }

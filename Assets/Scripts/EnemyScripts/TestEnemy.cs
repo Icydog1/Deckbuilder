@@ -5,22 +5,37 @@ public class TestEnemy : Enemy
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
+        movesets = new string[] {"MoveSet1", "MoveSet2", "MoveSet3"};
+        maxHealth = 10;
         base.Start(); // runs the code from the base
                       // add your additional code here
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
-        MoveSet1();
+        base.Update(); // runs the code from the base
     }
 
     public void MoveSet1()
     {
-        MoveX(3);
+        MoveX(1);
+        //Debug.Log("enemy moved 1");
+        EndTurn();
     }
     public void MoveSet2()
     {
+        MoveX(2);
+        //Debug.Log("enemy moved 2");
+        EndTurn();
+
+    }
+
+    public void MoveSet3()
+    {
+        MoveX(3);
+        //Debug.Log("enemy moved 3");
+        EndTurn();
 
     }
 }

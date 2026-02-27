@@ -94,18 +94,21 @@ public class MouseManager : MonoBehaviour
                 selectedHeight = mouseOverHeights[mouseOver.IndexOf(item)];
             }
         }
-        if (selectedObject.GetComponent<Tile>())
+        if (selectedObject.GetComponent<Selectable>())
         {
-            selectedObject.GetComponent<SpriteRenderer>().color = Color.green;
+            GameObject border = selectedObject.transform.Find("Border").gameObject;
+            border.GetComponent<SpriteRenderer>().color = Color.green;
         }
     }
     public void MouseOffObject(float newheight, GameObject newObject)
     {
         mouseOver.Remove(newObject);
         mouseOverHeights.Remove(newheight);
-        if (newObject.GetComponent<Tile>())
+        if (selectedObject.GetComponent<Selectable>())
         {
-            newObject.GetComponent<SpriteRenderer>().color = Color.black;
+            GameObject border = selectedObject.transform.Find("Border").gameObject;
+            
+            border.GetComponent<SpriteRenderer>().color = Color.black;
         }
         if (newObject.GetComponent<Card>())
         {
@@ -209,6 +212,10 @@ public class MouseManager : MonoBehaviour
             if (clickedObject.GetComponent<UIButton>())
             {
                 clickedObject.GetComponent<UIButton>().Activate();
+            }
+            if (clickedObject.GetComponent<Enemy>())
+            {
+                playerControler.EnemyClicked(clickedObject);
             }
             if (!dragableClicked)
             {

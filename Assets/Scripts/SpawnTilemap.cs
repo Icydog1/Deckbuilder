@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SpawnTilemap : MonoBehaviour
 {
-    private float tileWidth = 2, tileHeight;
+    private float tileWidth = 2, tileHeight, zLayer = 1000;
     private MapManager mapManager;
     public List<GameObject> tiles = new List<GameObject>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -35,6 +35,6 @@ public class SpawnTilemap : MonoBehaviour
     }
     private void spawnTile(float x, float y, GameObject tile)
     {
-        Instantiate(tile, new Vector3(x, y, tile.transform.position.z), transform.rotation);
+        Instantiate(tile, new Vector3(x, y, zLayer), transform.rotation);
     }
 }
