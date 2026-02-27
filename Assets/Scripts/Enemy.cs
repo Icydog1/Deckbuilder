@@ -1,5 +1,6 @@
-using NUnit.Framework;
+using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -12,7 +13,9 @@ public class Enemy : MonoBehaviour
     protected float distanceToPlayer;
     protected Vector3 relativeHexPosToPlayer;
     protected string[] movesets;
+    //protected List<string> actionQueue = new List<string>();
     protected string currentMove;
+
 
     public int maxHealth, health;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -91,5 +94,10 @@ public class Enemy : MonoBehaviour
     public void AttackedForX(int attackValue)
     {
         health -= attackValue;
+    }
+
+    public void showHideTooltip(bool show)
+    {
+
     }
 }

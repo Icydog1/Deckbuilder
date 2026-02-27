@@ -30,6 +30,7 @@ public class MouseManager : MonoBehaviour
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
 
+
     }
 
     // Update is called once per frame

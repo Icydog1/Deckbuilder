@@ -22,9 +22,9 @@ using UnityEngine;
 
     public override IEnumerator PlayTop()
     {
-        playerControler.AttackX(1, 100);
+        playerControler.AttackX(1);
         yield return new WaitUntil(() => currentStep == 1);
-        playerControler.AttackX(3, 100);
+        playerControler.AttackX(3);
         yield return new WaitUntil(() => currentStep == 2);
         //Debug.Log("top played fully");
 

@@ -69,10 +69,14 @@ public class PlayerControler : MonoBehaviour
                 Vector3 clickedObjectHex = mapManager.GetPosInHexCords(clickedEnemy.transform.position);
                 Vector2 clickedEnemyCords = clickedEnemy.transform.position;
                 //sometimes doent work
-                if (mapManager.GetDistanceTo(clickedEnemyCords, playerHexCords) <= range)
+                if (mapManager.GetDistanceTo(clickedEnemyCords, player.transform.position) <= range)
                 {
                     clickedEnemy.GetComponent<Enemy>().AttackedForX(attackDamageValue);
                     targetsLeft--;
+                }
+                else
+                {
+                    Debug.Log("Out Of range");
                 }
                 if (targetsLeft == 0)
                 {
