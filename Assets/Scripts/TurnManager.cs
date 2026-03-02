@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
@@ -14,6 +16,8 @@ public class TurnManager : MonoBehaviour
     public Enemy currentEnemyTurnScript;
     public List<GameObject> turnOrder = new List<GameObject>();
     public bool endOfRound, playerTurn, enemyTurn;
+
+    public static event Action<TurnManager> RoundEnded;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -39,7 +43,6 @@ public class TurnManager : MonoBehaviour
     {
         playerTurn = false;
         enemyTurn = false;
-        endOfRound = false;
         if (turnOrder.IndexOf(currentTurn) + 1 == turnOrder.Count)
         {
             endOfRound = true;
@@ -67,7 +70,15 @@ public class TurnManager : MonoBehaviour
     {
         currentTurn = turnOrder[0];
         deckManager.DrawNewHand();
+        if (RoundEnded != null)
+        {
+            RoundEnded(this);
+        }
+
         NextTurn();
     }
+
+
+
 
 }
