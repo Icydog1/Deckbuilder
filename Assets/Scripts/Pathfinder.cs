@@ -5,16 +5,21 @@ using UnityEngine;
 
 public class Pathfinder : MonoBehaviour
 {
-    private List<List<Vector3>> elevations = new List<List<Vector3>>();
-    private List<Vector3> currentHeight = new List<Vector3>();
-    private List<Vector3> checkedTiles = new List<Vector3>();
+    private MapManager mapManager;
+
+
+    private List<List<Vector2>> elevations = new List<List<Vector2>>();
+    private List<Vector2> currentHeight = new List<Vector2>();
+    private List<Vector2> checkedTiles = new List<Vector2>();
     private bool pathFound;
     private int currentElevation;
-    private Vector3 finalTile;
+    private Vector2 finalTile;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        pathfindFrom(Vector3.zero, Vector3.up * 2 + Vector3.right * 2);
+        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
+
+        pathfindFrom(Vector3.zero, Vector3.left * -2 + Vector3.right * 2);
         //need to fix problem that corrdinte system hase multipule vales for eash corrdinate (to vecot 3s will point to same spot)
         //dpmt think it will casue problems just performese issuse(fatest rount wont be going in circles)
     }
@@ -27,15 +32,16 @@ public class Pathfinder : MonoBehaviour
 
     public void pathfindFrom(Vector3 startPos, Vector3 endPos)
     {
-        finalTile = endPos;
+
+        finalTile = mapManager.HexToOneToOne(endPos);
         for (int i = 0; pathFound == false; i++)
         {
             currentElevation = i;
-            List<Vector3> currentHeight = new List<Vector3>();
+            List<Vector2> currentHeight = new List<Vector2>();
             elevations.Add(currentHeight);
             if (i == 0)
             {
-                elevations[i].Add(startPos);
+                elevations[i].Add(mapManager.HexToOneToOne(startPos));
             }
             else
             {
@@ -55,19 +61,19 @@ public class Pathfinder : MonoBehaviour
     }
 
 
-    public void buildElevation(Vector3 pos)
+    public void buildElevation(Vector2 pos, bool range = false, bool jump = false, bool fly = false)
     {
-        Vector3 checktile = new Vector3();
+        Vector2 checktile = new Vector2();
         for (int i = 0; i < 6; i++)
         {
             switch (i)
             {
-                case 0: checktile = pos + Vector3.up; break ;
-                case 1: checktile = pos + Vector3.down; break;
-                case 2: checktile = pos + Vector3.left; break;
-                case 3: checktile = pos + Vector3.right; break;
-                case 4: checktile = pos + Vector3.forward; break;
-                case 5: checktile = pos + Vector3.back; break;
+                case 0: checktile = pos + Vector2.up; break ;
+                case 1: checktile = pos + Vector2.down; break;
+                case 2: checktile = pos + Vector2.right; break;
+                case 3: checktile = pos + Vector2.left; break;
+                case 4: checktile = pos + Vector2.up + Vector2.right; ; break;
+                case 5: checktile = pos + Vector2.down + Vector2.left; break;
             }
             if (!checkedTiles.Contains(checktile))
             {
@@ -79,11 +85,21 @@ public class Pathfinder : MonoBehaviour
 
                 }
                 //detectobsticals
-                elevations[currentElevation].Add(checktile);
+                if (mapManager.GetObsticalAtHex(checktile, range && jump && fly, false, range && jump && fly).Count != 0)
+                {
+                    Debug.Log(mapManager.GetObsticalAtHex(checktile, range && jump && fly, false, range && jump && fly)[0]);
+                    Debug.Log("obstical found at " + checktile);
+                }
+                else if (mapManager.GetObsticalAtHex(checktile, false, true, false, false).Count != 0)
+                {
+                    Debug.Log("enemy found at " + checktile);
+                }
+                else
+                {
+                    elevations[currentElevation].Add(checktile);
+                }
                 checkedTiles.Add(checktile);
-
             }
         }
-
     }
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8427654687114374432}
   - component: {fileID: 1050918151112110569}
   - component: {fileID: 6821626672205144794}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BaseTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4336639065014853476}
   - component: {fileID: 2588388311374645945}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4894582289113756724}
   - component: {fileID: 5023203077783566167}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BaseTileImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using static UnityEditor.PlayerSettings;
 
 public class MapManager : MonoBehaviour
 {
@@ -9,15 +12,19 @@ public class MapManager : MonoBehaviour
     private float tileXDistance, tileYDistance;
     float upLeft, up, upRight;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = GameObject.Find("Player");
         tileWidth = tileSize * 2;
         tileHeight = tileSize * Mathf.Sqrt(3);
-        tileXDistance = tileWidth * 3/4;
+        tileXDistance = tileWidth * 3 / 4;
         tileYDistance = tileHeight;
         //Debug.Log(GetDisanceInHexCordsTo(Vector2.one * 5,Vector2.zero));
+    }
+    void Start()
+    {
+
     }
 
     // Update is called once per frame
@@ -140,6 +147,28 @@ public class MapManager : MonoBehaviour
         return new Vector2(xComponent, yComponent);
     }
 
+    public Vector2 HexToOneToOne(Vector3 HexPos)
+    {
+        //OneToOne coridates (tiles left and up, tiles right and up)
+        return new Vector2(HexPos.x + HexPos.y, HexPos.z + HexPos.y);
+    }
+
+    public Vector3 OneToOneToHex(Vector2 OneToOnePos)
+    {
+        //OneToOne coridates (tiles left and up, tiles right and up)
+        return new Vector3(OneToOnePos.x, 0, OneToOnePos.y);
+    }
+
+    public Vector2 OneToOneToPos(Vector2 OneToOnePos)
+    {
+        float xComponent;
+        xComponent = OneToOnePos.y * tileXDistance - OneToOnePos.x * tileXDistance;
+        float yComponent;
+        yComponent = OneToOnePos.y * tileYDistance / 2 + OneToOnePos.x * tileYDistance / 2;
+        return new Vector2(xComponent, yComponent);
+
+    }
+
     public int GetDistanceTo(Vector2 startPos, Vector2 endPos)
     {
         Vector3 cordsBetween = GetDisanceInHexCordsTo(startPos, endPos);
@@ -155,8 +184,58 @@ public class MapManager : MonoBehaviour
 
     }
 
-    public GameObject GetObjectOnHex(Vector2 pos, int layer)
+    public List<GameObject> GetObsticalAtHex(Vector2 OneToOnePos, bool obstacle = true, bool enemy = true, bool player = true, bool wall = true)
     {
-        return Physics2D.OverlapPoint(pos, layer, -Mathf.Infinity, Mathf.Infinity).gameObject;
+        List<GameObject> obstacles = new List<GameObject>();
+        Vector2 pos = OneToOneToPos(OneToOnePos);
+        if (wall && Physics2D.OverlapPoint(pos, 64) != null && Physics2D.OverlapPoint(pos, 64).gameObject.GetComponent<Wall>() != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 64).gameObject);
+        }
+        if (obstacle && Physics2D.OverlapPoint(pos, 64) != null && Physics2D.OverlapPoint(pos, 64).gameObject.GetComponent<Obstacle>() != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 64).gameObject);
+        }
+        if (enemy && Physics2D.OverlapPoint(pos, 128) != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 128).gameObject);
+        }
+        if (player && Physics2D.OverlapPoint(pos, 256) != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 256).gameObject);
+        }
+        return obstacles;
+    }
+
+    public GameObject GetTileAtHex(Vector2 OneToOnePos)
+    {
+        Vector2 pos = OneToOneToPos(OneToOnePos);
+        //Debug.Log("retuned enemy");
+        return Physics2D.OverlapPoint(pos, 64).gameObject;
+    }
+    public GameObject GetObjectOnHex(Vector2 OneToOnePos, bool enemy = true, bool player = true)
+    {
+        //Debug.Log(hexPos);
+
+        Vector2 pos = OneToOneToPos(OneToOnePos);
+        int layermask = 0;
+        if (enemy)
+        {
+            layermask += 128;            
+        }
+        if (player)
+        {
+            layermask += 256;
+        }
+        //Debug.Log("retuned enemy");
+        //Debug.Log(pos);
+        if (Physics2D.OverlapPoint(pos, layermask) != null)
+        {
+            return Physics2D.OverlapPoint(pos, layermask).gameObject;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

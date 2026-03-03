@@ -23,7 +23,7 @@ public class SpawnTilemap : MonoBehaviour
         {
             for (int j = -50; j < 50; j++)
             {
-                spawnTile(tileWidth * j * 0.75f, i * tileHeight + Mathf.Abs(j) % 2 * tileHeight * 0.5f, tiles[0]);
+                spawnTile(tileWidth * j * 0.75f, i * tileHeight + Mathf.Abs(j) % 2 * tileHeight * 0.5f, tiles[Random.Range(0,tiles.Count)]);
             }
         }
     }

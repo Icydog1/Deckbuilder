@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
@@ -8,12 +7,16 @@ public class EnemySpawner : MonoBehaviour
     private TurnManager turnManager;
     private float SpawnChance = 0.1f;
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
 
         Instantiate(enemy, transform.position, transform.rotation);
+
+
+
         TurnManager.RoundEnded += AttemptToSpawnEnemy;
 
     }
