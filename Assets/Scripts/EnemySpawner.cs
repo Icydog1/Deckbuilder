@@ -6,12 +6,15 @@ public class EnemySpawner : MonoBehaviour
     public GameObject enemy;
     private TurnManager turnManager;
     private float SpawnChance = 0.1f;
-
+    private MapManager mapManager;
+    private Vector2 OneToOnePos;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
+        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
+        OneToOnePos = mapManager.PosToOneToOne(transform.position);
 
         Instantiate(enemy, transform.position, transform.rotation);
 
@@ -31,7 +34,14 @@ public class EnemySpawner : MonoBehaviour
     {
         if (Random.Range(0, 1f) <= SpawnChance)
         {
-            Instantiate(enemy, transform.position, transform.rotation);
+            if (mapManager.GetEntityOnHex(OneToOnePos) == null)
+            {
+                Instantiate(enemy, transform.position, transform.rotation);
+            }
+            else
+            {
+                Debug.Log("spawn obstructed");
+            }
         }
         //Debug.Log("attempted to spawn");
     }

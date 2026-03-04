@@ -221,7 +221,7 @@ public class MapManager : MonoBehaviour
         }
         else
         {
-            return gameObject;
+            return null;
         }
     }
     public GameObject GetEntityOnHex(Vector2 OneToOnePos)
@@ -234,7 +234,7 @@ public class MapManager : MonoBehaviour
         }
         else
         {
-            return gameObject;
+            return null;
         }
     }
 }

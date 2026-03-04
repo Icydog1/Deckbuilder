@@ -20,22 +20,19 @@ public class TestEnemy : Enemy
     public void MoveSet1()
     {
         Move(1);
-        //Debug.Log("enemy moved 1");
-        EndTurn();
+        //EndTurn();
     }
     public void MoveSet2()
     {
         Move(2);
-        //Debug.Log("enemy moved 2");
-        EndTurn();
+        //EndTurn();
 
     }
 
     public void MoveSet3()
     {
         Move(3);
-        //Debug.Log("enemy moved 3");
-        EndTurn();
+        //EndTurn();
 
     }
 }

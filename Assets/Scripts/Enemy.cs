@@ -34,6 +34,16 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     public virtual void Update()
     {
+        if (turnManager.currentTurn == gameObject)
+        {
+            GameObject border = transform.Find("Border").gameObject;
+            border.GetComponent<SpriteRenderer>().color = Color.white;
+        }
+        else
+        {
+            GameObject border = transform.Find("Border").gameObject;
+            border.GetComponent<SpriteRenderer>().color = Color.black;
+        }
 
     }
 
@@ -48,13 +58,14 @@ public class Enemy : MonoBehaviour
         turnManager.NextTurn();
     }
 
-    public void Move(int moveValue, bool isJump = false, bool isFly = false)
+    public void Move(int moveValue,int range = 1, bool isJump = false, bool isFly = false)
     {
         OneToOnePos = mapManager.PosToOneToOne(transform.position);
+        pathfinder.PathfindTowards(OneToOnePos, playerControler.playerOneToOneCords, gameObject, moveValue, range, isJump, isFly);
         //Debug.Log("attemteted to move");
-        pathfinder.findPathFromToRange(OneToOnePos, playerControler.playerOneToOneCords);
+        //pathfinder.findPathFromToRange(OneToOnePos, playerControler.playerOneToOneCords);
         //pathfinder.findPathFrom(OneToOnePos, playerControler.playerOneToOneCords);
-        pathfinder.MoveAlongPath(moveValue, gameObject, OneToOnePos);
+        //pathfinder.MoveAlongPath(moveValue, gameObject, OneToOnePos);
     }
 
 
