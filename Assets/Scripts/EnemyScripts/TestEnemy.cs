@@ -19,13 +19,13 @@ public class TestEnemy : Enemy
 
     public void MoveSet1()
     {
-        MoveX(1);
+        Move(1);
         //Debug.Log("enemy moved 1");
         EndTurn();
     }
     public void MoveSet2()
     {
-        MoveX(2);
+        Move(2);
         //Debug.Log("enemy moved 2");
         EndTurn();
 
@@ -33,7 +33,7 @@ public class TestEnemy : Enemy
 
     public void MoveSet3()
     {
-        MoveX(3);
+        Move(3);
         //Debug.Log("enemy moved 3");
         EndTurn();
 

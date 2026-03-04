@@ -12,6 +12,7 @@ public class PlayerControler : MonoBehaviour
     public GameObject playedCard;
     public Card playedCardScript;
     private Vector3 playerHexCords;
+    public Vector2 playerOneToOneCords;
     private int moveLeft, targetsLeft, attackDamageValue;
     private int range;
     private bool isTargetATile, isTargetAEnemy;
@@ -25,6 +26,7 @@ public class PlayerControler : MonoBehaviour
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         player = GameObject.Find("Player");
+        playerOneToOneCords = Vector2.zero;
 
         health = maxHealth;
     }
@@ -36,6 +38,8 @@ public class PlayerControler : MonoBehaviour
         {
             ActionDone();
         }
+        playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
+        playerOneToOneCords = mapManager.HexToOneToOne(playerHexCords);
     }
 
     public void TileClicked(GameObject tile)
@@ -44,6 +48,7 @@ public class PlayerControler : MonoBehaviour
         {
             clickedTile = tile;
             playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
+            playerOneToOneCords = mapManager.HexToOneToOne(playerHexCords);
             Vector2 clickedTileCords = clickedTile.transform.position;
 
             if (mapManager.GetDistanceTo(clickedTileCords, player.transform.position) <= moveLeft)

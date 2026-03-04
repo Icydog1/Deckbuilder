@@ -878,6 +878,7 @@ MonoBehaviour:
   clickedEnemy: {fileID: 0}
   playedCard: {fileID: 0}
   playedCardScript: {fileID: 0}
+  playerOneToOneCords: {x: 0, y: 0}
   topEnergy: 0
   bottomEnergy: 0
   maxHealth: 100

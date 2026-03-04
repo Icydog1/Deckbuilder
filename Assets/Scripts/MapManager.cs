@@ -169,6 +169,11 @@ public class MapManager : MonoBehaviour
 
     }
 
+    public Vector2 PosToOneToOne(Vector2 pos)
+    {
+        return HexToOneToOne(GetPosInHexCords(pos));
+    }
+
     public int GetDistanceTo(Vector2 startPos, Vector2 endPos)
     {
         Vector3 cordsBetween = GetDisanceInHexCordsTo(startPos, endPos);
@@ -210,32 +215,26 @@ public class MapManager : MonoBehaviour
     public GameObject GetTileAtHex(Vector2 OneToOnePos)
     {
         Vector2 pos = OneToOneToPos(OneToOnePos);
-        //Debug.Log("retuned enemy");
-        return Physics2D.OverlapPoint(pos, 64).gameObject;
+        if (Physics2D.OverlapPoint(pos, 64) != null)
+        {
+            return Physics2D.OverlapPoint(pos, 64).gameObject;
+        }
+        else
+        {
+            return gameObject;
+        }
     }
-    public GameObject GetObjectOnHex(Vector2 OneToOnePos, bool enemy = true, bool player = true)
+    public GameObject GetEntityOnHex(Vector2 OneToOnePos)
     {
-        //Debug.Log(hexPos);
-
         Vector2 pos = OneToOneToPos(OneToOnePos);
-        int layermask = 0;
-        if (enemy)
-        {
-            layermask += 128;            
-        }
-        if (player)
-        {
-            layermask += 256;
-        }
-        //Debug.Log("retuned enemy");
-        //Debug.Log(pos);
+        int layermask = 384;
         if (Physics2D.OverlapPoint(pos, layermask) != null)
         {
             return Physics2D.OverlapPoint(pos, layermask).gameObject;
         }
         else
         {
-            return null;
+            return gameObject;
         }
     }
 }

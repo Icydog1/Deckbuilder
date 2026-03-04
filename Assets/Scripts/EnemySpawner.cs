@@ -33,6 +33,6 @@ public class EnemySpawner : MonoBehaviour
         {
             Instantiate(enemy, transform.position, transform.rotation);
         }
-        Debug.Log("attempted to spawn");
+        //Debug.Log("attempted to spawn");
     }
 }

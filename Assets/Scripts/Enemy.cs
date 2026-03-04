@@ -9,9 +9,11 @@ public class Enemy : MonoBehaviour
     protected PlayerControler playerControler;
     protected TurnManager turnManager;
     protected MapManager mapManager;
+    protected Pathfinder pathfinder;
     protected bool isMyTurn;
     protected float distanceToPlayer;
     protected Vector3 relativeHexPosToPlayer;
+    protected Vector2 OneToOnePos;
     protected string[] movesets;
     //protected List<string> actionQueue = new List<string>();
     protected string currentMove;
@@ -24,6 +26,7 @@ public class Enemy : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
+        pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
         turnManager.turnOrder.Add(gameObject);
         health = maxHealth;
     }
@@ -44,10 +47,17 @@ public class Enemy : MonoBehaviour
     {
         turnManager.NextTurn();
     }
-    public void MoveHex(Vector3 hexDirections)
-    {
 
+    public void Move(int moveValue, bool isJump = false, bool isFly = false)
+    {
+        OneToOnePos = mapManager.PosToOneToOne(transform.position);
+        //Debug.Log("attemteted to move");
+        pathfinder.findPathFromToRange(OneToOnePos, playerControler.playerOneToOneCords);
+        //pathfinder.findPathFrom(OneToOnePos, playerControler.playerOneToOneCords);
+        pathfinder.MoveAlongPath(moveValue, gameObject, OneToOnePos);
     }
+
+
     public void MoveX(int moveValue, bool isJump = false)
     {
         //Debug.Log("AttemptToMove");
