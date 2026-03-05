@@ -37,10 +37,10 @@ public class Pathfinder : MonoBehaviour
     {
         
     }
-    public void PathfindTowards(Vector2 selfPos, Vector2 targetPos, GameObject self, int moveValue, int range, bool jump = false, bool fly = false)
+    public void PathfindTowards(Vector2 selfPos, Vector2 targetPos, GameObject self, int moveValue, int range = 1, bool jump = false, bool fly = false)
     {
         //Debug.Log("attemteted to move");
-        findPathFromToRange(selfPos, targetPos, range);
+        findPathFromToRange(selfPos, targetPos, range, jump, fly);
         //pathfinder.findPathFrom(OneToOnePos, playerControler.playerOneToOneCords);
         if (!inRange)
         {
@@ -49,7 +49,7 @@ public class Pathfinder : MonoBehaviour
     }
 
 
-    public void findPathFromToRange(Vector2 selfPos, Vector2 targetPos, int range, bool jump = false, bool fly = false)
+    public void findPathFromToRange(Vector2 selfPos, Vector2 targetPos, int range, bool jump, bool fly)
     {
         inRange = false;
         currentPos = selfPos;
@@ -203,7 +203,7 @@ public class Pathfinder : MonoBehaviour
                 if (checktile == currentPos)
                 {
                     pathFound = true;
-                    Debug.Log("path found");
+                    //Debug.Log("path found");
                     //Debug.Log("final elevation " + currentElevation);
                     //Debug.Log(mapManager.GetTileAtHex(checktile).transform.position);
                     GameObject border = tile.transform.Find("Border").gameObject;
@@ -217,13 +217,13 @@ public class Pathfinder : MonoBehaviour
                     impassableTiles.Add(checktile);
                     //Debug.Log("obstical found at " + checktile);
                 }
-                else if ((entity && entity.GetComponent<Enemy>()) || (tile.GetComponent<Obstacle>() && (range || jump || fly)) || (entity && entity.GetComponent<PlayerControler>() && (range || jump || fly)))
+                else if ((entity && entity.GetComponent<Enemy>()) || (tile.GetComponent<Obstacle>() && ((range || jump) && !fly)) || (entity && entity.GetComponent<PlayerControler>() && (range || jump || fly)))
                 {
                     GameObject border = tile.transform.Find("Border").gameObject;
                     border.GetComponent<SpriteRenderer>().color = Color.yellow;
                     unSafeTiles.Add(checktile);
                     elevations[currentElevation].Add(checktile);
-
+                    tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
                     //Debug.Log("unsafe tile found at " + checktile);
                 }
                 else
@@ -232,8 +232,8 @@ public class Pathfinder : MonoBehaviour
                     border.GetComponent<SpriteRenderer>().color = Color.blue;
                     safeTiles.Add(checktile);
                     elevations[currentElevation].Add(checktile);
+                    tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
                 }
-                tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
                 checkedTiles.Add(checktile);
             }
         }
@@ -242,11 +242,20 @@ public class Pathfinder : MonoBehaviour
     public void MoveAlongPath(int moveValue, GameObject enemy, Vector2 enemyPos)
     {
         int moveLeft = moveValue;
+        Vector2 oneToOnePos = enemyPos;
+        Vector2 pos;
         for (int i = 0; i < moveValue; i++)
         {
-            enemy.transform.position = mapManager.OneToOneToPos(TakeStep(enemyPos, moveLeft));
+            //Debug.Log(currentElevation);
+            oneToOnePos = TakeStep(oneToOnePos, moveLeft);
+            pos = mapManager.OneToOneToPos(oneToOnePos);
+            enemy.transform.position = new Vector3(pos.x, pos.y, enemy.transform.position.z);
+            //Debug.Log(currentPos);
+            //mapManager.PosToOneToOne(transform.position);
             moveLeft--;
-            Debug.Log("moved once");
+            currentElevation--;
+            //Debug.Log("moved once");
+
         }
 
 
@@ -256,6 +265,10 @@ public class Pathfinder : MonoBehaviour
         Vector2 checktile = new Vector2();
         Vector2 currentTile = enemyPos;
         int elevation = currentElevation;
+        if (currentElevation == 0)
+        {
+            return enemyPos;
+        }
         for (int i = 0; i < 6; i++)
         {
             switch (i)
@@ -275,15 +288,14 @@ public class Pathfinder : MonoBehaviour
                 }
                 else if (TestForSafeAround(checktile, elevation - 1, moveLeft - 1))
                 {
+                    //Debug.Log("checktile is safe, should move to" + checktile);
                     return checktile;
                 }
             }
-            else
-            {
-                //Debug.Log("no tile to go to");
-                //Debug.Log(elevation - 1);
-            }
+
         }
+        //Debug.Log("no tile to go to");
+        //Debug.Log(elevation - 1);
         return enemyPos;
     }
 
@@ -306,23 +318,24 @@ public class Pathfinder : MonoBehaviour
                 case 4: checktile = currentTile + Vector2.up + Vector2.right; ; break;
                 case 5: checktile = currentTile + Vector2.down + Vector2.left; break;
             }
-            Debug.Log("elevation " + elevation);
-            Debug.Log("checktile " + checktile);
-            Debug.Log("currentTile " + currentTile);
-            Debug.Log("currentTile object " + mapManager.GetTileAtHex(currentTile).transform.position);
+            //Debug.Log("elevation " + elevation);
+            //Debug.Log("checktile " + checktile);
+            //Debug.Log("currentTile " + currentTile);
+            //Debug.Log("currentTile object " + mapManager.GetTileAtHex(currentTile).transform.position);
             if (elevations[elevation - 1].Contains(checktile))
             {
                 if (safeTiles.Contains(checktile))
                 {
+                    //Debug.Log("checktile is safe " + checktile);
                     return true;
                 }
-                else if (TestForSafeAround(checktile, elevation - 1, moveLeft -1))
+                else if (TestForSafeAround(checktile, elevation - 1, moveLeft - 1))
                 {
                     return true;
                 }
             }
         }
-        Debug.Log("not safe");
+        //Debug.Log("not safe");
         return false;
 
     }

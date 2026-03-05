@@ -58,7 +58,7 @@ public class Enemy : MonoBehaviour
         turnManager.NextTurn();
     }
 
-    public void Move(int moveValue,int range = 1, bool isJump = false, bool isFly = false)
+    public void Move(int moveValue,int range = 1, bool isJump = true, bool isFly = false)
     {
         OneToOnePos = mapManager.PosToOneToOne(transform.position);
         pathfinder.PathfindTowards(OneToOnePos, playerControler.playerOneToOneCords, gameObject, moveValue, range, isJump, isFly);
