@@ -68,8 +68,8 @@ public class Enemy : MonoBehaviour
         //pathfinder.MoveAlongPath(moveValue, gameObject, OneToOnePos);
     }
 
-
-    public void MoveX(int moveValue, bool isJump = false)
+    /*
+    public void Move(int moveValue, bool isJump = false)
     {
         //Debug.Log("AttemptToMove");
         //Debug.Log(transform.position + "self Pos, " + playerControler.gameObject.transform.position + "playerPos");
@@ -103,6 +103,8 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+    */
 
     public void AttackX(int attackValue, int attackRange = 1)
     {
