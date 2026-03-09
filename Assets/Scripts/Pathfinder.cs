@@ -24,17 +24,18 @@ public class Pathfinder : MonoBehaviour
 
     private List<Vector2> actualPath = new List<Vector2>();
 
-
     private Vector2 furthestPoint;
     private int furthestElevation;
-
 
     private bool pathFound, inRange;
     private bool isJump, isFly;
     private int moveValue;
     private int currentElevation;
     private Vector2 currentPos;
-    private GameObject currentEnemy;
+    private Enemy currentEnemy;
+
+    private float enemyMoveDelay = 0.5f;
+    private bool doneMoving;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -50,7 +51,7 @@ public class Pathfinder : MonoBehaviour
     {
         
     }
-    public void PathfindTowards(Vector2 selfPos, Vector2 targetPos, GameObject self, int newMoveValue, int range = 1, bool jump = false, bool fly = false)
+    public IEnumerator PathfindTowards(Vector2 selfPos, Vector2 targetPos, GameObject self, int newMoveValue, int range = 1, bool jump = false, bool fly = false)
     {
         moveValue = newMoveValue;
         isJump = jump;
@@ -64,9 +65,13 @@ public class Pathfinder : MonoBehaviour
             findPosiblePaths(selfPos);
             //Debug.Log("found Path");
             //Debug.Log(actualPath[0]);
-            MoveAlongPath(self, selfPos);
+            StartCoroutine(MoveAlongPath(self, selfPos));
+            yield return new WaitUntil(() => doneMoving == true);
+            doneMoving = false;
             //Debug.Log("Moved");
         }
+
+        self.GetComponent<Enemy>().ActionDone();
     }
 
 
@@ -213,6 +218,7 @@ public class Pathfinder : MonoBehaviour
         border.GetComponent<SpriteRenderer>().color = Color.red;
         Vector2 currentLocaton = furthestPoint;
         actualPath.Clear();
+        //Debug.Log(furthestPoint);
         while (currentLocaton != selfPos)
         {
             actualPath.Insert(0, currentLocaton);
@@ -220,6 +226,7 @@ public class Pathfinder : MonoBehaviour
             killswitch++;
             if (killswitch > 100)
             {
+                Debug.Log(currentLocaton);
                 currentLocaton = selfPos;
                 Debug.Log("Finding move path timed out");
             }
@@ -288,7 +295,7 @@ public class Pathfinder : MonoBehaviour
                         {
                             if (originalElevations[j].Contains(checktile))
                             {
-                                Debug.Log("new tile");
+                                //Debug.Log("new tile");
                                 furthestPoint = checktile;
                                 furthestElevation = j;
                             }
@@ -302,35 +309,19 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
-    public void MoveAlongPath(GameObject enemy, Vector2 enemyPos)
+    public IEnumerator MoveAlongPath(GameObject enemy, Vector2 enemyPos)
     {
         Vector2 oneToOnePos = enemyPos;
         Vector2 pos;
         for (int i = 0; i < actualPath.Count; i++)
         {
+            //Debug.Log(actualPath[i]);
             oneToOnePos = actualPath[i];
             pos = mapManager.OneToOneToPos(oneToOnePos);
             enemy.transform.position = new Vector3(pos.x, pos.y, enemy.transform.position.z);
+            yield return new WaitForSeconds(0.1f);
         }
-    }
-    public void OldMoveAlongPath(int moveValue, GameObject enemy, Vector2 enemyPos)
-    {
-        int moveLeft = moveValue;
-        Vector2 oneToOnePos = enemyPos;
-        Vector2 pos;
-        for (int i = 0; i < moveValue; i++)
-        {
-            //Debug.Log(currentElevation);
-            oneToOnePos = TakeStep(oneToOnePos, moveLeft);
-            pos = mapManager.OneToOneToPos(oneToOnePos);
-            enemy.transform.position = new Vector3(pos.x, pos.y, enemy.transform.position.z);
-            //Debug.Log(currentPos);
-            //mapManager.PosToOneToOne(transform.position);
-            moveLeft--;
-            currentElevation--;
-            //Debug.Log("moved once");
-
-        }
+        doneMoving = true;
     }
     public Vector2 TakeStep(Vector2 enemyPos, int moveLeft)
     {
@@ -390,10 +381,6 @@ public class Pathfinder : MonoBehaviour
                 case 4: checktile = currentTile + Vector2.up + Vector2.right; ; break;
                 case 5: checktile = currentTile + Vector2.down + Vector2.left; break;
             }
-            //Debug.Log("elevation " + elevation);
-            //Debug.Log("checktile " + checktile);
-            //Debug.Log("currentTile " + currentTile);
-            //Debug.Log("currentTile object " + mapManager.GetTileAtHex(currentTile).transform.position);
             if (elevations[elevation - 1].Contains(checktile))
             {
                 if (safeTiles.Contains(checktile))

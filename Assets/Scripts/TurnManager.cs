@@ -18,6 +18,7 @@ public class TurnManager : MonoBehaviour
     public bool endOfRound, playerTurn, enemyTurn;
 
     public static event Action<TurnManager> RoundEnded;
+    public static event Action<TurnManager> RoundStarted;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -31,6 +32,11 @@ public class TurnManager : MonoBehaviour
     private void Start()
     {
         currentTurn = player;
+
+        if (RoundStarted != null)
+        {
+            RoundStarted(this);
+        }
     }
 
     // Update is called once per frame
@@ -41,6 +47,7 @@ public class TurnManager : MonoBehaviour
 
     public void NextTurn()
     {
+        Debug.Log("next turn");
         playerTurn = false;
         enemyTurn = false;
         if (turnOrder.IndexOf(currentTurn) + 1 == turnOrder.Count)
@@ -54,7 +61,7 @@ public class TurnManager : MonoBehaviour
             if (currentTurn.GetComponent<Enemy>())
             {
                 currentEnemyTurnScript = currentTurn.GetComponent<Enemy>();
-                currentEnemyTurnScript.StartOfTurn();
+                StartCoroutine(currentEnemyTurnScript.TakeTurn());
                 //currentEnemyTurnScript.isMyTurn = true;
                 enemyTurn = true;
             }
@@ -74,6 +81,11 @@ public class TurnManager : MonoBehaviour
         {
             RoundEnded(this);
         }
+        if (RoundStarted != null)
+        {
+            RoundStarted(this);
+        }
+        
 
         NextTurn();
     }

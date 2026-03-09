@@ -1,7 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Enemy : MonoBehaviour
 {
@@ -14,9 +16,16 @@ public class Enemy : MonoBehaviour
     protected float distanceToPlayer;
     protected Vector3 relativeHexPosToPlayer;
     protected Vector2 OneToOnePos;
-    protected string[] movesets;
+    //protected string[] movesets;
     //protected List<string> actionQueue = new List<string>();
-    protected string currentMove;
+    protected delegate void moveSetsMethod();
+    protected moveSetsMethod currentMove;
+    protected List<moveSetsMethod> moveSets = new List<moveSetsMethod>();
+    protected delegate void currentPlanMethods();
+    protected currentPlanMethods currentPlan;
+    protected bool nextAction;
+
+
 
 
     public int maxHealth, health;
@@ -29,6 +38,7 @@ public class Enemy : MonoBehaviour
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
         turnManager.turnOrder.Add(gameObject);
         health = maxHealth;
+        TurnManager.RoundStarted += GetPlan;
     }
 
     // Update is called once per frame
@@ -47,10 +57,14 @@ public class Enemy : MonoBehaviour
 
     }
 
+    public void GetPlan(TurnManager turnManager)
+    {
+        currentMove = moveSets[Random.Range(0, moveSets.Count)];
+
+    }
     public void StartOfTurn()
     {
-        currentMove = movesets[Random.Range(0, movesets.Length)];
-        Invoke(currentMove, 0);
+        nextAction = true;
     }
 
     public void EndTurn()
@@ -58,14 +72,29 @@ public class Enemy : MonoBehaviour
         turnManager.NextTurn();
     }
 
+    public IEnumerator TakeTurn()
+    {
+        currentMove = moveSets[Random.Range(0, moveSets.Count)];
+        StartOfTurn();
+        yield return new WaitUntil(() => nextAction == true);
+        nextAction = false;
+        for (int i = 0; i < moveSets.Count; i++)
+        {
+            moveSets[i]();
+            yield return new WaitUntil(() => nextAction == true);
+            nextAction = false;
+        }
+        EndTurn();
+    }
+    public void ActionDone()
+    {
+        nextAction = true;
+    }
     public void Move(int moveValue,int range = 1, bool isJump = true, bool isFly = false)
     {
         OneToOnePos = mapManager.PosToOneToOne(transform.position);
-        pathfinder.PathfindTowards(OneToOnePos, playerControler.playerOneToOneCords, gameObject, moveValue, range, isJump, isFly);
-        //Debug.Log("attemteted to move");
-        //pathfinder.findPathFromToRange(OneToOnePos, playerControler.playerOneToOneCords);
-        //pathfinder.findPathFrom(OneToOnePos, playerControler.playerOneToOneCords);
-        //pathfinder.MoveAlongPath(moveValue, gameObject, OneToOnePos);
+        StartCoroutine(pathfinder.PathfindTowards(OneToOnePos, playerControler.playerOneToOneCords, gameObject, moveValue, range, isJump, isFly));
+
     }
 
     /*

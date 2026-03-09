@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TestEnemy : Enemy
@@ -5,7 +6,9 @@ public class TestEnemy : Enemy
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        movesets = new string[] {"MoveSet1", "MoveSet1", "MoveSet1"};
+        moveSets.Add(MoveSet1);
+        //moveSets.Add(MoveSet2);
+        //moveSets.Add(MoveSet3);
         maxHealth = 10;
         base.Start(); // runs the code from the base
                       // add your additional code here
@@ -19,20 +22,17 @@ public class TestEnemy : Enemy
 
     public void MoveSet1()
     {
-        Move(2);
-        //EndTurn();
+        Move(3);
     }
     public void MoveSet2()
     {
         Move(4);
-        //EndTurn();
 
     }
 
     public void MoveSet3()
     {
         Move(4);
-        //EndTurn();
 
     }
 }
