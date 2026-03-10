@@ -25,6 +25,9 @@ public class Enemy : MonoBehaviour
     protected currentPlanMethods currentPlan;
     protected bool nextAction;
 
+    protected bool isPlanning;
+    protected List<string> displayedPlan = new List<string>();
+
 
 
 
@@ -44,31 +47,27 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     public virtual void Update()
     {
-        if (turnManager.currentTurn == gameObject)
-        {
-            GameObject border = transform.Find("Border").gameObject;
-            border.GetComponent<SpriteRenderer>().color = Color.white;
-        }
-        else
-        {
-            GameObject border = transform.Find("Border").gameObject;
-            border.GetComponent<SpriteRenderer>().color = Color.black;
-        }
 
     }
 
     public void GetPlan(TurnManager turnManager)
     {
+        isPlanning = true;
         currentMove = moveSets[Random.Range(0, moveSets.Count)];
 
     }
     public void StartOfTurn()
     {
+        isPlanning = false;
+        GameObject border = transform.Find("Border").gameObject;
+        border.GetComponent<SpriteRenderer>().color = Color.white;
         nextAction = true;
     }
 
     public void EndTurn()
     {
+        GameObject border = transform.Find("Border").gameObject;
+        border.GetComponent<SpriteRenderer>().color = Color.black;
         turnManager.NextTurn();
     }
 
@@ -94,46 +93,16 @@ public class Enemy : MonoBehaviour
     {
         OneToOnePos = mapManager.PosToOneToOne(transform.position);
         StartCoroutine(pathfinder.PathfindTowards(OneToOnePos, playerControler.playerOneToOneCords, gameObject, moveValue, range, isJump, isFly));
-
-    }
-
-    /*
-    public void Move(int moveValue, bool isJump = false)
-    {
-        //Debug.Log("AttemptToMove");
-        //Debug.Log(transform.position + "self Pos, " + playerControler.gameObject.transform.position + "playerPos");
-        distanceToPlayer = mapManager.GetDistanceTo(transform.position, playerControler.gameObject.transform.position);
-        //Debug.Log(distanceToPlayer);
-        relativeHexPosToPlayer = mapManager.GetDisanceInHexCordsTo(transform.position, playerControler.transform.position);
-        for (int i = 0; i < moveValue; i++)
+        if (isPlanning)
         {
-            if (distanceToPlayer > 1)
+            string planString = "Move " + moveValue;
+            if (isJump)
             {
-                //Debug.Log(distanceToPlayer + "distanceToPlayer");
-                //Debug.Log(relativeHexPosToPlayer + "posToPlayer");
-                if (Mathf.Abs(relativeHexPosToPlayer.x) > Mathf.Abs(relativeHexPosToPlayer.y) && Mathf.Abs(relativeHexPosToPlayer.x) > Mathf.Abs(relativeHexPosToPlayer.z))
-                {
-                    transform.position = mapManager.PosWithHexOffset(transform.position, -new Vector3(1, 0, 0) * Mathf.Sign(relativeHexPosToPlayer.x));
-                    relativeHexPosToPlayer -= new Vector3(1, 0, 0) * Mathf.Sign(relativeHexPosToPlayer.x);
-                    distanceToPlayer--;
-                }
-                else if (Mathf.Abs(relativeHexPosToPlayer.y) > Mathf.Abs(relativeHexPosToPlayer.z))
-                {
-                    transform.position = mapManager.PosWithHexOffset(transform.position, -new Vector3(0, 1, 0) * Mathf.Sign(relativeHexPosToPlayer.y));
-                    relativeHexPosToPlayer -= new Vector3(0, 1, 0) * Mathf.Sign(relativeHexPosToPlayer.y);
-                    distanceToPlayer--;
-                }
-                else
-                {
-                    transform.position = mapManager.PosWithHexOffset(transform.position, -new Vector3(0, 0, 1) * Mathf.Sign(relativeHexPosToPlayer.z));
-                    relativeHexPosToPlayer -= new Vector3(0,0,1) * Mathf.Sign(relativeHexPosToPlayer.z);
-                    distanceToPlayer--;
-                }
+                planString += " Jump";
             }
+            displayedPlan.Add(planString);
         }
     }
-
-    */
 
     public void AttackX(int attackValue, int attackRange = 1)
     {

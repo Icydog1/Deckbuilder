@@ -30,7 +30,6 @@ public class Clickable : MonoBehaviour , IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData eventData)
     {
         mouseManager.MouseOnObject(height, gameObject);
-
     }
 
     public void OnPointerExit(PointerEventData eventData)

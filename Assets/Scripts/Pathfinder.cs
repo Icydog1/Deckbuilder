@@ -162,7 +162,6 @@ public class Pathfinder : MonoBehaviour
                     buildElevation(elevations[currentElevation - 1][j], true, false);
                 }
             }
-
             if (i >= 100)
             {
                 pathFound = true;
@@ -183,6 +182,8 @@ public class Pathfinder : MonoBehaviour
         safeTiles.Clear();
         unSafeTiles.Clear();
         impassableTiles.Clear();
+        posibleTiles.Clear();
+        posibleTilesPath.Clear();
         pathFound = false;
         for (int i = 0; i <= moveValue; i++)
         {
@@ -191,6 +192,7 @@ public class Pathfinder : MonoBehaviour
             elevations.Add(currentHeight);
             if (i == 0)
             {
+
                 elevations[i].Add(selfPos);
                 checkedTiles.Add(selfPos);
                 safeTiles.Add(selfPos);
