@@ -22,9 +22,9 @@ using UnityEngine;
 
     public override IEnumerator PlayTop()
     {
-        playerControler.AttackX(1);
+        playerControler.Attack(1);
         yield return new WaitUntil(() => currentStep == 1);
-        playerControler.AttackX(3);
+        playerControler.Attack(3);
         yield return new WaitUntil(() => currentStep == 2);
         //Debug.Log("top played fully");
 
@@ -35,9 +35,9 @@ using UnityEngine;
 
     public override IEnumerator PlayBottom()
     {
-        playerControler.MoveX(4);
+        playerControler.Move(4);
         yield return new WaitUntil(() => currentStep == 1);
-        playerControler.MoveX(3);
+        playerControler.Move(3);
         yield return new WaitUntil(() => currentStep == 2);
         //Debug.Log("bottom played fully");
         DonePlaying();

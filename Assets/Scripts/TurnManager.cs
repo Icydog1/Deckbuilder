@@ -31,13 +31,18 @@ public class TurnManager : MonoBehaviour
     }
     private void Start()
     {
+        StartCoroutine(StartGame());
+    }
+    public IEnumerator StartGame()
+    {
+        yield return new WaitForSeconds(0.5f);
         currentTurn = player;
-
         if (RoundStarted != null)
         {
             RoundStarted(this);
         }
     }
+
 
     // Update is called once per frame
     void Update()
@@ -45,9 +50,22 @@ public class TurnManager : MonoBehaviour
 
     }
 
+    public void RemoveFromTurnOrder(GameObject removedObject)
+    {
+        if (currentTurn = removedObject)
+        {
+            currentTurn = turnOrder[turnOrder.IndexOf(removedObject) - 1];
+            turnOrder.Remove(removedObject);
+            NextTurn();
+        }
+        else
+        {
+            turnOrder.Remove(removedObject);
+        }
+    }
     public void NextTurn()
     {
-        Debug.Log("next turn");
+        //Debug.Log("next turn");
         playerTurn = false;
         enemyTurn = false;
         if (turnOrder.IndexOf(currentTurn) + 1 == turnOrder.Count)

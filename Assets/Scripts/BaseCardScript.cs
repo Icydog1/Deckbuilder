@@ -102,7 +102,7 @@ public class Card : MonoBehaviour
         topGlow.SetActive(false);
         bottomGlow.SetActive(false);
         deckManager.DiscardCard(gameObject);
-        mouseManager.MouseOffObject(transform.position.z, gameObject);
+        mouseManager.MouseOffObject(gameObject);
         //Debug.Log("done playing");
         currentStep = 0;
     }

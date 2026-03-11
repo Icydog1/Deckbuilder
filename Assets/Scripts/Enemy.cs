@@ -12,26 +12,26 @@ public class Enemy : MonoBehaviour
     protected TurnManager turnManager;
     protected MapManager mapManager;
     protected Pathfinder pathfinder;
+    private MouseManager mouseManager;
+    protected EnemyUi enemyUI;
     protected bool isMyTurn;
     protected float distanceToPlayer;
     protected Vector3 relativeHexPosToPlayer;
     protected Vector2 OneToOnePos;
-    //protected string[] movesets;
-    //protected List<string> actionQueue = new List<string>();
     protected delegate void moveSetsMethod();
-    protected moveSetsMethod currentMove;
     protected List<moveSetsMethod> moveSets = new List<moveSetsMethod>();
-    protected delegate void currentPlanMethods();
-    protected currentPlanMethods currentPlan;
     protected bool nextAction;
+
+    protected List<System.Action> currentPlan = new List<System.Action>();
+    protected moveSetsMethod plannedMoveSet;
+
 
     protected bool isPlanning;
     protected List<string> displayedPlan = new List<string>();
 
-
-
-
     public int maxHealth, health;
+    private bool canFly = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Start()
     {
@@ -39,6 +39,10 @@ public class Enemy : MonoBehaviour
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
+        enemyUI = GameObject.Find("EnemyUI").GetComponent<EnemyUi>();
+        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
+
+
         turnManager.turnOrder.Add(gameObject);
         health = maxHealth;
         TurnManager.RoundStarted += GetPlan;
@@ -53,8 +57,12 @@ public class Enemy : MonoBehaviour
     public void GetPlan(TurnManager turnManager)
     {
         isPlanning = true;
-        currentMove = moveSets[Random.Range(0, moveSets.Count)];
+        currentPlan.Clear();
+        displayedPlan.Clear();
+        plannedMoveSet = moveSets[Random.Range(0, moveSets.Count)];
+        plannedMoveSet();
 
+        enemyUI.Plan(displayedPlan);
     }
     public void StartOfTurn()
     {
@@ -73,13 +81,12 @@ public class Enemy : MonoBehaviour
 
     public IEnumerator TakeTurn()
     {
-        currentMove = moveSets[Random.Range(0, moveSets.Count)];
         StartOfTurn();
         yield return new WaitUntil(() => nextAction == true);
         nextAction = false;
-        for (int i = 0; i < moveSets.Count; i++)
+        for (int i = 0; i < currentPlan.Count; i++)
         {
-            moveSets[i]();
+            currentPlan[i]();
             yield return new WaitUntil(() => nextAction == true);
             nextAction = false;
         }
@@ -89,12 +96,11 @@ public class Enemy : MonoBehaviour
     {
         nextAction = true;
     }
-    public void Move(int moveValue,int range = 1, bool isJump = true, bool isFly = false)
+    public void Move(int moveValue, int range = 1, bool isJump = false)
     {
-        OneToOnePos = mapManager.PosToOneToOne(transform.position);
-        StartCoroutine(pathfinder.PathfindTowards(OneToOnePos, playerControler.playerOneToOneCords, gameObject, moveValue, range, isJump, isFly));
         if (isPlanning)
         {
+            currentPlan.Add(() => Move(moveValue, range, isJump));
             string planString = "Move " + moveValue;
             if (isJump)
             {
@@ -102,23 +108,51 @@ public class Enemy : MonoBehaviour
             }
             displayedPlan.Add(planString);
         }
-    }
-
-    public void AttackX(int attackValue, int attackRange = 1)
-    {
-        if (distanceToPlayer <= attackRange)
+        else
         {
-            playerControler.AttackedForX(attackValue);
+            OneToOnePos = mapManager.PosToOneToOne(transform.position);
+            StartCoroutine(pathfinder.PathfindTowards(OneToOnePos, playerControler.playerOneToOneCords, gameObject, moveValue, range, isJump, canFly));
         }
     }
 
-    public void AttackedForX(int attackValue)
+    public void Attack(int attackValue, int attackRange = 1)
+    {
+        if (isPlanning)
+        {
+            currentPlan.Add(() => Attack(attackValue, attackRange));
+            string planString = "Attack " + attackValue;
+            displayedPlan.Add(planString);
+        }
+        else
+        {
+            if (distanceToPlayer <= attackRange)
+            {
+                playerControler.AttackedFor(attackValue);
+            }
+            ActionDone();
+        }
+    }
+
+    public void AttackedFor(int attackValue)
     {
         health -= attackValue;
+        enemyUI.SetHealth(health);
+        if (health < 0)
+        {
+            Die();
+        }
     }
 
     public void showHideTooltip(bool show)
     {
 
+    }
+
+    public void Die()
+    {
+        TurnManager.RoundStarted -= GetPlan;
+        mouseManager.MouseOffObject(gameObject);
+        turnManager.RemoveFromTurnOrder(gameObject);
+        Destroy(gameObject);
     }
 }

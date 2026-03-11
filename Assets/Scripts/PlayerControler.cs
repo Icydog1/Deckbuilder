@@ -10,6 +10,7 @@ public class PlayerControler : MonoBehaviour
     private MapManager mapManager;
     public GameObject clickedTile, clickedEnemy;
     public GameObject playedCard;
+    private PlayerStats playerStats;
     public Card playedCardScript;
     private Vector3 playerHexCords;
     public Vector2 playerOneToOneCords;
@@ -26,7 +27,10 @@ public class PlayerControler : MonoBehaviour
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         player = GameObject.Find("Player");
+        playerStats = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
+        Debug.Log(playerStats);
         playerOneToOneCords = Vector2.zero;
+
 
         health = maxHealth;
     }
@@ -60,7 +64,7 @@ public class PlayerControler : MonoBehaviour
             if (moveLeft == 0)
             {
                 ActionDone();
-                Debug.Log("Done Moving");
+                //Debug.Log("Done Moving");
             }
         }
     }
@@ -76,7 +80,7 @@ public class PlayerControler : MonoBehaviour
                 //sometimes doent work
                 if (mapManager.GetDistanceTo(clickedEnemyCords, player.transform.position) <= range)
                 {
-                    clickedEnemy.GetComponent<Enemy>().AttackedForX(attackDamageValue);
+                    clickedEnemy.GetComponent<Enemy>().AttackedFor(attackDamageValue);
                     targetsLeft--;
                 }
                 else
@@ -86,7 +90,7 @@ public class PlayerControler : MonoBehaviour
                 if (targetsLeft == 0)
                 {
                     ActionDone();
-                    Debug.Log("Done Attacking");
+                    //Debug.Log("Done Attacking");
                 }
             }
         }
@@ -104,7 +108,7 @@ public class PlayerControler : MonoBehaviour
         playedCardScript.currentStep++;
     }
 
-    public void MoveX(int moveValue, bool isJump = false)
+    public void Move(int moveValue, bool isJump = false)
     {
         actionDone = false;
         isMoving = true;
@@ -112,7 +116,7 @@ public class PlayerControler : MonoBehaviour
         moveLeft = moveValue;
     }
 
-    public void AttackX(int attackValue, int attackRange = 1, int targets = 1)
+    public void Attack(int attackValue, int attackRange = 1, int targets = 1)
     {
         actionDone = false;
         isAttacking = true;
@@ -123,9 +127,10 @@ public class PlayerControler : MonoBehaviour
 
     }
 
-    public void AttackedForX(int attackValue)
+    public void AttackedFor(int attackValue)
     {
         health -= attackValue;
+        playerStats.SetHealth(health);
     }
 
 }

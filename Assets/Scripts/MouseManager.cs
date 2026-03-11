@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class MouseManager : MonoBehaviour
 {
@@ -78,8 +79,9 @@ public class MouseManager : MonoBehaviour
 
 
     }
-    public void MouseOnObject(float newheight, GameObject newObject)
+    public void MouseOnObject(GameObject newObject)
     {
+        float newheight = transform.position.z;
 
         if (mouseOver.Count == 0)
         {
@@ -101,35 +103,39 @@ public class MouseManager : MonoBehaviour
             border.GetComponent<SpriteRenderer>().color = Color.green;
         }
     }
-    public void MouseOffObject(float newheight, GameObject newObject)
+    public void MouseOffObject(GameObject newObject)
     {
-        mouseOver.Remove(newObject);
-        mouseOverHeights.Remove(newheight);
-        if (selectedObject.GetComponent<Selectable>())
+        if (mouseOver.Contains(newObject))
         {
-            GameObject border = selectedObject.transform.Find("Border").gameObject;
-            
-            border.GetComponent<SpriteRenderer>().color = Color.black;
-        }
-        if (newObject.GetComponent<Card>())
-        {
-            newObject.transform.localScale = new Vector3(1, 1, 1);
-            newObject.transform.position = newObject.transform.position - new Vector3(0, selectedCardHeightIncrease, 0) * cameraScript.zoom;
-        }
-        if (mouseOver.Count == 0)
-        {
-            //Debug.Log(selectedObject + "off");
-            selectedObject = null;
-            selectedHeight = -Mathf.Infinity;
-        }
-        else
-        {
-            foreach (GameObject item in mouseOver)
+            if (selectedObject.GetComponent<Selectable>())
             {
-                if (selectedHeight < mouseOverHeights[mouseOver.IndexOf(item)])
+                GameObject border = selectedObject.transform.Find("Border").gameObject;
+
+                border.GetComponent<SpriteRenderer>().color = Color.black;
+            }
+            if (newObject.GetComponent<Card>())
+            {
+                newObject.transform.localScale = new Vector3(1, 1, 1);
+                newObject.transform.position = newObject.transform.position - new Vector3(0, selectedCardHeightIncrease, 0) * cameraScript.zoom;
+            }
+            mouseOver.Remove(newObject);
+            float newheight = transform.position.z;
+            mouseOverHeights.Remove(newheight);
+            if (mouseOver.Count == 0)
+            {
+                //Debug.Log(selectedObject + "off");
+                selectedObject = null;
+                selectedHeight = -Mathf.Infinity;
+            }
+            else
+            {
+                foreach (GameObject item in mouseOver)
                 {
-                    selectedObject = item;
-                    selectedHeight = mouseOverHeights[mouseOver.IndexOf(item)];
+                    if (selectedHeight < mouseOverHeights[mouseOver.IndexOf(item)])
+                    {
+                        selectedObject = item;
+                        selectedHeight = mouseOverHeights[mouseOver.IndexOf(item)];
+                    }
                 }
             }
         }
@@ -189,12 +195,12 @@ public class MouseManager : MonoBehaviour
             {
                 if (mousePos.y > topPlayLine * Screen.height)
                 {
-                    Debug.Log(clickedObject + "top was played");
+                    //Debug.Log(clickedObject + "top was played");
                     clickedObject.GetComponent<Card>().AttemptToPlayTop();
                 }
                 else if (mousePos.y > bottomPlayLine * Screen.height)
                 {
-                    Debug.Log(clickedObject + "bottom was played");
+                    //Debug.Log(clickedObject + "bottom was played");
                     clickedObject.GetComponent<Card>().AttemptToPlayBottom();
                 }
                 else

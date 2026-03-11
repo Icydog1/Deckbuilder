@@ -34,7 +34,7 @@ public class Pathfinder : MonoBehaviour
     private Vector2 currentPos;
     private Enemy currentEnemy;
 
-    private float enemyMoveDelay = 0.5f;
+    private float enemyMoveDelay = 0.1f;
     private bool doneMoving;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -321,7 +321,7 @@ public class Pathfinder : MonoBehaviour
             oneToOnePos = actualPath[i];
             pos = mapManager.OneToOneToPos(oneToOnePos);
             enemy.transform.position = new Vector3(pos.x, pos.y, enemy.transform.position.z);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(enemyMoveDelay);
         }
         doneMoving = true;
     }

@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 54447365780542375}
   - component: {fileID: 2014367060900325786}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: EnemyUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

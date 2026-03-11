@@ -7,7 +7,7 @@ public class TestEnemy : Enemy
     public override void Start()
     {
         moveSets.Add(MoveSet1);
-        //moveSets.Add(MoveSet2);
+        moveSets.Add(MoveSet2);
         //moveSets.Add(MoveSet3);
         maxHealth = 10;
         base.Start(); // runs the code from the base
@@ -22,17 +22,18 @@ public class TestEnemy : Enemy
 
     public void MoveSet1()
     {
-        Move(3);
+        Move(3, 1, true);
+        Attack(3);
+
     }
     public void MoveSet2()
     {
         Move(4);
-
+        Attack(2);
     }
 
     public void MoveSet3()
     {
         Move(4);
-
     }
 }

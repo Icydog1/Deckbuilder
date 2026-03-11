@@ -20,7 +20,7 @@ public class Clickable : MonoBehaviour , IPointerEnterHandler, IPointerExitHandl
     // Update is called once per frame
     void Update()
     {
-        height = transform.position.z;
+        //height = transform.position.z;
     }
 
     public void OnMouseExit()
@@ -29,12 +29,12 @@ public class Clickable : MonoBehaviour , IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        mouseManager.MouseOnObject(height, gameObject);
+        mouseManager.MouseOnObject(gameObject);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        mouseManager.MouseOffObject(height, gameObject);
+        mouseManager.MouseOffObject(gameObject);
 
     }
     
