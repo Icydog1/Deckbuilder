@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerControler : MonoBehaviour
@@ -21,6 +23,9 @@ public class PlayerControler : MonoBehaviour
     public int topEnergy, bottomEnergy;
     public int maxHealth = 100, health;
 
+    public List<System.Action> currentActionQueue = new List<System.Action>();
+
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -59,12 +64,12 @@ public class PlayerControler : MonoBehaviour
             {
                 moveLeft -= mapManager.GetDistanceTo(clickedTileCords, player.transform.position);
                 player.transform.position = clickedTileCords;
-                //Debug.Log(moveLeft);
+                Debug.Log(moveLeft);
             }
             if (moveLeft == 0)
             {
                 ActionDone();
-                //Debug.Log("Done Moving");
+                Debug.Log("Done Moving");
             }
         }
     }
@@ -96,7 +101,24 @@ public class PlayerControler : MonoBehaviour
         }
 
     }
+    /*
+    public void AddToActionQueue(System.Action action)
+    {
+        currentActionQueue.Add(action);
+    }
 
+    public IEnumerator PreformQueue()
+    {
+        foreach (System.Action action in currentActionQueue)
+        {
+            action();
+            yield return new WaitUntil(() => nextAction == true);
+            nextAction = false;
+        }
+        currentActionQueue.Clear();
+        playedCardScript.DonePlaying();
+    }
+    */
     public void ActionDone()
     {
         isMoving = false;
@@ -106,6 +128,7 @@ public class PlayerControler : MonoBehaviour
         isTargetATile = false;
         isTargetAEnemy = false;
         playedCardScript.currentStep++;
+        playedCardScript.nextAction = true;
     }
 
     public void Move(int moveValue, bool isJump = false)

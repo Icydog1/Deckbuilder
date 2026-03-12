@@ -11,7 +11,7 @@ public class EnemyUi : MonoBehaviour
     //List<string> currentCondtions = new List<string>();
     private bool noCondions;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         healthText = healthTextObject.GetComponent<TextMeshProUGUI>();
         condtionsText = condtionsTextObject.GetComponent<TextMeshProUGUI>();
@@ -19,12 +19,12 @@ public class EnemyUi : MonoBehaviour
 
 
 
-        SetHealth(100);
+        //SetHealth(100);
         SetCondtions(new string[0]);
         List<string> testString = new List<string>();
-        testString.Add("Move 2");
-        testString.Add("Move 3");
-        testString.Add("Attack 4");
+        //testString.Add("Move 2");
+        //testString.Add("Move 3");
+        //testString.Add("Attack 4");
         Plan(testString);
     }
 

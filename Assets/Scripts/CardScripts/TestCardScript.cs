@@ -9,6 +9,15 @@ using UnityEngine;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
+        topActions.Add(() => playerControler.Attack(4));
+        topActions.Add(() => playerControler.Attack(4));
+
+        bottomActions.Add(() => playerControler.Move(4));
+        bottomActions.Add(() => playerControler.Move(2));
+
+        topDescription = "Attack 4";
+
+
         base.Start(); // runs the code from the base
                       // add your additional code here
     }
@@ -20,26 +29,30 @@ using UnityEngine;
                       // add your additional code here
     }
 
+
+    /*
     public override IEnumerator PlayTop()
     {
-        playerControler.Attack(1);
-        yield return new WaitUntil(() => currentStep == 1);
-        playerControler.Attack(3);
-        yield return new WaitUntil(() => currentStep == 2);
-        //Debug.Log("top played fully");
-
-        DonePlaying();
-
+        foreach (System.Action action in topActions)
+        {
+            action();
+            yield return new WaitUntil(() => playerControler.nextAction == true);
+            nextAction = false;
+        }
+    
     }
-
-
-    public override IEnumerator PlayBottom()
+    
+    public override void PlayTop()
     {
-        playerControler.Move(4);
-        yield return new WaitUntil(() => currentStep == 1);
-        playerControler.Move(3);
-        yield return new WaitUntil(() => currentStep == 2);
-        //Debug.Log("bottom played fully");
-        DonePlaying();
+        //playerControler.AddToActionQueue(() => playerControler.Attack(1));
+        //playerControler.AddToActionQueue(() => playerControler.Attack(3));
     }
+    
+
+    public override void PlayBottom()
+    {
+        playerControler.AddToActionQueue(() => playerControler.Move(4));
+        playerControler.AddToActionQueue(() => playerControler.Move(2));
+    }
+    */
 }

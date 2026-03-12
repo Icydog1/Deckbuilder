@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Card : MonoBehaviour
@@ -12,6 +13,12 @@ public class Card : MonoBehaviour
     protected bool isTopPlayed, isBottomPlayed;
     protected bool isPlaying;
     public int currentStep;
+    public bool nextAction;
+
+    public List<System.Action> topActions = new List<System.Action>();
+    public List<System.Action> bottomActions = new List<System.Action>();
+
+    protected string topDescription;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -28,32 +35,7 @@ public class Card : MonoBehaviour
     // Update is called once per frame
     public virtual void Update()
     {
-        if (isCurrentCard)
-        {
-            if (playerControler.actionDone)
-            {
 
-            }
-            if (isTopPlayed && !isPlaying)
-            {
-                isPlaying = true;
-                currentStep = 0;
-                topGlow.SetActive(true);
-                StartCoroutine(PlayTop());
-                mouseManager.clickedObject = null;
-
-            }
-            if (isBottomPlayed && !isPlaying)
-            {
-                isPlaying = true;
-                currentStep = 0;
-                bottomGlow.SetActive(true);
-
-                StartCoroutine(PlayBottom());
-                mouseManager.clickedObject = null;
-
-            }
-        }
     }
 
 
@@ -63,6 +45,8 @@ public class Card : MonoBehaviour
         {
             isTopPlayed = true;
             playerControler.topEnergy -= topCost;
+
+
             SetPlayed();
         }
         else
@@ -76,7 +60,9 @@ public class Card : MonoBehaviour
         {
             isBottomPlayed = true;
             playerControler.bottomEnergy -= bottomCost;
+
             SetPlayed();
+
         }
         else
         {
@@ -91,6 +77,18 @@ public class Card : MonoBehaviour
         playerControler.cardPlayed = true;
         playerControler.playedCard = gameObject;
         playerControler.playedCardScript = gameObject.GetComponent<Card>();
+        currentStep = 0;
+        mouseManager.clickedObject = null;
+        if (isTopPlayed)
+        {
+            topGlow.SetActive(true);
+            StartCoroutine(PlayTop());
+        }
+        if (isBottomPlayed)
+        {
+            bottomGlow.SetActive(true);
+            StartCoroutine(PlayBottom());
+        }
     }
 
     public void DonePlaying()
@@ -107,20 +105,41 @@ public class Card : MonoBehaviour
         currentStep = 0;
     }
 
-    public virtual IEnumerator PlayTop()
+    public IEnumerator PlayTop()
+    {
+        foreach (System.Action action in topActions)
+        {
+            action();
+            yield return new WaitUntil(() => nextAction == true);
+            nextAction = false;
+        }
+        DonePlaying();
+    }
+
+    public IEnumerator PlayBottom()
+    {
+        foreach (System.Action action in bottomActions)
+        {
+            action();
+            //Debug.Log(action.Method.Name);
+            yield return new WaitUntil(() => nextAction == true);
+            nextAction = false;
+        }
+        DonePlaying();
+    }
+    /*
+    public virtual void PlayTop()
     {
         Debug.Log("Warning Baseclass top played");
-        yield return null;
     }
-
-    public virtual IEnumerator PlayBottom()
+    
+    public virtual void PlayBottom()
     {
         Debug.Log("Warning Baseclass bottom played");
-        yield return null;
 
     }
+    */
 
 
-    
 
 }

@@ -22,14 +22,14 @@ public class TestEnemy : Enemy
 
     public void MoveSet1()
     {
-        Move(3, 1, true);
-        Attack(3);
+        Move(3, false);
+        Attack(3, 2);
 
     }
     public void MoveSet2()
     {
         Move(4);
-        Attack(2);
+        Attack(2, 2);
     }
 
     public void MoveSet3()

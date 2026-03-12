@@ -52,7 +52,7 @@ public class TurnManager : MonoBehaviour
 
     public void RemoveFromTurnOrder(GameObject removedObject)
     {
-        if (currentTurn = removedObject)
+        if (currentTurn == removedObject)
         {
             currentTurn = turnOrder[turnOrder.IndexOf(removedObject) - 1];
             turnOrder.Remove(removedObject);
@@ -97,13 +97,15 @@ public class TurnManager : MonoBehaviour
         deckManager.DrawNewHand();
         if (RoundEnded != null)
         {
+            Debug.Log("Round ended");
             RoundEnded(this);
         }
         if (RoundStarted != null)
         {
+            Debug.Log("Round Started");
             RoundStarted(this);
         }
-        
+
 
         NextTurn();
     }

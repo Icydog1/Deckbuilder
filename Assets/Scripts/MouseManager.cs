@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class MouseManager : MonoBehaviour
@@ -99,8 +100,17 @@ public class MouseManager : MonoBehaviour
         }
         if (selectedObject.GetComponent<Selectable>())
         {
-            GameObject border = selectedObject.transform.Find("Border").gameObject;
-            border.GetComponent<SpriteRenderer>().color = Color.green;
+            if (selectedObject.GetComponent<UIButton>())
+            {
+                GameObject border = selectedObject.transform.Find("Border").gameObject;
+                border.GetComponent<Image>().color = Color.green;
+            }
+            else
+            {
+                GameObject border = selectedObject.transform.Find("Border").gameObject;
+                border.GetComponent<SpriteRenderer>().color = Color.green;
+            }
+
         }
     }
     public void MouseOffObject(GameObject newObject)
@@ -109,9 +119,16 @@ public class MouseManager : MonoBehaviour
         {
             if (selectedObject.GetComponent<Selectable>())
             {
-                GameObject border = selectedObject.transform.Find("Border").gameObject;
-
-                border.GetComponent<SpriteRenderer>().color = Color.black;
+                if (selectedObject.GetComponent<UIButton>())
+                {
+                    GameObject border = selectedObject.transform.Find("Border").gameObject;
+                    border.GetComponent<Image>().color = Color.black;
+                }
+                else
+                {
+                    GameObject border = selectedObject.transform.Find("Border").gameObject;
+                    border.GetComponent<SpriteRenderer>().color = Color.black;
+                }
             }
             if (newObject.GetComponent<Card>())
             {
@@ -143,35 +160,19 @@ public class MouseManager : MonoBehaviour
     public GameObject getObjectAtPoint(Vector2 point)
     {
         return Physics2D.OverlapPoint(point).gameObject;
-        /*
-        Debug.Log(worldMousePos);
-        Debug.Log(Physics2D.OverlapPointAll(worldMousePos));
-        mouseOverList.Clear();
-        foreach (Collider2D collider in Physics2D.OverlapPointAll(worldMousePos))
-        {
-            mouseOverList.Add(collider.gameObject);
-            Debug.Log(collider);
-        }
-        selectedObject = null;
-        if (mouseOverList.Count != 0)
-        {
-            foreach (GameObject item in mouseOverList)
-            {
-                if (item.GetComponent<Clickable>())
-                {
-                    selectedObject = item;
-                }
-            }
-            Debug.Log(selectedObject);
-
-        }
-        */
-
     }
     public void MouseClicked()
     {
 
         clickedObject = selectedObject;
+        if (clickedObject && clickedObject.GetComponent<UIButton>())
+        {
+            if (selectedObject.GetComponent<UIButton>())
+            {
+                GameObject image = selectedObject.transform.Find("Image").gameObject;
+                image.GetComponent<Image>().color = new Color(0.8f, 0.8f, 0.8f);
+            }
+        }
         if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.cardPlayed == false)
         {
             dragableClicked = true;
@@ -188,6 +189,14 @@ public class MouseManager : MonoBehaviour
     }
     public void MouseReleased()
     {
+        if (clickedObject && clickedObject.GetComponent<UIButton>())
+        {
+            if (clickedObject.GetComponent<UIButton>())
+            {
+                GameObject image = clickedObject.transform.Find("Image").gameObject;
+                image.GetComponent<Image>().color = Color.white;
+            }
+        }
         if (dragableClicked && !shortClick)
         {
 
@@ -210,7 +219,7 @@ public class MouseManager : MonoBehaviour
             }
             dragableClicked = false;
         }
-        if (clickedObject != null)
+        if (clickedObject != null && clickedObject == selectedObject)
         {
             if (clickedObject.GetComponent<Tile>())
             {
@@ -224,10 +233,10 @@ public class MouseManager : MonoBehaviour
             {
                 playerControler.EnemyClicked(clickedObject);
             }
-            if (!dragableClicked)
-            {
-                clickedObject = null;
-            }
+        }
+        if (!dragableClicked)
+        {
+            clickedObject = null;
         }
 
     }

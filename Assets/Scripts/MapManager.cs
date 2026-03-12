@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
-using static UnityEditor.PlayerSettings;
+
 
 public class MapManager : MonoBehaviour
 {
@@ -34,6 +33,126 @@ public class MapManager : MonoBehaviour
     }
 
     //public void Move(GameObject movedObject,)
+
+    public Vector3 OneToOneToHex(Vector2 oneToOnePos)
+    {
+        //OneToOne coridates (tiles left and up, tiles right and up)
+        return new Vector3(oneToOnePos.x, 0, oneToOnePos.y);
+    }
+
+    public Vector2 OneToOneToPos(Vector2 oneToOnePos)
+    {
+        float xComponent;
+        xComponent = oneToOnePos.y * tileXDistance - oneToOnePos.x * tileXDistance;
+        float yComponent;
+        yComponent = oneToOnePos.y * tileYDistance / 2 + oneToOnePos.x * tileYDistance / 2;
+        return new Vector2(xComponent, yComponent);
+
+    }
+
+    public Vector2 PosToOneToOne(Vector2 pos)
+    {
+        //return HexToOneToOne(GetPosInHexCords(pos));
+        float tilesRight = pos.x / tileXDistance;
+        float tilesUp = pos.y / tileYDistance;
+        float oneToOneX = - tilesRight / 2 + tilesUp;
+        float oneToOneY = tilesRight / 2 + tilesUp;
+        Mathf.RoundToInt(oneToOneX);
+        Mathf.RoundToInt(oneToOneY);
+        return new Vector2(oneToOneX, oneToOneY);
+    }
+
+    public int GetDistanceBetweenOneToOne(Vector2 startOneToOnePos, Vector2 endOneToOnePos)
+    {
+        Vector2 vectorBetween = startOneToOnePos - endOneToOnePos;
+        float distance = -1;
+        if (Mathf.Sign(vectorBetween.x) == Mathf.Sign(vectorBetween.y))
+        {
+            if (Mathf.Abs(vectorBetween.x) > Mathf.Abs(vectorBetween.y))
+            {
+                distance = Mathf.Abs(vectorBetween.x);
+            }
+            else
+            {
+                distance = Mathf.Abs(vectorBetween.y);
+            }
+        }
+        else
+        {
+            distance = Mathf.Abs(vectorBetween.x) + Mathf.Abs(vectorBetween.y);
+        }
+        return Mathf.RoundToInt(distance);
+    }
+
+    public int GetDistanceBetweenPos(Vector2 startPos, Vector2 endPos)
+    {
+        return GetDistanceBetweenOneToOne(PosToOneToOne(startPos), PosToOneToOne(startPos));
+
+    }
+    public int GetDistanceTo(Vector2 startPos, Vector2 endPos)
+    {
+        Vector3 cordsBetween = GetDisanceInHexCordsTo(startPos, endPos);
+        //Debug.Log(cordsBetween + "cordsBetween");
+        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
+
+    }
+    public int GetDistanceToHex(Vector3 startHexPos, Vector3 endHexPos)
+    {
+        Vector3 cordsBetween = GetDisanceInHexCordsTo(HexToPos(startHexPos), HexToPos(endHexPos));
+        //Debug.Log(cordsBetween + "cordsBetween");
+        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
+
+    }
+
+    public List<GameObject> GetObsticalAtHex(Vector2 OneToOnePos, bool obstacle = true, bool enemy = true, bool player = true, bool wall = true)
+    {
+        List<GameObject> obstacles = new List<GameObject>();
+        Vector2 pos = OneToOneToPos(OneToOnePos);
+        if (wall && Physics2D.OverlapPoint(pos, 64) != null && Physics2D.OverlapPoint(pos, 64).gameObject.GetComponent<Wall>() != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 64).gameObject);
+        }
+        if (obstacle && Physics2D.OverlapPoint(pos, 64) != null && Physics2D.OverlapPoint(pos, 64).gameObject.GetComponent<Obstacle>() != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 64).gameObject);
+        }
+        if (enemy && Physics2D.OverlapPoint(pos, 128) != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 128).gameObject);
+        }
+        if (player && Physics2D.OverlapPoint(pos, 256) != null)
+        {
+            obstacles.Add(Physics2D.OverlapPoint(pos, 256).gameObject);
+        }
+        return obstacles;
+    }
+
+    public GameObject GetTileAtHex(Vector2 OneToOnePos)
+    {
+        Vector2 pos = OneToOneToPos(OneToOnePos);
+        if (Physics2D.OverlapPoint(pos, 64) != null)
+        {
+            return Physics2D.OverlapPoint(pos, 64).gameObject;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    public GameObject GetEntityOnHex(Vector2 OneToOnePos)
+    {
+        Vector2 pos = OneToOneToPos(OneToOnePos);
+        int layermask = 384;
+        if (Physics2D.OverlapPoint(pos, layermask) != null)
+        {
+            return Physics2D.OverlapPoint(pos, layermask).gameObject;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
     public Vector3 GetPosInHexCords(Vector2 pos)
     {
         return (GetDisanceInHexCordsTo(pos,Vector2.zero));
@@ -153,88 +272,4 @@ public class MapManager : MonoBehaviour
         return new Vector2(HexPos.x + HexPos.y, HexPos.z + HexPos.y);
     }
 
-    public Vector3 OneToOneToHex(Vector2 OneToOnePos)
-    {
-        //OneToOne coridates (tiles left and up, tiles right and up)
-        return new Vector3(OneToOnePos.x, 0, OneToOnePos.y);
-    }
-
-    public Vector2 OneToOneToPos(Vector2 OneToOnePos)
-    {
-        float xComponent;
-        xComponent = OneToOnePos.y * tileXDistance - OneToOnePos.x * tileXDistance;
-        float yComponent;
-        yComponent = OneToOnePos.y * tileYDistance / 2 + OneToOnePos.x * tileYDistance / 2;
-        return new Vector2(xComponent, yComponent);
-
-    }
-
-    public Vector2 PosToOneToOne(Vector2 pos)
-    {
-        return HexToOneToOne(GetPosInHexCords(pos));
-    }
-
-    public int GetDistanceTo(Vector2 startPos, Vector2 endPos)
-    {
-        Vector3 cordsBetween = GetDisanceInHexCordsTo(startPos, endPos);
-        //Debug.Log(cordsBetween + "cordsBetween");
-        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
-
-    }
-    public int GetDistanceToHex(Vector3 startHexPos, Vector3 endHexPos)
-    {
-        Vector3 cordsBetween = GetDisanceInHexCordsTo(HexToPos(startHexPos), HexToPos(endHexPos));
-        //Debug.Log(cordsBetween + "cordsBetween");
-        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
-
-    }
-
-    public List<GameObject> GetObsticalAtHex(Vector2 OneToOnePos, bool obstacle = true, bool enemy = true, bool player = true, bool wall = true)
-    {
-        List<GameObject> obstacles = new List<GameObject>();
-        Vector2 pos = OneToOneToPos(OneToOnePos);
-        if (wall && Physics2D.OverlapPoint(pos, 64) != null && Physics2D.OverlapPoint(pos, 64).gameObject.GetComponent<Wall>() != null)
-        {
-            obstacles.Add(Physics2D.OverlapPoint(pos, 64).gameObject);
-        }
-        if (obstacle && Physics2D.OverlapPoint(pos, 64) != null && Physics2D.OverlapPoint(pos, 64).gameObject.GetComponent<Obstacle>() != null)
-        {
-            obstacles.Add(Physics2D.OverlapPoint(pos, 64).gameObject);
-        }
-        if (enemy && Physics2D.OverlapPoint(pos, 128) != null)
-        {
-            obstacles.Add(Physics2D.OverlapPoint(pos, 128).gameObject);
-        }
-        if (player && Physics2D.OverlapPoint(pos, 256) != null)
-        {
-            obstacles.Add(Physics2D.OverlapPoint(pos, 256).gameObject);
-        }
-        return obstacles;
-    }
-
-    public GameObject GetTileAtHex(Vector2 OneToOnePos)
-    {
-        Vector2 pos = OneToOneToPos(OneToOnePos);
-        if (Physics2D.OverlapPoint(pos, 64) != null)
-        {
-            return Physics2D.OverlapPoint(pos, 64).gameObject;
-        }
-        else
-        {
-            return null;
-        }
-    }
-    public GameObject GetEntityOnHex(Vector2 OneToOnePos)
-    {
-        Vector2 pos = OneToOneToPos(OneToOnePos);
-        int layermask = 384;
-        if (Physics2D.OverlapPoint(pos, layermask) != null)
-        {
-            return Physics2D.OverlapPoint(pos, layermask).gameObject;
-        }
-        else
-        {
-            return null;
-        }
-    }
 }
