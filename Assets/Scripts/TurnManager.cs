@@ -36,11 +36,12 @@ public class TurnManager : MonoBehaviour
     public IEnumerator StartGame()
     {
         yield return new WaitForSeconds(0.5f);
-        currentTurn = player;
+        currentTurn = turnOrder[0];
         if (RoundStarted != null)
         {
             RoundStarted(this);
         }
+        NextTurn();
     }
 
 
@@ -85,6 +86,7 @@ public class TurnManager : MonoBehaviour
             }
             if (currentTurn == player)
             {
+                playerControler.StartTurn();
                 playerTurn = true;
             }
 

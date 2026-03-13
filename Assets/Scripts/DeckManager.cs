@@ -10,6 +10,8 @@ public class DeckManager : MonoBehaviour
     public List<GameObject> deckContents, handContents, discardContents, playContents = new List<GameObject>();
     private List<List<GameObject>> posibleCardLocations = new List<List<GameObject>>();
     private float relativeSpaceBetweenCards = 0.4f;
+    private float selectedCardHeightIncrease = 0.25f;
+
     private int handSize;
     private int startHandSize = 5;
     private CameraScript cameraScript;
@@ -43,8 +45,6 @@ public class DeckManager : MonoBehaviour
         posibleCardLocations.Add(handContents);
         posibleCardLocations.Add(discardContents);
         posibleCardLocations.Add(playContents);
-
-
 
     }
 
@@ -131,6 +131,22 @@ public class DeckManager : MonoBehaviour
     {
         MoveTo(currentCard, discard);
     }
+    public void SelectCard(GameObject card)
+    {
+        if (card.transform.localScale == Vector3.one)
+        {
+            card.transform.localScale = new Vector3(2, 2, 1);
+            card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * cameraScript.zoom, 0);
+        }
+    }
+    public void DeSelectCard(GameObject card)
+    {
+        if (card.transform.localScale == new Vector3(2, 2, 1))
+        {
+            card.transform.localScale = Vector3.one;
+            card.transform.position = card.transform.position - new Vector3(0, selectedCardHeightIncrease * cameraScript.zoom, 0);
+        }
+    }
 
     public void UpdateHand()
     {
@@ -141,7 +157,8 @@ public class DeckManager : MonoBehaviour
             card.transform.position = hand.transform.position + Vector3.left * (((float)handSize - 1) / 2 - handContents.IndexOf(card)) * spaceBetweenCards;
             if (card.transform.localScale != Vector3.one)
             {
-                card.transform.position = card.transform.position + new Vector3(0, mouseManager.selectedCardHeightIncrease, 0) * cameraScript.zoom;
+                card.transform.localScale = Vector3.one;
+                SelectCard(card);
             }
         }
 

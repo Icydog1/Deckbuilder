@@ -19,6 +19,9 @@ public class MapManager : MonoBehaviour
         tileHeight = tileSize * Mathf.Sqrt(3);
         tileXDistance = tileWidth * 3 / 4;
         tileYDistance = tileHeight;
+
+        //        tileXDistance = 3 / 2;
+        //        tileYDistance = Mathf.Sqrt(3);
         //Debug.Log(GetDisanceInHexCordsTo(Vector2.one * 5,Vector2.zero));
     }
     void Start()

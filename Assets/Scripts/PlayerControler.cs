@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PlayerControler : MonoBehaviour
 {
-    public bool cardPlayed;
     public bool actionDone, manualEnd;
     private bool isMoving, isAttacking;
+    public bool isPlayerTurn;
     private GameObject player;
     private MouseManager mouseManager;
     private MapManager mapManager;
+    private TurnManager turnManager;
     public GameObject clickedTile, clickedEnemy;
     public GameObject playedCard;
     private PlayerStats playerStats;
@@ -20,12 +21,21 @@ public class PlayerControler : MonoBehaviour
     private int range;
     private bool isTargetATile, isTargetAEnemy;
 
-    public int topEnergy, bottomEnergy;
+    private int topEnergy, bottomEnergy;
+    public int TopEnergy { get { return topEnergy; } set { topEnergy = value; } }
+    public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; } }
+
     public int maxHealth = 100, health;
 
     public List<System.Action> currentActionQueue = new List<System.Action>();
 
-    
+    public bool canPlayCards;
+    private bool cardPlayed;
+
+    public bool CanPlayCards { get { return canPlayCards; } }
+    public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -33,7 +43,8 @@ public class PlayerControler : MonoBehaviour
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         player = GameObject.Find("Player");
         playerStats = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
-        Debug.Log(playerStats);
+        turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
+        //Debug.Log(playerStats);
         playerOneToOneCords = Vector2.zero;
 
 
@@ -43,10 +54,6 @@ public class PlayerControler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (manualEnd)
-        {
-            ActionDone();
-        }
         playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
         playerOneToOneCords = mapManager.HexToOneToOne(playerHexCords);
     }
@@ -101,24 +108,40 @@ public class PlayerControler : MonoBehaviour
         }
 
     }
-    /*
-    public void AddToActionQueue(System.Action action)
+    public void UpdatePlayer()
     {
-        currentActionQueue.Add(action);
+        if (!cardPlayed && isPlayerTurn)
+        {
+            canPlayCards = true;
+        }
+        else
+        {
+            canPlayCards = false;
+        }
     }
 
-    public IEnumerator PreformQueue()
+    public void StartTurn()
     {
-        foreach (System.Action action in currentActionQueue)
-        {
-            action();
-            yield return new WaitUntil(() => nextAction == true);
-            nextAction = false;
-        }
-        currentActionQueue.Clear();
-        playedCardScript.DonePlaying();
+        isPlayerTurn = true;
+        UpdatePlayer();
     }
-    */
+    public void EndTurn()
+    {
+        if (!cardPlayed && isPlayerTurn)
+        {
+            isPlayerTurn = false;
+            UpdatePlayer();
+            turnManager.NextTurn();
+        }
+    }
+    public void ManualEnd()
+    {
+        if (cardPlayed && isPlayerTurn)
+        {
+            ActionDone();
+        }
+    }
+
     public void ActionDone()
     {
         isMoving = false;
@@ -150,7 +173,7 @@ public class PlayerControler : MonoBehaviour
 
     }
 
-    public void AttackedFor(int attackValue)
+    public void AttackedFor(int attackValue, int range = 1)
     {
         health -= attackValue;
         playerStats.SetHealth(health);

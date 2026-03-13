@@ -51,12 +51,11 @@ public class MouseManager : MonoBehaviour
             mouseDown = false;
             MouseReleased();
         }
-        if (selectedObject != null && selectedObject.GetComponent<Card>() != null && selectedObject.transform.localScale == Vector3.one)
+        if (selectedObject != null && selectedObject.GetComponent<Card>() != null)
         {
-            selectedObject.transform.localScale = new Vector3 (2,2,1);
-            selectedObject.transform.position = selectedObject.transform.position + new Vector3(0, selectedCardHeightIncrease, 0) * cameraScript.zoom;
+            deckManager.SelectCard(selectedObject);
         }
-        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && clickedObject.GetComponent<Card>() != null && playerControler.cardPlayed == false)
+        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && playerControler.CanPlayCards == true && clickedObject.GetComponent<Card>() != null)
         {
             //Debug.Log(worldMousePos);
             clickedObject.transform.position = new Vector3(worldMousePos.x, worldMousePos.y, clickedObject.transform.position.z);
@@ -132,8 +131,7 @@ public class MouseManager : MonoBehaviour
             }
             if (newObject.GetComponent<Card>())
             {
-                newObject.transform.localScale = new Vector3(1, 1, 1);
-                newObject.transform.position = newObject.transform.position - new Vector3(0, selectedCardHeightIncrease, 0) * cameraScript.zoom;
+                deckManager.DeSelectCard(newObject);
             }
             mouseOver.Remove(newObject);
             float newheight = transform.position.z;
@@ -173,7 +171,7 @@ public class MouseManager : MonoBehaviour
                 image.GetComponent<Image>().color = new Color(0.8f, 0.8f, 0.8f);
             }
         }
-        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.cardPlayed == false)
+        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.CanPlayCards == true)
         {
             dragableClicked = true;
             StartCoroutine(ShortFirstClick());

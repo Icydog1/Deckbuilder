@@ -9,15 +9,8 @@ using UnityEngine;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        topActions.Add(() => playerControler.Attack(4));
-        topActions.Add(() => playerControler.Attack(4));
-
-        bottomActions.Add(() => playerControler.Move(4));
-        bottomActions.Add(() => playerControler.Move(2));
-
-        topDescription = "Attack 4";
-
-
+        topCost = 0;
+        bottomCost = 0;
         base.Start(); // runs the code from the base
                       // add your additional code here
     }
@@ -29,6 +22,18 @@ using UnityEngine;
                       // add your additional code here
     }
 
+
+    public override void PrepareTop()
+    {
+        PrepareAttack(4);
+        PrepareAttack(4);
+    }
+
+    public override void PrepareBottom()
+    {
+        PrepareMove(4);
+        PrepareMove(4);
+    }
 
     /*
     public override IEnumerator PlayTop()
