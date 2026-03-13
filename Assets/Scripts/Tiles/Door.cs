@@ -5,7 +5,9 @@ public class Door : MonoBehaviour
     [SerializeField]
     private GameObject wall;
 
-    private int roomsNextTo;
+    private GameObject roomNextTo = null;
+    private Vector2 roomNextToCords;
+    public Vector2 RoomNextToCords { get { return roomNextToCords; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,12 +20,17 @@ public class Door : MonoBehaviour
         
     }
 
-    public void AddRoom()
+    public void AddRoom(GameObject room, Vector2 roomCords)
     {
-        roomsNextTo++;
-        if (roomsNextTo >= 2)
+        if (roomNextTo)
         {
             Instantiate(wall, transform.position, transform.rotation);
         }
+        else
+        {
+            roomNextTo = room;
+            roomNextToCords = roomCords;
+        }
+
     }
 }

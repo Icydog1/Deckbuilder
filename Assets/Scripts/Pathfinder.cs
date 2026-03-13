@@ -74,6 +74,11 @@ public class Pathfinder : MonoBehaviour
         self.GetComponent<Enemy>().ActionDone();
     }
 
+    public IEnumerator PathToTile(Vector2 selfPos, Vector2 targetPos, int newMoveValue, bool jump = false, bool fly = false)
+    {
+        yield return new WaitUntil(() => doneMoving == true);
+
+    }
 
     public void findPathFromToRange(Vector2 selfPos, Vector2 targetPos, int range)
     {

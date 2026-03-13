@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerControler : MonoBehaviour
@@ -11,6 +12,7 @@ public class PlayerControler : MonoBehaviour
     private MouseManager mouseManager;
     private MapManager mapManager;
     private TurnManager turnManager;
+    private RoomSpawner roomSpawner;
     public GameObject clickedTile, clickedEnemy;
     public GameObject playedCard;
     private PlayerStats playerStats;
@@ -18,6 +20,7 @@ public class PlayerControler : MonoBehaviour
     private Vector3 playerHexCords;
     public Vector2 playerOneToOneCords;
     private int moveLeft, targetsLeft, attackDamageValue;
+    private bool canJump, canFly;
     private int range;
     private bool isTargetATile, isTargetAEnemy;
 
@@ -44,6 +47,7 @@ public class PlayerControler : MonoBehaviour
         player = GameObject.Find("Player");
         playerStats = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
+        roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         //Debug.Log(playerStats);
         playerOneToOneCords = Vector2.zero;
 
@@ -63,22 +67,42 @@ public class PlayerControler : MonoBehaviour
         if (isTargetATile)
         {
             clickedTile = tile;
-            playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
-            playerOneToOneCords = mapManager.HexToOneToOne(playerHexCords);
+            //playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
+            playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
             Vector2 clickedTileCords = clickedTile.transform.position;
-
-            if (mapManager.GetDistanceTo(clickedTileCords, player.transform.position) <= moveLeft)
+            if (isMoving)
             {
-                moveLeft -= mapManager.GetDistanceTo(clickedTileCords, player.transform.position);
-                player.transform.position = clickedTileCords;
-                Debug.Log(moveLeft);
+                AttemptToMove(tile, clickedTileCords);
             }
-            if (moveLeft == 0)
+
+        }
+    }
+    public void AttemptToMove(GameObject tile, Vector2 tileCords)
+    {
+        int distance = mapManager.GetDistanceTo(tileCords, player.transform.position);
+        if (distance <= moveLeft)
+        {
+            if (tile.GetComponent<Door>())
             {
-                ActionDone();
-                Debug.Log("Done Moving");
+                MoveTo(tileCords, distance);
+                roomSpawner.SpawnRoomsNextToDoor(mapManager.PosToOneToOne(tileCords), tile.GetComponent<Door>().RoomNextToCords);
+            }
+            else if (!tile.GetComponent<Wall>() && (!tile.GetComponent<Obstacle>() || canFly))
+            {
+                MoveTo(tileCords, distance);
             }
         }
+        if (moveLeft == 0)
+        {
+            ActionDone();
+            Debug.Log("Done Moving");
+        }
+    }
+
+    public void MoveTo(Vector2 tileCords, int distance)
+    {
+        moveLeft -= distance;
+        player.transform.position = tileCords;
     }
     public void EnemyClicked(GameObject enemy)
     {

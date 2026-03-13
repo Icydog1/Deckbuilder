@@ -7,7 +7,9 @@ public class MapManager : MonoBehaviour
 {
     private GameManager gameManager;
     public GameObject player;
-    public float tileSize = 1, tileWidth, tileHeight;
+    private float tileSize = 1, tileWidth, tileHeight;
+    public float TileWidth { get { return tileWidth; } }
+    public float TileHeight { get { return tileHeight; } }
     private float tileXDistance, tileYDistance;
     float upLeft, up, upRight;
     // Start is called once before the first execution of Update after the MonoBehaviour is created

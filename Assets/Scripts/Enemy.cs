@@ -171,7 +171,6 @@ public class Enemy : MonoBehaviour
     public void Die()
     {
         TurnManager.RoundStarted -= GetPlan;
-        mouseManager.MouseOffObject(gameObject);
         turnManager.RemoveFromTurnOrder(gameObject);
         Destroy(gameObject);
     }

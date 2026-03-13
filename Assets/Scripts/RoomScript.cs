@@ -6,7 +6,7 @@ public class RoomScript : MonoBehaviour
     private MapManager mapManager;
 
     private Vector2 oneToOneCords;
-    private List<GameObject> doors = new List<GameObject>();
+    //private List<GameObject> doors = new List<GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -23,16 +23,16 @@ public class RoomScript : MonoBehaviour
                 case 0: checktile = oneToOneCords + new Vector2(3,-3); break;
                 case 1: checktile = oneToOneCords + new Vector2(6, 3); break;
                 case 2: checktile = oneToOneCords + new Vector2(3, 6); break;
-                case 3: checktile = oneToOneCords + new Vector2(3, -3); break;
+                case 3: checktile = oneToOneCords + new Vector2(-3, 3); break;
                 case 4: checktile = oneToOneCords + new Vector2(-6, -3); break;
                 case 5: checktile = oneToOneCords + new Vector2(-3, -6); break;
             }
             GameObject checkedObject = mapManager.GetTileAtHex(checktile);
             if (checkedObject.GetComponent<Door>())
             {
-                checkedObject.GetComponent<Door>().AddRoom();
+                checkedObject.GetComponent<Door>().AddRoom(gameObject,oneToOneCords);
             }
-            doors.Add(checkedObject);
+            //doors.Add(checkedObject);
         }
 
     }

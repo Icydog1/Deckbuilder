@@ -14,8 +14,8 @@ public class SpawnTilemap : MonoBehaviour
     void Awake()
     {
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
-        tileWidth = mapManager.tileWidth;
-        tileHeight = mapManager.tileHeight;
+        tileWidth = mapManager.TileWidth;
+        tileHeight = mapManager.TileHeight;
         BuildTileProbabilities(initialTileWeights);
 
 

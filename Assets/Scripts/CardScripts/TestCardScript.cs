@@ -31,8 +31,8 @@ using UnityEngine;
 
     public override void PrepareBottom()
     {
-        PrepareMove(4);
-        PrepareMove(4);
+        PrepareMove(1000);
+        //PrepareMove(4);
     }
 
     /*

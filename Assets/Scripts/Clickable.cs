@@ -23,9 +23,6 @@ public class Clickable : MonoBehaviour , IPointerEnterHandler, IPointerExitHandl
         //height = transform.position.z;
     }
 
-    public void OnMouseExit()
-    {
-    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -35,7 +32,11 @@ public class Clickable : MonoBehaviour , IPointerEnterHandler, IPointerExitHandl
     public void OnPointerExit(PointerEventData eventData)
     {
         mouseManager.MouseOffObject(gameObject);
-
     }
-    
+
+    public void OnDestroy()
+    {
+        mouseManager.MouseOffObject(gameObject);
+    }
+
 }

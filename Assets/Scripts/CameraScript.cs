@@ -9,8 +9,10 @@ public class CameraScript : MonoBehaviour
     private float maxZoom = 500, minZoom = 1f;
     private Camera cam;
     private DeckManager deckManager;
+    private GameObject player;
     public float standardHeight = 900, standardWidth = 1600, screenHeight, screenWidth, heightRatio, widthRatio, widthHeightRatio, standardWidthHeightRatio, zoom;
     public float FOVHeight, FOVWidth;
+    private bool playerLock;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,6 +20,7 @@ public class CameraScript : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        player = GameObject.Find("Player");
         standardWidthHeightRatio = standardWidth / standardHeight;
         zoom = cam.orthographicSize;
         StartCoroutine(resolutionChanged());
@@ -27,6 +30,26 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
+
+        xSpeed = Input.GetAxis("Horizontal");
+        ySpeed = Input.GetAxis("Vertical");
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (!playerLock)
+            {
+                playerLock = true;
+                xSpeed = 0;
+                ySpeed = 0;
+            }
+            else
+            {
+                playerLock = false;
+            }
+        }
+        if (playerLock)
+        {
+            transform.position = new Vector3(player.transform.position.x, player.transform.position.y, transform.position.z);
+        }
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
             scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -43,8 +66,11 @@ public class CameraScript : MonoBehaviour
             
             StartCoroutine(resolutionChanged());
         }
-        xSpeed = Input.GetAxis("Horizontal");
-        ySpeed = Input.GetAxis("Vertical");
+
+        if (xSpeed != 0 || ySpeed != 0)
+        {
+            playerLock = false;
+        }
         transform.position = new Vector3(transform.position.x + xSpeed * zoom * Time.deltaTime * camSpeed, transform.position.y + ySpeed * cam.orthographicSize * Time.deltaTime * camSpeed, transform.position.z);
         if (screenHeight != Screen.height * zoom || screenWidth != Screen.width * zoom)
         {
