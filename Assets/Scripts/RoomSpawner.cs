@@ -47,7 +47,8 @@ public class RoomSpawner : MonoBehaviour
     {
         Debug.Log(doorOneToOne + "Doorpos");
         Debug.Log(currentRoom + "OldRoomPos");
-
+        float realativeRotation = Vector2.Angle(doorOneToOne - currentRoom, Vector2.right);
+        transform.localEulerAngles = new Vector3(0, 0, realativeRotation);
         Vector2 newRoomPos = 2 * doorOneToOne - currentRoom;
         if (!builtRooms.Contains(newRoomPos))
         {
