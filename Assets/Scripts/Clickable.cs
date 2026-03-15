@@ -11,7 +11,7 @@ public class Clickable : MonoBehaviour , IPointerEnterHandler, IPointerExitHandl
     private MouseManager mouseManager;
     private float height;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();

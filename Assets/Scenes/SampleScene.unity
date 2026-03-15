@@ -1452,7 +1452,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rooms:
-  - {fileID: 3918804302560134702, guid: f90689ad11904e349849992dab7222ff, type: 3}
+  - {fileID: 6359971421526807227, guid: 706925ddbaa195a4aa3f2559d3a3f281, type: 3}
+  - {fileID: 2227390383329365627, guid: 0b05ebffa454f6d4f8f657746041e212, type: 3}
 --- !u!4 &887113702
 Transform:
   m_ObjectHideFlags: 0
@@ -4539,7 +4540,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2057178974424478010, guid: 0b05ebffa454f6d4f8f657746041e212, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 60
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2057178974424478010, guid: 0b05ebffa454f6d4f8f657746041e212, type: 3}
       propertyPath: m_LocalPosition.y

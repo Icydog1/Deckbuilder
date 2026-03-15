@@ -10,6 +10,8 @@ public class RoomSpawner : MonoBehaviour
     private float[] initialRoomWeights = { 0.9f}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
     private List<Vector2> builtRooms = new List<Vector2>();
+    public List<Vector2> BuiltRooms { get { return builtRooms; } }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -45,10 +47,10 @@ public class RoomSpawner : MonoBehaviour
     }
     public void SpawnRoomsNextToDoor(Vector2 doorOneToOne, Vector2 currentRoom)
     {
-        Debug.Log(doorOneToOne + "Doorpos");
-        Debug.Log(currentRoom + "OldRoomPos");
-        float realativeRotation = Vector2.Angle(doorOneToOne - currentRoom, Vector2.right);
+        float realativeRotation = Vector2.SignedAngle(new Vector2(1, 0), mapManager.OneToOneToPos(doorOneToOne - currentRoom));
+        //Debug.Log(mapManager.OneToOneToPos(doorOneToOne - currentRoom));
         transform.localEulerAngles = new Vector3(0, 0, realativeRotation);
+        //Debug.Log(realativeRotation);
         Vector2 newRoomPos = 2 * doorOneToOne - currentRoom;
         if (!builtRooms.Contains(newRoomPos))
         {
