@@ -5,7 +5,9 @@ public class EnemySpawner : MonoBehaviour
 
     public GameObject enemy;
     private TurnManager turnManager;
-    private float SpawnChance = 0.1f;
+    private float spawnChance = 0.1f;
+    [SerializeField]
+    private float spawnHeight;
     private MapManager mapManager;
     private Vector2 OneToOnePos;
 
@@ -15,8 +17,9 @@ public class EnemySpawner : MonoBehaviour
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         OneToOnePos = mapManager.PosToOneToOne(transform.position);
+        transform.position = new Vector3(transform.position.x, transform.position.y, spawnHeight);
 
-        Instantiate(enemy, transform.position, transform.rotation);
+        Instantiate(enemy, transform.position, Quaternion.identity);
 
 
 
@@ -32,11 +35,11 @@ public class EnemySpawner : MonoBehaviour
 
     public void AttemptToSpawnEnemy(TurnManager turnManager)
     {
-        if (Random.Range(0, 1f) <= SpawnChance)
+        if (Random.Range(0, 1f) <= spawnChance)
         {
             if (mapManager.GetEntityOnHex(OneToOnePos) == null)
             {
-                Instantiate(enemy, transform.position, transform.rotation);
+                Instantiate(enemy, transform.position, Quaternion.identity);
             }
             else
             {

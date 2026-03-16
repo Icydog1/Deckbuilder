@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerControler : MonoBehaviour
 {
     public bool actionDone, manualEnd;
-    private bool isMoving, isAttacking;
+    public bool isMoving, isAttacking;
     public bool isPlayerTurn;
     private GameObject player;
     private MouseManager mouseManager;
@@ -17,7 +17,6 @@ public class PlayerControler : MonoBehaviour
     public GameObject playedCard;
     private PlayerStats playerStats;
     public Card playedCardScript;
-    private Vector3 playerHexCords;
     public Vector2 playerOneToOneCords;
     private int moveLeft, targetsLeft, attackDamageValue;
     private bool canJump, canFly;
@@ -58,8 +57,7 @@ public class PlayerControler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
-        playerOneToOneCords = mapManager.HexToOneToOne(playerHexCords);
+        playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
     }
 
     public void TileClicked(GameObject tile)
@@ -79,7 +77,7 @@ public class PlayerControler : MonoBehaviour
     }
     public void AttemptToMove(GameObject tile, Vector2 tileCords)
     {
-        int distance = mapManager.GetDistanceTo(tileCords, player.transform.position);
+        int distance = mapManager.GetDistanceBetweenPos(tileCords, player.transform.position);
         if (distance <= moveLeft)
         {
             if (tile.GetComponent<Door>())
@@ -111,10 +109,9 @@ public class PlayerControler : MonoBehaviour
         {
             if (isAttacking)
             {
-                Vector3 clickedObjectHex = mapManager.GetPosInHexCords(clickedEnemy.transform.position);
                 Vector2 clickedEnemyCords = clickedEnemy.transform.position;
-                //sometimes doent work
-                if (mapManager.GetDistanceTo(clickedEnemyCords, player.transform.position) <= range)
+                //dont calculate range
+                if (mapManager.GetDistanceBetweenPos(clickedEnemyCords, player.transform.position) <= range)
                 {
                     clickedEnemy.GetComponent<Enemy>().AttackedFor(attackDamageValue);
                     targetsLeft--;

@@ -121,7 +121,7 @@ public class Pathfinder : MonoBehaviour
                     safeTiles.Add(pos);
                     //Debug.Log("start tile" + pos);
                     GameObject tile = mapManager.GetTileAtHex(pos);
-                    tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
+                    //tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
 
                 }
             }
@@ -282,7 +282,7 @@ public class Pathfinder : MonoBehaviour
                     border.GetComponent<SpriteRenderer>().color = Color.yellow;
                     unSafeTiles.Add(checktile);
                     elevations[currentElevation].Add(checktile);
-                    tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
+                    //tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
                     //Debug.Log("unsafe tile found at " + checktile);
                 }
                 else
@@ -291,7 +291,7 @@ public class Pathfinder : MonoBehaviour
                     border.GetComponent<SpriteRenderer>().color = Color.blue;
                     safeTiles.Add(checktile);
                     elevations[currentElevation].Add(checktile);
-                    tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
+                    //tile.transform.position = new Vector3(tile.transform.position.x, tile.transform.position.y, currentElevation);
                 }
                 checkedTiles.Add(checktile);
                 if (pathFromEnemy)

@@ -171,6 +171,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e67d2512ff2fa2844a971483c55b28c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isLeftEntrance: 0
+  isTopLeftEntrance: 0
+  isTopRightEntrance: 0
+  isRightEntrance: 0
+  isBottomRightEntrance: 0
+  isBottomLeftEntrance: 0
 --- !u!1001 &76540978896448339
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1660,6 +1666,10 @@ PrefabInstance:
     - target: {fileID: 1588885295552724964, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
       propertyPath: m_Name
       value: EmptyTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 1588885295552724964, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

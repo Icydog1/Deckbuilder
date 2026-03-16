@@ -7,10 +7,12 @@ public class RoomSpawner : MonoBehaviour
     private MapManager mapManager;
     [SerializeField]
     private GameObject[] rooms;
+    [SerializeField]
     private float[] initialRoomWeights = { 0.9f}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
-    private List<Vector2> builtRooms = new List<Vector2>();
-    public List<Vector2> BuiltRooms { get { return builtRooms; } }
+    private float realativeRotation = 0;
+    public List<Vector2Int> builtRooms = new List<Vector2Int>();
+    public List<Vector2Int> BuiltRooms { get { return builtRooms; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -47,36 +49,43 @@ public class RoomSpawner : MonoBehaviour
     }
     public void SpawnRoomsNextToDoor(Vector2 doorOneToOne, Vector2 currentRoom)
     {
-        float realativeRotation = Vector2.SignedAngle(new Vector2(1, 0), mapManager.OneToOneToPos(doorOneToOne - currentRoom));
         //Debug.Log(mapManager.OneToOneToPos(doorOneToOne - currentRoom));
-        transform.localEulerAngles = new Vector3(0, 0, realativeRotation);
         //Debug.Log(realativeRotation);
+        realativeRotation = Vector2.SignedAngle(new Vector2(1, 0), mapManager.OneToOneToPos(doorOneToOne - currentRoom));
+        realativeRotation = Mathf.RoundToInt(realativeRotation / 60) * 60;
         Vector2 newRoomPos = 2 * doorOneToOne - currentRoom;
-        if (!builtRooms.Contains(newRoomPos))
+        Vector2Int roundednewRoomPos = Vector2Int.RoundToInt(newRoomPos);
+        if (!builtRooms.Contains(roundednewRoomPos))
         {
-            spawnRandomRoom(newRoomPos);
+            SpawnRandomRoom(roundednewRoomPos);
         }
         
     }
 
-    private void spawnRandomRoom(Vector2 oneToOnePos)
+    public void SpawnStartingRoom()
+    {
+        SpawnRoom(Vector2Int.zero, rooms[0]);
+    }
+    private void SpawnRandomRoom(Vector2Int oneToOnePos)
     {
         float randomNumber = Random.Range(0, 1f);
         for (int i = 0; i < rooms.Length; i++)
         {
             if (randomNumber < roomProbabilities[i])
             {
-                spawnRoom(oneToOnePos, rooms[i]);
+                SpawnRoom(oneToOnePos, rooms[i]);
                 break;
             }
         }
     }
 
-    private void spawnRoom(Vector2 oneToOnePos, GameObject room)
+    private void SpawnRoom(Vector2Int oneToOnePos, GameObject room)
     {
-        Debug.Log(oneToOnePos + "roompos");
+        //Debug.Log(oneToOnePos + "roompos");
         builtRooms.Add(oneToOnePos);
         Vector2 pos = mapManager.OneToOneToPos(oneToOnePos);
+        int rotation = room.GetComponent<RoomScript>().GetSpawnRotation();
+        transform.localEulerAngles = new Vector3(0, 0, realativeRotation + rotation);
         Instantiate(room, new Vector3(pos.x, pos.y, zLayer), transform.rotation);
     }
 }

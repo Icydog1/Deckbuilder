@@ -39,11 +39,7 @@ public class MapManager : MonoBehaviour
 
     //public void Move(GameObject movedObject,)
 
-    public Vector3 OneToOneToHex(Vector2 oneToOnePos)
-    {
-        //OneToOne coridates (tiles left and up, tiles right and up)
-        return new Vector3(oneToOnePos.x, 0, oneToOnePos.y);
-    }
+
 
     public Vector2 OneToOneToPos(Vector2 oneToOnePos)
     {
@@ -55,21 +51,19 @@ public class MapManager : MonoBehaviour
 
     }
 
-    public Vector2 PosToOneToOne(Vector2 pos)
+    public Vector2Int PosToOneToOne(Vector2 pos)
     {
         //return HexToOneToOne(GetPosInHexCords(pos));
         float tilesRight = pos.x / tileXDistance;
         float tilesUp = pos.y / tileYDistance;
         float oneToOneX = - tilesRight / 2 + tilesUp;
         float oneToOneY = tilesRight / 2 + tilesUp;
-        Mathf.RoundToInt(oneToOneX);
-        Mathf.RoundToInt(oneToOneY);
-        return new Vector2(oneToOneX, oneToOneY);
+        return new Vector2Int(Mathf.RoundToInt(oneToOneX), Mathf.RoundToInt(oneToOneY));
     }
 
-    public int GetDistanceBetweenOneToOne(Vector2 startOneToOnePos, Vector2 endOneToOnePos)
+    public int GetDistanceBetweenOneToOne(Vector2 startOneToOne, Vector2 endOneToOne)
     {
-        Vector2 vectorBetween = startOneToOnePos - endOneToOnePos;
+        Vector2 vectorBetween = startOneToOne - endOneToOne;
         float distance = -1;
         if (Mathf.Sign(vectorBetween.x) == Mathf.Sign(vectorBetween.y))
         {
@@ -94,21 +88,7 @@ public class MapManager : MonoBehaviour
         return GetDistanceBetweenOneToOne(PosToOneToOne(startPos), PosToOneToOne(startPos));
 
     }
-    public int GetDistanceTo(Vector2 startPos, Vector2 endPos)
-    {
-        Vector3 cordsBetween = GetDisanceInHexCordsTo(startPos, endPos);
-        //Debug.Log(cordsBetween + "cordsBetween");
-        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
-
-    }
-    public int GetDistanceToHex(Vector3 startHexPos, Vector3 endHexPos)
-    {
-        Vector3 cordsBetween = GetDisanceInHexCordsTo(HexToPos(startHexPos), HexToPos(endHexPos));
-        //Debug.Log(cordsBetween + "cordsBetween");
-        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
-
-    }
-
+   
     public List<GameObject> GetObsticalAtHex(Vector2 OneToOnePos, bool obstacle = true, bool enemy = true, bool player = true, bool wall = true)
     {
         List<GameObject> obstacles = new List<GameObject>();
@@ -158,6 +138,9 @@ public class MapManager : MonoBehaviour
         }
     }
     
+
+    //old hexCord stuff
+    /*
     public Vector3 GetPosInHexCords(Vector2 pos)
     {
         return (GetDisanceInHexCordsTo(pos,Vector2.zero));
@@ -276,5 +259,18 @@ public class MapManager : MonoBehaviour
         //OneToOne coridates (tiles left and up, tiles right and up)
         return new Vector2(HexPos.x + HexPos.y, HexPos.z + HexPos.y);
     }
+    public Vector3 OneToOneToHex(Vector2 oneToOnePos)
+    {
+        //OneToOne coridates (tiles left and up, tiles right and up)
+        return new Vector3(oneToOnePos.x, 0, oneToOnePos.y);
+    }
 
+    public int GetDistanceToHex(Vector3 startHexPos, Vector3 endHexPos)
+    {
+        Vector3 cordsBetween = GetDisanceInHexCordsTo(HexToPos(startHexPos), HexToPos(endHexPos));
+        //Debug.Log(cordsBetween + "cordsBetween");
+        return Mathf.RoundToInt(Mathf.Abs(cordsBetween.x) + Mathf.Abs(cordsBetween.y) + Mathf.Abs(cordsBetween.z));
+
+    }
+    */
 }

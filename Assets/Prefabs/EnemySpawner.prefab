@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 8200818806492408565, guid: 5c2f50d2540c7aa4b84d72dd28b11ed8, type: 3}
+  spawnHeight: 10

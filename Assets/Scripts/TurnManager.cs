@@ -31,11 +31,9 @@ public class TurnManager : MonoBehaviour
     }
     private void Start()
     {
-        StartCoroutine(StartGame());
     }
-    public IEnumerator StartGame()
+    public void StartTakingTurns()
     {
-        yield return new WaitForSeconds(0.5f);
         currentTurn = turnOrder[0];
         if (RoundStarted != null)
         {
@@ -99,12 +97,12 @@ public class TurnManager : MonoBehaviour
         deckManager.DrawNewHand();
         if (RoundEnded != null)
         {
-            Debug.Log("Round ended");
+            //Debug.Log("Round ended");
             RoundEnded(this);
         }
         if (RoundStarted != null)
         {
-            Debug.Log("Round Started");
+            //Debug.Log("Round Started");
             RoundStarted(this);
         }
 
