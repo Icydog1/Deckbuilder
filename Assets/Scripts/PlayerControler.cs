@@ -15,6 +15,8 @@ public class PlayerControler : MonoBehaviour
     private RoomSpawner roomSpawner;
     public GameObject clickedTile, clickedEnemy;
     public GameObject playedCard;
+    private GameObject currentTile;
+    private RewardManager rewardManager;
     private PlayerStats playerStats;
     public Card playedCardScript;
     public Vector2 playerOneToOneCords;
@@ -33,9 +35,10 @@ public class PlayerControler : MonoBehaviour
 
     public bool canPlayCards;
     private bool cardPlayed;
-
     public bool CanPlayCards { get { return canPlayCards; } }
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
+    private bool gettingReward;
+    public bool GettingReward { get { return gettingReward; } set { gettingReward = value; } }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -47,6 +50,8 @@ public class PlayerControler : MonoBehaviour
         playerStats = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
+        rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
+
         //Debug.Log(playerStats);
         playerOneToOneCords = Vector2.zero;
 
@@ -72,7 +77,6 @@ public class PlayerControler : MonoBehaviour
             {
                 AttemptToMove(tile, clickedTileCords);
             }
-
         }
     }
     public void AttemptToMove(GameObject tile, Vector2 tileCords)
@@ -88,6 +92,10 @@ public class PlayerControler : MonoBehaviour
             else if (!tile.GetComponent<Wall>() && (!tile.GetComponent<Obstacle>() || canFly))
             {
                 MoveTo(tileCords, distance);
+                if (tile.GetComponent<Lootable>())
+                {
+                    rewardManager.TileReward(tile);
+                }
             }
         }
         if (moveLeft == 0)
@@ -131,7 +139,8 @@ public class PlayerControler : MonoBehaviour
     }
     public void UpdatePlayer()
     {
-        if (!cardPlayed && isPlayerTurn)
+
+        if (!cardPlayed && !gettingReward && isPlayerTurn)
         {
             canPlayCards = true;
         }

@@ -33,7 +33,7 @@ public class Pathfinder : MonoBehaviour
     private int currentElevation;
     private Vector2 currentPos;
     private Enemy currentEnemy;
-
+    private int enemyElevation;
     private float enemyMoveDelay = 0.1f;
     private bool doneMoving;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -133,12 +133,13 @@ public class Pathfinder : MonoBehaviour
                 }
             }
 
-            if (i >= 1000)
+            if (i >= 10000)
             {
                 pathFound = true;
                 Debug.Log("area pathfinding timed out");
             }
         }
+        enemyElevation = currentElevation;
     }
 
 
@@ -167,7 +168,7 @@ public class Pathfinder : MonoBehaviour
                     buildElevation(elevations[currentElevation - 1][j], true, false);
                 }
             }
-            if (i >= 100)
+            if (i >= 10000)
             {
                 pathFound = true;
                 Debug.Log("range pathfinding timed out");
@@ -213,7 +214,7 @@ public class Pathfinder : MonoBehaviour
                 }
             }
 
-            if (i >= 100)
+            if (i >= 10000)
             {
                 pathFound = true;
                 Debug.Log("posible path pathfinding timed out");
@@ -318,6 +319,19 @@ public class Pathfinder : MonoBehaviour
 
     public IEnumerator MoveAlongPath(GameObject enemy, Vector2 enemyPos)
     {
+        float newEnemyMoveDelay = enemyMoveDelay;
+        if (enemyElevation >= 10)
+        {
+            newEnemyMoveDelay = (enemyMoveDelay * (10 + 20)) / (enemyElevation + 20);
+        }
+        if (newEnemyMoveDelay > enemyMoveDelay)
+        {
+            Debug.Log(enemy + " tried to move with delay " + enemyMoveDelay + " delay");
+
+        }
+        //Debug.Log(enemyMoveDelay + "original delay");
+        //Debug.Log(newEnemyMoveDelay + "new delay");
+
         Vector2 oneToOnePos = enemyPos;
         Vector2 pos;
         for (int i = 0; i < actualPath.Count; i++)
@@ -326,7 +340,7 @@ public class Pathfinder : MonoBehaviour
             oneToOnePos = actualPath[i];
             pos = mapManager.OneToOneToPos(oneToOnePos);
             enemy.transform.position = new Vector3(pos.x, pos.y, enemy.transform.position.z);
-            yield return new WaitForSeconds(enemyMoveDelay);
+            yield return new WaitForSeconds(newEnemyMoveDelay);
         }
         doneMoving = true;
     }

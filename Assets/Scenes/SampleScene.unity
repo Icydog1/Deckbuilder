@@ -1014,7 +1014,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2093885241}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &695467238
@@ -2448,6 +2449,50 @@ MonoBehaviour:
   bottomGlow: {fileID: 0}
   currentStep: 0
   nextAction: 0
+--- !u!1 &1281001565
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1281001567}
+  - component: {fileID: 1281001566}
+  m_Layer: 0
+  m_Name: RewardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1281001566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281001565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 435b5bbf70c972f41a6d90b8f0c4d000, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1281001567
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281001565}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.499949, y: 0.2765183, z: 0.048348878}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1334181733 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3020119270382537323, guid: eed49f979a7341d45afc66a8b612d9e6, type: 3}
@@ -3965,7 +4010,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 695467237}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &23557688850845626
 MonoBehaviour:
@@ -5148,9 +5193,9 @@ SceneRoots:
   - {fileID: 646725013}
   - {fileID: 887113702}
   - {fileID: 304582378}
-  - {fileID: 2093885241}
   - {fileID: 695467237}
   - {fileID: 8915854858156047289}
   - {fileID: 325978540}
   - {fileID: 1987784950}
   - {fileID: 1166489206}
+  - {fileID: 1281001567}

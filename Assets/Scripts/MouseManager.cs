@@ -19,6 +19,7 @@ public class MouseManager : MonoBehaviour
     private PlayerControler playerControler;
     private CameraScript cameraScript;
     private DeckManager deckManager;
+    private RewardManager rewardManager;
     public float selectedCardHeightIncrease = 0.25f;
 
 
@@ -31,6 +32,7 @@ public class MouseManager : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
 
 
     }
@@ -198,7 +200,7 @@ public class MouseManager : MonoBehaviour
         if (dragableClicked && !shortClick)
         {
 
-            if (clickedObject.GetComponent<Playable>() != null)
+            if (clickedObject.GetComponent<Card>() != null)
             {
                 if (mousePos.y > topPlayLine * Screen.height)
                 {
@@ -230,6 +232,10 @@ public class MouseManager : MonoBehaviour
             if (clickedObject.GetComponent<Enemy>())
             {
                 playerControler.EnemyClicked(clickedObject);
+            }
+            if (clickedObject.GetComponent<IsReward>())
+            {
+                rewardManager.RewardSelected(clickedObject);
             }
         }
         if (!dragableClicked)
