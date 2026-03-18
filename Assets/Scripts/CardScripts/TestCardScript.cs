@@ -9,8 +9,8 @@ using UnityEngine;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        topCost = 0;
-        bottomCost = 0;
+        topCost = 2;
+        bottomCost = 2;
         base.Start(); // runs the code from the base
                       // add your additional code here
     }

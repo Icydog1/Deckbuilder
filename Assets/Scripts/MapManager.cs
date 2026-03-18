@@ -85,7 +85,7 @@ public class MapManager : MonoBehaviour
 
     public int GetDistanceBetweenPos(Vector2 startPos, Vector2 endPos)
     {
-        return GetDistanceBetweenOneToOne(PosToOneToOne(startPos), PosToOneToOne(startPos));
+        return GetDistanceBetweenOneToOne(PosToOneToOne(startPos), PosToOneToOne(endPos));
 
     }
    

@@ -2,12 +2,15 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class CardEffectText : MonoBehaviour
+public class VariableDisplayer : MonoBehaviour
 {
     private TextMeshProUGUI textBox;
+
     private string displayedString;
+    [SerializeField]
+    private string addionalText;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    void Start()
     {
         textBox = GetComponent<TextMeshProUGUI>();
     }
@@ -18,14 +21,11 @@ public class CardEffectText : MonoBehaviour
         
     }
 
-    public void DisplayText(List<string> displayedText)
+
+    public void DisplayText(float variable)
     {
-        displayedString = "";
-        foreach (string text in displayedText)
-        {
-            displayedString += text;
-            displayedString += "\n";
-        }
+        displayedString = addionalText;
+        displayedString += variable;
         textBox.SetText(displayedString);
     }
 }

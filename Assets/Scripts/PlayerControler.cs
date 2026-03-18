@@ -16,6 +16,7 @@ public class PlayerControler : MonoBehaviour
     public GameObject clickedTile, clickedEnemy;
     public GameObject playedCard;
     private GameObject currentTile;
+    private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
     private PlayerStats playerStats;
     public Card playedCardScript;
@@ -26,8 +27,8 @@ public class PlayerControler : MonoBehaviour
     private bool isTargetATile, isTargetAEnemy;
 
     private int topEnergy, bottomEnergy;
-    public int TopEnergy { get { return topEnergy; } set { topEnergy = value; } }
-    public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; } }
+    public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
+    public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
     public int maxHealth = 100, health;
 
@@ -54,7 +55,8 @@ public class PlayerControler : MonoBehaviour
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
-
+        topEnergyDisplay = GameObject.Find("TopEnergyDisplay").GetComponent<VariableDisplayer>();
+        bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
         //Debug.Log(playerStats);
         playerOneToOneCords = Vector2.zero;
 
@@ -120,9 +122,8 @@ public class PlayerControler : MonoBehaviour
         {
             if (isAttacking)
             {
-                Vector2 clickedEnemyCords = clickedEnemy.transform.position;
                 //dont calculate range
-                if (mapManager.GetDistanceBetweenPos(clickedEnemyCords, player.transform.position) <= range)
+                if (mapManager.GetDistanceBetweenPos(clickedEnemy.transform.position, player.transform.position) <= range)
                 {
                     clickedEnemy.GetComponent<Enemy>().AttackedFor(attackDamageValue);
                     targetsLeft--;
@@ -157,6 +158,8 @@ public class PlayerControler : MonoBehaviour
     public void StartTurn()
     {
         isPlayerTurn = true;
+        TopEnergy = 2;
+        BottomEnergy = 2;
     }
     public void EndTurn()
     {
@@ -184,8 +187,8 @@ public class PlayerControler : MonoBehaviour
         actionDone = true;
         isTargetATile = false;
         isTargetAEnemy = false;
-        playedCardScript.currentStep++;
-        playedCardScript.nextAction = true;
+        //playedCardScript.currentStep++;
+        playedCardScript.NextAction = true;
     }
 
     public void Move(int moveValue, bool isJump = false)

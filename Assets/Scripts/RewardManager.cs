@@ -29,9 +29,11 @@ public class RewardManager : MonoBehaviour
 
     private Lootable tileScript;
     private int rewardRarity;
-    float commonProbability = 1f;// 0.8f;
-    float uncommonProbability = 0.15f;
-    float rareProbability = 0.05f;
+    private float commonProbability = 1f;// 0.8f;
+    private float uncommonProbability = 0f; //0.15f;
+    private float rareProbability = 0f; //0.05f;
+
+    private float relativeSpaceBetweenRewardCards = 0.5f;
 
     private bool isRewardCard;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -86,7 +88,7 @@ public class RewardManager : MonoBehaviour
     }
     void Start()
     {
-        GameManager.GameStarted += InitialReward;
+        //GameManager.GameStarted += InitialReward;
 
         isRewardCard = true;
 
@@ -153,7 +155,7 @@ public class RewardManager : MonoBehaviour
             }
             if (isRewardCard)
             {
-                Debug.Log(currentRewardPool.Count);
+                //Debug.Log(currentRewardPool.Count);
                 potentialRewards.Add(currentRewardPool[Random.Range(0, currentRewardPool.Count)]);
             }
             else
@@ -167,12 +169,13 @@ public class RewardManager : MonoBehaviour
             createdReward.AddComponent<IsReward>();
             currentOptions.Add(createdReward);
         }
-        deckManager.SeperateCards(currentOptions, rewardsLocation.transform.position);
+        deckManager.SeperateCards(currentOptions, rewardsLocation.transform.position, relativeSpaceBetweenRewardCards);
 
     }
     public void RewardSelected(GameObject reward)
     {
-        Debug.Log(reward + " selected");
+        //Debug.Log(reward + " selected");
+        Destroy(reward.GetComponent<IsReward>());
         deckManager.GainCard(reward);
         currentOptions.Remove(reward);
         foreach (GameObject unselectedReward in currentOptions)

@@ -1,22 +1,40 @@
 using System.Collections.Generic;
+using Unity.Jobs;
 using UnityEngine;
+using static UnityEngine.Rendering.GPUSort;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class DeckManager : MonoBehaviour
 {
     public GameManager gameManager;
 
     public GameObject hand, deck, discard, play;
-    public List<GameObject> masterDeck, startingDeck = new List<GameObject>();
+    public List<GameObject> entireDeck, startingDeck = new List<GameObject>();
     public List<GameObject> deckContents, handContents, discardContents, playContents = new List<GameObject>();
+    public List<GameObject> DeckContents {  get { return deckContents; } }
+    public List<GameObject> DiscardContents { get { return discardContents; } }
+    public List<GameObject> EntireDeck { get { return entireDeck; } }
+
+    private List<GameObject> displayedList;
     private List<List<GameObject>> posibleCardLocations = new List<List<GameObject>>();
-    private float relativeSpaceBetweenCards = 0.4f;
+    private VariableDisplayer cardsInDeckDisplay, cardsInDiscardDisplay, cardsInEntireDeckDisplay;
+    private float relativeSpaceBetweenCardsInHand = 0.35f;
+    //if change set hand positon
+    private float baseCardSize = 0.9f;
+    public float BaseCardSize { get { return baseCardSize; } }
+
     private float selectedCardHeightIncrease = 0.25f;
 
     private int handSize;
+    private int maxHandSize = 10;
+
     private int startHandSize = 5;
     private CameraScript cameraScript;
     private MouseManager mouseManager;
+    private GameObject listDisplayer;
 
+    private bool isDisplayingCards;
+    public bool IsDisplayingCards { get { return isDisplayingCards; } }
 
 
 
@@ -27,6 +45,11 @@ public class DeckManager : MonoBehaviour
     {
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
+        cardsInDeckDisplay = GameObject.Find("CardsInDeckDisplay").GetComponent<VariableDisplayer>();
+        cardsInDiscardDisplay = GameObject.Find("CardsInDiscardDisplay").GetComponent<VariableDisplayer>();
+        cardsInEntireDeckDisplay = GameObject.Find("CardsInEntireDeckDisplay").GetComponent<VariableDisplayer>();
+        listDisplayer = GameObject.Find("ListDisplayer");
+
 
         //Debug.Log(deck.transform.childCount);
         if (startingDeck.Count == 0)
@@ -39,7 +62,7 @@ public class DeckManager : MonoBehaviour
             }
         }
         deckContents = new List<GameObject>(startingDeck);
-        masterDeck = new List<GameObject>(startingDeck);
+        entireDeck = new List<GameObject>(startingDeck);
 
         posibleCardLocations.Add(deckContents);
         posibleCardLocations.Add(handContents);
@@ -75,7 +98,8 @@ public class DeckManager : MonoBehaviour
 
     public void GainCard(GameObject card)
     {
-        masterDeck.Add(card);
+        entireDeck.Add(card);
+        cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
         MoveTo(card, deck, Random.Range(0, deckContents.Count + 1));
     }
     public void DrawCard()
@@ -97,7 +121,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public void MoveTo(GameObject card, GameObject location, int newIndex = 0)
+    public void MoveTo(GameObject card, GameObject location, int newIndex = -1)
     {
 
         foreach (List<GameObject> posibleLocation in posibleCardLocations)
@@ -107,7 +131,14 @@ public class DeckManager : MonoBehaviour
                 posibleLocation.Remove(card);
             }
         }
-        GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
+        if (newIndex != -1)
+        {
+            GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
+        }
+        else
+        {
+            GetListByName(location.name.ToLower() + "Contents").Add(card);
+        }
         card.transform.SetParent(location.transform);
         card.transform.position = location.transform.position;
         if (location == hand || location == play)
@@ -119,6 +150,9 @@ public class DeckManager : MonoBehaviour
             card.gameObject.SetActive(false);
         }
         mouseManager.MouseOffObject(card);
+        cardsInDeckDisplay.DisplayText(deckContents.Count);
+        cardsInDiscardDisplay.DisplayText(discardContents.Count);
+
         UpdateHand();
     }
 
@@ -138,44 +172,121 @@ public class DeckManager : MonoBehaviour
     }
     public void SelectCard(GameObject card)
     {
-        if (card.transform.localScale == Vector3.one)
+        
+        if (GetRelativeCardSize(card) < 1.5f)
         {
-            card.transform.localScale = new Vector3(2, 2, 1);
-            card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * cameraScript.zoom, 0);
+            SetRelativeCardSize(card, 2);
+            card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
         }
     }
     public void DeSelectCard(GameObject card)
     {
-        if (card.transform.localScale == new Vector3(2, 2, 1))
+        if (GetRelativeCardSize(card) > 1.5f)
         {
-            card.transform.localScale = Vector3.one;
-            card.transform.position = card.transform.position - new Vector3(0, selectedCardHeightIncrease * cameraScript.zoom, 0);
+            SetRelativeCardSize(card, 1);
+            card.transform.position = card.transform.position - new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
         }
     }
-
+    public void SetRelativeCardSize(GameObject card, float size)
+    {
+        card.transform.localScale = new Vector3(size * BaseCardSize, size * BaseCardSize, 1);
+    }
+    public float GetRelativeCardSize(GameObject card)
+    {
+        return (card.transform.localScale.x/BaseCardSize);
+    }
     public void UpdateHand()
     {
         handSize = handContents.Count;
-        SeperateCards(handContents, hand.transform.position);
+        while (handContents.Count > maxHandSize)
+        {
+            MoveTo(handContents[handContents.Count - 1], discard);
+        }
+        SeperateCards(handContents, hand.transform.position, relativeSpaceBetweenCardsInHand * baseCardSize);
     }
 
-    public void SeperateCards(List<GameObject> cards, Vector2 pos)
+    public void SeperateCards(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards)
     {
         float spaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
+        //Debug.Log(spaceBetweenCards + " spaceBetweenCards");
+        //Debug.Log(cameraScript.widthHeightRatio + " widthHeightRatio");
+        int numberOfCards = cards.Count;
+        foreach (GameObject card in cards)
+        {
+            card.SetActive(true);
+            card.transform.position = new Vector3((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + pos.x, pos.y, card.transform.position.z);
+            if (GetRelativeCardSize(card) > 1.5f)
+            {
+                card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+            }
+
+        }
+    }
+    public void DisplayCardsInListByName(string listName, Vector2 pos, int rowLimit, bool randomOrder)
+    {
+        List<GameObject> list = GetListByName(listName);
+        if (list == displayedList)
+        {
+            StopDisplayingCardsInList();
+        }
+        else
+        {
+            if (displayedList != null)
+            {
+                StopDisplayingCardsInList();
+
+            }
+            DisplayCardsInList(list, pos, relativeSpaceBetweenCardsInHand, rowLimit, randomOrder);
+        }
+
+    }
+    public void DisplayCardsInList(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit,bool randomOrder)
+    {
+        isDisplayingCards = true;
+        listDisplayer.SetActive(true);
+        displayedList = cards;
+        float horizontalSpaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
+        float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.25f) * cameraScript.widthHeightRatio;
         int numberOfCards = cards.Count;
         //Debug.Log(spaceBetweenCards + " spaceBetweenCards");
         //Debug.Log(cameraScript.widthHeightRatio + " widthHeightRatio");
-
-        foreach (GameObject card in cards)
+        int rowsCount = Mathf.CeilToInt(cards.Count / rowLimit);
+        if (randomOrder)
         {
-            //Debug.Log(cards.IndexOf(card) + " index");
-            card.transform.position = new Vector3((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + pos.x, pos.y, card.transform.position.z);
-            //Debug.Log((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + " new x pos");
-            if (card.transform.localScale != Vector3.one)
+            List<GameObject> cardsInList = new List<GameObject>(cards);
+            cards = new List<GameObject>();
+            while (cardsInList.Count > 0)
             {
-                card.transform.localScale = Vector3.one;
-                SelectCard(card);
+                GameObject currentCard = cardsInList[Random.Range(0, cardsInList.Count)];
+                cards.Add(currentCard);
+                cardsInList.Remove(currentCard);
             }
         }
+        foreach (GameObject card in cards)
+        {
+            card.SetActive(true);
+            int row = Mathf.FloorToInt(cards.IndexOf(card) / rowLimit);
+            int column = cards.IndexOf(card) % rowLimit;
+            //Debug.Log(column + " column");
+            //Debug.Log(column * horizontalSpaceBetweenCards + " offset cords");
+            card.transform.position = new Vector3(pos.x + (column - (rowLimit/2)) * horizontalSpaceBetweenCards, pos.y - row * VerticalSpaceBetweenCards, card.transform.position.z);
+            //Debug.Log((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + " new x pos");
+            if (GetRelativeCardSize(card) > 1.5f)
+            {
+                card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+            }
+
+        }
+    }
+    public void StopDisplayingCardsInList()
+    {
+        foreach (GameObject card in displayedList)
+        {
+            isDisplayingCards = false;
+            card.SetActive(false);
+            listDisplayer.SetActive(false);
+            UpdateHand();
+        }
+        displayedList = null;
     }
 }

@@ -63,19 +63,19 @@ public class MouseManager : MonoBehaviour
             clickedObject.transform.position = new Vector3(worldMousePos.x, worldMousePos.y, clickedObject.transform.position.z);
             if (mousePos.y > topPlayLine * Screen.height)
             {
-                clickedObject.GetComponent<Card>().topGlow.SetActive(true);
-                clickedObject.GetComponent<Card>().bottomGlow.SetActive(false);
+                clickedObject.GetComponent<Card>().TopGlow.SetActive(true);
+                clickedObject.GetComponent<Card>().BottomGlow.SetActive(false);
             }
             else if (mousePos.y > bottomPlayLine * Screen.height)
             {
-                clickedObject.GetComponent<Card>().bottomGlow.SetActive(true);
-                clickedObject.GetComponent<Card>().topGlow.SetActive(false);
+                clickedObject.GetComponent<Card>().BottomGlow.SetActive(true);
+                clickedObject.GetComponent<Card>().TopGlow.SetActive(false);
 
             }
             else
             {
-                clickedObject.GetComponent<Card>().topGlow.SetActive(false);
-                clickedObject.GetComponent<Card>().bottomGlow.SetActive(false);
+                clickedObject.GetComponent<Card>().TopGlow.SetActive(false);
+                clickedObject.GetComponent<Card>().BottomGlow.SetActive(false);
             }
         }
 

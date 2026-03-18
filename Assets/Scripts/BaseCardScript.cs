@@ -10,18 +10,22 @@ public class Card : MonoBehaviour
     protected DeckManager deckManager;
     protected CardEffectText topText, bottomText;
 
-    public GameObject topGlow, bottomGlow;
+    protected GameObject topGlow, bottomGlow;
+    public GameObject TopGlow { get { return topGlow; } }
+    public GameObject BottomGlow { get { return bottomGlow; } }
     protected bool isCurrentCard;
     protected int topCost, bottomCost;
     protected bool isTopPlayed, isBottomPlayed;
     protected bool isPlaying;
-    public int currentStep;
-    public bool nextAction;
+    //protected int currentStep;
+    protected bool nextAction;
+    public bool NextAction { set { nextAction = value; } }
+
     protected bool isPreparingTop;
 
-    public List<System.Action> topActions = new List<System.Action>();
-    public List<System.Action> bottomActions = new List<System.Action>();
-    public List<System.Action> prepareTo = new List<System.Action>();
+    protected List<System.Action> topActions = new List<System.Action>();
+    protected List<System.Action> bottomActions = new List<System.Action>();
+    protected List<System.Action> prepareTo = new List<System.Action>();
 
     protected List<string> topDescription = new List<string>();
     protected List<string> bottomDescription = new List<string>();
@@ -30,6 +34,11 @@ public class Card : MonoBehaviour
 
     protected int rarity = 1;
     public int Rarity { get { return rarity; } }
+
+    //private float baseAbsoluteSize = 1;
+    //private float relativeSize;
+    //public float RelativeSize { get { return relativeSize; } set { relativeSize = value; SetRelativeSize(); } }
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -43,6 +52,7 @@ public class Card : MonoBehaviour
         topText = transform.Find("Top Effects").GetComponent<CardEffectText>();
         bottomText = transform.Find("Bottom Effects").GetComponent<CardEffectText>();
 
+        deckManager.SetRelativeCardSize(gameObject, 1);
         // base class code runs
 
 
@@ -54,6 +64,8 @@ public class Card : MonoBehaviour
     {
 
     }
+
+
 
 
     public void AttemptToPlayTop()
@@ -68,7 +80,7 @@ public class Card : MonoBehaviour
         }
         else
         {
-            deckManager.UpdateHand();
+            PlayFailed();
         }
     }
     public void AttemptToPlayBottom()
@@ -83,8 +95,16 @@ public class Card : MonoBehaviour
         }
         else
         {
-            deckManager.UpdateHand();
+            PlayFailed();
         }
+    }
+
+    public void PlayFailed()
+    {
+        topGlow.SetActive(false);
+        bottomGlow.SetActive(false);
+        mouseManager.MouseOffObject(gameObject);
+        deckManager.UpdateHand();
     }
 
     public void SetPlayed()
@@ -95,7 +115,7 @@ public class Card : MonoBehaviour
         playerControler.playedCard = gameObject;
         playerControler.playedCardScript = gameObject.GetComponent<Card>();
         playerControler.UpdatePlayer();
-        currentStep = 0;
+        //currentStep = 0;
         mouseManager.clickedObject = null;
         if (isTopPlayed)
         {
@@ -121,7 +141,7 @@ public class Card : MonoBehaviour
         deckManager.DiscardCard(gameObject);
         mouseManager.MouseOffObject(gameObject);
         //Debug.Log("done playing");
-        currentStep = 0;
+        //currentStep = 0;
     }
 
     public IEnumerator PlayTop()
