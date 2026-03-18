@@ -28,8 +28,8 @@ public class Card : MonoBehaviour
     protected List<string> currentDescription = new List<string>();
     protected string currentDescriptionString = "";
 
-    private int rarity;
-    public int Rarity { get { return Rarity; } }
+    protected int rarity = 1;
+    public int Rarity { get { return rarity; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 

@@ -23,7 +23,7 @@ public class DeckManager : MonoBehaviour
 
     //public DiscardScript discardScript;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
@@ -45,7 +45,6 @@ public class DeckManager : MonoBehaviour
         posibleCardLocations.Add(handContents);
         posibleCardLocations.Add(discardContents);
         posibleCardLocations.Add(playContents);
-
     }
 
     // Update is called once per frame
@@ -74,6 +73,11 @@ public class DeckManager : MonoBehaviour
         }
     }
 
+    public void GainCard(GameObject card)
+    {
+        masterDeck.Add(card);
+        MoveTo(card, deck, Random.Range(0, deckContents.Count + 1));
+    }
     public void DrawCard()
     {
         if (deckContents.Count == 0)
@@ -93,7 +97,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public void MoveTo(GameObject card, GameObject location)
+    public void MoveTo(GameObject card, GameObject location, int newIndex = 0)
     {
 
         foreach (List<GameObject> posibleLocation in posibleCardLocations)
@@ -103,7 +107,7 @@ public class DeckManager : MonoBehaviour
                 posibleLocation.Remove(card);
             }
         }
-        GetListByName(location.name.ToLower() + "Contents").Add(card);
+        GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
         card.transform.SetParent(location.transform);
         card.transform.position = location.transform.position;
         if (location == hand || location == play)
@@ -114,6 +118,7 @@ public class DeckManager : MonoBehaviour
         {
             card.gameObject.SetActive(false);
         }
+        mouseManager.MouseOffObject(card);
         UpdateHand();
     }
 
@@ -150,17 +155,27 @@ public class DeckManager : MonoBehaviour
 
     public void UpdateHand()
     {
-        float spaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
         handSize = handContents.Count;
-        foreach (GameObject card in handContents)
+        SeperateCards(handContents, hand.transform.position);
+    }
+
+    public void SeperateCards(List<GameObject> cards, Vector2 pos)
+    {
+        float spaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
+        int numberOfCards = cards.Count;
+        //Debug.Log(spaceBetweenCards + " spaceBetweenCards");
+        //Debug.Log(cameraScript.widthHeightRatio + " widthHeightRatio");
+
+        foreach (GameObject card in cards)
         {
-            card.transform.position = hand.transform.position + Vector3.left * (((float)handSize - 1) / 2 - handContents.IndexOf(card)) * spaceBetweenCards;
+            //Debug.Log(cards.IndexOf(card) + " index");
+            card.transform.position = new Vector3((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + pos.x, pos.y, card.transform.position.z);
+            //Debug.Log((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + " new x pos");
             if (card.transform.localScale != Vector3.one)
             {
                 card.transform.localScale = Vector3.one;
                 SelectCard(card);
             }
         }
-
     }
 }

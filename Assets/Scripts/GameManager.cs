@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     private RoomSpawner roomSpawner;
 
     private bool nextAction;
+    public static event Action<GameManager> GameStarted;
 
 
 
@@ -35,9 +37,14 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartGame()
     {
+
         yield return new WaitForEndOfFrame();
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
+        if (GameStarted != null)
+        {
+            GameStarted(this);
+        }
         roomSpawner.SpawnStartingRoom();
         turnManager.StartTakingTurns();
     }

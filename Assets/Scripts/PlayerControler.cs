@@ -34,8 +34,11 @@ public class PlayerControler : MonoBehaviour
     public List<System.Action> currentActionQueue = new List<System.Action>();
 
     public bool canPlayCards;
+    public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
+    public bool canEndTurn;
+
     private bool cardPlayed;
-    public bool CanPlayCards { get { return canPlayCards; } }
+
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
     private bool gettingReward;
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; } }
@@ -139,25 +142,26 @@ public class PlayerControler : MonoBehaviour
     }
     public void UpdatePlayer()
     {
-
         if (!cardPlayed && !gettingReward && isPlayerTurn)
         {
             canPlayCards = true;
+            canEndTurn = true;
         }
         else
         {
             canPlayCards = false;
+            canEndTurn = false;
         }
     }
 
     public void StartTurn()
     {
         isPlayerTurn = true;
-        UpdatePlayer();
     }
     public void EndTurn()
     {
-        if (!cardPlayed && isPlayerTurn)
+        UpdatePlayer();
+        if (canEndTurn)
         {
             isPlayerTurn = false;
             UpdatePlayer();

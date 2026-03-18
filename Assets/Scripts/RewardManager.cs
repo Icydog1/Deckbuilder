@@ -1,27 +1,48 @@
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 
 public class RewardManager : MonoBehaviour
 {
     private PlayerControler playerControler;
+    private DeckManager deckManager;
+    private GameManager gameManager;
+    private GameObject rewardsLocation;
 
-    private List<GameObject> relicRewards;
 
-    private List<GameObject> allCardRewards;
-    private List<GameObject> commonCardRewards;
-    private List<GameObject> uncommonCardRewards;
-    private List<GameObject> rareCardRewards;
+    [SerializeField]
+    private List<GameObject> allCardRewards = new List<GameObject>();
+    private List<GameObject> commonCardRewards = new List<GameObject>();
+    private List<GameObject> uncommonCardRewards = new List<GameObject>();
+    private List<GameObject> rareCardRewards = new List<GameObject>();
 
+
+    [SerializeField]
+    private List<GameObject> allRelicRewards = new List<GameObject>();
+    private List<GameObject> commonRelicRewards = new List<GameObject>();
+    private List<GameObject> uncommonRelicRewards = new List<GameObject>();
+    private List<GameObject> rareRelicRewards = new List<GameObject>();
+
+
+
+    private List<GameObject> currentOptions = new List<GameObject>();
 
     private Lootable tileScript;
     private int rewardRarity;
-    float commonProbability = 0.8f;
+    float commonProbability = 1f;// 0.8f;
     float uncommonProbability = 0.15f;
     float rareProbability = 0.05f;
+
+    private bool isRewardCard;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
+        deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+        rewardsLocation = GameObject.Find("Rewards");
+
         if (commonProbability + uncommonProbability + rareProbability != 1f)
         {
             Debug.Log("reward probabilitys dont add to 1");
@@ -43,6 +64,32 @@ public class RewardManager : MonoBehaviour
                 rareCardRewards.Add(card);
             }
         }
+        /*
+        foreach (GameObject relic in allRelicRewards)
+        {
+            int cardRarity = relic.GetComponent<Relic>().Rarity;
+            if (cardRarity == 1)
+            {
+                commonRelicRewards.Add(relic);
+            }
+            else if (cardRarity == 2)
+            {
+                uncommonRelicRewards.Add(relic);
+            }
+            else
+            {
+                rareRelicRewards.Add(relic);
+            }
+        }
+        */
+
+    }
+    void Start()
+    {
+        GameManager.GameStarted += InitialReward;
+
+        isRewardCard = true;
+
     }
 
     // Update is called once per frame
@@ -53,38 +100,86 @@ public class RewardManager : MonoBehaviour
     public void AnyReward()
     {
         playerControler.GettingReward = true;
-        playerControler.UpdatePlayer();
+        //playerControler.UpdatePlayer();
     }
+    public void InitialReward(GameManager gameManager)
+    {
+        AnyReward();
+        GenerateReward(3);
+
+    }
+
 
     public void TileReward(GameObject tile)
     {
         AnyReward();
         tileScript = tile.GetComponent<Lootable>();
+        tileScript.Looted();
         //rewardRarity = tileScript.Raity;
 
-        
+        GenerateReward(3);
     }
 
-    private void GenerateReward()
+    private void GenerateReward(int numberOfRewards)
     {
-        float randomProbability = Random.Range(0, 1);
-        if (randomProbability < commonProbability)
+        List<GameObject> potentialRewards = new List<GameObject>();
+        for (int i = 0; i < numberOfRewards; i++)
         {
-            rewardRarity = 1;
-        }
-        else if (randomProbability < commonProbability + uncommonProbability)
-        {
-            rewardRarity = 2;
-        }
-        else
-        {
-            rewardRarity = 3;
-        }
+            float randomProbability = Random.Range(0, 1);
+            List<GameObject> currentRewardPool = new List<GameObject>();
+            if (randomProbability <= commonProbability)
+            {
+                rewardRarity = 1;
+                currentRewardPool = new List<GameObject>(commonCardRewards);
+            }
+            else if (randomProbability <= commonProbability + uncommonProbability)
+            {
+                rewardRarity = 2;
+                currentRewardPool = new List<GameObject>(uncommonCardRewards);
 
+            }
+            else
+            {
+                rewardRarity = 3;
+                currentRewardPool = new List<GameObject>(rareCardRewards);
+
+            }
+            foreach (GameObject reward in currentOptions)
+            {
+                if (currentRewardPool.Contains(reward))
+                {
+                    currentRewardPool.Remove(reward);
+                }
+            }
+            if (isRewardCard)
+            {
+                Debug.Log(currentRewardPool.Count);
+                potentialRewards.Add(currentRewardPool[Random.Range(0, currentRewardPool.Count)]);
+            }
+            else
+            {
+                //GameObject currentReward = Random.Range(0, allRelicRewards.Count)
+            }
+        }
+        foreach (GameObject reward in potentialRewards)
+        {
+            GameObject createdReward = Instantiate(reward, rewardsLocation.transform);
+            createdReward.AddComponent<IsReward>();
+            currentOptions.Add(createdReward);
+        }
+        deckManager.SeperateCards(currentOptions, rewardsLocation.transform.position);
 
     }
     public void RewardSelected(GameObject reward)
     {
-
+        Debug.Log(reward + " selected");
+        deckManager.GainCard(reward);
+        currentOptions.Remove(reward);
+        foreach (GameObject unselectedReward in currentOptions)
+        {
+            Destroy(unselectedReward);
+        }
+        currentOptions.Clear();
+        playerControler.GettingReward = false;
     }
 }

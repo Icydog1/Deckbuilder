@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Lootable : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject lootedTile;
     private bool isCard;
     private bool isRelic;
     private float raity;
@@ -16,5 +18,11 @@ public class Lootable : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void Looted()
+    {
+        Instantiate(lootedTile,transform.position,transform.rotation);
+        Destroy(gameObject);
     }
 }

@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class RoomSpawner : MonoBehaviour
 {
-    private float tileWidth = 2, tileHeight, zLayer = 1000, roomSize = 13;
+    private float tileWidth = 2, tileHeight, zLayer = 1000, roomSize = 17;
     private MapManager mapManager;
     [SerializeField]
     private GameObject[] rooms;
-    [SerializeField]
-    private float[] initialRoomWeights = { 0.9f}; //, 0.6f, 0.05f 
+    //[SerializeField]
+    private float[] initialRoomWeights = {1f,1f,1f}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
     private float realativeRotation = 0;
     public List<Vector2Int> builtRooms = new List<Vector2Int>();

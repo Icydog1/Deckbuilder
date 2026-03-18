@@ -90,10 +90,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3212786461230137599, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
       propertyPath: m_Name
-      value: BaseCard Variant
+      value: TestCard3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3212786461230137599, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -588614774702678644}
   m_SourcePrefab: {fileID: 100100000, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+--- !u!1 &4253183361818028982 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3212786461230137599, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+  m_PrefabInstance: {fileID: 1697940588127415113}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-588614774702678644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4253183361818028982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 199ed124467c4b6468d2f840d0a8b414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topGlow: {fileID: 0}
+  bottomGlow: {fileID: 0}
+  currentStep: 0
+  nextAction: 0

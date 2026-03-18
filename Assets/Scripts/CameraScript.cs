@@ -11,12 +11,13 @@ public class CameraScript : MonoBehaviour
     private DeckManager deckManager;
     private GameObject player;
     public float standardHeight = 900, standardWidth = 1600, screenHeight, screenWidth, heightRatio, widthRatio, widthHeightRatio, standardWidthHeightRatio, zoom;
+    public float WidthHeightRatio { get { return widthHeightRatio;} }
     public float FOVHeight, FOVWidth;
     private bool playerLock;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         cam = GetComponent<Camera>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();

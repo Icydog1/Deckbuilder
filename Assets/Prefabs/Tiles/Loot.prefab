@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 156239944842639177, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Name
-      value: BaseTile Variant
+      value: Loot
       objectReference: {fileID: 0}
     - target: {fileID: 2075810079898960554, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -89,3 +89,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b63b979b12c3c145b657226a216830d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lootedTile: {fileID: 1588885295552724964, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}

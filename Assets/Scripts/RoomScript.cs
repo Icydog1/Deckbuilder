@@ -7,7 +7,7 @@ public class RoomScript : MonoBehaviour
     private RoomSpawner roomSpawner;
 
     private Vector2Int oneToOneCords;
-    private int roomSize = 6;
+    private int roomSize = 8;
 
     [SerializeField]
     private bool isLeftEntrance;
