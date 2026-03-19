@@ -8,10 +8,10 @@ public class RoomSpawner : MonoBehaviour
     [SerializeField]
     private GameObject[] rooms;
     //[SerializeField]
-    private float[] initialRoomWeights = {1f,1f,1f}; //, 0.6f, 0.05f 
+    private float[] initialRoomWeights = {0, 1f, 1f, 1f}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
     private float realativeRotation = 0;
-    public List<Vector2Int> builtRooms = new List<Vector2Int>();
+    private List<Vector2Int> builtRooms = new List<Vector2Int>();
     public List<Vector2Int> BuiltRooms { get { return builtRooms; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

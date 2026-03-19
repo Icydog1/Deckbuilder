@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 2214250779122734930}
   - component: {fileID: 8825298400596184108}
   m_Layer: 5
-  m_Name: Bottom Glow
+  m_Name: BottomGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 3424957341001128148}
   - component: {fileID: 5170928359129748955}
   m_Layer: 5
-  m_Name: Bottom Effects
+  m_Name: BottomEffects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -386,7 +386,7 @@ GameObject:
   - component: {fileID: 5929440010874381456}
   - component: {fileID: 3671752080458568288}
   m_Layer: 5
-  m_Name: Top Glow
+  m_Name: TopGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -460,8 +460,9 @@ GameObject:
   - component: {fileID: 4425309317702042953}
   - component: {fileID: 185697828004612437}
   - component: {fileID: 2452133953480577746}
+  - component: {fileID: 4550510092382779447}
   m_Layer: 5
-  m_Name: Top Cost
+  m_Name: TopCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -585,6 +586,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4550510092382779447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2295265440343059651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adebb0822745a3149aa33355e100fe5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  addionalText: 
 --- !u!1 &2532403951471211723
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,8 +685,9 @@ GameObject:
   - component: {fileID: 5841765755636589362}
   - component: {fileID: 7335589265651393113}
   - component: {fileID: 899065076391208802}
+  - component: {fileID: 3667272763966640908}
   m_Layer: 5
-  m_Name: Bottom Cost
+  m_Name: BottomCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -796,6 +811,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3667272763966640908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2969900778327432471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adebb0822745a3149aa33355e100fe5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  addionalText: 
 --- !u!1 &3212786461230137599
 GameObject:
   m_ObjectHideFlags: 0
@@ -981,7 +1009,7 @@ GameObject:
   - component: {fileID: 4002536179479296092}
   - component: {fileID: 4318404377552534437}
   m_Layer: 5
-  m_Name: Top Effects
+  m_Name: TopEffects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

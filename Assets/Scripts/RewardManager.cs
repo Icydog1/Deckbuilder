@@ -8,6 +8,7 @@ public class RewardManager : MonoBehaviour
     private DeckManager deckManager;
     private GameManager gameManager;
     private GameObject rewardsLocation;
+    private UIManager uIManager;
 
 
     [SerializeField]
@@ -42,6 +43,7 @@ public class RewardManager : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
 
         rewardsLocation = GameObject.Find("Rewards");
 
@@ -102,6 +104,7 @@ public class RewardManager : MonoBehaviour
     public void AnyReward()
     {
         playerControler.GettingReward = true;
+        uIManager.IsGettingReward = true;
         //playerControler.UpdatePlayer();
     }
     public void InitialReward(GameManager gameManager)
@@ -184,5 +187,6 @@ public class RewardManager : MonoBehaviour
         }
         currentOptions.Clear();
         playerControler.GettingReward = false;
+        uIManager.IsGettingReward = false;
     }
 }

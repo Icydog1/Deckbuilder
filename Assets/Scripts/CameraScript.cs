@@ -86,6 +86,9 @@ public class CameraScript : MonoBehaviour
         screenWidth = Screen.width * zoom;
         widthRatio = screenWidth / standardWidth;
         widthHeightRatio = widthRatio / heightRatio * zoom;
-        deckManager.UpdateHand();
+        if (!deckManager.IsDisplayingCards)
+        {
+            deckManager.UpdateHand();
+        }
     }
 }

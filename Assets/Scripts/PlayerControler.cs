@@ -3,26 +3,31 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerControler : MonoBehaviour
+public class PlayerControler : Figure
 {
     public bool actionDone, manualEnd;
     public bool isMoving, isAttacking;
     public bool isPlayerTurn;
     private GameObject player;
-    private MouseManager mouseManager;
-    private MapManager mapManager;
-    private TurnManager turnManager;
     private RoomSpawner roomSpawner;
     public GameObject clickedTile, clickedEnemy;
     public GameObject playedCard;
     private GameObject currentTile;
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
-    private PlayerStats playerStats;
+    //private PlayerStats playerStats;
+    private DeckManager deckManager;
     public Card playedCardScript;
     public Vector2 playerOneToOneCords;
+
+    public List<System.Action> currentActionQueue = new List<System.Action>();
+
+    private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward;
+    public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
+    public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
+    public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
     private int moveLeft, targetsLeft, attackDamageValue;
-    private bool canJump, canFly;
+    private bool canJump;
     private int range;
     private bool isTargetATile, isTargetAEnemy;
 
@@ -30,38 +35,22 @@ public class PlayerControler : MonoBehaviour
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
     public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
-    public int maxHealth = 100, health;
-
-    public List<System.Action> currentActionQueue = new List<System.Action>();
-
-    public bool canPlayCards;
-    public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
-    public bool canEndTurn;
-
-    private bool cardPlayed;
-
-    public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
-    private bool gettingReward;
-    public bool GettingReward { get { return gettingReward; } set { gettingReward = value; } }
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public override void Start()
     {
-        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
-        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         player = GameObject.Find("Player");
-        playerStats = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
-        turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
+        statsDisplayer = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
         topEnergyDisplay = GameObject.Find("TopEnergyDisplay").GetComponent<VariableDisplayer>();
         bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
+        deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         //Debug.Log(playerStats);
         playerOneToOneCords = Vector2.zero;
 
+        base.Start();
 
-        health = maxHealth;
     }
 
     // Update is called once per frame
@@ -72,7 +61,7 @@ public class PlayerControler : MonoBehaviour
 
     public void TileClicked(GameObject tile)
     {
-        if (isTargetATile)
+        if (isTargetATile && canPreformActions)
         {
             clickedTile = tile;
             //playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
@@ -118,7 +107,7 @@ public class PlayerControler : MonoBehaviour
     public void EnemyClicked(GameObject enemy)
     {
         clickedEnemy = enemy;
-        if (isTargetAEnemy)
+        if (isTargetAEnemy && canPreformActions)
         {
             if (isAttacking)
             {
@@ -143,7 +132,7 @@ public class PlayerControler : MonoBehaviour
     }
     public void UpdatePlayer()
     {
-        if (!cardPlayed && !gettingReward && isPlayerTurn)
+        if (!cardPlayed && !gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards)
         {
             canPlayCards = true;
             canEndTurn = true;
@@ -152,6 +141,14 @@ public class PlayerControler : MonoBehaviour
         {
             canPlayCards = false;
             canEndTurn = false;
+        }
+        if (!gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards)
+        {
+            canPreformActions = true;
+        }
+        else
+        {
+            canPreformActions = false;
         }
     }
 
@@ -179,7 +176,7 @@ public class PlayerControler : MonoBehaviour
         }
     }
 
-    public void ActionDone()
+    public override void ActionDone()
     {
         isMoving = false;
         isAttacking = false;
@@ -207,13 +204,31 @@ public class PlayerControler : MonoBehaviour
         attackDamageValue = attackValue;
         range = attackRange;
         isTargetAEnemy = true;
-
     }
-
-    public void AttackedFor(int attackValue, int range = 1)
+    /*
+    public void Block(int blockValue)
     {
-        health -= attackValue;
-        playerStats.SetHealth(health);
+        block += blockValue;
+        playerStats.SetHealthAndBlock(health, block);
+        ActionDone();
     }
+
+    public void AttackedFor(int attackValue)
+    {
+        if (block > 0 )
+        {
+            int damageBlocked = Mathf.Min(attackValue, block);
+            attackValue -= damageBlocked;
+            block -= damageBlocked;
+        }
+        health -= attackValue;
+        playerStats.SetHealthAndBlock(health, block);
+    }
+    */
+    public override void Die()
+    {
+        Debug.Log("You Died");
+    }
+
 
 }

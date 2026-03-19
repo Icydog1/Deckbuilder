@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class EnemyUi : MonoBehaviour
+public class EnemyUi : FigureStats
 {
-    public GameObject healthTextObject, condtionsTextObject, planTextObject;
-    private TextMeshProUGUI healthText, condtionsText, planText;
+    public GameObject planTextObject;
+    private TextMeshProUGUI planText;
 
     //List<string> currentCondtions = new List<string>();
     private bool noCondions;
@@ -32,24 +32,6 @@ public class EnemyUi : MonoBehaviour
     void Update()
     {
         
-    }
-
-    public void SetHealth(int health)
-    {
-        healthText.SetText("Health: " + health);
-    }
-    public void SetCondtions(string[] condtions)
-    {
-        if (condtions.Length == 0)
-        {
-            noCondions = true;
-            condtionsText.SetText("");
-        }
-        else
-        {
-            condtionsText.SetText("Condtions " + condtions);
-        }
-
     }
     public void Plan(List<string> moves)
     {

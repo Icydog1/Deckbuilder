@@ -11,11 +11,11 @@ public class DisplayCardsInList : UIButton
     [SerializeField]
     private bool isRandomOrder;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    protected override void Start()
+    protected override void Awake()
     {
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         listDisplayer = GameObject.Find("ListDisplayer");
-        base.Start();
+        base.Awake();
     }
 
     // Update is called once per frame
@@ -27,6 +27,5 @@ public class DisplayCardsInList : UIButton
     public override void Activate()
     {
         deckManager.DisplayCardsInListByName(listName, listDisplayer.transform.position, 5, isRandomOrder);
-
     }
 }

@@ -3,9 +3,9 @@ using UnityEngine;
 public class EndCurrentAction : UIButton
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
     }
 
     // Update is called once per frame

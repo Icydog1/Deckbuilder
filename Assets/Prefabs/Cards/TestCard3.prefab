@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 906462911710736965, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      propertyPath: m_Name
+      value: BottomGlow
+      objectReference: {fileID: 0}
+    - target: {fileID: 1320338768519443485, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      propertyPath: m_Name
+      value: BottomEffects
+      objectReference: {fileID: 0}
     - target: {fileID: 1857116613258385720, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -88,9 +96,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2218071010814338538, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      propertyPath: m_Name
+      value: TopGlow
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295265440343059651, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      propertyPath: m_Name
+      value: TopCost
+      objectReference: {fileID: 0}
+    - target: {fileID: 2969900778327432471, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      propertyPath: m_Name
+      value: BottomCost
+      objectReference: {fileID: 0}
     - target: {fileID: 3212786461230137599, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
       propertyPath: m_Name
       value: TestCard3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631650157743195674, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      propertyPath: m_Name
+      value: TopEffects
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -99,7 +123,31 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3212786461230137599, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1130815430471482616}
+    - targetCorrespondingSourceObject: {fileID: 2295265440343059651, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2354082144190529913}
+    - targetCorrespondingSourceObject: {fileID: 2969900778327432471, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1297064046532702604}
   m_SourcePrefab: {fileID: 100100000, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+--- !u!1 &597325333287241610 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2295265440343059651, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+  m_PrefabInstance: {fileID: 1697940588127415113}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2354082144190529913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597325333287241610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adebb0822745a3149aa33355e100fe5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  addionalText: 
 --- !u!1 &4253183361818028982 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3212786461230137599, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
@@ -117,7 +165,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb33d210b8778fc47946f9fa2c1e5faa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topGlow: {fileID: 0}
-  bottomGlow: {fileID: 0}
-  currentStep: 0
-  nextAction: 0
+--- !u!1 &4514716779965167198 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2969900778327432471, guid: 1a5dab5985c22d34eb22473745e2e151, type: 3}
+  m_PrefabInstance: {fileID: 1697940588127415113}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1297064046532702604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4514716779965167198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adebb0822745a3149aa33355e100fe5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  addionalText: 

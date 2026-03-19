@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class GameManager : MonoBehaviour
@@ -26,7 +27,11 @@ public class GameManager : MonoBehaviour
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
 
+
         StartCoroutine(StartGame());
+
+        //GameObject.Find("ListDisplayerScreenBlocker").GetComponent<Image>().enabled = true;
+        //GameObject.Find("ListDisplayer").SetActive(false);
     }
 
     // Update is called once per frame

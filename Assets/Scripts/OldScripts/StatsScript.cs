@@ -16,7 +16,7 @@ public class StatsScript : MonoBehaviour
     }
     public void GetStatsOnEnemy(Enemy enemyScript)
     {
-        health = enemyScript.health;
+        //health = enemyScript.health;
     }
 
     public void GetnerateEnemyStats()

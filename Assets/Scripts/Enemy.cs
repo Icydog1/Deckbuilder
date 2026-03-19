@@ -2,19 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : Figure
 {
 
     protected PlayerControler playerControler;
-    protected TurnManager turnManager;
-    protected MapManager mapManager;
     protected Pathfinder pathfinder;
-    private MouseManager mouseManager;
-    protected EnemyUi enemyUI;
-    protected bool isMyTurn;
     protected float distanceToPlayer;
-    protected Vector3 relativeHexPosToPlayer;
-    protected Vector2 oneToOnePos;
+    //protected Vector3 relativeHexPosToPlayer;
 
     protected delegate void moveSetsMethod();
     protected List<moveSetsMethod> moveSets = new List<moveSetsMethod>();
@@ -29,19 +23,16 @@ public class Enemy : MonoBehaviour
     protected int preferedRange;
 
 
-    public int maxHealth, health;
-    private bool canFly = false;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public virtual void Start()
+    public override void Start()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
-        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
-        enemyUI = transform.Find("EnemyUI").GetComponent<EnemyUi>();
-        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
+        statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
 
+        base.Start();
 
         turnManager.turnOrder.Add(gameObject);
         health = maxHealth;
@@ -63,7 +54,7 @@ public class Enemy : MonoBehaviour
         displayedPlan.Clear();
         plannedMoveSet = moveSets[Random.Range(0, moveSets.Count)];
         plannedMoveSet();
-        enemyUI.Plan(displayedPlan);
+        //statsDisplayer.Plan(displayedPlan);
     }
     public void StartOfTurn()
     {
@@ -104,7 +95,7 @@ public class Enemy : MonoBehaviour
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
         distanceToPlayer = mapManager.GetDistanceBetweenOneToOne(oneToOnePos, playerControler.playerOneToOneCords);
     }
-    public void ActionDone()
+    public override void ActionDone()
     {
         CalculateValues();
         nextAction = true;
@@ -153,6 +144,22 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    /*
+    public void Block(int blockValue)
+    {
+        if (isPlanning)
+        {
+            currentPlan.Add(() => Block(blockValue));
+            string planString = "Block " + blockValue;
+            displayedPlan.Add(planString);
+        }
+        else
+        {
+
+            ActionDone();
+        }
+    }
+
     public void AttackedFor(int attackValue)
     {
         health -= attackValue;
@@ -162,13 +169,13 @@ public class Enemy : MonoBehaviour
             Die();
         }
     }
-
+    */
     public void showHideTooltip(bool show)
     {
 
     }
 
-    public void Die()
+    public override void Die()
     {
         TurnManager.RoundStarted -= GetPlan;
         turnManager.RemoveFromTurnOrder(gameObject);

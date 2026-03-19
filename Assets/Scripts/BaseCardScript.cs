@@ -9,6 +9,7 @@ public class Card : MonoBehaviour
     protected MouseManager mouseManager;
     protected DeckManager deckManager;
     protected CardEffectText topText, bottomText;
+    protected VariableDisplayer topCostText, bottomCostText;
 
     protected GameObject topGlow, bottomGlow;
     public GameObject TopGlow { get { return topGlow; } }
@@ -32,6 +33,7 @@ public class Card : MonoBehaviour
     protected List<string> currentDescription = new List<string>();
     protected string currentDescriptionString = "";
 
+    [SerializeField]
     protected int rarity = 1;
     public int Rarity { get { return rarity; } }
 
@@ -47,10 +49,12 @@ public class Card : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        topGlow = transform.Find("Top Glow").gameObject;
-        bottomGlow = transform.Find("Bottom Glow").gameObject;
-        topText = transform.Find("Top Effects").GetComponent<CardEffectText>();
-        bottomText = transform.Find("Bottom Effects").GetComponent<CardEffectText>();
+        topGlow = transform.Find("TopGlow").gameObject;
+        bottomGlow = transform.Find("BottomGlow").gameObject;
+        topText = transform.Find("TopEffects").GetComponent<CardEffectText>();
+        bottomText = transform.Find("BottomEffects").GetComponent<CardEffectText>();
+        topCostText = transform.Find("TopCost").GetComponent<VariableDisplayer>();
+        bottomCostText = transform.Find("BottomCost").GetComponent<VariableDisplayer>();
 
         deckManager.SetRelativeCardSize(gameObject, 1);
         // base class code runs
@@ -173,10 +177,12 @@ public class Card : MonoBehaviour
         isPreparingTop = true;
         currentDescription = topDescription;
         PrepareTop();
+        topCostText.DisplayText(topCost);
         prepareTo = bottomActions;
         isPreparingTop = false;
         currentDescription = bottomDescription;
         PrepareBottom();
+        bottomCostText.DisplayText(bottomCost);
         DisplayEffects();
     }
 
@@ -227,6 +233,11 @@ public class Card : MonoBehaviour
         }
         AddToDescription();
     }
-
+    public void PrepareBlock(int blockValue)
+    {
+        prepareTo.Add(() => playerControler.Block(blockValue));
+        currentDescriptionString = "Block " + blockValue;
+        AddToDescription();
+    }
 
 }
