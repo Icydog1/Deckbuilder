@@ -167,10 +167,10 @@ public class MouseManager : MonoBehaviour
         clickedObject = selectedObject;
         if (clickedObject && clickedObject.GetComponent<UIButton>())
         {
-            if (selectedObject.GetComponent<UIButton>())
+            if (clickedObject.GetComponent<UIButton>())
             {
-                GameObject image = selectedObject.transform.Find("Image").gameObject;
-                image.GetComponent<Image>().color = new Color(0.8f, 0.8f, 0.8f);
+                GameObject image = clickedObject.transform.Find("Image").gameObject;
+                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().ClickedColor;
             }
         }
         if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.CanPlayCards == true)
@@ -194,7 +194,7 @@ public class MouseManager : MonoBehaviour
             if (clickedObject.GetComponent<UIButton>())
             {
                 GameObject image = clickedObject.transform.Find("Image").gameObject;
-                image.GetComponent<Image>().color = Color.white;
+                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
             }
         }
         if (dragableClicked && !shortClick)

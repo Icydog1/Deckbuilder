@@ -12,7 +12,7 @@ public class Figure : MonoBehaviour
 
     protected Vector2 oneToOnePos;
 
-    protected int maxHealth, health, block;
+    protected int maxHealth = 1, health, block = 0;
     protected bool canFly = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Start()
@@ -25,12 +25,20 @@ public class Figure : MonoBehaviour
 
         health = maxHealth;
 
+
+        statsDisplayer.SetHealthAndBlock(health, block);
+
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void baseStartTurn()
+    {
+        block = 0;
     }
 
     public virtual void ActionDone()

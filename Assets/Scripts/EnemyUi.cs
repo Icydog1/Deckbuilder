@@ -7,25 +7,11 @@ public class EnemyUi : FigureStats
 {
     public GameObject planTextObject;
     private TextMeshProUGUI planText;
-
-    //List<string> currentCondtions = new List<string>();
-    private bool noCondions;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    public override void Awake()
     {
-        healthText = healthTextObject.GetComponent<TextMeshProUGUI>();
-        condtionsText = condtionsTextObject.GetComponent<TextMeshProUGUI>();
+        base.Awake();
+
         planText = planTextObject.GetComponent<TextMeshProUGUI>();
-
-
-
-        //SetHealth(100);
-        SetCondtions(new string[0]);
-        List<string> testString = new List<string>();
-        //testString.Add("Move 2");
-        //testString.Add("Move 3");
-        //testString.Add("Attack 4");
-        Plan(testString);
     }
 
     // Update is called once per frame
@@ -35,7 +21,7 @@ public class EnemyUi : FigureStats
     }
     public void Plan(List<string> moves)
     {
-        if (noCondions)
+        if (noConditions)
         {
             planTextObject.transform.position = gameObject.transform.position + new Vector3(-0.5f, 0.25f , 0);
         }

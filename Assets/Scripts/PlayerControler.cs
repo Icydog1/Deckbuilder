@@ -15,6 +15,7 @@ public class PlayerControler : Figure
     private GameObject currentTile;
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
+    private GameManager gameManager;
     //private PlayerStats playerStats;
     private DeckManager deckManager;
     public Card playedCardScript;
@@ -46,17 +47,27 @@ public class PlayerControler : Figure
         topEnergyDisplay = GameObject.Find("TopEnergyDisplay").GetComponent<VariableDisplayer>();
         bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
         //Debug.Log(playerStats);
-        playerOneToOneCords = Vector2.zero;
-
+        GameManager.GameStarted += PreparePlayer;
         base.Start();
-
     }
 
     // Update is called once per frame
     void Update()
     {
         playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
+    }
+
+    public void PreparePlayer(GameManager gameManager)
+    {
+        maxHealth = 100;
+        health = maxHealth;
+        playerOneToOneCords = Vector2.zero;
+        statsDisplayer.SetHealthAndBlock(health, 0);
+        statsDisplayer.SetConditions(new string[0]);
+
     }
 
     public void TileClicked(GameObject tile)
@@ -95,7 +106,7 @@ public class PlayerControler : Figure
         if (moveLeft == 0)
         {
             ActionDone();
-            Debug.Log("Done Moving");
+            //Debug.Log("Done Moving");
         }
     }
 
@@ -157,6 +168,7 @@ public class PlayerControler : Figure
         isPlayerTurn = true;
         TopEnergy = 2;
         BottomEnergy = 2;
+        base.baseStartTurn();
     }
     public void EndTurn()
     {

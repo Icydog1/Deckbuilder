@@ -253,8 +253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f13bb0202d8d1f2448efa6b19379b6b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthTextObject: {fileID: 298836964610731805}
-  condtionsTextObject: {fileID: 5865611617877550958}
   planTextObject: {fileID: 1989280391353621185}
 --- !u!1 &1603514548244973757
 GameObject:
@@ -578,7 +576,7 @@ GameObject:
   - component: {fileID: 1356806907336001554}
   - component: {fileID: 7992758703967638172}
   m_Layer: 5
-  m_Name: ConditonsText
+  m_Name: ConditionsText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

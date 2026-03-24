@@ -20,7 +20,8 @@ public class Card : MonoBehaviour
     protected bool isPlaying;
     //protected int currentStep;
     protected bool nextAction;
-    public bool NextAction { set { nextAction = value; } }
+    public bool NextAction { set { nextAction = value;}
+    }
 
     protected bool isPreparingTop;
 

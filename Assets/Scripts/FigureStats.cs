@@ -4,19 +4,20 @@ using UnityEngine;
 
 public class FigureStats : MonoBehaviour
 {
-    [SerializeField]
-    protected GameObject healthTextObject, condtionsTextObject;
-    protected TextMeshProUGUI healthText, condtionsText;
-    private bool noCondions;
+    protected GameObject healthTextObject, conditionsTextObject;
+    protected TextMeshProUGUI healthText, conditionsText;
+    protected bool noConditions;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public virtual void Awake()
     {
+        healthTextObject = transform.Find("HealthText").gameObject;
+        conditionsTextObject = transform.Find("ConditionsText").gameObject;
         healthText = healthTextObject.GetComponent<TextMeshProUGUI>();
-        condtionsText = condtionsTextObject.GetComponent<TextMeshProUGUI>();
+        conditionsText = conditionsTextObject.GetComponent<TextMeshProUGUI>();
 
         SetHealthAndBlock(100, 0);
-        SetCondtions(new string[0]);
+        SetConditions(new string[0]);
         List<string> testString = new List<string>();
     }
 
@@ -25,21 +26,22 @@ public class FigureStats : MonoBehaviour
     {
         
     }
-
+    
     public void SetHealthAndBlock(int health, int block)
     {
         healthText.SetText("Health: " + health + " Block: " + block);
     }
-    public void SetCondtions(string[] condtions)
+
+    public void SetConditions(string[] conditions)
     {
-        if (condtions.Length == 0)
+        if (conditions.Length == 0)
         {
-            noCondions = true;
-            condtionsText.SetText("");
+            noConditions = true;
+            conditionsText.SetText("");
         }
         else
         {
-            condtionsText.SetText("Condtions " + condtions);
+            conditionsText.SetText("Conditions " + conditions);
         }
 
     }

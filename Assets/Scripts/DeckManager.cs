@@ -15,7 +15,8 @@ public class DeckManager : MonoBehaviour
     public List<GameObject> DiscardContents { get { return discardContents; } }
     public List<GameObject> EntireDeck { get { return entireDeck; } }
 
-    private List<GameObject> displayedList;
+    private List<GameObject> displayedList = new List<GameObject>();
+    private List<GameObject> displayedListName;
     private List<List<GameObject>> posibleCardLocations = new List<List<GameObject>>();
     private VariableDisplayer cardsInDeckDisplay, cardsInDiscardDisplay, cardsInEntireDeckDisplay;
     private float relativeSpaceBetweenCardsInHand = 0.35f;
@@ -71,6 +72,7 @@ public class DeckManager : MonoBehaviour
         posibleCardLocations.Add(discardContents);
         posibleCardLocations.Add(playContents);
 
+        GameManager.GameStarted += DrawStartingHand;
     }
 
     // Update is called once per frame
@@ -83,6 +85,11 @@ public class DeckManager : MonoBehaviour
     public void PlayCard(GameObject card)
     {
         MoveTo(card, play);
+    }
+
+    public void DrawStartingHand(GameManager gameManager)
+    {
+        DrawNewHand();
     }
 
     public void DrawNewHand()
@@ -142,6 +149,7 @@ public class DeckManager : MonoBehaviour
         {
             GetListByName(location.name.ToLower() + "Contents").Add(card);
         }
+        DeSelectCard(card);
         card.transform.SetParent(location.transform);
         card.transform.position = location.transform.position;
         if (location == hand || location == play)
@@ -228,13 +236,13 @@ public class DeckManager : MonoBehaviour
     public void DisplayCardsInListByName(string listName, Vector2 pos, int rowLimit, bool randomOrder)
     {
         List<GameObject> list = GetListByName(listName);
-        if (list == displayedList)
+        if (list == displayedListName)
         {
             StopDisplayingCardsInList();
         }
         else
         {
-            if (displayedList != null)
+            if (displayedListName != null)
             {
                 StopDisplayingCardsInList();
 
@@ -248,39 +256,36 @@ public class DeckManager : MonoBehaviour
         isDisplayingCards = true;
         listDisplayer.SetActive(true);
         uIManager.IsDisplayingList = true;
-        displayedList = cards;
+        displayedList.Clear();
+        displayedListName = cards;
+        foreach (GameObject card in cards)
+        {
+            displayedList.Add(Instantiate(card));
+        }
         float horizontalSpaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
         float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.25f) * cameraScript.widthHeightRatio;
-        int numberOfCards = cards.Count;
+        int numberOfCards = displayedList.Count;
         //Debug.Log(spaceBetweenCards + " spaceBetweenCards");
         //Debug.Log(cameraScript.widthHeightRatio + " widthHeightRatio");
-        int rowsCount = Mathf.CeilToInt(cards.Count / rowLimit);
+        int rowsCount = Mathf.CeilToInt(displayedList.Count / rowLimit);
         if (randomOrder)
         {
-            List<GameObject> cardsInList = new List<GameObject>(cards);
-            cards = new List<GameObject>();
+            List<GameObject> cardsInList = new List<GameObject>(displayedList);
+            displayedList = new List<GameObject>();
             while (cardsInList.Count > 0)
             {
                 GameObject currentCard = cardsInList[Random.Range(0, cardsInList.Count)];
-                cards.Add(currentCard);
+                displayedList.Add(currentCard);
                 cardsInList.Remove(currentCard);
             }
         }
-        foreach (GameObject card in cards)
+        foreach (GameObject card in displayedList)
         {
             card.transform.SetParent(listDisplayer.transform);
             card.SetActive(true);
-            int row = Mathf.FloorToInt(cards.IndexOf(card) / rowLimit);
-            int column = cards.IndexOf(card) % rowLimit;
-            //Debug.Log(column + " column");
-            //Debug.Log(column * horizontalSpaceBetweenCards + " offset cords");
+            int row = Mathf.FloorToInt(displayedList.IndexOf(card) / rowLimit);
+            int column = displayedList.IndexOf(card) % rowLimit;
             card.transform.position = new Vector3(pos.x + (column - (rowLimit/2)) * horizontalSpaceBetweenCards, pos.y - row * VerticalSpaceBetweenCards, card.transform.position.z);
-            //Debug.Log((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + " new x pos");
-            if (GetRelativeCardSize(card) > 1.5f)
-            {
-                card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
-            }
-
         }
     }
 
@@ -291,18 +296,13 @@ public class DeckManager : MonoBehaviour
 
     public void StopDisplayingCardsInList()
     {
+        isDisplayingCards = false;
         foreach (GameObject card in displayedList)
         {
-            isDisplayingCards = false;
-            card.SetActive(false);
-            uIManager.IsDisplayingList = false;
-            listDisplayer.SetActive(false);
-            if (handContents.Contains(card))
-            {
-                card.transform.SetParent(hand.transform);
-            }
-            UpdateHand();
+            Destroy(card);
         }
-        displayedList = null;
+        listDisplayer.SetActive(false);
+        uIManager.IsDisplayingList = false;
+        displayedListName = null;
     }
 }

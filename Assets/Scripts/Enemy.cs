@@ -21,7 +21,7 @@ public class Enemy : Figure
 
     protected int actionNum;
     protected int preferedRange;
-
+    protected EnemyUi enemyStatsDisplayer;
 
 
 
@@ -30,8 +30,8 @@ public class Enemy : Figure
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
-        statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
-
+        enemyStatsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
+        statsDisplayer = enemyStatsDisplayer;
         base.Start();
 
         turnManager.turnOrder.Add(gameObject);
@@ -54,10 +54,11 @@ public class Enemy : Figure
         displayedPlan.Clear();
         plannedMoveSet = moveSets[Random.Range(0, moveSets.Count)];
         plannedMoveSet();
-        //statsDisplayer.Plan(displayedPlan);
+        enemyStatsDisplayer.Plan(displayedPlan);
     }
     public void StartOfTurn()
     {
+        base.baseStartTurn();
         isPlanning = false;
         if (preferedRange == int.MaxValue)
         {

@@ -8,8 +8,9 @@ public class PlayerStats : FigureStats
 
     //List<string> currentCondtions = new List<string>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public override void Awake()
     {
+        base.Awake();
 
 
         //Plan(testString);
