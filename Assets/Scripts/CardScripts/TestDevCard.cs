@@ -1,12 +1,12 @@
 using System.Collections;
 using UnityEngine;
 
- public class TestStartCard : Card
+public class TestDevCard : Card
 {
     public override void Start()
     {
-        topCost = 1;
-        bottomCost = 1;
+        topCost = 0;
+        bottomCost = 0;
         base.Start();
     }
     public override void Update()
@@ -17,11 +17,13 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        playerControler.Attack(3);
+        playerControler.Block(100);
+        playerControler.Attack(100,3);
+
     }
 
     public override void PrepareBottom()
     {
-        playerControler.Move(3);
+        playerControler.Move(1000, true);
     }
 }

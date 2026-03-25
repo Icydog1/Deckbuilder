@@ -17,11 +17,11 @@ public class TestCard4 : Card
 
     public override void PrepareTop()
     {
-        PrepareBlock(5);
+        playerControler.Block(5);
     }
 
     public override void PrepareBottom()
     {
-        PrepareMove(4,true);
+        playerControler.Move(4,true);
     }
 }

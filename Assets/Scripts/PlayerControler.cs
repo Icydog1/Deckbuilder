@@ -49,6 +49,8 @@ public class PlayerControler : Figure
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
+        isPlayer = true;
+
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
         base.Start();
@@ -192,7 +194,7 @@ public class PlayerControler : Figure
     {
         isMoving = false;
         isAttacking = false;
-        manualEnd = false;
+        //manualEnd = false;
         actionDone = true;
         isTargetATile = false;
         isTargetAEnemy = false;
@@ -200,7 +202,7 @@ public class PlayerControler : Figure
         playedCardScript.NextAction = true;
     }
 
-    public void Move(int moveValue, bool isJump = false)
+    public void ControledMove(int moveValue, bool isJump = false)
     {
         actionDone = false;
         isMoving = true;
@@ -208,7 +210,7 @@ public class PlayerControler : Figure
         moveLeft = moveValue;
     }
 
-    public void Attack(int attackValue, int attackRange = 1, int targets = 1)
+    public void ControledAttack(int attackValue, int attackRange, int targets)
     {
         actionDone = false;
         isAttacking = true;
@@ -216,6 +218,26 @@ public class PlayerControler : Figure
         attackDamageValue = attackValue;
         range = attackRange;
         isTargetAEnemy = true;
+    }
+
+    public void Lockpick(int lockpickValue)
+    {
+        float additionalLockpick = lockpickValue;
+
+
+        int finalLockpick = Mathf.FloorToInt(additionalLockpick);
+        if (isPlanning)
+        {
+            prepareActions.Add(() => Block(finalLockpick));
+            string currentDescriptionString = "Block" + finalLockpick;
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+//            block += finalLockpick;
+//            statsDisplayer.SetHealthAndBlock(health, block);
+            ActionDone();
+        }
     }
     /*
     public void Block(int blockValue)

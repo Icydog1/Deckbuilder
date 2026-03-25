@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
- public class TestStartCard : Card
+public class TestStartCard2 : Card
 {
     public override void Start()
     {
@@ -17,11 +17,11 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        playerControler.Attack(3);
+        playerControler.Block(3);
     }
 
     public override void PrepareBottom()
     {
-        playerControler.Move(3);
+        playerControler.Lockpick(3);
     }
 }

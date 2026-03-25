@@ -5,9 +5,6 @@ using UnityEngine;
 public class Enemy : Figure
 {
 
-    protected PlayerControler playerControler;
-    protected Pathfinder pathfinder;
-    protected float distanceToPlayer;
     //protected Vector3 relativeHexPosToPlayer;
 
     protected delegate void moveSetsMethod();
@@ -16,11 +13,9 @@ public class Enemy : Figure
 
     protected List<System.Action> currentPlan = new List<System.Action>();
     protected moveSetsMethod plannedMoveSet;
-    protected bool isPlanning;
     protected List<string> displayedPlan = new List<string>();
 
     protected int actionNum;
-    protected int preferedRange;
     protected EnemyUi enemyStatsDisplayer;
 
 
@@ -28,10 +23,9 @@ public class Enemy : Figure
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
         enemyStatsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
         statsDisplayer = enemyStatsDisplayer;
+        isEnemy = true;
         base.Start();
 
         turnManager.turnOrder.Add(gameObject);
@@ -48,6 +42,8 @@ public class Enemy : Figure
 
     public void GetPlan(TurnManager turnManager)
     {
+        PrepareActions = currentPlan;
+        PlanDescription = displayedPlan;
         isPlanning = true;
         preferedRange = int.MaxValue;
         currentPlan.Clear();
@@ -101,6 +97,7 @@ public class Enemy : Figure
         CalculateValues();
         nextAction = true;
     }
+    /*
     public void Move(int moveValue, bool isJump = false)
     {
         if (isPlanning)
@@ -145,7 +142,7 @@ public class Enemy : Figure
         }
     }
 
-    /*
+    
     public void Block(int blockValue)
     {
         if (isPlanning)

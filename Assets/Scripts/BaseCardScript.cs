@@ -174,23 +174,29 @@ public class Card : MonoBehaviour
 
     public void PrepareCard()
     {
-        prepareTo = topActions;
+        playerControler.IsPlanning = true;
         isPreparingTop = true;
-        currentDescription = topDescription;
+        playerControler.PrepareActions = topActions;
+        playerControler.PlanDescription = topDescription;
         PrepareTop();
         topCostText.DisplayText(topCost);
-        prepareTo = bottomActions;
         isPreparingTop = false;
-        currentDescription = bottomDescription;
+        playerControler.PrepareActions = bottomActions;
+        playerControler.PlanDescription = bottomDescription;
         PrepareBottom();
         bottomCostText.DisplayText(bottomCost);
         DisplayEffects();
+        playerControler.IsPlanning = false;
     }
 
     public void DisplayEffects()
     {
         topText.DisplayText(topDescription);
         bottomText.DisplayText(bottomDescription);
+        if (topText)
+        {
+
+        }
         topDescription.Clear();
         bottomDescription.Clear();
     }
@@ -205,40 +211,40 @@ public class Card : MonoBehaviour
     {
 
     }
+    /*
 
-    public void AddToDescription()
+public void AddToDescription()
+{
+    currentDescription.Add(currentDescriptionString);
+    //Debug.Log(currentDescriptionString);
+    currentDescriptionString = "";
+}
+public void playerControler.Attack(int attackValue, int range = 1)
+{
+    prepareTo.Add(() => playerControler.Attack(attackValue, range));
+    currentDescriptionString = "Attack " + attackValue;
+    if (range > 1)
     {
-        currentDescription.Add(currentDescriptionString);
-        //Debug.Log(currentDescriptionString);
-        currentDescriptionString = "";
+        currentDescriptionString += " range " + range;
     }
+    AddToDescription();
+}
 
-    public void PrepareAttack(int attackValue, int range = 1)
+public void playerControler.Move(int moveValue, bool isJump = false)
+{
+    prepareTo.Add(() => playerControler.Move(moveValue, isJump));
+    currentDescriptionString = "Move " + moveValue;
+    if (isJump)
     {
-        prepareTo.Add(() => playerControler.Attack(attackValue, range));
-        currentDescriptionString = "Attack " + attackValue;
-        if (range > 1)
-        {
-            currentDescriptionString += " range " + range;
-        }
-        AddToDescription();
+        currentDescriptionString += " Jump";
     }
-
-    public void PrepareMove(int moveValue, bool isJump = false)
-    {
-        prepareTo.Add(() => playerControler.Move(moveValue, isJump));
-        currentDescriptionString = "Move " + moveValue;
-        if (isJump)
-        {
-            currentDescriptionString += " Jump";
-        }
-        AddToDescription();
-    }
-    public void PrepareBlock(int blockValue)
-    {
-        prepareTo.Add(() => playerControler.Block(blockValue));
-        currentDescriptionString = "Block " + blockValue;
-        AddToDescription();
-    }
-
+    AddToDescription();
+}
+public void playerControler.Block(int blockValue)
+{
+    prepareTo.Add(() => playerControler.Block(blockValue));
+    currentDescriptionString = "Block " + blockValue;
+    AddToDescription();
+}
+*/
 }

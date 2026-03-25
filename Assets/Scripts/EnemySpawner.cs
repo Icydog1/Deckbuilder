@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-
-    public GameObject enemy;
+    [SerializeField]
+    private List<GameObject> enemy = new List<GameObject>();
     private TurnManager turnManager;
     private float spawnChance = 0.1f;
     [SerializeField]
@@ -19,7 +20,7 @@ public class EnemySpawner : MonoBehaviour
         OneToOnePos = mapManager.PosToOneToOne(transform.position);
         transform.position = new Vector3(transform.position.x, transform.position.y, spawnHeight);
 
-        Instantiate(enemy, transform.position, Quaternion.identity);
+        SpawnEnemy();
 
 
 
@@ -39,7 +40,7 @@ public class EnemySpawner : MonoBehaviour
         {
             if (mapManager.GetEntityOnHex(OneToOnePos) == null)
             {
-                Instantiate(enemy, transform.position, Quaternion.identity);
+                SpawnEnemy();
             }
             else
             {
@@ -48,4 +49,10 @@ public class EnemySpawner : MonoBehaviour
         }
         //Debug.Log("attempted to spawn");
     }
+
+    public void SpawnEnemy()
+    {
+        Instantiate(enemy[Random.Range(0,enemy.Count)], transform.position, Quaternion.identity);
+    }
+
 }
