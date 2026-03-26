@@ -4,14 +4,19 @@ public class Lootable : MonoBehaviour
 {
     [SerializeField]
     private GameObject lootedTile;
+    private RewardManager rewardManager;
     private bool isCard;
     private bool isRelic;
-    private float raity;
-    public float Raity { get { return raity; }}
+    private float rarity = 1;
+    [SerializeField]
+    private int lockpickDifficulty = 1;
+    public int LockpickDifficulty { get { return lockpickDifficulty; } set { lockpickDifficulty = value; } }
+    public float Rarity { get { return rarity; }}
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        
+        rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
+
     }
 
     // Update is called once per frame
@@ -24,5 +29,14 @@ public class Lootable : MonoBehaviour
     {
         Instantiate(lootedTile,transform.position,transform.rotation);
         Destroy(gameObject);
+    }
+
+    public void Lockpick(int lockpickValue)
+    {
+        LockpickDifficulty -= lockpickValue;
+        if (LockpickDifficulty <= 0)
+        {
+            rewardManager.TileReward(gameObject);
+        }
     }
 }

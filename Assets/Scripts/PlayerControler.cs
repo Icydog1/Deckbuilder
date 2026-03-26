@@ -24,6 +24,7 @@ public class PlayerControler : Figure
     public List<System.Action> currentActionQueue = new List<System.Action>();
 
     private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward;
+    private bool waitUntilVariable;
     public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
@@ -101,7 +102,7 @@ public class PlayerControler : Figure
                 MoveTo(tileCords, distance);
                 if (tile.GetComponent<Lootable>())
                 {
-                    rewardManager.TileReward(tile);
+                    //rewardManager.TileReward(tile);
                 }
             }
         }
@@ -228,16 +229,34 @@ public class PlayerControler : Figure
         int finalLockpick = Mathf.FloorToInt(additionalLockpick);
         if (isPlanning)
         {
-            prepareActions.Add(() => Block(finalLockpick));
-            string currentDescriptionString = "Block" + finalLockpick;
+            prepareActions.Add(() => Lockpick(finalLockpick));
+            string currentDescriptionString = "Lockpick " + finalLockpick;
             planDescription.Add(currentDescriptionString);
         }
         else
         {
-//            block += finalLockpick;
-//            statsDisplayer.SetHealthAndBlock(health, block);
-            ActionDone();
+            currentTile = mapManager.GetTileAtHex(playerOneToOneCords);
+            if (currentTile.GetComponent<Lootable>())
+            {
+                currentTile.GetComponent<Lootable>().Lockpick(finalLockpick);
+                waitUntilVariable = !gettingReward;
+                StartCoroutine(WaitUntil());
+            }
         }
+    }
+
+    public IEnumerator WaitUntilRewardSelected()
+    {
+        yield return new WaitUntil( () => gettingReward == true);
+        ActionDone();
+    }
+
+
+    public IEnumerator WaitUntil()
+    {
+        yield return new WaitUntil(() => waitUntilVariable == true);
+        Debug.Log("test");
+        ActionDone();
     }
     /*
     public void Block(int blockValue)

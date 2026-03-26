@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Jobs;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 using static UnityEngine.Rendering.GPUSort;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
@@ -60,18 +61,18 @@ public class DeckManager : MonoBehaviour
             for (int i = 0; i < deck.transform.childCount; i++)
             {
                 startingDeck.Add(deck.transform.GetChild(i).gameObject);
-                Debug.Log(deck.transform.GetChild(i).gameObject);
-
+                //Debug.Log(deck.transform.GetChild(i).gameObject);
             }
         }
-        deckContents = new List<GameObject>(startingDeck);
-        entireDeck = new List<GameObject>(startingDeck);
+        //deckContents = new List<GameObject>(startingDeck);
+        //entireDeck = new List<GameObject>(startingDeck);
 
         posibleCardLocations.Add(deckContents);
         posibleCardLocations.Add(handContents);
         posibleCardLocations.Add(discardContents);
         posibleCardLocations.Add(playContents);
 
+        GameManager.GameStarted += SpawnStartingDeck;
         GameManager.GameStarted += DrawStartingHand;
     }
 
@@ -85,6 +86,19 @@ public class DeckManager : MonoBehaviour
     public void PlayCard(GameObject card)
     {
         MoveTo(card, play);
+    }
+    public void SpawnStartingDeck(GameManager gameManager)
+    {
+        foreach (GameObject card in startingDeck)
+        {
+            GameObject newCard = Instantiate(card);
+            entireDeck.Add(newCard);
+            deckContents.Add(newCard);
+            newCard.transform.SetParent(deck.transform);
+            newCard.gameObject.SetActive(false);
+        }
+        Suffle(ref deckContents);
+
     }
 
     public void DrawStartingHand(GameManager gameManager)
@@ -123,13 +137,34 @@ public class DeckManager : MonoBehaviour
     }
     public void ReSuffle()
     {
+        /*
         int discardSize = discardContents.Count;
         for (int i = 0; i < discardSize; i++)
         {
             GameObject currentCard = discardContents[Random.Range(0, discardContents.Count)];
             MoveTo(currentCard, deck);
         }
+        */
+        while (discardContents.Count > 0)
+        {
+            MoveTo(discardContents[0], deck);
+        }
+        Suffle(ref deckContents);
     }
+
+    public void Suffle(ref List<GameObject> list)
+    {
+        List<GameObject> tempList = new List<GameObject>(list);
+        list.Clear();
+        int listsize = tempList.Count;
+        for (int i = 0; i < listsize; i++)
+        {
+            GameObject currentCard = tempList[Random.Range(0, tempList.Count)];
+            list.Add(currentCard);
+            tempList.Remove(currentCard);
+        }
+    }
+
 
     public void MoveTo(GameObject card, GameObject location, int newIndex = -1)
     {
