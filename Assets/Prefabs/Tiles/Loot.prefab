@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Loot
       objectReference: {fileID: 0}
+    - target: {fileID: 1050918151112110569, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
+      propertyPath: moveCost
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 2075810079898960554, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -90,3 +94,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lootedTile: {fileID: 1588885295552724964, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+  lockpickDifficulty: 1

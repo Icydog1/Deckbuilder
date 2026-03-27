@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &1452351114859022509
+--- !u!1001 &5160151660261450819
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,23 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 156239944842639177, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Name
-      value: EmptyTile
+      value: DifficultTerrain
       objectReference: {fileID: 0}
     - target: {fileID: 1050918151112110569, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: moveCost
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2075810079898960554, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2075810079898960554, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2075810079898960554, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2075810079898960554, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -68,53 +56,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4336639065014853476, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Color.b
-      value: 0.43529412
+      value: 0.20754719
       objectReference: {fileID: 0}
     - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Color.g
-      value: 0.43529412
+      value: 0.20754719
       objectReference: {fileID: 0}
     - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Color.r
-      value: 0.43529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 6622281425006665172, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_Color.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6622281425006665172, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6622281425006665172, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_Color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6622281425006665172, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_Color.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6622281425006665172, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_SortingLayer
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6622281425006665172, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1212382849
-      objectReference: {fileID: 0}
-    - target: {fileID: 6622281425006665172, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_RenderingLayerMask
-      value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 8427654687114374432, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
+      value: 0.20754719
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

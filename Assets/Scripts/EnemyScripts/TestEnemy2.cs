@@ -20,19 +20,19 @@ public class TestEnemy2 : Enemy
 
     public void MoveSet1()
     {
-        Move(2);
-        Attack(3);
+        Move(10);
+        Attack(15);
 
     }
     public void MoveSet2()
     {
-        Move(4);
-        Attack(2);
+        Move(20);
+        Block(10);
     }
 
     public void MoveSet3()
     {
-        Move(5);
-        Attack(1);
+        Move(25);
+        Attack(5);
     }
 }

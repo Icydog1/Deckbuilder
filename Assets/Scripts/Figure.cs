@@ -59,6 +59,7 @@ public class Figure : MonoBehaviour
 
     public void baseStartTurn()
     {
+        preferedRange = 1;
         block = 0;
         statsDisplayer.SetHealthAndBlock(health, block);
     }
