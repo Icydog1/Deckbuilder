@@ -10,6 +10,10 @@ public class MouseManager : MonoBehaviour
     private float bottomPlayLine = 0.3f, topPlayLine = 0.6f;
     private Vector2 mousePos, worldMousePos;
     public GameObject selectedObject, clickedObject;
+    public GameObject SelectedObject { get { return selectedObject; } }
+    public GameObject ClickedObject { get { return clickedObject; } }
+
+
     private float selectedHeight = -Mathf.Infinity;
     private List<GameObject> mouseOver = new List<GameObject>();
     private List<GameObject> mouseOverList = new List<GameObject>();
@@ -156,10 +160,6 @@ public class MouseManager : MonoBehaviour
                 }
             }
         }
-    }
-    public GameObject getObjectAtPoint(Vector2 point)
-    {
-        return Physics2D.OverlapPoint(point).gameObject;
     }
     public void MouseClicked()
     {

@@ -17,11 +17,11 @@ public class TestStartCard2 : Card
 
     public override void PrepareTop()
     {
-        playerControler.Block(3);
+        playerControler.Block(10);
     }
 
     public override void PrepareBottom()
     {
-        playerControler.Lockpick(3);
+        playerControler.Lockpick(10);
     }
 }

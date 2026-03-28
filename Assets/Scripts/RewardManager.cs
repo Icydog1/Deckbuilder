@@ -177,7 +177,7 @@ public class RewardManager : MonoBehaviour
     }
     public void RewardSelected(GameObject reward)
     {
-        //Debug.Log(reward + " selected");
+        Debug.Log(reward + " selected");
         Destroy(reward.GetComponent<IsReward>());
         deckManager.GainCard(reward);
         currentOptions.Remove(reward);

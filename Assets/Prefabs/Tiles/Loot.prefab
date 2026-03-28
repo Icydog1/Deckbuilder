@@ -94,4 +94,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lootedTile: {fileID: 1588885295552724964, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
-  lockpickDifficulty: 1
+  lockpickDifficulty: 20

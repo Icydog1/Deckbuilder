@@ -17,13 +17,13 @@ public class TestDevCard : Card
 
     public override void PrepareTop()
     {
-        playerControler.Block(100);
-        playerControler.Attack(100,3);
+        playerControler.Block(1000);
+        playerControler.Attack(1000,3);
 
     }
 
     public override void PrepareBottom()
     {
-        playerControler.Move(1000, true);
+        playerControler.Move(1000, false);
     }
 }

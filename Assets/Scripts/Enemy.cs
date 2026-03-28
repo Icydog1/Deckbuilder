@@ -28,6 +28,7 @@ public class Enemy : Figure
         isEnemy = true;
         base.Start();
 
+        team = 1;
         turnManager.turnOrder.Add(gameObject);
         health = maxHealth;
         TurnManager.RoundStarted += GetPlan;

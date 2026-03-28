@@ -21,7 +21,10 @@ public class Figure : MonoBehaviour
     protected Vector2 oneToOnePos;
     protected int preferedRange;
     protected float distanceToPlayer;
-
+    protected int team;
+    public int Team { get { return team; } }
+    protected bool isPreformingAnimation;
+    public bool IsPreformingAnimation { set { isPreformingAnimation = value; } get { return isPreformingAnimation; } }
 
     protected int maxHealth = 1, health, block = 0;
     protected bool canFly = false;
@@ -59,7 +62,6 @@ public class Figure : MonoBehaviour
 
     public void baseStartTurn()
     {
-        preferedRange = 1;
         block = 0;
         statsDisplayer.SetHealthAndBlock(health, block);
     }

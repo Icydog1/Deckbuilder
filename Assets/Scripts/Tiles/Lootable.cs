@@ -9,7 +9,7 @@ public class Lootable : MonoBehaviour
     private bool isRelic;
     private float rarity = 1;
     [SerializeField]
-    private int lockpickDifficulty = 1;
+    private int lockpickDifficulty = 10;
     public int LockpickDifficulty { get { return lockpickDifficulty; } set { lockpickDifficulty = value; } }
     public float Rarity { get { return rarity; }}
     // Start is called once before the first execution of Update after the MonoBehaviour is created

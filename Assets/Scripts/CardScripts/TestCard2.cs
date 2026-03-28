@@ -16,11 +16,11 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        playerControler.Attack(3,4);
+        playerControler.Attack(15,4);
     }
 
     public override void PrepareBottom()
     {
-        playerControler.Move(3);
+        playerControler.Move(15);
     }
 }

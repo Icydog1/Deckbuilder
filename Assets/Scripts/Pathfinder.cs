@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Pathfinder : MonoBehaviour
 {
@@ -20,20 +21,26 @@ public class Pathfinder : MonoBehaviour
     private List<Vector2> posibleTilesPath = new List<Vector2>();
 
     private List<Vector2> actualPath = new List<Vector2>();
+    public List<Vector2> ActualPath { get { return actualPath; } }
 
     private Vector2 furthestPoint;
     private int furthestElevation;
 
     private bool pathFound, inRange;
+    private int endElevation;
     private bool isJump, isFly;
     private int baseMoveCost = 5;
     private int moveValue;
+    private int moveLeft;
+    public int MoveLeft { get { return moveLeft; } set { moveLeft = value; } }
+
     private int currentElevation;
     private Vector2 currentPos;
-    private Enemy currentEnemy;
-    private int enemyElevation;
-    private float enemyMoveDelay = 0.1f;
+    private GameObject currentFigure;
+    private int figureElevation;
+    private float figureMoveDelay = 0.1f;
     private bool doneMoving;
+    public bool DoneMoving { get { return doneMoving; } set { doneMoving = value; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -51,6 +58,7 @@ public class Pathfinder : MonoBehaviour
     }
     public IEnumerator PathfindTowards(Vector2 selfPos, Vector2 targetPos, GameObject self, int newMoveValue, int range = 1, bool jump = false, bool fly = false)
     {
+        currentFigure = self;
         moveValue = newMoveValue;
         isJump = jump;
         isFly = fly;
@@ -58,23 +66,41 @@ public class Pathfinder : MonoBehaviour
         currentPos = selfPos;
         //finds posible spots that woul be good with ending on
         findPosInRange(targetPos, range);
-        Debug.Log("range done");
+        //Debug.Log("range done");
         List<Vector2> posibleLocations = new List<Vector2>(safeTiles);
         //builds heightmap out from ending spots
         findPathToArea(selfPos, posibleLocations);
-        Debug.Log("area done");
+        //Debug.Log("area done");
         if (!inRange)
         {
-            //finds the path from the enemy with current movement that gets them as close to player a posible
+            //finds the path from the figure with current movement that gets them as close to player a posible
             findPosiblePaths(selfPos);
             //moves along path
-            StartCoroutine(MoveAlongPath(self, selfPos));
+            StartCoroutine(MoveAlongPath(currentFigure, selfPos));
             yield return new WaitUntil(() => doneMoving == true);
             doneMoving = false;
         }
 
-        self.GetComponent<Enemy>().ActionDone();
+        self.GetComponent<Figure>().ActionDone();
     }
+
+    public void PlanPathToTile(Vector2 selfPos, Vector2 targetPos, GameObject self, int newMoveValue, bool jump = false, bool fly = false)
+    {
+        currentFigure = self;
+        moveValue = newMoveValue;
+        isJump = jump;
+        isFly = fly;
+        currentPos = selfPos;
+        //builds heightmap out from ending spots
+        findPathToArea(selfPos, new List<Vector2>(){targetPos});
+        //finds the path from the figure with current movement that gets them as close to player a posible
+        //Debug.Log("area done");
+        findPosiblePaths(selfPos);
+        //Debug.Log("path Found");
+
+
+    }
+
 
     public IEnumerator PathToTile(Vector2 selfPos, Vector2 targetPos, int newMoveValue, bool jump = false, bool fly = false)
     {
@@ -141,10 +167,14 @@ public class Pathfinder : MonoBehaviour
         pathFound = false;
         if (targetArea.Contains(selfPos))
         {
-            pathFound = true;
+            endElevation = 0;
             inRange = true;
         }
-        for (int i = 0; pathFound == false; i++)
+        else
+        {
+            endElevation = int.MaxValue - 1;
+        }
+        for (int i = 0; i <= endElevation + 1; i++)
         {
             currentElevation = i - 1;
             elevations.Add(new List<Vector2>());
@@ -153,34 +183,43 @@ public class Pathfinder : MonoBehaviour
             {
                 foreach (Vector2 pos in targetArea)
                 {
-                    GameObject tile = mapManager.GetTileAtHex(pos);
-                    AddToElevation(pos, tile);
-                    checkedTiles.Add(pos);
-                    safeTiles.Add(pos);
-
+                    GetTileType(pos, 1);
                 }
             }
-            //builds elevations from previus height
             else
             {
-                foreach (Vector2 pos in elevations[currentElevation])
+                for (int j = 0; j < elevations[currentElevation].Count; j++)
                 {
-                    buildElevation(pos, false, false);
+                    buildElevation(elevations[currentElevation][j], false, false);
                 }
+
 
             }
             //failsafe in case somting fais so it isnt a infinite loop
             if (i >= 10000)
             {
-                pathFound = true;
+                endElevation = 0;
                 Debug.Log("area pathfinding timed out");
             }
         }
-        enemyElevation = currentElevation;
+        /*
+        for (int i = 0; i < elevations.Count; i++)
+        {
+            Debug.Log(i + "test");
+            foreach (Vector2 pos in elevations[i])
+            {
+                mapManager.GetTileAtHex(pos).transform.position += new Vector3(0, 0, i);
+            }
+        }
+        */
+        
+        
+        figureElevation = currentElevation;
     }
 
     public void findPosiblePaths(Vector2 selfPos)
     {
+        //Debug.Log("finding posible paths");
         originalElevations.Clear();
         originalSafeTiles.Clear();
         originalElevations = new List<List<Vector2>>(elevations);
@@ -245,9 +284,10 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
-    public void AddToElevation(Vector2 tilePos, GameObject tile, bool isRange = false, bool pathFromEnemy = false)
+    public void AddToElevation(Vector2 tilePos, GameObject tile, bool isRange = false, bool pathFromFigure = false, int addedCost = 0)
     {
         int moveCost;
+        //Debug.Log(isJump);
         if (isRange)
         {
             moveCost = 1;
@@ -258,19 +298,26 @@ public class Pathfinder : MonoBehaviour
         }
         else
         {
-            moveCost = tile.GetComponent<Tile>().MoveCost;
+            if (pathFromFigure)
+            {
+                moveCost = tile.GetComponent<Tile>().MoveCost;
+            }
+            else
+            {
+                moveCost = addedCost;
+            }
         }
         while (elevations.Count <= moveCost + currentElevation)
         {
             elevations.Add(new List<Vector2>());
         }
         elevations[moveCost + currentElevation].Add(tilePos);
-        if (pathFromEnemy && moveCost + currentElevation > moveValue)
+        if (pathFromFigure && moveCost + currentElevation > moveValue)
         {
             impassableTiles.Add(tilePos);
         }
     }
-    public void buildElevation(Vector2 pos, bool range, bool pathFromEnemy)
+    public void buildElevation(Vector2 pos, bool range, bool pathFromFigure)
     {
         Vector2 checktile = new Vector2();
         //for each tile in the six directions
@@ -282,107 +329,131 @@ public class Pathfinder : MonoBehaviour
                 case 1: checktile = pos + Vector2.down; break;
                 case 2: checktile = pos + Vector2.right; break;
                 case 3: checktile = pos + Vector2.left; break;
-                case 4: checktile = pos + Vector2.up + Vector2.right; ; break;
+                case 4: checktile = pos + Vector2.up + Vector2.right; break;
                 case 5: checktile = pos + Vector2.down + Vector2.left; break;
             }
             //if it isnt already checked
             if (!checkedTiles.Contains(checktile))
             {
-                GameObject tile = mapManager.GetTileAtHex(checktile);
-                GameObject entity = mapManager.GetEntityOnHex(checktile);
-                //if the tile is the tile the pathfinder is on
-                if (checktile == currentPos && !pathFromEnemy)
-                {
-                    pathFound = true;
-                    GameObject border = tile.transform.Find("Border").gameObject;
-                    border.GetComponent<SpriteRenderer>().color = Color.cyan;
-                    safeTiles.Add(checktile);
-                    AddToElevation(checktile, tile, range);
-                    Debug.Log("path found");
-
-                }
-                //if tile is impasible
-                else if (tile.GetComponent<Wall>() || (tile.GetComponent<Obstacle>() && !(range || isJump || isFly)) || (entity && entity.GetComponent<PlayerControler>() && !(range || isJump || isFly)))
-                {
-                    impassableTiles.Add(checktile);
-                }
-                //if tile is unsafe
-                else if ((entity && entity.GetComponent<Enemy>()) || (tile.GetComponent<Obstacle>() && ((range || isJump) && !isFly)) || (entity && entity.GetComponent<PlayerControler>() && (range || isJump || isFly)))
-                {
-                    GameObject border = tile.transform.Find("Border").gameObject;
-                    border.GetComponent<SpriteRenderer>().color = Color.yellow;
-                    unSafeTiles.Add(checktile);
-                    AddToElevation(checktile, tile, range, pathFromEnemy);
-
-                }
-                //if tile is safe
-                else
-                {
-                    GameObject border = tile.transform.Find("Border").gameObject;
-                    border.GetComponent<SpriteRenderer>().color = Color.blue;
-                    safeTiles.Add(checktile);
-                    AddToElevation(checktile, tile, range, pathFromEnemy);
-                }
                 checkedTiles.Add(checktile);
-
-                if (pathFromEnemy && !impassableTiles.Contains(checktile))
+                GameObject tile = mapManager.GetTileAtHex(checktile);
+                if (tile != null)
                 {
-                    if (originalSafeTiles.Contains(checktile))
+                    GameObject entity = mapManager.GetEntityOnHex(checktile);
+                    //if the tile is the tile the pathfinder is on
+                    if (checktile == currentPos && !pathFromFigure)
                     {
-                        //for each elevation lower than the 
-                        for (int j = 0; j < furthestElevation; j++)
+                        pathFound = true;
+                        GameObject border = tile.transform.Find("Border").gameObject;
+                        border.GetComponent<SpriteRenderer>().color = Color.cyan;
+                        safeTiles.Add(checktile);
+                        AddToElevation(checktile, tile, range);
+                        endElevation = currentElevation + tile.GetComponent<Tile>().MoveCost;
+                        //Debug.Log(currentElevation + tile.GetComponent<Tile>().MoveCost + " final elevation");
+                    }
+                    else
+                    {
+                        GetTileType(checktile, mapManager.GetTileAtHex(pos).GetComponent<Tile>().MoveCost, range, pathFromFigure);
+                    }
+                    if (pathFromFigure && !impassableTiles.Contains(checktile))
+                    {
+                        if (originalSafeTiles.Contains(checktile))
                         {
-                            if (originalElevations[j].Contains(checktile))
+                            //for each elevation lower than the 
+                            for (int j = 0; j < furthestElevation; j++)
                             {
-                                //Debug.Log("new tile");
-                                furthestPoint = checktile;
-                                furthestElevation = j;
+                                if (originalElevations[j].Contains(checktile))
+                                {
+                                    //Debug.Log("new tile");
+                                    furthestPoint = checktile;
+                                    furthestElevation = j;
+                                }
                             }
                         }
+                        posibleTiles.Add(checktile);
+                        posibleTilesPath.Add(pos);
                     }
-                    posibleTiles.Add(checktile);
-                    posibleTilesPath.Add(pos);
                 }
+
             }
         }
     }
 
-    public IEnumerator MoveAlongPath(GameObject enemy, Vector2 enemyPos)
+    public void GetTileType(Vector2 checktile, int addedCost, bool range = false, bool pathFromFigure = false)
     {
-        float newEnemyMoveDelay = enemyMoveDelay;
-        if (enemyElevation >= 10)
+        checkedTiles.Add(checktile);
+        GameObject tile = mapManager.GetTileAtHex(checktile);
+        if (tile != null)
         {
-            newEnemyMoveDelay = (enemyMoveDelay * (10 + 20)) / (enemyElevation + 20);
+            GameObject entity = mapManager.GetEntityOnHex(checktile);
+            if ((tile.GetComponent<Wall>() && !(currentFigure.GetComponent<PlayerControler>() && tile.GetComponent<Door>())) || (tile.GetComponent<Obstacle>() && !(range || isJump || isFly)) || (entity && entity.GetComponent<Figure>() && entity.GetComponent<Figure>().Team != currentFigure.GetComponent<Figure>().Team && !(range || isJump || isFly)))
+            {
+                impassableTiles.Add(checktile);
+            }
+            //if tile is unsafe
+            else if ((tile.GetComponent<Obstacle>() && !isFly) || entity && entity.GetComponent<Figure>())
+            {
+                GameObject border = tile.transform.Find("Border").gameObject;
+                //border.GetComponent<SpriteRenderer>().color = Color.yellow;
+                unSafeTiles.Add(checktile);
+                AddToElevation(checktile, tile, range, pathFromFigure, addedCost);
+
+            }
+            //if tile is safe
+            else
+            {
+                GameObject border = tile.transform.Find("Border").gameObject;
+                //border.GetComponent<SpriteRenderer>().color = Color.blue;
+                safeTiles.Add(checktile);
+                AddToElevation(checktile, tile, range, pathFromFigure, addedCost);
+            }
         }
-        if (newEnemyMoveDelay > enemyMoveDelay)
+    }
+    public IEnumerator MoveAlongPath(GameObject figure, Vector2 figurePos)
+    {
+        figure.GetComponent<Figure>().IsPreformingAnimation = true;
+        float newFigureMoveDelay = figureMoveDelay;
+        if (figureElevation >= 10)
         {
-            Debug.Log(enemy + " tried to move with delay " + enemyMoveDelay + " delay");
+            newFigureMoveDelay = (figureMoveDelay * (10 + 20)) / (figureElevation + 20);
+        }
+        if (newFigureMoveDelay > figureMoveDelay)
+        {
+            Debug.Log(figure + " tried to move with delay " + figureMoveDelay + " delay");
 
         }
-        //Debug.Log(enemyMoveDelay + "original delay");
-        //Debug.Log(newEnemyMoveDelay + "new delay");
+        //Debug.Log(figureMoveDelay + "original delay");
+        //Debug.Log(newFigureMoveDelay + "new delay");
 
-        Vector2 oneToOnePos = enemyPos;
+        Vector2 oneToOnePos = figurePos;
         Vector2 pos;
         for (int i = 0; i < actualPath.Count; i++)
         {
-            Debug.Log(actualPath[i]);
             oneToOnePos = actualPath[i];
+            if (isJump || isFly)
+            {
+                moveLeft -= baseMoveCost;
+            }
+            else
+            {
+                moveLeft -= mapManager.GetTileAtHex(actualPath[i]).GetComponent<Tile>().MoveCost;
+            }
             pos = mapManager.OneToOneToPos(oneToOnePos);
-            enemy.transform.position = new Vector3(pos.x, pos.y, enemy.transform.position.z);
-            yield return new WaitForSeconds(newEnemyMoveDelay);
+            figure.transform.position = new Vector3(pos.x, pos.y, figure.transform.position.z);
+            yield return new WaitForSeconds(newFigureMoveDelay);
         }
         doneMoving = true;
+        figure.GetComponent<Figure>().IsPreformingAnimation = false;
     }
     /*
-    public Vector2 TakeStep(Vector2 enemyPos, int moveLeft)
+    public Vector2 TakeStep(Vector2 figurePos, int moveLeft)
     {
         Vector2 checktile = new Vector2();
-        Vector2 currentTile = enemyPos;
+        Vector2 currentTile = figurePos;
         int elevation = currentElevation;
         if (currentElevation == 0)
         {
-            return enemyPos;
+            return figurePos;
         }
         for (int i = 0; i < 6; i++)
         {
@@ -415,7 +486,7 @@ public class Pathfinder : MonoBehaviour
         }
         //Debug.Log("no tile to go to");
         //Debug.Log(elevation - 1);
-        return enemyPos;
+        return figurePos;
     }
 
     public bool TestForSafeAround(Vector2 tile, int elevation, int moveLeft)
