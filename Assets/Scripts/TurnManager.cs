@@ -28,6 +28,8 @@ public class TurnManager : MonoBehaviour
         newRoundMarker = GameObject.Find("NewRoundMarker");
         turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
+        LevelManager.LevelCleared += ResetTurnOrder;
+
     }
     private void Start()
     {
@@ -110,7 +112,14 @@ public class TurnManager : MonoBehaviour
         NextTurn();
     }
 
-
+    public void ResetTurnOrder(LevelManager levelManager = null)
+    {
+        turnOrder.Clear();
+        turnOrder.Add(newRoundMarker);
+        turnOrder.Add(player);
+        currentTurn = turnOrder[1];
+        playerControler.ForceEndTurn();
+    }
 
 
 }

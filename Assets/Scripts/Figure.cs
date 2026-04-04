@@ -1,5 +1,7 @@
-using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -11,6 +13,9 @@ public class Figure : MonoBehaviour
     protected FigureStats statsDisplayer;
     protected PlayerControler playerControler;
     protected Pathfinder pathfinder;
+    protected ConditionManager conditionManager;
+    protected DeckManager deckManager;
+    protected LevelManager levelManager;
 
 
     protected bool isMyTurn;
@@ -34,24 +39,30 @@ public class Figure : MonoBehaviour
     protected List<System.Action> prepareActions = new List<System.Action>();
     public List<System.Action> PrepareActions { set { prepareActions = value; } }
 
+    protected List<Condition> conditions = new List<Condition>();
+    public List<Condition> Conditions { set { conditions = value; } get { return conditions; } }
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public virtual void Start()
+    public virtual void Awake()
     {
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
+        conditionManager = GameObject.Find("ConditionManager").GetComponent<ConditionManager>();
+        deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
 
         //statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
-
-
+    }
+    public virtual void Start()
+    {
         health = maxHealth;
 
 
         statsDisplayer.SetHealthAndBlock(health, block);
-
     }
 
     // Update is called once per frame
@@ -60,10 +71,35 @@ public class Figure : MonoBehaviour
         
     }
 
+    
+
     public void baseStartTurn()
     {
+
         block = 0;
         statsDisplayer.SetHealthAndBlock(health, block);
+
+    }
+    public void baseEndTurn()
+    {
+        for (int i = 0; i < conditions.Count; i++)
+        {
+            if (conditions[i].Duration > 0)
+            {
+                conditions[i].Duration--;
+            }
+            if (conditions[i].Duration == 0)
+            {
+                conditions.Remove(conditions[i]);
+                i--;
+            }
+        }
+        if (isPlayer)
+        {
+            deckManager.UpdateCardsDisplay();
+        }
+        statsDisplayer.DisplayConditions(conditions);
+        turnManager.NextTurn();
     }
 
     public virtual void ActionDone()
@@ -75,14 +111,12 @@ public class Figure : MonoBehaviour
 
     public void Block(int blockValue)
     {
-        float additionalBlock = blockValue;
-
-        int finalBlock = Mathf.FloorToInt(additionalBlock);
+        int finalBlock = conditionManager.ModifyBlock(this, blockValue);
 
         if (isPlanning)
         {
-            prepareActions.Add(() => Block(finalBlock));
-            string currentDescriptionString = "Block" + finalBlock;
+            //prepareActions.Add(() => Block(finalBlock));
+            string currentDescriptionString = "Block " + finalBlock;
             planDescription.Add(currentDescriptionString);
         }
         else
@@ -93,13 +127,13 @@ public class Figure : MonoBehaviour
         }
     }
 
-    public void Attack(int attackValue, int attackRange = 1, int targets = 1)
+    public void Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null)
     {
-        float additionalAttack = attackValue;
-
-
-        int finalAttack = Mathf.FloorToInt(additionalAttack);
-
+        if (attackConditions == null)
+        {
+            attackConditions = new Condition[0];
+        }
+        int finalAttack = conditionManager.ModifyAttack(this, attackValue);
         if (isPlanning)
         {
             if (!isPlayer)
@@ -109,8 +143,12 @@ public class Figure : MonoBehaviour
                     preferedRange = attackRange;
                 }
             }
-            prepareActions.Add(() => Attack(finalAttack, attackRange, targets));
+            //prepareActions.Add(() => Attack(finalAttack, attackRange, targets));
             string planString = "Attack " + finalAttack;
+            if (repeats > 1)
+            {
+                planString += " " + repeats + " times ";
+            }
             if (attackRange > 1)
             {
                 planString += " range " + attackRange;
@@ -119,19 +157,20 @@ public class Figure : MonoBehaviour
             {
                 planString += " target " + targets;
             }
+
             planDescription.Add(planString);
         }
         else
         {
             if (isPlayer)
             {
-                playerControler.ControledAttack(finalAttack, attackRange, targets);
+                playerControler.ControledAttack(finalAttack, attackRange, targets, attackConditions);
             }
             else
             {
-                if (distanceToPlayer <= attackRange)
+                foreach (Figure target in FindTargets("enemy", attackRange, targets))
                 {
-                    playerControler.AttackedFor(finalAttack);
+                    target.AttackedFor(finalAttack, attackConditions);
                 }
                 ActionDone();
             }
@@ -140,13 +179,10 @@ public class Figure : MonoBehaviour
     }
     public void Move(int moveValue, bool isJump = false)
     {
-        float additionalMove = moveValue;
-
-
-        int finalMove = Mathf.FloorToInt(additionalMove);
+        int finalMove = conditionManager.ModifyMove(this, moveValue);
         if (isPlanning)
         {
-            prepareActions.Add(() => Move(finalMove, isJump));
+            //prepareActions.Add(() => Move(finalMove, isJump));
             string planString = "Move " + finalMove;
             if (isJump)
             {
@@ -166,7 +202,228 @@ public class Figure : MonoBehaviour
             }
         }
     }
-    public void AttackedFor(int attackValue)
+    public void ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    {
+        ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget);
+    }
+
+    public void ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    {
+        if (isPlanning)
+        {
+            List<string> individualConditionText = new List<string>();
+            string currentDescriptionStart = "";
+            string currentDescriptionEnd = "";
+            if (targetType == "self")
+            {
+                currentDescriptionStart += "Gain ";
+            }
+            else
+            {
+                currentDescriptionStart += "Apply ";
+
+                currentDescriptionEnd += " target ";
+
+                if (targets == int.MaxValue)
+                {
+                    currentDescriptionEnd += "all";
+                }
+                else
+                {
+                    currentDescriptionEnd += targets;
+                }
+                if (targetType == "ally")
+                {
+                    if (targets != 1)
+                    {
+                        currentDescriptionEnd += " ally";
+                    }
+                    else
+                    {
+                        currentDescriptionEnd += " allies";
+                    }
+                }
+                if (displayTarget)
+                {
+                    if (targetType == "enemy")
+                    {
+                        if (targets != 1)
+                        {
+                            currentDescriptionEnd += " enemy";
+                        }
+                        else
+                        {
+                            currentDescriptionEnd += " enemies";
+                        }
+
+                    }
+                    if (targetType == "self or ally")
+                    {
+                        if (targets != 1)
+                        {
+                            currentDescriptionEnd += " ally or self";
+                        }
+                        else
+                        {
+                            currentDescriptionEnd += " allies or self";
+                        }
+                    }
+
+                }
+                currentDescriptionEnd += " range " + range;
+                if (!isPlayer)
+                {
+                    if (preferedRange > range && targetType == "enemy")
+                    {
+                        preferedRange = range;
+                    }
+                }
+            }
+            foreach (Condition condition in newConditions)
+            {
+                string currentDescriptionString = currentDescriptionString = condition.Value + " " + condition.Name;
+                if (condition.Duration == 1)
+                {
+                    currentDescriptionString += " this turn";
+                }
+                else if (condition.Duration != -1)
+                {
+                    currentDescriptionString += " for " + condition.Duration + " turns";
+                }
+                individualConditionText.Add(currentDescriptionString);
+            }
+            string separator = ", ";
+            string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
+            planDescription.Add(conditionText);
+        }
+        else
+        {
+            if (isPlayer)
+            {
+                if (targetType == "self")
+                {
+                    GainConditions(newConditions);
+                    ActionDone();
+                }
+                else
+                {
+                    playerControler.ControledApplyConditions(newConditions, targetType, range, targets);
+                }
+            }
+            else
+            {
+                foreach (Figure target in FindTargets(targetType, range, targets))
+                {
+                    foreach (Condition condition in newConditions)
+                    {
+                        target.GainCondition(condition);
+                    }
+                }
+                ActionDone();
+            }
+        }
+    }
+
+    public void GainConditions(Condition[] newConditions)
+    {
+        foreach (Condition condition in newConditions)
+        {
+            GainCondition(condition);
+        }
+    }
+    public void GainCondition(Condition condition)
+    {
+        //Debug.Log("GainedCondition");
+        bool isDuplicate = false;
+        for (int i = 0; i < conditions.Count; i++)
+        {
+            if (conditions[i].Name == condition.Name)
+            {
+                if (condition.AddType == 1 && conditions[i].Duration == condition.Duration)
+                {
+                    conditions[i].Value += condition.Value;
+                    isDuplicate = true;
+                    break;
+                }
+                if (condition.AddType == 2 && conditions[i].Value == condition.Value)
+                {
+                    conditions[i].Duration += condition.Duration;
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+        }
+        if (isDuplicate == false)
+        {
+            conditions.Add(condition);
+        }
+        if (isPlayer)
+        {
+            deckManager.UpdateCardsDisplay();
+        }
+        statsDisplayer.DisplayConditions(conditions);
+    }
+    public List<Figure> FindTargets(string targetType, int range = 1, int targets = 1)
+    {
+        return ChooseTargets(FindPosibleTargets(targetType, range), targets);
+    }
+    public List<Figure> FindPosibleTargets(string targetType, int range = 1)
+    {
+        List<Figure> targetableFigures = new List<Figure>();
+        List<Figure> posibleTargets = pathfinder.GetFiguresInRange(oneToOnePos, range, gameObject);
+        if (targetType == "self")
+        {
+            targetableFigures.Add(this);
+        }
+        else if (targetType == "enemy")
+        {
+            foreach (Figure posibletarget in posibleTargets)
+            {
+                if (posibletarget.team != team)
+                {
+                    targetableFigures.Add(posibletarget);
+                }
+            }
+        }
+        else if (targetType == "ally")
+        {
+            foreach (Figure posibletarget in posibleTargets)
+            {
+                if (posibletarget.team == team && posibletarget != this)
+                {
+                    targetableFigures.Add(posibletarget);
+                }
+            }
+        }
+        else if (targetType == "self and ally")
+        {
+            foreach (Figure posibletarget in posibleTargets)
+            {
+                if (posibletarget.team == team)
+                {
+                    targetableFigures.Add(posibletarget);
+                }
+
+            }
+        }
+        return targetableFigures;
+    }
+
+    public List<Figure> ChooseTargets(List<Figure> posibleTargets, int targets = 1)
+    {
+        List<Figure> targetedFigures = new List<Figure>();
+        foreach (Figure posibletarget in posibleTargets)
+        {
+            if (targets > 0)
+            {
+                targetedFigures.Add(posibletarget);
+                targets--;
+            }
+        }
+        return targetedFigures;
+    }
+    public void AttackedFor(int attackValue, Condition[] newConditions)
     {
         if (block > 0)
         {
@@ -180,10 +437,17 @@ public class Figure : MonoBehaviour
         {
             Die();
         }
+        else
+        {
+            GainConditions(newConditions);
+        }
     }
     public virtual void Die()
     {
         Debug.Log("Base Die ran");
     }
-
+    public virtual void Remove(LevelManager levelManager = null)
+    {
+        Debug.Log("Base Remove ran");
+    }
 }

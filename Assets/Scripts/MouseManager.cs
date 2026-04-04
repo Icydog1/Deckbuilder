@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.RuleTile.TilingRuleOutput;
@@ -57,11 +58,11 @@ public class MouseManager : MonoBehaviour
             mouseDown = false;
             MouseReleased();
         }
-        if (selectedObject != null && selectedObject.GetComponent<Card>() != null)
+        if (selectedObject && selectedObject.GetComponent<Card>())
         {
             deckManager.SelectCard(selectedObject);
         }
-        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && playerControler.CanPlayCards == true && clickedObject.GetComponent<Card>() != null)
+        if (clickedObject && clickedObject.GetComponent<Dragable>() && playerControler.CanPlayCards == true && clickedObject.GetComponent<Card>() != null)
         {
             //Debug.Log(worldMousePos);
             clickedObject.transform.position = new Vector3(worldMousePos.x, worldMousePos.y, clickedObject.transform.position.z);
@@ -105,7 +106,7 @@ public class MouseManager : MonoBehaviour
         }
         if (selectedObject.GetComponent<Selectable>())
         {
-            if (selectedObject.GetComponent<UIButton>())
+            if (selectedObject.GetComponent<Selectable>().IsUI || selectedObject.GetComponent<UIButton>())
             {
                 GameObject border = selectedObject.transform.Find("Border").gameObject;
                 border.GetComponent<Image>().color = Color.green;
@@ -124,7 +125,7 @@ public class MouseManager : MonoBehaviour
         {
             if (selectedObject.GetComponent<Selectable>())
             {
-                if (selectedObject.GetComponent<UIButton>())
+                if (selectedObject.GetComponent<Selectable>().IsUI || selectedObject.GetComponent<UIButton>())
                 {
                     GameObject border = selectedObject.transform.Find("Border").gameObject;
                     border.GetComponent<Image>().color = Color.black;
@@ -176,6 +177,8 @@ public class MouseManager : MonoBehaviour
         if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.CanPlayCards == true)
         {
             dragableClicked = true;
+            deckManager.hand.transform.SetAsLastSibling();
+            clickedObject.transform.SetAsLastSibling();
             StartCoroutine(ShortFirstClick());
         }
 
@@ -216,6 +219,7 @@ public class MouseManager : MonoBehaviour
                 {
                     deckManager.UpdateHand();
                 }
+                deckManager.hand.transform.SetAsFirstSibling();
             }
             dragableClicked = false;
         }
@@ -229,9 +233,9 @@ public class MouseManager : MonoBehaviour
             {
                 clickedObject.GetComponent<UIButton>().Activate();
             }
-            if (clickedObject.GetComponent<Enemy>())
+            if (clickedObject.GetComponent<Figure>())
             {
-                playerControler.EnemyClicked(clickedObject);
+                playerControler.FigureClicked(clickedObject);
             }
             if (clickedObject.GetComponent<IsReward>())
             {

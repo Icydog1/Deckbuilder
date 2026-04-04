@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 public class PlayerControler : Figure
 {
     public bool actionDone, manualEnd;
-    public bool isMoving, isAttacking;
+    public bool isMoving, isAttacking, isAppliyingConditions;
     public bool isPlayerTurn;
     private GameObject player;
     private RoomSpawner roomSpawner;
@@ -17,8 +17,10 @@ public class PlayerControler : Figure
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
     private GameManager gameManager;
+    private string moveCostDisplaySetting;
+    public string MoveCostDisplaySetting { set { moveCostDisplaySetting = value; ShowMoveCostDisplay(); } }
+
     //private PlayerStats playerStats;
-    private DeckManager deckManager;
     public Card playedCardScript;
     public Vector2 playerOneToOneCords;
 
@@ -30,18 +32,23 @@ public class PlayerControler : Figure
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
     private int moveLeft, targetsLeft, attackDamageValue;
+    private Condition[] appliedConditions;
     private bool canJump;
     private int range;
     private bool isTargetATile, isTargetAEnemy;
     private GameObject selectedTile;
+    private List<Figure> posibleTargets;
+    private List<string> actionsRemaining = new List<string>();
+    public List<string> ActionsRemaining { set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
     private int topEnergy, bottomEnergy;
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
     public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public override void Start()
+    public override void Awake()
     {
         player = GameObject.Find("Player");
         statsDisplayer = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
@@ -49,13 +56,19 @@ public class PlayerControler : Figure
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
         topEnergyDisplay = GameObject.Find("TopEnergyDisplay").GetComponent<VariableDisplayer>();
         bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
-        deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+        base.Awake(); 
+    }
+
+    public override void Start()
+    {
 
         isPlayer = true;
         team = 0;
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
+
         base.Start();
     }
 
@@ -92,13 +105,24 @@ public class PlayerControler : Figure
 
     }
 
+    public void ShowMoveCostDisplay()
+    {
+        if (moveCostDisplaySetting == "Always" || (moveCostDisplaySetting == "On Move" && isMoving))
+        {
+            mapManager.showMoveCost(true, canJump, canFly);
+        }
+        else
+        {
+            mapManager.showMoveCost(false);
+        }
+    }
     public void PreparePlayer(GameManager gameManager)
     {
         maxHealth = 100;
         health = maxHealth;
         playerOneToOneCords = Vector2.zero;
         statsDisplayer.SetHealthAndBlock(health, 0);
-        statsDisplayer.SetConditions(new string[0]);
+        //statsDisplayer.SetConditions(new string[0]);
     }
 
     public void TileClicked(GameObject tile)
@@ -120,8 +144,11 @@ public class PlayerControler : Figure
         foreach (Vector2 tileCords in pathfinder.ActualPath)
         {
             GameObject newTile = mapManager.GetTileAtHex(tileCords);
-            GameObject border = newTile.transform.Find("Border").gameObject;
-            border.GetComponent<SpriteRenderer>().color = Color.black;
+            if (newTile != null)
+            {
+                GameObject border = newTile.transform.Find("Border").gameObject;
+                border.GetComponent<SpriteRenderer>().color = Color.black;
+            }
         }
         pathfinder.PlanPathToTile(oneToOnePos, mapManager.PosToOneToOne(tile.transform.position), gameObject, moveLeft, canJump, canFly);
         foreach (Vector2 tileCords in pathfinder.ActualPath)
@@ -144,66 +171,48 @@ public class PlayerControler : Figure
             GameObject door = mapManager.GetTileAtHex(oneToOnePos);
             roomSpawner.SpawnRoomsNextToDoor(mapManager.PosToOneToOne(door.transform.position), door.GetComponent<Door>().RoomNextToCords);
         }
+        if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Stair>())
+        {
+            levelManager.GoUpLevel();
+
+        }
         if (moveLeft == 0)
         {
             ActionDone();
         }
     }
 
-    /*
-    public void AttemptToMove(GameObject tile, Vector2 tileCords)
-    {
-        int distance = mapManager.GetDistanceBetweenPos(tileCords, player.transform.position);
-        if (distance <= moveLeft)
-        {
-            if (tile.GetComponent<Door>())
-            {
-                MoveTo(tileCords, distance);
-                roomSpawner.SpawnRoomsNextToDoor(mapManager.PosToOneToOne(tileCords), tile.GetComponent<Door>().RoomNextToCords);
-            }
-            else if (!tile.GetComponent<Wall>() && (!tile.GetComponent<Obstacle>() || canFly))
-            {
-                MoveTo(tileCords, distance);
-                if (tile.GetComponent<Lootable>())
-                {
-                    //rewardManager.TileReward(tile);
-                }
-            }
-        }
-        if (moveLeft == 0)
-        {
-            ActionDone();
-            //Debug.Log("Done Moving");
-        }
-    }
 
-    public void MoveTo(Vector2 tileCords, int distance)
+    public void FigureClicked(GameObject figure)
     {
-        moveLeft -= distance;
-        player.transform.position = tileCords;
-    }
-    */
-    public void EnemyClicked(GameObject enemy)
-    {
-        clickedEnemy = enemy;
-        if (isTargetAEnemy && canPreformActions)
+        //Debug.Log("clicked" + figure);
+        clickedEnemy = figure;
+        if (canPreformActions)
         {
             if (isAttacking)
             {
-                //dont calculate range
-                if (mapManager.GetDistanceBetweenPos(clickedEnemy.transform.position, player.transform.position) <= range)
+                if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
                 {
-                    clickedEnemy.GetComponent<Enemy>().AttackedFor(attackDamageValue);
+                    clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, appliedConditions);
                     targetsLeft--;
-                }
-                else
-                {
-                    Debug.Log("Out Of range");
+                    posibleTargets.Remove(figure.GetComponent<Figure>());
                 }
                 if (targetsLeft == 0)
                 {
                     ActionDone();
-                    //Debug.Log("Done Attacking");
+                }
+            }
+            else if (isAppliyingConditions)
+            {
+                if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
+                {
+                    clickedEnemy.GetComponent<Figure>().GainConditions(appliedConditions);
+                    targetsLeft--;
+                    posibleTargets.Remove(figure.GetComponent<Figure>());
+                }
+                if (targetsLeft == 0)
+                {
+                    ActionDone();
                 }
             }
         }
@@ -238,6 +247,18 @@ public class PlayerControler : Figure
         BottomEnergy = 2;
         base.baseStartTurn();
     }
+
+    public void ForceEndTurn()
+    {
+        if (cardPlayed)
+        {
+            playedCardScript.StopPlaying = true;
+            CardDone();
+        }
+        isPlayerTurn = false;
+        UpdatePlayer();
+        base.baseEndTurn();
+    }
     public void EndTurn()
     {
         UpdatePlayer();
@@ -245,7 +266,7 @@ public class PlayerControler : Figure
         {
             isPlayerTurn = false;
             UpdatePlayer();
-            turnManager.NextTurn();
+            base.baseEndTurn();
         }
     }
     public void ManualEnd()
@@ -258,16 +279,40 @@ public class PlayerControler : Figure
 
     public override void ActionDone()
     {
+        if (isMoving && moveCostDisplaySetting == "On Move")
+        {
+            mapManager.showMoveCost(false);
+        }
         isMoving = false;
         canJump = false;
         isAttacking = false;
-        //manualEnd = false;
         actionDone = true;
         isTargetATile = false;
         isTargetAEnemy = false;
-        //playedCardScript.currentStep++;
+        if (cardPlayed)
+        {
+            actionsRemaining.Remove(actionsRemaining[0]);
+            statsDisplayer.Plan(actionsRemaining);
+            playedCardScript.NextAction = true;
+        }
+    }
+    public void CardDone()
+    {
+        if (isMoving && moveCostDisplaySetting == "On Move")
+        {
+            mapManager.showMoveCost(false);
+        }
+        isMoving = false;
+        canJump = false;
+        isAttacking = false;
+        actionDone = true;
+        isTargetATile = false;
+        isTargetAEnemy = false;
+        actionsRemaining.Clear();
+        statsDisplayer.Plan(actionsRemaining);
         playedCardScript.NextAction = true;
     }
+
 
     public void ControledMove(int moveValue, bool isJump = false)
     {
@@ -276,9 +321,13 @@ public class PlayerControler : Figure
         isTargetATile = true;
         moveLeft = moveValue;
         canJump = isJump;
+        if (moveCostDisplaySetting == "On Move")
+        {
+            mapManager.showMoveCost(true, isJump, canFly);
+        }
     }
 
-    public void ControledAttack(int attackValue, int attackRange, int targets)
+    public void ControledAttack(int attackValue, int attackRange, int targets, Condition[] attackConditions)
     {
         actionDone = false;
         isAttacking = true;
@@ -286,17 +335,25 @@ public class PlayerControler : Figure
         attackDamageValue = attackValue;
         range = attackRange;
         isTargetAEnemy = true;
+        appliedConditions = attackConditions;
+        posibleTargets = FindPosibleTargets("enemy", attackRange);
     }
 
+    public void ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
+    {
+        actionDone = false;
+        isAppliyingConditions = true;
+        targetsLeft = targets;
+        range = conditionsRange;
+        appliedConditions = newConditions;
+        posibleTargets = FindPosibleTargets(targetType, conditionsRange);
+    }
     public void Lockpick(int lockpickValue)
     {
-        float additionalLockpick = lockpickValue;
+        int finalLockpick = conditionManager.ModifyLockpick(this, lockpickValue);
 
-
-        int finalLockpick = Mathf.FloorToInt(additionalLockpick);
         if (isPlanning)
         {
-            prepareActions.Add(() => Lockpick(finalLockpick));
             string currentDescriptionString = "Lockpick " + finalLockpick;
             planDescription.Add(currentDescriptionString);
         }
@@ -323,26 +380,7 @@ public class PlayerControler : Figure
         Debug.Log("test");
         ActionDone();
     }
-    /*
-    public void Block(int blockValue)
-    {
-        block += blockValue;
-        playerStats.SetHealthAndBlock(health, block);
-        ActionDone();
-    }
 
-    public void AttackedFor(int attackValue)
-    {
-        if (block > 0 )
-        {
-            int damageBlocked = Mathf.Min(attackValue, block);
-            attackValue -= damageBlocked;
-            block -= damageBlocked;
-        }
-        health -= attackValue;
-        playerStats.SetHealthAndBlock(health, block);
-    }
-    */
     public override void Die()
     {
         Debug.Log("You Died");

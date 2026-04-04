@@ -6,16 +6,25 @@ public class TestEnemy2 : Enemy
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        moveSets.Add(MoveSet1);
-        moveSets.Add(MoveSet2);
-        moveSets.Add(MoveSet3);
-        maxHealth = 10;
-        base.Start();
-    }
+        moveSets.Add(new List<System.Action> {
+            () => Move(10)
+            ,() => Attack(15)
+        });
+        moveSets.Add(new List<System.Action> {
 
-    public override void Update()
-    {
-        base.Update();
+            () => Move(20)
+            ,() => Attack(10)
+        });
+        moveSets.Add(new List<System.Action> {
+
+            () => Move(25)
+            ,() => Attack(5)
+        });
+        //moveSets.Add(MoveSet1);
+        //moveSets.Add(MoveSet2);
+        //moveSets.Add(MoveSet3);
+        maxHealth = 50;
+        base.Start();
     }
 
     public void MoveSet1()

@@ -29,20 +29,20 @@ public class Pathfinder : MonoBehaviour
     private bool pathFound, inRange;
     private int endElevation;
     private bool isJump, isFly;
-    private int baseMoveCost = 5;
     private int moveValue;
     private int moveLeft;
     public int MoveLeft { get { return moveLeft; } set { moveLeft = value; } }
 
     private int currentElevation;
     private Vector2 currentPos;
+    private Vector2 targetPos;
     private GameObject currentFigure;
     private int figureElevation;
     private float figureMoveDelay = 0.1f;
     private bool doneMoving;
     public bool DoneMoving { get { return doneMoving; } set { doneMoving = value; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
 
@@ -56,7 +56,16 @@ public class Pathfinder : MonoBehaviour
     {
         
     }
-    public IEnumerator PathfindTowards(Vector2 selfPos, Vector2 targetPos, GameObject self, int newMoveValue, int range = 1, bool jump = false, bool fly = false)
+
+    //findPosInRange and findPathToArea set target pos as 0 and build outwards until fining starting pos 
+    //each tile assings value to adjasent tiles elevation
+    //findPosiblePaths builds outwards from starting pos and finds the spot that is moveable to that is closest to 0 from previus functions
+    //each tile adds its own value to elevation
+
+
+
+
+    public IEnumerator PathfindTowards(Vector2 selfPos, Vector2 newTargetPos, GameObject self, int newMoveValue, int range = 1, bool jump = false, bool fly = false)
     {
         currentFigure = self;
         moveValue = newMoveValue;
@@ -64,6 +73,7 @@ public class Pathfinder : MonoBehaviour
         isFly = fly;
         inRange = false;
         currentPos = selfPos;
+        targetPos = newTargetPos;
         //finds posible spots that woul be good with ending on
         findPosInRange(targetPos, range);
         //Debug.Log("range done");
@@ -84,23 +94,41 @@ public class Pathfinder : MonoBehaviour
         self.GetComponent<Figure>().ActionDone();
     }
 
-    public void PlanPathToTile(Vector2 selfPos, Vector2 targetPos, GameObject self, int newMoveValue, bool jump = false, bool fly = false)
+    public void PlanPathToTile(Vector2 selfPos, Vector2 newTargetPos, GameObject self, int newMoveValue, bool jump = false, bool fly = false)
     {
         currentFigure = self;
         moveValue = newMoveValue;
         isJump = jump;
         isFly = fly;
         currentPos = selfPos;
+        targetPos = newTargetPos;
         //builds heightmap out from ending spots
         findPathToArea(selfPos, new List<Vector2>(){targetPos});
         //finds the path from the figure with current movement that gets them as close to player a posible
         //Debug.Log("area done");
         findPosiblePaths(selfPos);
         //Debug.Log("path Found");
-
-
     }
 
+    public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject self)
+    {
+        List<Figure> figures = new List<Figure>();
+        currentFigure = self;
+        currentPos = selfPos;
+        findPosInRange(selfPos, range);
+        foreach (List<Vector2> elevation in elevations)
+        {
+            foreach (Vector2 pos in elevation)
+            {
+                GameObject entity = mapManager.GetEntityOnHex(pos);
+                if (entity != null)
+                {
+                    figures.Add(entity.GetComponent<Figure>());
+                }
+            }
+        }
+        return figures;
+    }
 
     public IEnumerator PathToTile(Vector2 selfPos, Vector2 targetPos, int newMoveValue, bool jump = false, bool fly = false)
     {
@@ -122,7 +150,7 @@ public class Pathfinder : MonoBehaviour
 
 
     //finds all tiles with a specifc range of a tile
-    public void findPosInRange(Vector2 targetPos, int range)
+    public void findPosInRange(Vector2 newTargetPos, int range)
     {
         elevations.Clear();
         checkedTiles.Clear();
@@ -138,7 +166,7 @@ public class Pathfinder : MonoBehaviour
             //adds starting tile
             if (i == 0)
             {
-                elevations[0].Add(targetPos);
+                GetTileType(newTargetPos, 0, true);
             }
             //each tile spreads to other tiles ignoring move costs
             else
@@ -184,6 +212,19 @@ public class Pathfinder : MonoBehaviour
                 foreach (Vector2 pos in targetArea)
                 {
                     GetTileType(pos, 1);
+                    /*
+                    if (mapManager.GetTileAtHex(pos).GetComponent<Stair>())
+                    {
+
+                        checkedTiles.Add(pos);
+                        safeTiles.Add(pos);
+                        elevations[0].Add(pos);
+
+                    }
+                    else
+                    {
+                    }
+                    */
                 }
             }
             else
@@ -294,7 +335,7 @@ public class Pathfinder : MonoBehaviour
         }
         else if (isJump || isFly)
         {
-            moveCost = baseMoveCost;
+            moveCost = mapManager.BaseMoveCost;
         }
         else
         {
@@ -320,6 +361,7 @@ public class Pathfinder : MonoBehaviour
     public void buildElevation(Vector2 pos, bool range, bool pathFromFigure)
     {
         Vector2 checktile = new Vector2();
+        GameObject originalTile = mapManager.GetTileAtHex(pos);
         //for each tile in the six directions
         for (int i = 0; i < 6; i++)
         {
@@ -353,7 +395,7 @@ public class Pathfinder : MonoBehaviour
                     }
                     else
                     {
-                        GetTileType(checktile, mapManager.GetTileAtHex(pos).GetComponent<Tile>().MoveCost, range, pathFromFigure);
+                        GetTileType(checktile, originalTile.GetComponent<Tile>().MoveCost, range, pathFromFigure);
                     }
                     if (pathFromFigure && !impassableTiles.Contains(checktile))
                     {
@@ -381,12 +423,13 @@ public class Pathfinder : MonoBehaviour
 
     public void GetTileType(Vector2 checktile, int addedCost, bool range = false, bool pathFromFigure = false)
     {
+
         checkedTiles.Add(checktile);
         GameObject tile = mapManager.GetTileAtHex(checktile);
         if (tile != null)
         {
             GameObject entity = mapManager.GetEntityOnHex(checktile);
-            if ((tile.GetComponent<Wall>() && !(currentFigure.GetComponent<PlayerControler>() && tile.GetComponent<Door>())) || (tile.GetComponent<Obstacle>() && !(range || isJump || isFly)) || (entity && entity.GetComponent<Figure>() && entity.GetComponent<Figure>().Team != currentFigure.GetComponent<Figure>().Team && !(range || isJump || isFly)))
+            if ((tile.GetComponent<Wall>() && !(currentFigure.GetComponent<PlayerControler>() && targetPos == checktile && (tile.GetComponent<Door>() || tile.GetComponent<Stair>())))  || (tile.GetComponent<Obstacle>() && !(range || isJump || isFly)) || (entity && entity.GetComponent<Figure>() && entity.GetComponent<Figure>().Team != currentFigure.GetComponent<Figure>().Team && !(range || isJump || isFly)))
             {
                 impassableTiles.Add(checktile);
             }
@@ -432,7 +475,7 @@ public class Pathfinder : MonoBehaviour
             oneToOnePos = actualPath[i];
             if (isJump || isFly)
             {
-                moveLeft -= baseMoveCost;
+                moveLeft -= mapManager.BaseMoveCost;
             }
             else
             {

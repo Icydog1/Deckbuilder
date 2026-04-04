@@ -10,8 +10,12 @@ public class MapManager : MonoBehaviour
     private float tileSize = 1, tileWidth, tileHeight;
     public float TileWidth { get { return tileWidth; } }
     public float TileHeight { get { return tileHeight; } }
+    private int baseMoveCost = 5;
+    public int BaseMoveCost { get { return baseMoveCost; } }
+
     private float tileXDistance, tileYDistance;
     float upLeft, up, upRight;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -28,7 +32,7 @@ public class MapManager : MonoBehaviour
     }
     void Start()
     {
-
+        showMoveCost(false);
     }
 
     // Update is called once per frame
@@ -41,6 +45,36 @@ public class MapManager : MonoBehaviour
 
 
 
+    public void showMoveCost(bool showOrHide, bool isJump = false, bool isfly = false)
+    {
+        Tile[] tiles = FindObjectsByType<Tile>(FindObjectsSortMode.None);
+        if (showOrHide)
+        {
+            if (isJump || isfly)
+            {
+                foreach (Tile tileScript in tiles)
+                {
+                    tileScript.MoveCostDisplay.DisplayText(baseMoveCost);
+                }
+            }
+            else
+            {
+                foreach (Tile tileScript in tiles)
+                {
+                    tileScript.MoveCostDisplay.DisplayText(tileScript.MoveCost);
+                }
+            }
+        }
+        else
+        {
+            foreach (Tile tileScript in tiles)
+            {
+                tileScript.MoveCostDisplay.Disable();
+            }
+        }
+
+
+    }
     public Vector2 OneToOneToPos(Vector2 oneToOnePos)
     {
         float xComponent;

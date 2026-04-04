@@ -13,6 +13,7 @@ public class VariableDisplayer : MonoBehaviour
     void Awake()
     {
         textBox = GetComponent<TextMeshProUGUI>();
+        transform.rotation = Quaternion.identity;
     }
 
     // Update is called once per frame
@@ -22,10 +23,22 @@ public class VariableDisplayer : MonoBehaviour
     }
 
 
-    public void DisplayText(float variable)
+    public void DisplayText(int variable)
     {
+        textBox.enabled = true;
         displayedString = addionalText;
         displayedString += variable;
         textBox.SetText(displayedString);
+    }
+    public void DisplayString(string variable)
+    {
+        textBox.enabled = true;
+        displayedString = addionalText;
+        displayedString += variable;
+        textBox.SetText(displayedString);
+    }
+    public void Disable()
+    {
+        textBox.enabled = false;
     }
 }

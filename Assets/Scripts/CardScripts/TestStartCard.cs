@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
  public class TestStartCard : Card
@@ -17,11 +18,11 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        playerControler.Attack(10);
+        topActions.Add(() => playerControler.Attack(10));
     }
 
     public override void PrepareBottom()
     {
-        playerControler.Move(10);
+        bottomActions.Add(() => playerControler.Move(10));
     }
 }

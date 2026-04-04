@@ -25,14 +25,15 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        playerControler.Attack(20);
-        playerControler.Attack(20);
+        topActions.Add(() => playerControler.Attack(20));
+        topActions.Add(() => playerControler.Attack(20));
+
     }
 
     public override void PrepareBottom()
     {
-        playerControler.Move(30);
-        //playerControler.Move(4);
+        bottomActions.Add(() => playerControler.Move(30));
+
     }
 
     /*

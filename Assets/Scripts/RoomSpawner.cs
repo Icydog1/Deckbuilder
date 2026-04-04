@@ -1,16 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.BoolParameter;
 
 public class RoomSpawner : MonoBehaviour
 {
     private float tileWidth = 2, tileHeight, zLayer = 1000, roomSize = 17;
     private MapManager mapManager;
+    private PlayerControler playerControler;
+
     [SerializeField]
     private GameObject[] rooms;
     [SerializeField]
     private float[] initialRoomWeights = {0, 1f, 1f, 1f, 1f}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
     private float realativeRotation = 0;
+    private List<GameObject> existingRooms = new List<GameObject>();
+
     private List<Vector2Int> builtRooms = new List<Vector2Int>();
     public List<Vector2Int> BuiltRooms { get { return builtRooms; } }
 
@@ -18,9 +23,12 @@ public class RoomSpawner : MonoBehaviour
     void Start()
     {
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
+        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
+
         tileWidth = mapManager.TileWidth;
         tileHeight = mapManager.TileHeight;
         BuildRoomProbabilities(initialRoomWeights);
+        LevelManager.LevelCleared += ClearRooms;
     }
 
     // Update is called once per frame
@@ -29,6 +37,15 @@ public class RoomSpawner : MonoBehaviour
 
     }
 
+    public void ClearRooms(LevelManager levelManager)
+    {
+        foreach (GameObject room in existingRooms)
+        {
+            Destroy(room);
+        }
+        existingRooms.Clear();
+        builtRooms.Clear();
+    }
     private void BuildRoomProbabilities(float[] roomWeights)
     {
         if (roomWeights.Length != rooms.Length)
@@ -86,6 +103,9 @@ public class RoomSpawner : MonoBehaviour
         Vector2 pos = mapManager.OneToOneToPos(oneToOnePos);
         int rotation = room.GetComponent<RoomScript>().GetSpawnRotation();
         transform.localEulerAngles = new Vector3(0, 0, realativeRotation + rotation);
-        Instantiate(room, new Vector3(pos.x, pos.y, zLayer), transform.rotation);
+        existingRooms.Add(Instantiate(room, new Vector3(pos.x, pos.y, zLayer), transform.rotation));
+
+        playerControler.ShowMoveCostDisplay();
+
     }
 }

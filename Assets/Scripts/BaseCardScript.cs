@@ -20,8 +20,9 @@ public class Card : MonoBehaviour
     protected bool isPlaying;
     //protected int currentStep;
     protected bool nextAction;
-    public bool NextAction { set { nextAction = value;}
-    }
+    public bool NextAction { set { nextAction = value;}}
+    protected bool stopPlaying;
+    public bool StopPlaying { set { stopPlaying = value; } }
 
     protected bool isPreparingTop;
 
@@ -44,8 +45,7 @@ public class Card : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-
-    public virtual void Start()
+    public void Awake()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
@@ -57,11 +57,18 @@ public class Card : MonoBehaviour
         topCostText = transform.Find("TopCost").GetComponent<VariableDisplayer>();
         bottomCostText = transform.Find("BottomCost").GetComponent<VariableDisplayer>();
 
+        PrepareTop();
+        PrepareBottom();
         deckManager.SetRelativeCardSize(gameObject, 1);
+
+    }
+
+    public virtual void Start()
+    {
         // base class code runs
 
 
-        PrepareCard();
+        PrepareCardDiscription();
     }
 
     // Update is called once per frame
@@ -145,61 +152,64 @@ public class Card : MonoBehaviour
         bottomGlow.SetActive(false);
         deckManager.DiscardCard(gameObject);
         mouseManager.MouseOffObject(gameObject);
+        stopPlaying = false;
         //Debug.Log("done playing");
         //currentStep = 0;
     }
 
     public IEnumerator PlayTop()
     {
+        //Debug.Log("topDescriptionCount " + topDescription.Count);
+        playerControler.ActionsRemaining = new List<string>(topDescription);
         foreach (System.Action action in topActions)
         {
-            action();
-            yield return new WaitUntil(() => nextAction == true);
-            nextAction = false;
+            if (stopPlaying == false)
+            {
+                action();
+                yield return new WaitUntil(() => nextAction == true);
+                nextAction = false;
+            }
         }
         DonePlaying();
     }
 
     public IEnumerator PlayBottom()
     {
+        playerControler.ActionsRemaining = new List<string>(bottomDescription);
         foreach (System.Action action in bottomActions)
         {
-            action();
-            //Debug.Log(action.Method.Name);
-            yield return new WaitUntil(() => nextAction == true);
-            nextAction = false;
+            if (stopPlaying == false)
+            {
+                action();
+                yield return new WaitUntil(() => nextAction == true);
+                nextAction = false;
+            }
         }
         DonePlaying();
     }
 
-    public void PrepareCard()
+    public void PrepareCardDiscription()
     {
+        topDescription.Clear();
+        bottomDescription.Clear();
         playerControler.IsPlanning = true;
-        isPreparingTop = true;
-        playerControler.PrepareActions = topActions;
         playerControler.PlanDescription = topDescription;
-        PrepareTop();
-        topCostText.DisplayText(topCost);
-        isPreparingTop = false;
-        playerControler.PrepareActions = bottomActions;
+        foreach (System.Action action in topActions)
+        {
+            action();
+        }
         playerControler.PlanDescription = bottomDescription;
-        PrepareBottom();
+        foreach (System.Action action in bottomActions)
+        {
+            action();
+        }
+        topCostText.DisplayText(topCost);
         bottomCostText.DisplayText(bottomCost);
-        DisplayEffects();
+        topText.DisplayText(topDescription);
+        bottomText.DisplayText(bottomDescription);
         playerControler.IsPlanning = false;
     }
 
-    public void DisplayEffects()
-    {
-        topText.DisplayText(topDescription);
-        bottomText.DisplayText(bottomDescription);
-        if (topText)
-        {
-
-        }
-        topDescription.Clear();
-        bottomDescription.Clear();
-    }
 
 
     public virtual void PrepareTop()

@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using Unity.Jobs;
 using UnityEngine;
-using static UnityEditor.FilePathAttribute;
-using static UnityEngine.Rendering.GPUSort;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class DeckManager : MonoBehaviour
 {
     public GameManager gameManager;
 
     public GameObject hand, deck, discard, play;
+    public GameObject Hand { get { return hand; } }
+
     public List<GameObject> entireDeck, startingDeck = new List<GameObject>();
     public List<GameObject> deckContents, handContents, discardContents, playContents = new List<GameObject>();
     public List<GameObject> DeckContents {  get { return deckContents; } }
@@ -176,6 +175,7 @@ public class DeckManager : MonoBehaviour
                 posibleLocation.Remove(card);
             }
         }
+        DeSelectCard(card);
         if (newIndex != -1)
         {
             GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
@@ -184,12 +184,18 @@ public class DeckManager : MonoBehaviour
         {
             GetListByName(location.name.ToLower() + "Contents").Add(card);
         }
-        DeSelectCard(card);
         card.transform.SetParent(location.transform);
         card.transform.position = location.transform.position;
-        if (location == hand || location == play)
+        if (location == hand)
         {
             card.gameObject.SetActive(true);
+            card.GetComponent<Card>().PrepareCardDiscription();
+        }
+        if (location == play)
+        {
+            card.gameObject.SetActive(true);
+            card.GetComponent<Card>().PrepareCardDiscription();
+            SelectCard(card);
         }
         else
         {
@@ -218,7 +224,6 @@ public class DeckManager : MonoBehaviour
     }
     public void SelectCard(GameObject card)
     {
-        
         if (GetRelativeCardSize(card) < 1.5f)
         {
             SetRelativeCardSize(card, 2);
@@ -227,7 +232,7 @@ public class DeckManager : MonoBehaviour
     }
     public void DeSelectCard(GameObject card)
     {
-        if (GetRelativeCardSize(card) > 1.5f)
+        if (GetRelativeCardSize(card) > 1.5f && !playContents.Contains(card))
         {
             SetRelativeCardSize(card, 1);
             card.transform.position = card.transform.position - new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
@@ -318,17 +323,28 @@ public class DeckManager : MonoBehaviour
         {
             card.transform.SetParent(listDisplayer.transform);
             card.SetActive(true);
+            SetRelativeCardSize(card, 1);
             int row = Mathf.FloorToInt(displayedList.IndexOf(card) / rowLimit);
             int column = displayedList.IndexOf(card) % rowLimit;
             card.transform.position = new Vector3(pos.x + (column - (rowLimit/2)) * horizontalSpaceBetweenCards, pos.y - row * VerticalSpaceBetweenCards, card.transform.position.z);
         }
     }
 
-    public void ReorderDisplayedCardsInList(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit, bool randomOrder)
+    public void UpdateCardsDisplay()
     {
-
+        foreach (GameObject card in displayedList)
+        {
+            card.GetComponent<Card>().PrepareCardDiscription();
+        }
+        foreach (GameObject card in handContents)
+        {
+            card.GetComponent<Card>().PrepareCardDiscription();
+        }
+        foreach (GameObject card in playContents)
+        {
+            card.GetComponent<Card>().PrepareCardDiscription();
+        }
     }
-
     public void StopDisplayingCardsInList()
     {
         isDisplayingCards = false;
@@ -336,6 +352,7 @@ public class DeckManager : MonoBehaviour
         {
             Destroy(card);
         }
+        displayedList.Clear();
         listDisplayer.SetActive(false);
         uIManager.IsDisplayingList = false;
         displayedListName = null;

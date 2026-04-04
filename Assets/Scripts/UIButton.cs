@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 public class UIButton : MonoBehaviour
 {
-    protected PlayerControler playerControler;
     private Color clickedColor = new Color(0.8f, 0.8f, 0.8f);
     private Color baseColor;
     public Color ClickedColor { get { return clickedColor; }}
@@ -15,7 +14,6 @@ public class UIButton : MonoBehaviour
     {
         baseColor = transform.Find("Image").gameObject.GetComponent<Image>().color;
 
-        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
 
     }
 
