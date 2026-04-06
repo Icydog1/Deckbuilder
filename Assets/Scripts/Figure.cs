@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -21,7 +21,7 @@ public class Figure : MonoBehaviour
     protected bool isMyTurn;
     protected bool isEnemy, isPlayer;
     protected bool isPlanning;
-    public bool IsPlanning { set { isPlanning = value; } }
+    public bool IsPlanning { set { isPlanning = value; } get { return isPlanning; } }
 
     protected Vector2 oneToOnePos;
     protected int preferedRange;

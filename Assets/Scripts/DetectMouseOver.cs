@@ -4,19 +4,15 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using UnityEngine.EventSystems;
 
-public class Clickable : MonoBehaviour
+public class DetectMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    
+
     private GameManager gameManager;
     private MouseManager mouseManager;
     private float height;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        if (!GetComponent<DetectMouseOver>())
-        {
-            gameObject.AddComponent<DetectMouseOver>();
-        }
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
     }
@@ -28,5 +24,19 @@ public class Clickable : MonoBehaviour
     }
 
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        mouseManager.MouseOnObject(gameObject);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        mouseManager.MouseOffObject(gameObject);
+    }
+
+    public void OnDestroy()
+    {
+        mouseManager.MouseOffObject(gameObject);
+    }
 
 }

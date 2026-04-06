@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 3582228842672114436}
   - component: {fileID: 8382749796072806682}
   - component: {fileID: 5646214420335566179}
+  - component: {fileID: 849339533898162876}
   m_Layer: 5
   m_Name: BaseRelic
   m_TagString: Untagged
@@ -194,6 +195,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7c655b47f10d0f4892f4f20b36ea6b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &849339533898162876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1302826265344430264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83dbacd5f2f6fc4428215f8072022f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3154883777525513639

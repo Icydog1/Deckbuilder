@@ -13,7 +13,7 @@ public class MouseManager : MonoBehaviour
     public GameObject selectedObject, clickedObject;
     public GameObject SelectedObject { get { return selectedObject; } }
     public GameObject ClickedObject { get { return clickedObject; } }
-
+    private GameObject hoveredObject;
 
     private float selectedHeight = -Mathf.Infinity;
     private List<GameObject> mouseOver = new List<GameObject>();
@@ -25,6 +25,8 @@ public class MouseManager : MonoBehaviour
     private CameraScript cameraScript;
     private DeckManager deckManager;
     private RewardManager rewardManager;
+    private TooltipManager tooltipManager;
+
     public float selectedCardHeightIncrease = 0.25f;
 
 
@@ -38,6 +40,7 @@ public class MouseManager : MonoBehaviour
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
+        tooltipManager = GameObject.Find("Tooltip").GetComponent<TooltipManager>();
 
 
     }
@@ -118,6 +121,12 @@ public class MouseManager : MonoBehaviour
             }
 
         }
+        if (selectedObject.GetComponent<Hoverable>())
+        {
+            hoveredObject = selectedObject;
+            tooltipManager.StartHoveringOver(hoveredObject);
+        }
+
     }
     public void MouseOffObject(GameObject newObject)
     {
@@ -135,6 +144,11 @@ public class MouseManager : MonoBehaviour
                     GameObject border = selectedObject.transform.Find("Border").gameObject;
                     border.GetComponent<SpriteRenderer>().color = Color.black;
                 }
+            }
+            if (newObject.GetComponent<Hoverable>())
+            {
+                hoveredObject = null;
+                tooltipManager.StopHoveringOver();
             }
             if (newObject.GetComponent<Card>())
             {
@@ -160,8 +174,11 @@ public class MouseManager : MonoBehaviour
                     }
                 }
             }
+
         }
     }
+
+
     public void MouseClicked()
     {
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class Relic : MonoBehaviour
 
     protected string relicName;
     public string RelicName {  get { return relicName; } }
+
+
     protected bool isActive, isUnique;
     protected int count;
     protected int rarity = 1;
@@ -30,26 +33,42 @@ public class Relic : MonoBehaviour
     {
         
     }
-
+    public string GetRelicDescription()
+    {
+        List<string> descriptionList = new List<string>();
+        playerControler.PlanDescription = descriptionList;
+        playerControler.IsPlanning = true;
+        OnGain();
+        string displayedString = "";
+        foreach (string text in descriptionList)
+        {
+            displayedString += text;
+            displayedString += "\n";
+        }
+        playerControler.IsPlanning = false;
+        return displayedString;
+    }
     public void GainRelic()
     {
+        playerControler.IsPlanning = false;
         OnGain();
     }
     public virtual void OnGain()
     {
-
-        count = 1;
-        if (!isUnique)
+        if (!playerControler.IsPlanning)
         {
-
-            countDisplay.DisplayText(count);
+            count = 1;
+            if (!isUnique)
+            {
+                countDisplay.DisplayText(count);
+            }
         }
+
     }
     public virtual void IncreaseCount()
     {
         count++;
         countDisplay.DisplayText(count);
-
     }
 
 }

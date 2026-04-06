@@ -60,7 +60,7 @@ public class RelicManager : MonoBehaviour
         }
         else 
         {
-            relicSript.OnGain();
+            relicSript.GainRelic();
             relicObjects.Add(relic);
             relics.Add(relicSript.RelicName, relicSript);
             relic.transform.SetParent(relicDisplayer.transform);

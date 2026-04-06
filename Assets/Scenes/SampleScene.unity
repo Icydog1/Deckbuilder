@@ -2068,10 +2068,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\U0001F4A5\u2B21\U0001F78B"
+  m_text: "\U0001F4A5\u2B21\U0001F78B\u2739"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: abc8e4b052e23fb4292232fd35ffa260, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: abc8e4b052e23fb4292232fd35ffa260, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 730419fd5ae43d64eb28174b5800a445, type: 2}
+  m_sharedMaterial: {fileID: 2062310369728924829, guid: 730419fd5ae43d64eb28174b5800a445, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3940,6 +3940,7 @@ GameObject:
   - component: {fileID: 1069799703}
   - component: {fileID: 1069799702}
   - component: {fileID: 1069799701}
+  - component: {fileID: 1069799705}
   m_Layer: 5
   m_Name: Tooltip
   m_TagString: Untagged
@@ -3964,9 +3965,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 300, y: 127.095}
+  m_AnchoredPosition: {x: -150, y: 0}
   m_SizeDelta: {x: 300, y: 0}
-  m_Pivot: {x: 0.5, y: 1}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1069799701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4045,6 +4046,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1069799699}
   m_CullTransparentMesh: 1
+--- !u!114 &1069799705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069799699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe51ebcbd23de504ba66a2fe03be6dd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1073291603
 GameObject:
   m_ObjectHideFlags: 0
@@ -4252,7 +4265,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: jfkkkdghkjhsdkjfhskjdfhskjdhfkjshkdjfshdkjfsdhfkjsdlkfjkclnvxlknvklxjncklxlkcjvlkxjclvkjxlckjvlxkcjvxcvxcvxcvsdfklsjdfsdsdfsdfsdfsdsfsdfsd
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
