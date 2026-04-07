@@ -69,18 +69,18 @@ public class ConditionManager : MonoBehaviour
         return finalMove;
     }
 
-    public int ModifyLockpick(Figure effectedFigure, int initalLockpick)
+    public int ModifyAbility(Figure effectedFigure, int initalAbility)
     {
-        float modifiedLockpick = initalLockpick;
+        float modifiedAbility = initalAbility;
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
             if (condition.Name == "finesse")
             {
-                modifiedLockpick += condition.Value;
+                modifiedAbility += condition.Value;
             }
         }
-        int finalLockpick = Mathf.FloorToInt(modifiedLockpick);
-        return finalLockpick;
+        int finalAbility = Mathf.FloorToInt(modifiedAbility);
+        return finalAbility;
     }
 }

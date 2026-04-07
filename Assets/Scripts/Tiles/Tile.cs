@@ -12,6 +12,10 @@ public class Tile : MonoBehaviour
     private VariableDisplayer moveCostDisplay;
     public VariableDisplayer MoveCostDisplay { get { return moveCostDisplay; } }
 
+    void Awake()
+    {
+        LevelManager.LevelCleared += Remove;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -24,5 +28,14 @@ public class Tile : MonoBehaviour
     {
         
     }
+    public void Remove(LevelManager levelManager)
+    {
+        Destroy(gameObject);
+    }
 
+    public void OnDestroy()
+    {
+        LevelManager.LevelCleared -= Remove;
+
+    }
 }

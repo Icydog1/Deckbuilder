@@ -46,7 +46,7 @@ public class LevelManager : MonoBehaviour
         if (!isBossLevel)
         {
             isBossLevel = true;
-            Debug.Log("went up level");
+            //Debug.Log("went up level");
             levelSpecific.Add(Instantiate(bossRooms[UnityEngine.Random.Range(0, bossRooms.Length)]));
         }
         else

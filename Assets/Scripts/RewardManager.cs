@@ -175,7 +175,7 @@ public class RewardManager : MonoBehaviour
                 }
 
             }
-            foreach (GameObject reward in currentOptions)
+            foreach (GameObject reward in potentialRewards)
             {
                 if (currentRewardPool.Contains(reward))
                 {

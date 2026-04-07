@@ -22,6 +22,6 @@ public class TestStartCard2 : Card
 
     public override void PrepareBottom()
     {
-        bottomActions.Add(() => playerControler.Lockpick(10));
+        bottomActions.Add(() => playerControler.Ability(10));
     }
 }

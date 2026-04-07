@@ -17,6 +17,8 @@ public class PlayerControler : Figure
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
     private GameManager gameManager;
+    private AbilityManager abilityManager;
+
     private string moveCostDisplaySetting;
     public string MoveCostDisplaySetting { set { moveCostDisplaySetting = value; ShowMoveCostDisplay(); } }
 
@@ -57,6 +59,7 @@ public class PlayerControler : Figure
         topEnergyDisplay = GameObject.Find("TopEnergyDisplay").GetComponent<VariableDisplayer>();
         bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
 
         base.Awake(); 
     }
@@ -68,7 +71,7 @@ public class PlayerControler : Figure
         team = 0;
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
-
+        GainNewAbility(1, new List<System.Action>() {() => Lockpick(1) });
         base.Start();
     }
 
@@ -348,9 +351,24 @@ public class PlayerControler : Figure
         appliedConditions = newConditions;
         posibleTargets = FindPosibleTargets(targetType, conditionsRange);
     }
+    public void Ability(int abilityValue)
+    {
+        int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+
+        if (isPlanning)
+        {
+            string currentDescriptionString = "Ability " + finalAbility;
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+
+        }
+    }
+
     public void Lockpick(int lockpickValue)
     {
-        int finalLockpick = conditionManager.ModifyLockpick(this, lockpickValue);
+        int finalLockpick = conditionManager.ModifyAbility(this, lockpickValue);
 
         if (isPlanning)
         {
@@ -363,9 +381,23 @@ public class PlayerControler : Figure
             if (currentTile.GetComponent<Lootable>())
             {
                 currentTile.GetComponent<Lootable>().Lockpick(finalLockpick);
-                
+
                 StartCoroutine(WaitUntilRewardSelected());
             }
+        }
+    }
+
+    public void GainNewAbility(int cost, List<System.Action> abilities)
+    {
+
+        if (isPlanning)
+        {
+            string currentDescriptionString = "Gain ability " + "";
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+            abilityManager.GainAbility(cost, abilities);
         }
     }
     public IEnumerator WaitUntilRewardSelected()

@@ -20,14 +20,15 @@ public class FigureStats : MonoBehaviour
         conditionsText = conditionsTextObject.GetComponent<TextMeshProUGUI>();
         planText = planTextObject.GetComponent<TextMeshProUGUI>();
 
+        SetHealthAndBlock(100, 0);
+        DisplayConditions(new List<Condition>());
+        Plan(new List<string>());
 
     }
 
     public void Start()
     {
-        SetHealthAndBlock(100, 0);
-        DisplayConditions(new List<Condition>());
-        Plan(new List<string>());
+
     }
     // Update is called once per frame
     void Update()
@@ -64,7 +65,7 @@ public class FigureStats : MonoBehaviour
             }
             string separator = ", ";
 
-            string conditionText = "Conditions: " + string.Join(separator, individualConditionText); ;
+            string conditionText = "Conditions: " + string.Join(separator, individualConditionText);
             conditionsText.SetText(conditionText);
 
             //Debug.Log(conditionText);
@@ -100,6 +101,7 @@ public class FigureStats : MonoBehaviour
                 movesDisplay += ", " + move;
             }
         }
-        planText.SetText("Plan: " + movesDisplay);
+        //Debug.Log(movesDisplay);
+        planText.text = "Plan: " + movesDisplay;
     }
 }

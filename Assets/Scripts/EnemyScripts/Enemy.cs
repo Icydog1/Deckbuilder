@@ -49,6 +49,7 @@ public class Enemy : Figure
         displayedPlan.Clear();
         plannedMoveSet = moveSets[Random.Range(0, moveSets.Count)];
         currentPlan = new List<System.Action>(plannedMoveSet);
+        //Debug.Log("gotInitialPlan");
         UpdatePlan();
     }
 
@@ -60,8 +61,8 @@ public class Enemy : Figure
         {
             currentPlan[i]();
         }
-        isPlanning = false;
         enemyStatsDisplayer.Plan(displayedPlan);
+        isPlanning = false;
 
     }
     public void StartOfTurn()
