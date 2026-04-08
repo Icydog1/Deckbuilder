@@ -47,7 +47,10 @@ public class PlayerControler : Figure
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
     public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
+    private int variableCardModifier;
 
+    public int VariableCardModifier { get { return variableCardModifier; } set { variableCardModifier = value; } }
+    public bool NextAction { get { return nextAction; } set { nextAction = value; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
@@ -71,7 +74,7 @@ public class PlayerControler : Figure
         team = 0;
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
-        GainNewAbility(1, new List<System.Action>() {() => Lockpick(1) });
+        GainNewAbility(1, new List<System.Action>() {() => Lockpick(1,true) });
         base.Start();
     }
 
@@ -296,8 +299,8 @@ public class PlayerControler : Figure
         {
             actionsRemaining.Remove(actionsRemaining[0]);
             statsDisplayer.Plan(actionsRemaining);
-            playedCardScript.NextAction = true;
         }
+        nextAction = true;
     }
     public void CardDone()
     {
@@ -313,7 +316,7 @@ public class PlayerControler : Figure
         isTargetAEnemy = false;
         actionsRemaining.Clear();
         statsDisplayer.Plan(actionsRemaining);
-        playedCardScript.NextAction = true;
+        nextAction = true;
     }
 
 
@@ -366,8 +369,14 @@ public class PlayerControler : Figure
         }
     }
 
-    public void Lockpick(int lockpickValue)
+    public void Lockpick(int lockpickValue, bool isVariable = false)
     {
+        if (isVariable)
+        {
+            int x = 1;
+
+            lockpickValue *= x;
+        }
         int finalLockpick = conditionManager.ModifyAbility(this, lockpickValue);
 
         if (isPlanning)

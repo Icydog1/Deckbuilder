@@ -11,7 +11,6 @@ public class Enemy : Figure
     //protected List<moveSetsMethod> moveSets = new List<moveSetsMethod>();
     protected List<List<System.Action>> moveSets = new List<List<System.Action>>();
 
-    protected bool nextAction;
 
     protected List<System.Action> currentPlan = new List<System.Action>();
     protected List<System.Action> plannedMoveSet;

@@ -26,6 +26,8 @@ public class Figure : MonoBehaviour
     protected Vector2 oneToOnePos;
     protected int preferedRange;
     protected float distanceToPlayer;
+    protected bool nextAction;
+
     protected int team;
     public int Team { get { return team; } }
     protected bool isPreformingAnimation;

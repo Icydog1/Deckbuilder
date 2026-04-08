@@ -19,8 +19,8 @@ public class Card : MonoBehaviour
     protected bool isTopPlayed, isBottomPlayed;
     protected bool isPlaying;
     //protected int currentStep;
-    protected bool nextAction;
-    public bool NextAction { set { nextAction = value;}}
+    //protected bool nextAction;
+    //public bool NextAction { set { nextAction = value;}}
     protected bool stopPlaying;
     public bool StopPlaying { set { stopPlaying = value; } }
 
@@ -166,8 +166,8 @@ public class Card : MonoBehaviour
             if (stopPlaying == false)
             {
                 action();
-                yield return new WaitUntil(() => nextAction == true);
-                nextAction = false;
+                yield return new WaitUntil(() => playerControler.NextAction == true);
+                playerControler.NextAction = false;
             }
         }
         DonePlaying();
@@ -176,13 +176,14 @@ public class Card : MonoBehaviour
     public IEnumerator PlayBottom()
     {
         playerControler.ActionsRemaining = new List<string>(bottomDescription);
+        playerControler.NextAction = false;
         foreach (System.Action action in bottomActions)
         {
             if (stopPlaying == false)
             {
                 action();
-                yield return new WaitUntil(() => nextAction == true);
-                nextAction = false;
+                yield return new WaitUntil(() => playerControler.NextAction == true);
+                playerControler.NextAction = false;
             }
         }
         DonePlaying();
