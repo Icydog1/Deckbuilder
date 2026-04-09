@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class AbilitiesDisplay : UIButton
 {
-    private PlayerControler playerControler;
-
+    private GameObject abilitiesDiscriptions;
+    private bool isShowing;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Awake()
     {
-        //playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
+        abilitiesDiscriptions = GameObject.Find("AbilitiesDiscriptions");
 
         base.Awake();
     }
@@ -20,6 +20,19 @@ public class AbilitiesDisplay : UIButton
 
     public override void Activate()
     {
+        if (isShowing)
+        {
+            abilitiesDiscriptions.SetActive(false);
+
+            isShowing = false;
+        }
+        else
+        {
+            abilitiesDiscriptions.SetActive(true);
+
+            isShowing = true;
+
+        }
 
     }
 }

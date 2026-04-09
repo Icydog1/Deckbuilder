@@ -44,7 +44,8 @@ public class Figure : MonoBehaviour
     protected List<Condition> conditions = new List<Condition>();
     public List<Condition> Conditions { set { conditions = value; } get { return conditions; } }
 
-
+    protected int variableCardModifier;
+    public int VariableCardModifier { get { return variableCardModifier; } set { variableCardModifier = value; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Awake()
     {
@@ -111,10 +112,13 @@ public class Figure : MonoBehaviour
 
 
 
-    public void Block(int blockValue)
+    public void Block(int blockValue, bool isVariable = false)
     {
+        if (isVariable)
+        {
+            blockValue *= variableCardModifier;
+        }
         int finalBlock = conditionManager.ModifyBlock(this, blockValue);
-
         if (isPlanning)
         {
             //prepareActions.Add(() => Block(finalBlock));
@@ -129,8 +133,12 @@ public class Figure : MonoBehaviour
         }
     }
 
-    public void Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null)
+    public void Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null, bool isVariable = false)
     {
+        if (isVariable)
+        {
+            attackValue *= variableCardModifier;
+        }
         if (attackConditions == null)
         {
             attackConditions = new Condition[0];
@@ -179,8 +187,12 @@ public class Figure : MonoBehaviour
 
         }
     }
-    public void Move(int moveValue, bool isJump = false)
+    public void Move(int moveValue, bool isJump = false, bool isVariable = false)
     {
+        if (isVariable)
+        {
+            moveValue *= variableCardModifier;
+        }
         int finalMove = conditionManager.ModifyMove(this, moveValue);
         if (isPlanning)
         {

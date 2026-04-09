@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
  public class TestDebugCard : Card
@@ -27,6 +28,7 @@ using UnityEngine;
     {
         bottomActions.Add(() => playerControler.ApplyCondition(new Speed(10, -1), "enemy", 4, 1, true));
         bottomActions.Add(() => playerControler.ApplyConditions(new Condition[]{ new Finesse(5, 5)}, "self and ally", 2, 2));
+        bottomActions.Add(() => playerControler.GainNewAbility(1, new List<System.Action>() { () => playerControler.Move(1, false, true) }));
 
     }
 }

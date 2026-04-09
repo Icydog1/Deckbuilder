@@ -12,14 +12,13 @@ public class AbilityUI : UIButton
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Awake()
     {
-        //playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        //typeText = transform.Find("ShowMoveCostText").GetComponent<VariableDisplayer>();
+        abilityText = transform.Find("AbilityText").GetComponent<TextMeshProUGUI>();
+        abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
         base.Awake();
     }
     void Start()
     {
-        abilityText = transform.Find("AbilityText").GetComponent<TextMeshProUGUI>();
-        abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
+
 
     }
 
@@ -36,9 +35,13 @@ public class AbilityUI : UIButton
 
     public void DisplayText(List<string> description)
     {
-        string text = description.ToString();
-
-        abilityText.text = text;
+        string displayedString = "";
+        foreach (string text in description)
+        {
+            displayedString += text;
+            displayedString += "\n";
+        }
+        abilityText.text = displayedString;
     }
 
 }

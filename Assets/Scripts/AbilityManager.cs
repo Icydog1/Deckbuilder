@@ -5,18 +5,26 @@ using UnityEngine;
 public class AbilityManager : MonoBehaviour
 {
     private int abilityPower;
-    public int AbilityPower {  get { return abilityPower; } set { abilityPower = value; } }
+    public int AbilityPower {  get { return abilityPower; } set { abilityPower = value; avaliblePowerDisplay.DisplayText(abilityPower); } }
 
-    private int selectedPower;
-    public int SelectedPower { get { return selectedPower; } set { selectedPower = value; } }
+    private int selectedPower = 0;
+    public int SelectedPower { get { return selectedPower; } set { selectedPower = Mathf.Max(Mathf.Min(value, abilityPower),0); UpdateAbilitiesDescription(); selectedPowerDisplay.DisplayText(selectedPower); } }
 
-    private List<Ability> abilities;
+    private List<Ability> abilities = new List<Ability>();
     [SerializeField]
     private GameObject abilityUIObject;
+    private GameObject abilitiesDescriptions;
+
+    private VariableDisplayer avaliblePowerDisplay, selectedPowerDisplay;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        abilitiesDescriptions = GameObject.Find("AbilitiesDescriptions");
+        avaliblePowerDisplay = abilitiesDescriptions.transform.Find("AvaliblePowerDisplay").GetComponent<VariableDisplayer>();
+        selectedPowerDisplay = abilitiesDescriptions.transform.Find("SelectedPowerDisplay").GetComponent<VariableDisplayer>();
+
+        AbilityPower = 100;
     }
 
     // Update is called once per frame
@@ -28,12 +36,14 @@ public class AbilityManager : MonoBehaviour
     public void GainAbility(int cost, List<System.Action> actions)
     {
         //Ability newAbility = new Ability(cost, actions);
-        Instantiate(abilityUIObject);
-        Debug.Log(cost);
-        Debug.Log(actions);
-        Debug.Log(actions[0]);
+        GameObject newAbilityUIObject = Instantiate(abilityUIObject, abilitiesDescriptions.transform);
+        AbilityUI newAbilityUI = newAbilityUIObject.GetComponent<AbilityUI>();
+        Ability newAbility = new Ability(cost, actions);
+        newAbility.AbilityUI = newAbilityUI;
 
-        abilities.Add(new Ability(cost, actions));
+        abilities.Add(newAbility);
+        newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450-abilities.Count * 50);
+
         UpdateAbilitiesDescription();
         //UpdateAbilities();
     }

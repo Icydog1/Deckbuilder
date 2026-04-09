@@ -28,10 +28,14 @@ public class PlayerControler : Figure
 
     public List<System.Action> currentActionQueue = new List<System.Action>();
 
-    private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward;
+    private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, canPreformAbilities;
     private bool waitUntilVariable;
     public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
+    public bool CanPreformAbilities { get { UpdatePlayer(); return canPreformAbilities; } }
+
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
+    public bool PreformingAbility { get { return preformingAbility; } set { preformingAbility = value; } }
+
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
     private int moveLeft, targetsLeft, attackDamageValue;
     private Condition[] appliedConditions;
@@ -47,9 +51,6 @@ public class PlayerControler : Figure
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
     public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
-    private int variableCardModifier;
-
-    public int VariableCardModifier { get { return variableCardModifier; } set { variableCardModifier = value; } }
     public bool NextAction { get { return nextAction; } set { nextAction = value; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -74,7 +75,7 @@ public class PlayerControler : Figure
         team = 0;
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
-        GainNewAbility(1, new List<System.Action>() {() => Lockpick(1,true) });
+        GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true) });
         base.Start();
     }
 
@@ -226,15 +227,17 @@ public class PlayerControler : Figure
     }
     public void UpdatePlayer()
     {
-        if (!cardPlayed && !gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards && !isPreformingAnimation)
+        if (!cardPlayed && !gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards && !isPreformingAnimation && !preformingAbility)
         {
             canPlayCards = true;
             canEndTurn = true;
+            canPreformAbilities = true;
         }
         else
         {
             canPlayCards = false;
             canEndTurn = false;
+            canPreformAbilities = false;
         }
         if (!gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards && !isPreformingAnimation)
         {
@@ -277,7 +280,7 @@ public class PlayerControler : Figure
     }
     public void ManualEnd()
     {
-        if (cardPlayed && isPlayerTurn)
+        if ((cardPlayed || preformingAbility) && isPlayerTurn)
         {
             ActionDone();
         }
@@ -365,7 +368,7 @@ public class PlayerControler : Figure
         }
         else
         {
-
+            abilityManager.AbilityPower += finalAbility;
         }
     }
 
@@ -373,9 +376,8 @@ public class PlayerControler : Figure
     {
         if (isVariable)
         {
-            int x = 1;
 
-            lockpickValue *= x;
+            lockpickValue *= variableCardModifier;
         }
         int finalLockpick = conditionManager.ModifyAbility(this, lockpickValue);
 

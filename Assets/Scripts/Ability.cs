@@ -13,15 +13,24 @@ public class Ability : MonoBehaviour
     protected List<string> description = new List<string>();
 
     private AbilityUI abilityUI;
-    protected PlayerControler playerControler;
+    public AbilityUI AbilityUI { get { return abilityUI; } set { abilityUI = value; } }
 
+    protected PlayerControler playerControler;
+    protected AbilityManager abilityManager;
+
+    public int Cost { get { return cost; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public virtual void Awake()
+    void Awake()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
+        abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
+        //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
     }
+    public void Start()
+    {
 
+
+    }
     // Update is called once per frame
     void Update()
     {
@@ -32,6 +41,7 @@ public class Ability : MonoBehaviour
     {
         abilities = preformedAbilities;
         cost = abilityCost;
+        Awake();
     }
     
     public void UpdateDiscription(int abilitiesPointsSpent)
@@ -53,14 +63,27 @@ public class Ability : MonoBehaviour
 
     public IEnumerator PreformAbility(int abilitiesPointsSpent)
     {
-        timesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
-        playerControler.VariableCardModifier = timesPreformed;
-        foreach (System.Action action in abilities)
+        if (playerControler.CanPreformAbilities)
         {
-            action();
-            yield return new WaitUntil(() => playerControler.NextAction == true);
-            playerControler.NextAction = false;
+            timesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
+            if (timesPreformed >= 1)
+            {
+                abilityManager.AbilityPower -= timesPreformed * cost;
+                abilityManager.SelectedPower = abilityManager.SelectedPower;
+                playerControler.VariableCardModifier = timesPreformed;
+                playerControler.PreformingAbility = true;
+                foreach (System.Action action in abilities)
+                {
+                    action();
+                    yield return new WaitUntil(() => playerControler.NextAction == true);
+                    playerControler.NextAction = false;
+                }
+                playerControler.PreformingAbility = false;
+
+            }
+
         }
+
     }
 }
 
