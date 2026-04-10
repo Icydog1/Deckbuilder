@@ -111,7 +111,26 @@ public class Figure : MonoBehaviour
     }
 
 
-
+    public string GetPlanString(List<System.Action> actions)
+    {
+        List<string> currentPlanDescription = planDescription;
+        bool currentPlanningState = isPlanning;
+        planDescription = new List<string>();
+        isPlanning = true;
+        foreach (System.Action action in actions)
+        {
+            action();
+        }
+        string displayedString = "";
+        foreach (string text in planDescription)
+        {
+            displayedString += text;
+            displayedString += " ";
+        }
+        planDescription = currentPlanDescription;
+        isPlanning = currentPlanningState;
+        return displayedString;
+    }
     public void Block(int blockValue, bool isVariable = false)
     {
         if (isVariable)

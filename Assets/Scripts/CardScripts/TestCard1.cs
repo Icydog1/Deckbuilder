@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
- public class TestCardScript : Card
+ public class TestCard1 : Card
 {
 
 

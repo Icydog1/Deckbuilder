@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Playables;
 using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
@@ -25,6 +24,7 @@ public class AbilityManager : MonoBehaviour
         selectedPowerDisplay = abilitiesDescriptions.transform.Find("SelectedPowerDisplay").GetComponent<VariableDisplayer>();
 
         AbilityPower = 100;
+
     }
 
     // Update is called once per frame
@@ -33,6 +33,7 @@ public class AbilityManager : MonoBehaviour
         
     }
 
+
     public void GainAbility(int cost, List<System.Action> actions)
     {
         //Ability newAbility = new Ability(cost, actions);
@@ -40,8 +41,8 @@ public class AbilityManager : MonoBehaviour
         AbilityUI newAbilityUI = newAbilityUIObject.GetComponent<AbilityUI>();
         Ability newAbility = new Ability(cost, actions);
         newAbility.AbilityUI = newAbilityUI;
-
         abilities.Add(newAbility);
+        newAbilityUI.AbilityNumber = abilities.Count - 1;
         newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450-abilities.Count * 50);
 
         UpdateAbilitiesDescription();
@@ -61,6 +62,6 @@ public class AbilityManager : MonoBehaviour
     public void ActivateAbility(int abilityNumber)
     {
         StartCoroutine(abilities[abilityNumber].PreformAbility(selectedPower));
-
+        //Debug.Log("activated " + abilityNumber);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -52,6 +53,7 @@ public class PlayerControler : Figure
     public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
     public bool NextAction { get { return nextAction; } set { nextAction = value; } }
+    public static event Action<PlayerControler> PlayerTurnStarted;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
@@ -76,6 +78,9 @@ public class PlayerControler : Figure
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
         GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true) });
+
+        GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
+
         base.Start();
     }
 
@@ -251,6 +256,11 @@ public class PlayerControler : Figure
 
     public void StartTurn()
     {
+        if (PlayerTurnStarted != null)
+        {
+            PlayerTurnStarted(this);
+        }
+        
         isPlayerTurn = true;
         TopEnergy = 2;
         BottomEnergy = 2;
@@ -369,6 +379,7 @@ public class PlayerControler : Figure
         else
         {
             abilityManager.AbilityPower += finalAbility;
+            ActionDone();
         }
     }
 
@@ -380,7 +391,7 @@ public class PlayerControler : Figure
             lockpickValue *= variableCardModifier;
         }
         int finalLockpick = conditionManager.ModifyAbility(this, lockpickValue);
-
+        //Debug.Log(finalLockpick);
         if (isPlanning)
         {
             string currentDescriptionString = "Lockpick " + finalLockpick;
@@ -395,6 +406,10 @@ public class PlayerControler : Figure
 
                 StartCoroutine(WaitUntilRewardSelected());
             }
+            else
+            {
+                ActionDone();
+            }
         }
     }
 
@@ -403,12 +418,13 @@ public class PlayerControler : Figure
 
         if (isPlanning)
         {
-            string currentDescriptionString = "Gain ability " + "";
+            string currentDescriptionString = "Gain ability: " + cost + " AP for " + GetPlanString(abilities);
             planDescription.Add(currentDescriptionString);
         }
         else
         {
             abilityManager.GainAbility(cost, abilities);
+            ActionDone();
         }
     }
     public IEnumerator WaitUntilRewardSelected()

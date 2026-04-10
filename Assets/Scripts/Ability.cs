@@ -1,7 +1,5 @@
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
 public class Ability : MonoBehaviour
@@ -9,6 +7,7 @@ public class Ability : MonoBehaviour
     protected int cost;
     protected int abilityValue, timesPreformed;
     private int maxTimes;
+    private bool isUsed;
     private List<System.Action> abilities = new List<System.Action>();
     protected List<string> description = new List<string>();
 
@@ -16,6 +15,7 @@ public class Ability : MonoBehaviour
     public AbilityUI AbilityUI { get { return abilityUI; } set { abilityUI = value; } }
 
     protected PlayerControler playerControler;
+    protected MouseManager mouseManager;
     protected AbilityManager abilityManager;
 
     public int Cost { get { return cost; } }
@@ -23,8 +23,11 @@ public class Ability : MonoBehaviour
     void Awake()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
+        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
+
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
         //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
+        PlayerControler.PlayerTurnStarted += resetAbilityCooldown;
     }
     public void Start()
     {
@@ -36,7 +39,12 @@ public class Ability : MonoBehaviour
     {
         
     }
-    
+    public void resetAbilityCooldown(PlayerControler playerControler)
+    {
+        isUsed = false;
+        abilityUI.DisplayUsed(false);
+    }
+
     public Ability(int abilityCost, List<System.Action> preformedAbilities)
     {
         abilities = preformedAbilities;
@@ -63,11 +71,14 @@ public class Ability : MonoBehaviour
 
     public IEnumerator PreformAbility(int abilitiesPointsSpent)
     {
-        if (playerControler.CanPreformAbilities)
+        if (playerControler.CanPreformAbilities && !isUsed)
         {
             timesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
             if (timesPreformed >= 1)
             {
+                isUsed = true;
+                abilityUI.DisplayUsed(true);
+                mouseManager.MouseOffObject(abilityUI.gameObject);
                 abilityManager.AbilityPower -= timesPreformed * cost;
                 abilityManager.SelectedPower = abilityManager.SelectedPower;
                 playerControler.VariableCardModifier = timesPreformed;
@@ -81,7 +92,6 @@ public class Ability : MonoBehaviour
                 playerControler.PreformingAbility = false;
 
             }
-
         }
 
     }
