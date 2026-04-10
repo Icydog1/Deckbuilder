@@ -6,12 +6,12 @@ public class Enemy : Figure
 {
 
     //protected Vector3 relativeHexPosToPlayer;
-
+    private string enemyName;
     protected delegate void moveSetsMethod();
     //protected List<moveSetsMethod> moveSets = new List<moveSetsMethod>();
     protected List<List<System.Action>> moveSets = new List<List<System.Action>>();
-
-
+    protected List<int> movesSetOrder = new List<int>() { -1};
+    protected int currentmove = 0;
     protected List<System.Action> currentPlan = new List<System.Action>();
     protected List<System.Action> plannedMoveSet;
     protected List<string> displayedPlan = new List<string>();
@@ -46,7 +46,19 @@ public class Enemy : Figure
         PlanDescription = displayedPlan;
         currentPlan.Clear();
         displayedPlan.Clear();
-        plannedMoveSet = moveSets[Random.Range(0, moveSets.Count)];
+        if (currentmove == movesSetOrder.Count)
+        {
+            currentmove = 0;
+        }
+        if (movesSetOrder[currentmove] == -1)
+        {
+            plannedMoveSet = moveSets[Random.Range(0, moveSets.Count)];
+        }
+        else
+        {
+            plannedMoveSet = moveSets[movesSetOrder[currentmove]];
+
+        }
         currentPlan = new List<System.Action>(plannedMoveSet);
         //Debug.Log("gotInitialPlan");
         UpdatePlan();
@@ -95,6 +107,7 @@ public class Enemy : Figure
             yield return new WaitUntil(() => nextAction == true);
             nextAction = false;
         }
+        currentmove++;
         EndTurn();
     }
 

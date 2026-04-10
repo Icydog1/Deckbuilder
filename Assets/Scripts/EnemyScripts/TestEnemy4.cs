@@ -1,25 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
-
-public class TestEnemy : Enemy
+public class TestEnemy4 : Enemy
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        moveSets.Add(new List<System.Action> { 
-            () => Move(10) 
-            ,() => Attack(15, 5)
-        });
         moveSets.Add(new List<System.Action> {
-            () => Attack(25, 6)
+            () => Move(5)
+            ,() => Attack(5)
+            ,() => ApplyCondition(new Strength(2))
+            ,() => ApplyCondition(new Speed(2))
         });
-        moveSets.Add(new List<System.Action> {
-            () => Move(20)
-            ,() => Attack(20, 4)
-        });
+
         maxHealth = 50;
         base.Start();
     }
 }
-

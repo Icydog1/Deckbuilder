@@ -7,41 +7,25 @@ public class TestEnemy2 : Enemy
     public override void Start()
     {
         moveSets.Add(new List<System.Action> {
-            () => Move(10)
-            ,() => Attack(15)
-        });
-        moveSets.Add(new List<System.Action> {
-
             () => Move(20)
-            ,() => Attack(10)
+            ,() => Attack(20)
         });
         moveSets.Add(new List<System.Action> {
 
-            () => Move(25)
-            ,() => Attack(5)
+            () => Move(15)
+            ,() => Attack(10)
+            ,() => ApplyCondition(new Strength(5))
         });
-        //moveSets.Add(MoveSet1);
-        //moveSets.Add(MoveSet2);
-        //moveSets.Add(MoveSet3);
+        moveSets.Add(new List<System.Action> {
+
+            () => Move(10)
+            ,() => Attack(5)
+            ,() => Block(10)
+            ,() => ApplyCondition(new Speed(5))
+
+        });
+
         maxHealth = 50;
         base.Start();
-    }
-
-    public void MoveSet1()
-    {
-        Move(10);
-        Attack(15);
-
-    }
-    public void MoveSet2()
-    {
-        Move(20);
-        Block(10);
-    }
-
-    public void MoveSet3()
-    {
-        Move(25);
-        Attack(5);
     }
 }

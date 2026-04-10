@@ -7,8 +7,7 @@ public class EnemySpawner : MonoBehaviour
     private List<GameObject> enemy = new List<GameObject>();
     private TurnManager turnManager;
     private float spawnChance = 0.1f;
-    [SerializeField]
-    private float spawnHeight;
+    private float spawnHeight = 12;
     private MapManager mapManager;
     private Vector2 OneToOnePos;
 

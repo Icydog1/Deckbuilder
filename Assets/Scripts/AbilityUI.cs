@@ -9,6 +9,7 @@ public class AbilityUI : UIButton
     private TextMeshProUGUI abilityText;
     private AbilityManager abilityManager;
     private Image blocker;
+    private Color blockerColor = new Color(0.25f, 0.25f, 0.25f, 0.75f);
 
     private int abilityNumber;
     public int AbilityNumber {  set { abilityNumber = value; } }
@@ -49,7 +50,15 @@ public class AbilityUI : UIButton
     }
     public void DisplayUsed(bool isUsed)
     {
-        blocker.enabled = isUsed;
+        if (isUsed)
+        {
+            blocker.GetComponent<Image>().color = blockerColor;
+        }
+        else
+        {
+            blocker.GetComponent<Image>().color = Color.clear;
+
+        }
         GetComponent<DetectMouseOver>().enabled = !isUsed;
     }
 }

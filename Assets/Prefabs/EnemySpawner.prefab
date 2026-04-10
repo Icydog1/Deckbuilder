@@ -47,4 +47,7 @@ MonoBehaviour:
   enemy:
   - {fileID: 8200818806492408565, guid: 5c2f50d2540c7aa4b84d72dd28b11ed8, type: 3}
   - {fileID: 754991334857286953, guid: 2286cc366c6a8e646b7c92a424d49812, type: 3}
+  - {fileID: 4123394013621000764, guid: 08398da0b0ea6d94f8f8f6d948e4a3c1, type: 3}
+  - {fileID: 8269086330902769377, guid: 99b3190f93566aa49a671972ca85e183, type: 3}
+  - {fileID: 3989307062711343835, guid: aab69fb77074dda4ab5132eb7f9d56a9, type: 3}
   spawnHeight: 12
