@@ -4563,12 +4563,7 @@ MonoBehaviour:
   - {fileID: 8223758667069257376, guid: 6df655332e228174da5b573c6099fb92, type: 3}
   - {fileID: 1962054234577033496, guid: 26b2c5be54ef3584b8b58640a5caf8b8, type: 3}
   - {fileID: 9218115205761869585, guid: b7cfcb45a7aea784f9ad392550224247, type: 3}
-  initialRoomWeights:
-  - 0
-  - 1
-  - 1
-  - 1
-  - 1
+  - {fileID: 646555107119238115, guid: 59e675f0742c088459479abf96ffa8ab, type: 3}
 --- !u!4 &887113702
 Transform:
   m_ObjectHideFlags: 0

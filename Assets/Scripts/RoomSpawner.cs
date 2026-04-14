@@ -10,8 +10,8 @@ public class RoomSpawner : MonoBehaviour
 
     [SerializeField]
     private GameObject[] rooms;
-    [SerializeField]
-    private float[] initialRoomWeights = {0, 1f, 1f, 1f, 1f}; //, 0.6f, 0.05f 
+    //[SerializeField]
+    private float[] initialRoomWeights = {0,1,1,1,1,100000}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
     private float realativeRotation = 0;
     private List<GameObject> existingRooms = new List<GameObject>();
@@ -27,6 +27,24 @@ public class RoomSpawner : MonoBehaviour
 
         tileWidth = mapManager.TileWidth;
         tileHeight = mapManager.TileHeight;
+        if (initialRoomWeights.Length != rooms.Length)
+        {
+
+            float[] baseRoomWeights = new float[rooms.Length];
+            for(int i = 0; i < rooms.Length; i++)
+            {
+                if (initialRoomWeights.Length > i)
+                {
+                    baseRoomWeights[i] = initialRoomWeights[i];
+                }
+                else
+                {
+                    baseRoomWeights[i] = 1f;
+                }
+            }
+            initialRoomWeights = baseRoomWeights;
+
+        }
         BuildRoomProbabilities(initialRoomWeights);
         LevelManager.LevelCleared += ClearRooms;
     }
