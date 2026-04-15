@@ -5,8 +5,8 @@ public class Lootable : MonoBehaviour
     [SerializeField]
     private GameObject lootedTile;
     private RewardManager rewardManager;
+    [SerializeField]
     private bool isCard;
-    private bool isRelic;
     private float rarity = 1;
     [SerializeField]
     private int lockpickDifficulty = 10;
@@ -36,7 +36,7 @@ public class Lootable : MonoBehaviour
         LockpickDifficulty -= lockpickValue;
         if (LockpickDifficulty <= 0)
         {
-            rewardManager.TileReward(gameObject);
+            rewardManager.TileReward(gameObject, isCard);
         }
     }
 }

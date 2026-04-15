@@ -10,11 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 156239944842639177, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Name
-      value: VariableTerrainCost
+      value: DeprecatedVariableTerrainCost
       objectReference: {fileID: 0}
     - target: {fileID: 1050918151112110569, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: moveCost
-      value: 10
+      value: 100000
       objectReference: {fileID: 0}
     - target: {fileID: 1050918151112110569, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: changeColor
@@ -62,15 +62,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Color.b
-      value: 0.20754719
+      value: 0.43529412
       objectReference: {fileID: 0}
     - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Color.g
-      value: 0.20754719
+      value: 0.43529412
       objectReference: {fileID: 0}
     - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
       propertyPath: m_Color.r
-      value: 0.20754719
+      value: 0.43529412
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -7,7 +7,8 @@ public class UIButton : MonoBehaviour
     private Color baseColor;
     public Color ClickedColor { get { return clickedColor; }}
     public Color BaseColor { get { return baseColor; } }
-
+    [SerializeField]
+    private bool multiClickWhileDown;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Awake()

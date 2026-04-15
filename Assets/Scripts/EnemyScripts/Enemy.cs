@@ -56,8 +56,8 @@ public class Enemy : Figure
         }
         else
         {
+            Debug.Log(movesSetOrder[currentmove]);
             plannedMoveSet = moveSets[movesSetOrder[currentmove]];
-
         }
         currentPlan = new List<System.Action>(plannedMoveSet);
         //Debug.Log("gotInitialPlan");

@@ -38,7 +38,14 @@ public class FigureStats : MonoBehaviour
     
     public void SetHealthAndBlock(int health, int block)
     {
-        healthText.SetText("Health: " + health + " Block: " + block);
+        if (block > 0)
+        {
+            healthText.SetText("Health: " + health + " Block: " + block);
+        }
+        else
+        {
+            healthText.SetText("Health: " + health);
+        }
     }
 
     public void DisplayConditions(List<Condition> conditions)

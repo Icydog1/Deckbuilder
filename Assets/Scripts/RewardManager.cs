@@ -115,14 +115,14 @@ public class RewardManager : MonoBehaviour
     }
 
 
-    public void TileReward(GameObject tile)
+    public void TileReward(GameObject tile, bool isCard)
     {
         AnyReward();
         tileScript = tile.GetComponent<Lootable>();
         tileScript.Looted();
         //rewardRarity = tileScript.Raity;
 
-        GenerateReward(3);
+        GenerateReward(3, isCard);
     }
     public void BossReward()
     {

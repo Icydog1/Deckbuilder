@@ -249,7 +249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 50140903}
   m_Layer: 0
-  m_Name: Tester
+  m_Name: StartRelics
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1174,6 +1174,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 180456765}
   m_CullTransparentMesh: 1
+--- !u!1001 &196592944
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 642057486695467527, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1588885295552724964, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
+      propertyPath: m_Name
+      value: EmptyTile
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
 --- !u!1 &229682092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1335,6 +1392,10 @@ PrefabInstance:
     - target: {fileID: 663959561139009505, guid: 5ae60d4e096a1f44fb5fcd0c3adec70d, type: 3}
       propertyPath: m_Name
       value: TestStrengthRelic (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 663959561139009505, guid: 5ae60d4e096a1f44fb5fcd0c3adec70d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3786831110933247125, guid: 5ae60d4e096a1f44fb5fcd0c3adec70d, type: 3}
       propertyPath: m_Pivot.x
@@ -1550,6 +1611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f8eef224c446f142bb68cb9deb0a723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
   powerIncrease: 1
 --- !u!114 &278442231
 MonoBehaviour:
@@ -1638,6 +1700,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf68fae791c259a4c97daa932a6a2e87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
   listName: entireDeck
   isRandomOrder: 0
 --- !u!114 &289158496
@@ -2258,6 +2321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5f6d35bc0e776c43b67077fbba14b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
 --- !u!1 &367750120
 GameObject:
   m_ObjectHideFlags: 0
@@ -2438,6 +2502,10 @@ PrefabInstance:
     - target: {fileID: 7593476723129728348, guid: a6936a00a85b1ac4796a141a3ab6947b, type: 3}
       propertyPath: m_Name
       value: TestSpeedRelic
+      objectReference: {fileID: 0}
+    - target: {fileID: 7593476723129728348, guid: a6936a00a85b1ac4796a141a3ab6947b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3215,6 +3283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf68fae791c259a4c97daa932a6a2e87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
   listName: deckContents
   isRandomOrder: 1
 --- !u!114 &547518715
@@ -3797,6 +3866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f8eef224c446f142bb68cb9deb0a723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
   powerIncrease: -1
 --- !u!114 &767929041
 MonoBehaviour:
@@ -3886,6 +3956,10 @@ PrefabInstance:
     - target: {fileID: 5795666314669812343, guid: 20c7e432cc30b2343a315df4b6c93291, type: 3}
       propertyPath: m_Name
       value: TestDextarityRelic
+      objectReference: {fileID: 0}
+    - target: {fileID: 5795666314669812343, guid: 20c7e432cc30b2343a315df4b6c93291, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7914243643285678339, guid: 20c7e432cc30b2343a315df4b6c93291, type: 3}
       propertyPath: m_Pivot.x
@@ -5783,6 +5857,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a129045e5bd68d4a9b1a1076ecfcbb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
 --- !u!114 &1163138101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7310,6 +7385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b213cc1c7e6de4a8ab07feba03f90c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
 --- !u!1 &1788529100
 GameObject:
   m_ObjectHideFlags: 0
@@ -7397,6 +7473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16b2126b7279bc447900f947340db347, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
 --- !u!1 &1799867438
 GameObject:
   m_ObjectHideFlags: 0
@@ -7483,6 +7560,10 @@ PrefabInstance:
     - target: {fileID: 663959561139009505, guid: 5ae60d4e096a1f44fb5fcd0c3adec70d, type: 3}
       propertyPath: m_Name
       value: TestStrengthRelic
+      objectReference: {fileID: 0}
+    - target: {fileID: 663959561139009505, guid: 5ae60d4e096a1f44fb5fcd0c3adec70d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3786831110933247125, guid: 5ae60d4e096a1f44fb5fcd0c3adec70d, type: 3}
       propertyPath: m_Pivot.x
@@ -7764,6 +7845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf68fae791c259a4c97daa932a6a2e87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  multiClickWhileDown: 0
   listName: discardContents
   isRandomOrder: 0
 --- !u!114 &1888614624
@@ -9647,3 +9729,4 @@ SceneRoots:
   - {fileID: 367750122}
   - {fileID: 50140903}
   - {fileID: 48689495}
+  - {fileID: 196592944}

@@ -15,7 +15,7 @@ public class TestEnemy5 : Enemy
             () => ApplyCondition(new Strength(4))
         });
 
-        movesSetOrder = new List<int>() {1,2 };
+        movesSetOrder = new List<int>() {0,1};
         maxHealth = 50;
         base.Start();
     }

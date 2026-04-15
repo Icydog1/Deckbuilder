@@ -36,15 +36,19 @@ public class RelicManager : MonoBehaviour
     }
     public void TestGainRelic(GameManager gameManager)
     {
-        GameObject tester = GameObject.Find("Tester");
+        GameObject tester = GameObject.Find("StartRelics");
         List<GameObject> testObjects = new List<GameObject>();
         for (int i = 0; i < tester.transform.childCount; i++)
         {
             testObjects.Add(tester.transform.GetChild(i).gameObject);
         }
-        foreach (GameObject obj in testObjects)
+        foreach (GameObject relic in testObjects)
         {
-            GainRelic(obj);
+            if (relic.activeInHierarchy)
+            {
+                GainRelic(relic);
+
+            }
         }
 
     }
