@@ -11,7 +11,7 @@ public class RoomSpawner : MonoBehaviour
     [SerializeField]
     private GameObject[] rooms;
     //[SerializeField]
-    private float[] initialRoomWeights = {0,1,1,1,1,100000}; //, 0.6f, 0.05f 
+    private float[] initialRoomWeights = {0,1,1,1,1,1}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
     private float realativeRotation = 0;
     private List<GameObject> existingRooms = new List<GameObject>();

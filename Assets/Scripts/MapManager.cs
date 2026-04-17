@@ -54,14 +54,20 @@ public class MapManager : MonoBehaviour
             {
                 foreach (Tile tileScript in tiles)
                 {
-                    tileScript.MoveCostDisplay.DisplayText(baseMoveCost);
+                    if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())))
+                    {
+                        tileScript.MoveCostDisplay.DisplayText(baseMoveCost);
+                    }
                 }
             }
             else
             {
                 foreach (Tile tileScript in tiles)
                 {
-                    tileScript.MoveCostDisplay.DisplayText(tileScript.MoveCost);
+                    if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())) && !tileScript.gameObject.GetComponent<Obstacle>())
+                    {
+                        tileScript.MoveCostDisplay.DisplayText(tileScript.MoveCost);
+                    }
                 }
             }
         }

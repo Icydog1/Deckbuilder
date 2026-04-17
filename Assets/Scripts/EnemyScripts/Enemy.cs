@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : Figure
@@ -29,6 +30,10 @@ public class Enemy : Figure
     }
     public override void Start()
     {
+        if (moveSets.Count == 0)
+        {
+            Debug.Log("Warning no planed movesets on " + gameObject);
+        }
         enemyStatsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
         statsDisplayer = enemyStatsDisplayer;
         isEnemy = true;
@@ -39,6 +44,7 @@ public class Enemy : Figure
         health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
         GetNewPlan(null);
+
     }
 
     public void GetNewPlan(TurnManager turnManager)
@@ -56,7 +62,7 @@ public class Enemy : Figure
         }
         else
         {
-            Debug.Log(movesSetOrder[currentmove]);
+            //Debug.Log(movesSetOrder[currentmove]);
             plannedMoveSet = moveSets[movesSetOrder[currentmove]];
         }
         currentPlan = new List<System.Action>(plannedMoveSet);

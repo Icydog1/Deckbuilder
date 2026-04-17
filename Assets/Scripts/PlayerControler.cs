@@ -40,7 +40,10 @@ public class PlayerControler : Figure
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
     private int moveLeft, targetsLeft, attackDamageValue;
     private Condition[] appliedConditions;
-    private bool canJump;
+    private bool canJump, canMove;
+    private bool CanJump { set { canJump = value; UpdateMoveType(); } }
+    public bool CanMove { get { UpdatePlayer(); return canMove; } set { canMove = value; } }
+
     private int range;
     private bool isTargetATile, isTargetAEnemy;
     private GameObject selectedTile;
@@ -153,22 +156,27 @@ public class PlayerControler : Figure
     }
     public void PlanMove(GameObject tile)
     {
-        foreach (Vector2 tileCords in pathfinder.ActualPath)
+        if (!isPreformingAnimation)
         {
-            GameObject newTile = mapManager.GetTileAtHex(tileCords);
-            if (newTile != null)
+            foreach (Vector2 tileCords in pathfinder.ActualPath)
             {
+                GameObject newTile = mapManager.GetTileAtHex(tileCords);
+                if (newTile != null)
+                {
+                    GameObject border = newTile.transform.Find("Border").gameObject;
+                    border.GetComponent<SpriteRenderer>().color = Color.black;
+                }
+            }
+            pathfinder.PlanPathToTile(oneToOnePos, mapManager.PosToOneToOne(tile.transform.position), gameObject, moveLeft, canJump, canFly);
+            foreach (Vector2 tileCords in pathfinder.ActualPath)
+            {
+                GameObject newTile = mapManager.GetTileAtHex(tileCords);
                 GameObject border = newTile.transform.Find("Border").gameObject;
-                border.GetComponent<SpriteRenderer>().color = Color.black;
+                border.GetComponent<SpriteRenderer>().color = Color.yellow;
             }
         }
-        pathfinder.PlanPathToTile(oneToOnePos, mapManager.PosToOneToOne(tile.transform.position), gameObject, moveLeft, canJump, canFly);
-        foreach (Vector2 tileCords in pathfinder.ActualPath)
-        {
-            GameObject newTile = mapManager.GetTileAtHex(tileCords);
-            GameObject border = newTile.transform.Find("Border").gameObject;
-            border.GetComponent<SpriteRenderer>().color = Color.yellow;
-        }
+
+
     }
     public IEnumerator MoveAlongPath()
     {
@@ -247,11 +255,21 @@ public class PlayerControler : Figure
         if (!gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards && !isPreformingAnimation)
         {
             canPreformActions = true;
+            if (isMoving)
+            {
+                canMove = true;
+            }
+            else
+            {
+                canMove = false;
+            }
         }
         else
         {
             canPreformActions = false;
+            canMove = false;
         }
+
     }
 
     public void StartTurn()
@@ -303,7 +321,7 @@ public class PlayerControler : Figure
             mapManager.showMoveCost(false);
         }
         isMoving = false;
-        canJump = false;
+        CanJump = false;
         isAttacking = false;
         actionDone = true;
         isTargetATile = false;
@@ -322,7 +340,7 @@ public class PlayerControler : Figure
             mapManager.showMoveCost(false);
         }
         isMoving = false;
-        canJump = false;
+        CanJump = false;
         isAttacking = false;
         actionDone = true;
         isTargetATile = false;
@@ -339,10 +357,10 @@ public class PlayerControler : Figure
         isMoving = true;
         isTargetATile = true;
         moveLeft = moveValue;
-        canJump = isJump;
+        CanJump = isJump;
         if (moveCostDisplaySetting == "On Move")
         {
-            mapManager.showMoveCost(true, isJump, canFly);
+            ShowMoveCostDisplay();
         }
     }
 
@@ -443,6 +461,11 @@ public class PlayerControler : Figure
     public override void Die()
     {
         Debug.Log("You Died");
+    }
+
+    public void UpdateMoveType()
+    {
+        ShowMoveCostDisplay();
     }
 
 

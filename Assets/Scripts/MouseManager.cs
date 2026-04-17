@@ -126,6 +126,10 @@ public class MouseManager : MonoBehaviour
             hoveredObject = selectedObject;
             tooltipManager.StartHoveringOver(hoveredObject);
         }
+        if (playerControler.CanMove && selectedObject.GetComponent<Tile>())
+        {
+            playerControler.PlanMove(selectedObject);
+        }
 
     }
     public void MouseOffObject(GameObject newObject)
@@ -258,6 +262,14 @@ public class MouseManager : MonoBehaviour
             {
                 rewardManager.RewardSelected(clickedObject);
             }
+        }
+        if (selectedObject.GetComponent<Tile>())
+        {
+            if (playerControler.CanMove)
+            {
+                playerControler.PlanMove(selectedObject);
+            }
+            StartCoroutine(playerControler.MoveAlongPath());
         }
         if (!dragableClicked)
         {

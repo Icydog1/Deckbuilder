@@ -21,7 +21,10 @@ public class EnemySpawner : MonoBehaviour
 
         SpawnEnemy();
 
-
+        if (enemy[0].name == "BaseEnemy")
+        {
+            Debug.Log("Warning: " + gameObject + " tried to summonBase enemy");
+        }
 
         TurnManager.RoundEnded += AttemptToSpawnEnemy;
 
