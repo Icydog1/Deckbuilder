@@ -8,6 +8,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class MouseManager : MonoBehaviour
 {
     private bool mouseDown, shortClick, dragableClicked;
+    public bool MouseDown { get { return mouseDown; } }
     private float bottomPlayLine = 0.3f, topPlayLine = 0.6f;
     private Vector2 mousePos, worldMousePos;
     public GameObject selectedObject, clickedObject;
@@ -126,7 +127,7 @@ public class MouseManager : MonoBehaviour
             hoveredObject = selectedObject;
             tooltipManager.StartHoveringOver(hoveredObject);
         }
-        if (playerControler.CanMove && selectedObject.GetComponent<Tile>())
+        if (playerControler.CanMove && selectedObject.GetComponent<Tile>() && mouseDown)
         {
             playerControler.PlanMove(selectedObject);
         }
@@ -189,10 +190,11 @@ public class MouseManager : MonoBehaviour
         clickedObject = selectedObject;
         if (clickedObject && clickedObject.GetComponent<UIButton>())
         {
-            if (clickedObject.GetComponent<UIButton>())
+            GameObject image = clickedObject.transform.Find("Image").gameObject;
+            image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().ClickedColor;
+            if (clickedObject.GetComponent<ChangeAbilityPower>())
             {
-                GameObject image = clickedObject.transform.Find("Image").gameObject;
-                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().ClickedColor;
+                StartCoroutine(clickedObject.GetComponent<ChangeAbilityPower>().HoldClick());
             }
         }
         if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.CanPlayCards == true)
@@ -215,11 +217,8 @@ public class MouseManager : MonoBehaviour
     {
         if (clickedObject && clickedObject.GetComponent<UIButton>())
         {
-            if (clickedObject.GetComponent<UIButton>())
-            {
-                GameObject image = clickedObject.transform.Find("Image").gameObject;
-                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
-            }
+            GameObject image = clickedObject.transform.Find("Image").gameObject;
+            image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
         }
         if (dragableClicked && !shortClick)
         {
@@ -250,7 +249,7 @@ public class MouseManager : MonoBehaviour
             {
                 playerControler.TileClicked(clickedObject);
             }
-            if (clickedObject.GetComponent<UIButton>())
+            if (clickedObject.GetComponent<UIButton>() && !clickedObject.GetComponent<ChangeAbilityPower>())
             {
                 clickedObject.GetComponent<UIButton>().Activate();
             }
@@ -263,12 +262,9 @@ public class MouseManager : MonoBehaviour
                 rewardManager.RewardSelected(clickedObject);
             }
         }
-        if (selectedObject.GetComponent<Tile>())
+        if (selectedObject && selectedObject.GetComponent<Tile>() && playerControler.CanMove)
         {
-            if (playerControler.CanMove)
-            {
-                playerControler.PlanMove(selectedObject);
-            }
+            playerControler.PlanMove(selectedObject);
             StartCoroutine(playerControler.MoveAlongPath());
         }
         if (!dragableClicked)

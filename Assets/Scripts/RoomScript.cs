@@ -107,7 +107,7 @@ public class RoomScript : MonoBehaviour
         }
         if (startDirections.Count == 0)
         {
-            Debug.Log("No Start Direction");
+            Debug.Log("No Room Start Direction");
             startDirections.Add(0);
         }
         return startDirections[Random.Range(0, startDirections.Count)];

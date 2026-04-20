@@ -13,7 +13,7 @@ public class VariableDisplayer : MonoBehaviour
     void Awake()
     {
         textBox = GetComponent<TextMeshProUGUI>();
-        transform.rotation = Quaternion.identity;
+        //transform.rotation = Quaternion.identity;
     }
 
     // Update is called once per frame

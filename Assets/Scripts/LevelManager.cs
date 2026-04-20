@@ -37,6 +37,14 @@ public class LevelManager : MonoBehaviour
     {
         
     }
+    public void StartLevel()
+    {
+        level = 1;
+        isBossLevel = false;
+        player.transform.position = new Vector3(0, 0, player.transform.position.z);
+        camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
+        roomSpawner.SpawnStartingRoom();
+    }
 
     public void GoUpLevel()
     {

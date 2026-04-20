@@ -261,12 +261,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e67d2512ff2fa2844a971483c55b28c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isLeftEntrance: 0
-  isTopLeftEntrance: 0
-  isTopRightEntrance: 0
-  isRightEntrance: 0
-  isBottomRightEntrance: 0
-  isBottomLeftEntrance: 0
+  isLeftEntrance: 1
+  isTopLeftEntrance: 1
+  isTopRightEntrance: 1
+  isRightEntrance: 1
+  isBottomRightEntrance: 1
+  isBottomLeftEntrance: 1
 --- !u!1001 &153118381766693035
 PrefabInstance:
   m_ObjectHideFlags: 0

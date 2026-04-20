@@ -12,7 +12,9 @@ public class GameManager : MonoBehaviour
     private MouseManager mouseManager;
     private TurnManager turnManager;
     private RoomSpawner roomSpawner;
+    private LevelManager levelManager;
 
+    
     private bool nextAction;
     public static event Action<GameManager> GameStarted;
 
@@ -26,6 +28,7 @@ public class GameManager : MonoBehaviour
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
 
 
         StartCoroutine(StartGame());
@@ -42,15 +45,16 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartGame()
     {
-
         yield return new WaitForEndOfFrame();
+
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
         if (GameStarted != null)
         {
             GameStarted(this);
         }
-        roomSpawner.SpawnStartingRoom();
+        levelManager.StartLevel();
+        //roomSpawner.SpawnStartingRoom();
         turnManager.StartTakingTurns();
     }
 
@@ -58,5 +62,21 @@ public class GameManager : MonoBehaviour
     {
         nextAction = true;
     }
+//    public IEnumerator ReStartGame()
 
+    public void ReStartGame()
+    {
+        levelManager.ClearLevel();
+        //yield return new WaitForEndOfFrame();
+        //yield return new WaitUntil(() => nextAction == true);
+        //nextAction = false;
+        if (GameStarted != null)
+        {
+            GameStarted(this);
+        }
+        levelManager.StartLevel();
+
+        //roomSpawner.SpawnStartingRoom();
+        turnManager.StartTakingTurns();
+    }
 }

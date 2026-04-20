@@ -22,6 +22,8 @@ public class Tile : MonoBehaviour
         {
             moveCost = 1;
         }
+        transform.Find("TileUI").rotation = Quaternion.identity;
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

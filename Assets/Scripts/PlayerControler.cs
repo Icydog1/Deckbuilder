@@ -80,7 +80,7 @@ public class PlayerControler : Figure
         team = 0;
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
-        GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true) });
+        GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true)});
 
         GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
 
@@ -448,18 +448,19 @@ public class PlayerControler : Figure
     public IEnumerator WaitUntilRewardSelected()
     {
         yield return new WaitUntil(() => gettingReward == false);
-        Debug.Log("test");
+        //Debug.Log("test");
         ActionDone();
     }
     public IEnumerator WaitUntil()
     {
         yield return new WaitUntil(() => waitUntilVariable == false);
-        Debug.Log("test");
+        //Debug.Log("test");
         ActionDone();
     }
 
     public override void Die()
     {
+        gameManager.ReStartGame();
         Debug.Log("You Died");
     }
 

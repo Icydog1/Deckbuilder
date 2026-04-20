@@ -58,15 +58,14 @@ public class Ability : MonoBehaviour
         description.Clear();
         playerControler.IsPlanning = true;
         playerControler.PlanDescription = description;
-        timesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
-        playerControler.VariableCardModifier = timesPreformed;
+        int potentialTimesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
+        playerControler.VariableCardModifier = potentialTimesPreformed * cost;
         foreach (System.Action action in abilities)
         {
             action();
         }
         abilityUI.DisplayText(description);
         playerControler.IsPlanning = false;
-
     }
 
     public IEnumerator PreformAbility(int abilitiesPointsSpent)
@@ -74,6 +73,7 @@ public class Ability : MonoBehaviour
         if (playerControler.CanPreformAbilities && !isUsed)
         {
             timesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
+
             if (timesPreformed >= 1)
             {
                 isUsed = true;
@@ -81,16 +81,18 @@ public class Ability : MonoBehaviour
                 mouseManager.MouseOffObject(abilityUI.gameObject);
                 abilityManager.AbilityPower -= timesPreformed * cost;
                 abilityManager.SelectedPower = abilityManager.SelectedPower;
-                playerControler.VariableCardModifier = timesPreformed;
+                playerControler.VariableCardModifier = timesPreformed * cost;
+
                 playerControler.PreformingAbility = true;
+                playerControler.NextAction = false;
                 foreach (System.Action action in abilities)
                 {
                     action();
                     yield return new WaitUntil(() => playerControler.NextAction == true);
                     playerControler.NextAction = false;
                 }
+                Debug.Log("done");
                 playerControler.PreformingAbility = false;
-
             }
         }
 

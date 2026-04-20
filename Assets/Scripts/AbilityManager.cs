@@ -23,7 +23,7 @@ public class AbilityManager : MonoBehaviour
         avaliblePowerDisplay = abilitiesDescriptions.transform.Find("AvaliblePowerDisplay").GetComponent<VariableDisplayer>();
         selectedPowerDisplay = abilitiesDescriptions.transform.Find("SelectedPowerDisplay").GetComponent<VariableDisplayer>();
 
-        AbilityPower = 100;
+        AbilityPower = 15000;
 
     }
 
