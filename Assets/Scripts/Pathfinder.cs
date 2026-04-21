@@ -335,7 +335,15 @@ public class Pathfinder : MonoBehaviour
         }
         else if (isJump || isFly)
         {
-            moveCost = mapManager.BaseMoveCost;
+            //moveCost = mapManager.BaseMoveCost;
+            if (pathFromFigure)
+            {
+                moveCost = Mathf.Min(tile.GetComponent<Tile>().MoveCost, mapManager.BaseMoveCost);
+            }
+            else
+            {
+                moveCost = Mathf.Min(addedCost, mapManager.BaseMoveCost);
+            }
         }
         else
         {

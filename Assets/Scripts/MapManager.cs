@@ -56,7 +56,7 @@ public class MapManager : MonoBehaviour
                 {
                     if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())))
                     {
-                        tileScript.MoveCostDisplay.DisplayText(baseMoveCost);
+                        tileScript.MoveCostDisplay.DisplayText(Mathf.Min(tileScript.MoveCost, baseMoveCost));
                     }
                 }
             }

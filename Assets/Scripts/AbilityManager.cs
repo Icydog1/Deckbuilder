@@ -23,8 +23,8 @@ public class AbilityManager : MonoBehaviour
         avaliblePowerDisplay = abilitiesDescriptions.transform.Find("AvaliblePowerDisplay").GetComponent<VariableDisplayer>();
         selectedPowerDisplay = abilitiesDescriptions.transform.Find("SelectedPowerDisplay").GetComponent<VariableDisplayer>();
 
-        AbilityPower = 15000;
-
+        AbilityPower = 0;
+        PlayerControler.PlayerTurnStarted += ResetAbilityPower;
     }
 
     // Update is called once per frame
@@ -33,6 +33,11 @@ public class AbilityManager : MonoBehaviour
         
     }
 
+    public void ResetAbilityPower(PlayerControler playerControler)
+    {
+        AbilityPower = 0;
+        SelectedPower = 0;
+    }
 
     public void GainAbility(int cost, List<System.Action> actions)
     {

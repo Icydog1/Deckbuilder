@@ -7,6 +7,7 @@ public class ChangeAbilityPower : UIButton
 {
     private AbilityManager abilityManager;
     private MouseManager mouseManager;
+    //private float timeHeld;
     [SerializeField]
     private int powerIncrease;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -31,14 +32,14 @@ public class ChangeAbilityPower : UIButton
 
     public IEnumerator HoldClick()
     {
-        for (int timeHeldDown = 1; mouseManager.MouseDown; timeHeldDown++)
+        for (int timeHeldDown = 2; true; timeHeldDown++)
         {
-            yield return new WaitForSeconds(1 / timeHeldDown);
-            Debug.Log(timeHeldDown);
             if (mouseManager.selectedObject == gameObject)
             {
                 Activate();
             }
+            yield return new WaitForSeconds(1 / Mathf.Pow((float)timeHeldDown * 10,0.5f));
         }
     }
+
 }

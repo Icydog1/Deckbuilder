@@ -15,6 +15,7 @@ public class MouseManager : MonoBehaviour
     public GameObject SelectedObject { get { return selectedObject; } }
     public GameObject ClickedObject { get { return clickedObject; } }
     private GameObject hoveredObject;
+    private IEnumerator heldButtonRoutine;
 
     private float selectedHeight = -Mathf.Infinity;
     private List<GameObject> mouseOver = new List<GameObject>();
@@ -194,7 +195,7 @@ public class MouseManager : MonoBehaviour
             image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().ClickedColor;
             if (clickedObject.GetComponent<ChangeAbilityPower>())
             {
-                StartCoroutine(clickedObject.GetComponent<ChangeAbilityPower>().HoldClick());
+                StartCoroutine(heldButtonRoutine = clickedObject.GetComponent<ChangeAbilityPower>().HoldClick());
             }
         }
         if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.CanPlayCards == true)
@@ -215,6 +216,11 @@ public class MouseManager : MonoBehaviour
     }
     public void MouseReleased()
     {
+        if (heldButtonRoutine != null)
+        {
+            StopCoroutine(heldButtonRoutine);
+        }
+
         if (clickedObject && clickedObject.GetComponent<UIButton>())
         {
             GameObject image = clickedObject.transform.Find("Image").gameObject;

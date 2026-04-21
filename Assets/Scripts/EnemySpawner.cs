@@ -17,7 +17,7 @@ public class EnemySpawner : MonoBehaviour
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         OneToOnePos = mapManager.PosToOneToOne(transform.position);
-        transform.position = new Vector3(transform.position.x, transform.position.y, spawnHeight);
+        //transform.position = new Vector3(transform.position.x, transform.position.y, spawnHeight);
 
         SpawnEnemy();
 
@@ -54,7 +54,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void SpawnEnemy()
     {
-        Instantiate(enemy[Random.Range(0,enemy.Count)], transform.position, Quaternion.identity);
+        Instantiate(enemy[Random.Range(0,enemy.Count)], new Vector3(transform.position.x, transform.position.y, spawnHeight), Quaternion.identity);
     }
 
 }
