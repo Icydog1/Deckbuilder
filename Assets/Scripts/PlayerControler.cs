@@ -81,7 +81,7 @@ public class PlayerControler : Figure
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
         GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true)});
-
+        //increasing ability cost doesnt work
         GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
 
         base.Start();
@@ -397,6 +397,7 @@ public class PlayerControler : Figure
         else
         {
             abilityManager.AbilityPower += finalAbility;
+            abilityManager.SelectedPower += finalAbility;
             ActionDone();
         }
     }

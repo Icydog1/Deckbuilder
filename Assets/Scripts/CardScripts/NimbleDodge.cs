@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class TestCard4 : Card
+public class NimbleDodge : Card
 {
     public override void Start()
     {
@@ -17,7 +17,7 @@ public class TestCard4 : Card
 
     public override void PrepareTop()
     {
-        topActions.Add(() => playerControler.Block(15));
+        topActions.Add(() => playerControler.Block(25));
     }
 
     public override void PrepareBottom()

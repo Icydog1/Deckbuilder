@@ -41,7 +41,8 @@ public class AbilityManager : MonoBehaviour
 
     public void GainAbility(int cost, List<System.Action> actions)
     {
-        //Ability newAbility = new Ability(cost, actions);
+        //increasing ability cost doesnt work
+
         GameObject newAbilityUIObject = Instantiate(abilityUIObject, abilitiesDescriptions.transform);
         AbilityUI newAbilityUI = newAbilityUIObject.GetComponent<AbilityUI>();
         Ability newAbility = new Ability(cost, actions);
@@ -51,7 +52,6 @@ public class AbilityManager : MonoBehaviour
         newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450-abilities.Count * 50);
 
         UpdateAbilitiesDescription();
-        //UpdateAbilities();
     }
 
 

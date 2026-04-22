@@ -1,11 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
- public class TestCard3 : Card
-{
-    public override void Start()
+ public class LongShot : Card
+{    public override void Start()
     {
-        topCost = 0;
+        topCost = 1;
         bottomCost = 1;
         base.Start();
     }
@@ -17,12 +16,12 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        topActions.Add(() => playerControler.Attack(10));
+        topActions.Add(() => playerControler.Attack(15, 4));
+
     }
 
     public override void PrepareBottom()
     {
-        bottomActions.Add(() => playerControler.Move(25));
-
+        bottomActions.Add(() => playerControler.Ability(20));
     }
 }

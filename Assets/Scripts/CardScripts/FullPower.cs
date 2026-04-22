@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
- public class TestCard1 : Card
+ public class FullPower : Card
 {
 
 
@@ -32,7 +32,7 @@ using UnityEngine;
 
     public override void PrepareBottom()
     {
-        bottomActions.Add(() => playerControler.Move(30));
+        bottomActions.Add(() => playerControler.Move(35));
 
     }
 

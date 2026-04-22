@@ -303,7 +303,7 @@ public class DeckManager : MonoBehaviour
             displayedList.Add(Instantiate(card));
         }
         float horizontalSpaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
-        float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.25f) * cameraScript.widthHeightRatio;
+        float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.1f) * cameraScript.widthHeightRatio;
         int numberOfCards = displayedList.Count;
         //Debug.Log(spaceBetweenCards + " spaceBetweenCards");
         //Debug.Log(cameraScript.widthHeightRatio + " widthHeightRatio");

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -37,6 +38,8 @@ public class Card : MonoBehaviour
 
     [SerializeField]
     protected int rarity = 1;
+    protected string cardName;
+
     public int Rarity { get { return rarity; } }
 
     //private float baseAbsoluteSize = 1;
@@ -56,6 +59,12 @@ public class Card : MonoBehaviour
         bottomText = transform.Find("BottomEffects").GetComponent<CardEffectText>();
         topCostText = transform.Find("TopCost").GetComponent<VariableDisplayer>();
         bottomCostText = transform.Find("BottomCost").GetComponent<VariableDisplayer>();
+        cardName = this.name;
+        cardName = cardName.Replace("(Clone)", "");
+        cardName = Regex.Replace(cardName, "(.)([A-Z,0-9])", "$1 $2");
+        transform.Find("CardName").gameObject.GetComponent<TextMeshProUGUI>().SetText(cardName);
+
+
 
         PrepareTop();
         PrepareBottom();
