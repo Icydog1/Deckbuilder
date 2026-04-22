@@ -125,6 +125,14 @@ public class DeckManager : MonoBehaviour
         cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
         MoveTo(card, deck, Random.Range(0, deckContents.Count + 1));
     }
+    public void DrawCards(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            DrawCard();
+        }
+    }
+
     public void DrawCard()
     {
         if (deckContents.Count == 0)

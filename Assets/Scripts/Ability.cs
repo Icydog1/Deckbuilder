@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
 public class Ability : MonoBehaviour
@@ -79,10 +80,10 @@ public class Ability : MonoBehaviour
                 isUsed = true;
                 abilityUI.DisplayUsed(true);
                 mouseManager.MouseOffObject(abilityUI.gameObject);
+                playerControler.ActionsRemaining = new List<string>(description);
                 abilityManager.AbilityPower -= timesPreformed * cost;
                 abilityManager.SelectedPower = abilityManager.SelectedPower;
                 playerControler.VariableCardModifier = timesPreformed * cost;
-
                 playerControler.PreformingAbility = true;
                 playerControler.NextAction = false;
                 foreach (System.Action action in abilities)

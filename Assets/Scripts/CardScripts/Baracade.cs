@@ -1,11 +1,8 @@
-using System.Collections;
-using UnityEngine;
-
- public class QuickStab : Card
+ public class Baracade : Card
 {
     public override void Start()
     {
-        topCost = 0;
+        topCost = 2;
         bottomCost = 1;
         base.Start();
     }
@@ -17,12 +14,12 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Attack(10));
+        currentActions.Add(() => playerControler.Block(50));
+        currentActions.Add(() => playerControler.ApplyCondition(new Speed(-5, 2)));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Move(25));
-
+        currentActions.Add(() => playerControler.Block(10));
     }
 }

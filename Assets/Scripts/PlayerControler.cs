@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerControler : Figure
 {
@@ -29,13 +31,13 @@ public class PlayerControler : Figure
 
     public List<System.Action> currentActionQueue = new List<System.Action>();
 
-    private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, canPreformAbilities;
+    private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, preformingAction, canPreformAbilities;
     private bool waitUntilVariable;
     public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
     public bool CanPreformAbilities { get { UpdatePlayer(); return canPreformAbilities; } }
 
-    public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; } }
-    public bool PreformingAbility { get { return preformingAbility; } set { preformingAbility = value; } }
+    public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; UpdatePlayer(); } }
+    public bool PreformingAbility { get { return preformingAbility; } set { preformingAbility = value; UpdatePlayer(); } }
 
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
     private int moveLeft, targetsLeft, attackDamageValue;
@@ -185,6 +187,11 @@ public class PlayerControler : Figure
         yield return new WaitUntil(() => pathfinder.DoneMoving == true);
         pathfinder.DoneMoving = false;
         moveLeft = pathfinder.MoveLeft;
+        //actionsRemaining[0] = actionsRemaining[0];
+        //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(.)([A-Z,0-9])", "$1 $2");
+        actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
+        statsDisplayer.Plan(actionsRemaining);
+
         oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
         if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Door>())
         {
@@ -269,7 +276,14 @@ public class PlayerControler : Figure
             canPreformActions = false;
             canMove = false;
         }
-
+        if (cardPlayed || preformingAbility)
+        {
+            preformingAction = true;
+        }
+        else
+        {
+            preformingAction = false;
+        }
     }
 
     public void StartTurn()
@@ -326,7 +340,7 @@ public class PlayerControler : Figure
         actionDone = true;
         isTargetATile = false;
         isTargetAEnemy = false;
-        if (cardPlayed)
+        if (preformingAction)
         {
             actionsRemaining.Remove(actionsRemaining[0]);
             statsDisplayer.Plan(actionsRemaining);
@@ -431,7 +445,81 @@ public class PlayerControler : Figure
             }
         }
     }
+    public void Draw(int cardCount)
+    {
+        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
 
+        if (isPlanning)
+        {
+            string currentDescriptionString = "Draw " + cardCount + " card";
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+            deckManager.DrawCards(cardCount);
+            ActionDone();
+        }
+    }
+    public void GainEnergy(int amount,bool isTop)
+    {
+        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+
+        if (isPlanning)
+        {
+            string currentDescriptionString = "Gain " + amount;
+            if (isTop)
+            {
+                currentDescriptionString += " top";
+            }
+            else
+            {
+                currentDescriptionString += " bottom";
+            }
+            currentDescriptionString += " energy";
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+            if (isTop)
+            {
+                TopEnergy += amount;
+            }
+            else
+            {
+                BottomEnergy += amount;
+            }
+            ActionDone();
+        }
+    }
+    public void GainTopEnergy(int amount)
+    {
+        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+
+        if (isPlanning)
+        {
+            string currentDescriptionString = "Gain " + amount + " top energy";
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+            TopEnergy += amount;
+            ActionDone();
+        }
+    }
+    public void GainBottomEnergy(int amount)
+    {
+        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+        if (isPlanning)
+        {
+            string currentDescriptionString = "Gain " + amount + " bottom energy";
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+            BottomEnergy += amount;
+            ActionDone();
+        }
+    }
     public void GainNewAbility(int cost, List<System.Action> abilities)
     {
 

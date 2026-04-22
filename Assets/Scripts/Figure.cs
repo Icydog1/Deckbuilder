@@ -213,6 +213,7 @@ public class Figure : MonoBehaviour
             moveValue *= variableCardModifier;
         }
         int finalMove = conditionManager.ModifyMove(this, moveValue);
+        //Mathf(finalMove,0,)
         if (isPlanning)
         {
             //prepareActions.Add(() => Move(finalMove, isJump));
@@ -250,6 +251,25 @@ public class Figure : MonoBehaviour
             if (targetType == "self")
             {
                 currentDescriptionStart += "Gain ";
+                
+                //bool isPositive = false;
+                //foreach (Condition test in newConditions)
+                //{
+                //    if (test.Value > 0)
+                //    {
+                //        isPositive = true;
+                //        break;
+                //    }
+                //}
+                //if (isPositive)
+                //{
+                //    currentDescriptionStart += "Gain ";
+                //}
+                //else
+                //{
+                //    currentDescriptionStart += "Lose ";
+                //}
+                
             }
             else
             {

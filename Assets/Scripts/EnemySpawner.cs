@@ -5,6 +5,8 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField]
     private List<GameObject> enemy = new List<GameObject>();
+    private int activationDelay = 5;
+    private int tunsTillActive;
     private TurnManager turnManager;
     private float spawnChance = 0.1f;
     private float spawnHeight = 12;
@@ -27,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
         }
 
         TurnManager.RoundEnded += AttemptToSpawnEnemy;
-
+        tunsTillActive = activationDelay;
     }
 
     // Update is called once per frame
@@ -38,11 +40,13 @@ public class EnemySpawner : MonoBehaviour
 
     public void AttemptToSpawnEnemy(TurnManager turnManager)
     {
-        if (Random.Range(0, 1f) <= spawnChance)
+        tunsTillActive--;
+        if (tunsTillActive <= 0 && Random.Range(0, 1f) <= spawnChance)
         {
             if (mapManager.GetEntityOnHex(OneToOnePos) == null)
             {
                 SpawnEnemy();
+                tunsTillActive = activationDelay;
             }
             else
             {

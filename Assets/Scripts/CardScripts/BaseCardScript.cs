@@ -29,7 +29,7 @@ public class Card : MonoBehaviour
 
     protected List<System.Action> topActions = new List<System.Action>();
     protected List<System.Action> bottomActions = new List<System.Action>();
-    protected List<System.Action> prepareTo = new List<System.Action>();
+    protected List<System.Action> currentActions = new List<System.Action>();
 
     protected List<string> topDescription = new List<string>();
     protected List<string> bottomDescription = new List<string>();
@@ -65,8 +65,9 @@ public class Card : MonoBehaviour
         transform.Find("CardName").gameObject.GetComponent<TextMeshProUGUI>().SetText(cardName);
 
 
-
+        currentActions = topActions;
         PrepareTop();
+        currentActions = bottomActions;
         PrepareBottom();
         deckManager.SetRelativeCardSize(gameObject, 1);
 

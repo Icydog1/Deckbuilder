@@ -1,11 +1,12 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
- public class QuickStab : Card
+ public class Strike : Card
 {
     public override void Start()
     {
-        topCost = 0;
+        topCost = 1;
         bottomCost = 1;
         base.Start();
     }
@@ -22,7 +23,6 @@ using UnityEngine;
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Move(25));
-
+        currentActions.Add(() => playerControler.Move(10));
     }
 }
