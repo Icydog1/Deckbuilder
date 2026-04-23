@@ -16,7 +16,7 @@ public class Enemy : Figure
     protected List<System.Action> currentPlan = new List<System.Action>();
     protected List<System.Action> plannedMoveSet;
     protected List<string> displayedPlan = new List<string>();
-
+    private Coroutine currentTurnRoutine;
     protected int actionNum;
     protected EnemyUi enemyStatsDisplayer;
 
@@ -72,6 +72,8 @@ public class Enemy : Figure
 
     public void UpdatePlan()
     {
+        PlanDescription = displayedPlan;
+        displayedPlan.Clear();
         preferedRange = int.MaxValue;
         isPlanning = true;
         for (int i = 0; i < currentPlan.Count; i++)
@@ -80,7 +82,6 @@ public class Enemy : Figure
         }
         enemyStatsDisplayer.Plan(displayedPlan);
         isPlanning = false;
-
     }
     public void StartOfTurn()
     {
@@ -101,7 +102,18 @@ public class Enemy : Figure
         border.GetComponent<SpriteRenderer>().color = Color.black;
         base.baseEndTurn();
     }
-
+    public void StartStopTurn(bool isStart)
+    {
+        if (isStart)
+        {
+            currentTurnRoutine = StartCoroutine(TakeTurn());
+        }
+        else if (currentTurnRoutine != null)
+        {
+            StopCoroutine(currentTurnRoutine);
+            currentTurnRoutine = null;
+        }
+    }
     public IEnumerator TakeTurn()
     {
         StartOfTurn();
@@ -134,17 +146,24 @@ public class Enemy : Figure
 
     public override void Die()
     {
-        TurnManager.RoundStarted -= GetNewPlan;
-        LevelManager.LevelCleared -= Remove;
-        turnManager.RemoveFromTurnOrder(gameObject);
         Destroy(gameObject);
     }
 
     public override void Remove(LevelManager levelManager = null)
     {
+        Destroy(gameObject);
+    }
+
+    public void OnDestroy()
+    {
+        if (isMyTurn)
+        {
+            StartStopTurn(false);
+            turnManager.NextTurn();
+        }
         TurnManager.RoundStarted -= GetNewPlan;
         LevelManager.LevelCleared -= Remove;
         turnManager.RemoveFromTurnOrder(gameObject);
-        Destroy(gameObject);
+
     }
 }

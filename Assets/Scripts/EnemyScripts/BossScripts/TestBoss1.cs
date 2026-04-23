@@ -13,7 +13,7 @@ public class TestBoss1 : Boss
         moveSets.Add(new List<System.Action> {
 
             () => Move(20)
-            ,() => Attack(10)
+            ,() => Attack(10,1,1,2)
         });
         moveSets.Add(new List<System.Action> {
 

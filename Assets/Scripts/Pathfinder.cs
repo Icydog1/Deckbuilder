@@ -237,10 +237,10 @@ public class Pathfinder : MonoBehaviour
 
             }
             //failsafe in case somting fais so it isnt a infinite loop
-            if (i >= 10000)
+            if (i >= 1000000)
             {
                 endElevation = 0;
-                Debug.Log("area pathfinding timed out");
+                //Debug.Log("area pathfinding timed out");
             }
         }
         /*
@@ -306,7 +306,7 @@ public class Pathfinder : MonoBehaviour
         int killswitch = 0;
         GameObject tile = mapManager.GetTileAtHex(furthestPoint);
         GameObject border = tile.transform.Find("Border").gameObject;
-        border.GetComponent<SpriteRenderer>().color = Color.red;
+        //border.GetComponent<SpriteRenderer>().color = Color.red;
         Vector2 currentLocaton = furthestPoint;
         actualPath.Clear();
         //Debug.Log(furthestPoint);
@@ -395,7 +395,7 @@ public class Pathfinder : MonoBehaviour
                     {
                         pathFound = true;
                         GameObject border = tile.transform.Find("Border").gameObject;
-                        border.GetComponent<SpriteRenderer>().color = Color.cyan;
+                        //border.GetComponent<SpriteRenderer>().color = Color.cyan;
                         safeTiles.Add(checktile);
                         AddToElevation(checktile, tile, range);
                         endElevation = currentElevation + tile.GetComponent<Tile>().MoveCost;

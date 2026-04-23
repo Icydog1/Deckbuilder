@@ -67,14 +67,17 @@ public class LevelManager : MonoBehaviour
     }
     public void ClearLevel()
     {
+
         foreach (GameObject gameObject in levelSpecific)
         {
             Destroy(gameObject);
         }
+
         if (LevelCleared != null)
         {
             LevelCleared(this);
         }
+
     }
 
     public void BossKilled(Vector2 bossCords)

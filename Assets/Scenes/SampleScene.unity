@@ -3607,6 +3607,7 @@ MonoBehaviour:
   playedCard: {fileID: 0}
   playedCardScript: {fileID: 0}
   playerOneToOneCords: {x: 0, y: 0}
+  actionsRemaining: []
 --- !u!58 &695467239
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -6278,6 +6279,7 @@ MonoBehaviour:
   - {fileID: 7284795757905461826, guid: 56ed7ce6f6697734f8b5de3f433160dd, type: 3}
   - {fileID: 2514901786406067077, guid: b4d5692901c648e44a5534ba1a0bf6b3, type: 3}
   - {fileID: 2761692547563443597, guid: c0372bddbd94f664dad33a34fc27d13f, type: 3}
+  - {fileID: 3128490147055996887, guid: 4ba609f19b16f04428296e8b5dc982f5, type: 3}
   allRelicRewards:
   - {fileID: 5795666314669812343, guid: 20c7e432cc30b2343a315df4b6c93291, type: 3}
   - {fileID: 7593476723129728348, guid: a6936a00a85b1ac4796a141a3ab6947b, type: 3}
@@ -9662,13 +9664,13 @@ SceneRoots:
   - {fileID: 304582378}
   - {fileID: 325978540}
   - {fileID: 1987784950}
+  - {fileID: 1783873750040587480}
   - {fileID: 1281001567}
   - {fileID: 771261319}
   - {fileID: 834707256}
   - {fileID: 367750122}
   - {fileID: 50140903}
   - {fileID: 48689495}
-  - {fileID: 1783873750040587480}
   - {fileID: 2084116035}
   - {fileID: 887113702}
   - {fileID: 695467237}

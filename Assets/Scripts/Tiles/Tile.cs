@@ -10,7 +10,7 @@ public class Tile : MonoBehaviour
     private bool isSpawner;
     private int zHeight = 1000;
 
-    public int MoveCost { get { return moveCost; } }
+    public int MoveCost { get { return moveCost; } set { moveCost = value; } }
     [SerializeField]
     private VariableDisplayer moveCostDisplay;
     public VariableDisplayer MoveCostDisplay { get { return moveCostDisplay; } }

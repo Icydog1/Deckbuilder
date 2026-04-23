@@ -32,7 +32,8 @@ public class Lootable : MonoBehaviour
 
     public void Looted()
     {
-        Instantiate(lootedTile,transform.position,transform.rotation);
+        GameObject newTile = Instantiate(lootedTile,transform.position,transform.rotation);
+        newTile.GetComponent<Tile>().MoveCost = GetComponent<Tile>().MoveCost;
         Destroy(gameObject);
     }
 

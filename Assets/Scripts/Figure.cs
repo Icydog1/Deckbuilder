@@ -165,6 +165,8 @@ public class Figure : MonoBehaviour
         int finalAttack = conditionManager.ModifyAttack(this, attackValue);
         if (isPlanning)
         {
+            string currentDescriptionStart = "";
+            string currentDescriptionEnd = "";
             if (!isPlayer)
             {
                 if (preferedRange > attackRange)
@@ -173,21 +175,40 @@ public class Figure : MonoBehaviour
                 }
             }
             //prepareActions.Add(() => Attack(finalAttack, attackRange, targets));
-            string planString = "Attack " + finalAttack;
+            currentDescriptionStart = "Attack " + finalAttack;
             if (repeats > 1)
             {
-                planString += " " + repeats + " times ";
+                currentDescriptionEnd += " " + repeats + " times ";
             }
             if (attackRange > 1)
             {
-                planString += " range " + attackRange;
+                currentDescriptionEnd += " range " + attackRange;
             }
             if (targets > 1)
             {
-                planString += " target " + targets;
+                currentDescriptionEnd += " target " + targets;
             }
-
-            planDescription.Add(planString);
+            List<string> individualConditionText = new List<string>();
+            if (attackConditions.Length != 0)
+            {
+                currentDescriptionStart += " and apply ";
+                foreach (Condition condition in attackConditions)
+                {
+                    string currentDescriptionString = currentDescriptionString = condition.Value + " " + condition.Name;
+                    if (condition.Duration == 1)
+                    {
+                        currentDescriptionString += " this turn";
+                    }
+                    else if (condition.Duration != -1)
+                    {
+                        currentDescriptionString += " for " + condition.Duration + " turns";
+                    }
+                    individualConditionText.Add(currentDescriptionString);
+                }
+            }
+            string separator = ", ";
+            string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
+            planDescription.Add(attackText);
         }
         else
         {
@@ -416,6 +437,10 @@ public class Figure : MonoBehaviour
             deckManager.UpdateCardsDisplay();
         }
         statsDisplayer.DisplayConditions(conditions);
+        if (!isPlayer)
+        {
+            GetComponent<Enemy>().UpdatePlan();
+        }
     }
     public List<Figure> FindTargets(string targetType, int range = 1, int targets = 1)
     {

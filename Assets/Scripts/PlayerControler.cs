@@ -50,7 +50,7 @@ public class PlayerControler : Figure
     private bool isTargetATile, isTargetAEnemy;
     private GameObject selectedTile;
     private List<Figure> posibleTargets;
-    private List<string> actionsRemaining = new List<string>();
+    public List<string> actionsRemaining = new List<string>();
     public List<string> ActionsRemaining { set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
     private int topEnergy, bottomEnergy;
@@ -200,10 +200,11 @@ public class PlayerControler : Figure
         }
         if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Stair>())
         {
+
             levelManager.GoUpLevel();
 
         }
-        if (moveLeft == 0)
+        else if (moveLeft == 0)
         {
             ActionDone();
         }

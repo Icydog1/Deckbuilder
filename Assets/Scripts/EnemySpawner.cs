@@ -29,6 +29,7 @@ public class EnemySpawner : MonoBehaviour
         }
 
         TurnManager.RoundEnded += AttemptToSpawnEnemy;
+        //LevelManager.LevelCleared += Remove;
         tunsTillActive = activationDelay;
     }
 
@@ -59,6 +60,16 @@ public class EnemySpawner : MonoBehaviour
     public void SpawnEnemy()
     {
         Instantiate(enemy[Random.Range(0,enemy.Count)], new Vector3(transform.position.x, transform.position.y, spawnHeight), Quaternion.identity);
+    }
+    public void OnDestroy()
+    {
+        TurnManager.RoundEnded -= AttemptToSpawnEnemy;
+    }
+    public void Remove(LevelManager levelManager)
+    {
+        TurnManager.RoundEnded -= AttemptToSpawnEnemy;
+        LevelManager.LevelCleared -= Remove;
+        Destroy(gameObject);
     }
 
 }
