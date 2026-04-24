@@ -214,8 +214,8 @@ public class Card : MonoBehaviour
         {
             action();
         }
-        topCostText.DisplayText(topCost);
-        bottomCostText.DisplayText(bottomCost);
+        topCostText.DisplayString("<color=red>" + topCost);
+        bottomCostText.DisplayString("<color=#008000>" + bottomCost);
         topText.DisplayText(topDescription);
         bottomText.DisplayText(bottomDescription);
         playerControler.IsPlanning = false;

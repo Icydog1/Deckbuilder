@@ -186,6 +186,15 @@ public class PlayerControler : Figure
         StartCoroutine(pathfinder.MoveAlongPath(gameObject, oneToOnePos));
         yield return new WaitUntil(() => pathfinder.DoneMoving == true);
         pathfinder.DoneMoving = false;
+        foreach (Vector2 tileCords in pathfinder.ActualPath)
+        {
+            GameObject newTile = mapManager.GetTileAtHex(tileCords);
+            if (newTile != null)
+            {
+                GameObject border = newTile.transform.Find("Border").gameObject;
+                border.GetComponent<SpriteRenderer>().color = Color.black;
+            }
+        }
         moveLeft = pathfinder.MoveLeft;
         //actionsRemaining[0] = actionsRemaining[0];
         //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(.)([A-Z,0-9])", "$1 $2");

@@ -785,7 +785,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 304582378}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &135997604
 MonoBehaviour:
@@ -849,7 +849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adebb0822745a3149aa33355e100fe5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  addionalText: 'Top Energy: '
+  addionalText: '<color=red>Top Energy: '
 --- !u!114 &143490058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -870,7 +870,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Top Energy: 3'
+  m_text: '<color=red>Top Energy: 2'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1074,7 +1074,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adebb0822745a3149aa33355e100fe5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  addionalText: 'Bottom Energy: '
+  addionalText: '<color=#00C000>Bottom Energy: '
 --- !u!114 &180456768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1095,7 +1095,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Bottom Energy: 3'
+  m_text: '<color=#00C000>Bottom Energy: 2'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1858,8 +1858,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 135997603}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &304582379
@@ -9662,6 +9661,7 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 646725013}
   - {fileID: 304582378}
+  - {fileID: 135997603}
   - {fileID: 325978540}
   - {fileID: 1987784950}
   - {fileID: 1783873750040587480}

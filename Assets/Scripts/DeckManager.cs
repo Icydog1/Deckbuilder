@@ -234,6 +234,7 @@ public class DeckManager : MonoBehaviour
     {
         if (GetRelativeCardSize(card) < 1.5f)
         {
+            card.transform.SetAsLastSibling();
             SetRelativeCardSize(card, 2);
             card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
         }
