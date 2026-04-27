@@ -237,7 +237,7 @@ public class Pathfinder : MonoBehaviour
 
             }
             //failsafe in case somting fais so it isnt a infinite loop
-            if (i >= 1000000)
+            if (i >= 10000)
             {
                 endElevation = 0;
                 //Debug.Log("area pathfinding timed out");

@@ -91,7 +91,7 @@ public class Ability : MonoBehaviour
                     yield return new WaitUntil(() => playerControler.NextAction == true);
                     playerControler.NextAction = false;
                 }
-                Debug.Log("done");
+                //Debug.Log("done");
                 playerControler.PreformingAbility = false;
             }
         }

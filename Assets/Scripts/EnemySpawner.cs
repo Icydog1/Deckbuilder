@@ -64,6 +64,7 @@ public class EnemySpawner : MonoBehaviour
     public void OnDestroy()
     {
         TurnManager.RoundEnded -= AttemptToSpawnEnemy;
+        LevelManager.LevelCleared -= Remove;
     }
     public void Remove(LevelManager levelManager)
     {

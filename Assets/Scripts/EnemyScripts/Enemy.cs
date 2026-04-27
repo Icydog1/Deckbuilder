@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -27,6 +29,10 @@ public class Enemy : Figure
     {
         LevelManager.LevelCleared += Remove;
         base.Awake();
+        enemyName = this.name;
+        enemyName = enemyName.Replace("(Clone)", "");
+        enemyName = Regex.Replace(enemyName, "(.)([A-Z,0-9])", "$1 $2");
+        transform.Find("EnemyUI").transform.Find("NameText").gameObject.GetComponent<TextMeshProUGUI>().SetText(enemyName);
     }
     public override void Start()
     {

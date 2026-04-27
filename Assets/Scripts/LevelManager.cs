@@ -68,14 +68,15 @@ public class LevelManager : MonoBehaviour
     public void ClearLevel()
     {
 
-        foreach (GameObject gameObject in levelSpecific)
-        {
-            Destroy(gameObject);
-        }
+
 
         if (LevelCleared != null)
         {
             LevelCleared(this);
+        }
+        foreach (GameObject gameObject in levelSpecific)
+        {
+            Destroy(gameObject);
         }
 
     }

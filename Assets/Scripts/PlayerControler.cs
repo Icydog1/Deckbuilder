@@ -138,7 +138,10 @@ public class PlayerControler : Figure
         maxHealth = 100;
         health = maxHealth;
         playerOneToOneCords = Vector2.zero;
+        conditions.Clear();
         statsDisplayer.SetHealthAndBlock(health, 0);
+        statsDisplayer.DisplayConditions(new List<Condition>());
+        statsDisplayer.Plan(new List<string>());
         //statsDisplayer.SetConditions(new string[0]);
     }
 
@@ -567,6 +570,7 @@ public class PlayerControler : Figure
     {
         ShowMoveCostDisplay();
     }
+
 
 
 }
