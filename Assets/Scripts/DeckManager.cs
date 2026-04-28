@@ -71,6 +71,7 @@ public class DeckManager : MonoBehaviour
         posibleCardLocations.Add(discardContents);
         posibleCardLocations.Add(playContents);
 
+        GameManager.ResetGame += ResetDeck;
         GameManager.GameStarted += SpawnStartingDeck;
         GameManager.GameStarted += DrawStartingHand;
     }
@@ -86,6 +87,18 @@ public class DeckManager : MonoBehaviour
     {
         MoveTo(card, play);
     }
+    public void ResetDeck(GameManager gameManager)
+    {
+        foreach (GameObject card in entireDeck)
+        {
+            Destroy(card);
+        }
+        deckContents.Clear();
+        handContents.Clear();
+        discardContents.Clear();
+        playContents.Clear();
+        entireDeck.Clear();
+    }
     public void SpawnStartingDeck(GameManager gameManager)
     {
         foreach (GameObject card in startingDeck)
@@ -97,7 +110,6 @@ public class DeckManager : MonoBehaviour
             newCard.gameObject.SetActive(false);
         }
         Suffle(ref deckContents);
-
     }
 
     public void DrawStartingHand(GameManager gameManager)
@@ -107,16 +119,18 @@ public class DeckManager : MonoBehaviour
 
     public void DrawNewHand()
     {
-        int cardsInHand = handSize;
-        for (int i = 0; i < cardsInHand; i++)
+        //int cardsInHand = handSize;
+        //for (int i = 0; i < cardsInHand; i++)
+        //{
+        //    DiscardFirstCard();
+        //    //Debug.Log("card Discarded");
+        //}
+        List<GameObject> discardedCards = new List<GameObject>(handContents);
+        foreach (GameObject card in discardedCards)
         {
-            DiscardFirstCard();
-            //Debug.Log("card Discarded");
+            DiscardCard(card);
         }
-        for (int i = 0; i < startHandSize; i++)
-        {
-            DrawCard();
-        }
+        DrawCards(startHandSize);
     }
 
     public void GainCard(GameObject card)

@@ -425,6 +425,10 @@ public class Figure : MonoBehaviour
                     isDuplicate = true;
                     break;
                 }
+                if (condition.AddType == 3)
+                {
+                    conditions.Remove(conditions[i]);
+                }
             }
 
         }

@@ -26,6 +26,8 @@ public class RelicManager : MonoBehaviour
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
         relicDisplayer = GameObject.Find("RelicDisplayer");
         GameManager.GameStarted += TestGainRelic;
+        GameManager.ResetGame += ResetRelics;
+
         rowLimit = Mathf.FloorToInt((float)rowLimit / relicSize);
     }
 
@@ -33,6 +35,14 @@ public class RelicManager : MonoBehaviour
     void Update()
     {
         
+    }
+    public void ResetRelics(GameManager gameManager)
+    {
+        foreach(GameObject relic in relicObjects)
+        {
+            Destroy(relic);
+        }
+        relicObjects.Clear();
     }
     public void TestGainRelic(GameManager gameManager)
     {
@@ -47,7 +57,6 @@ public class RelicManager : MonoBehaviour
             if (relic.activeInHierarchy)
             {
                 GainRelic(relic);
-
             }
         }
 

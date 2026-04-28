@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class ConditionManager : MonoBehaviour
 {
@@ -35,6 +32,13 @@ public class ConditionManager : MonoBehaviour
                 modifiedAttack += condition.Value;
             }
         }
+        foreach (Condition condition in conditions)
+        {
+            if (condition.Name == "naturalScaling")
+            {
+                modifiedAttack *= (1 + 0.00001f * (float)condition.Value);
+            }
+        }
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
         return finalAttack;
     }
@@ -63,6 +67,13 @@ public class ConditionManager : MonoBehaviour
             if (condition.Name == "speed")
             {
                 modifiedMove += condition.Value;
+            }
+        }
+        foreach (Condition condition in conditions)
+        {
+            if (condition.Name == "naturalScaling")
+            {
+                modifiedMove *= (1 + 0.00001f * (float)condition.Value);
             }
         }
         int finalMove = Mathf.FloorToInt(modifiedMove);

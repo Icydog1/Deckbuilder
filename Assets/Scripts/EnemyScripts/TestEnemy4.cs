@@ -9,11 +9,11 @@ public class TestEnemy4 : Enemy
         moveSets.Add(new List<System.Action> {
             () => Move(5)
             ,() => Attack(5)
-            ,() => ApplyCondition(new Strength(2))
-            ,() => ApplyCondition(new Speed(2))
+            ,() => ApplyCondition(new Strength(3, 5))
+            ,() => ApplyCondition(new Speed(3, 5))
         });
 
-        maxHealth = 50;
+        maxHealth = 100;
         base.Start();
     }
 }

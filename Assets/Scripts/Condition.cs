@@ -1,6 +1,4 @@
-using NUnit.Compatibility;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class Condition : MonoBehaviour
 {
@@ -14,6 +12,8 @@ public class Condition : MonoBehaviour
 
     protected int addType;
     public int AddType { get { return addType; }}
+    protected bool isVisible;
+    public bool IsVisible { get { return IsVisible; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -27,12 +27,13 @@ public class Condition : MonoBehaviour
         
     }
     
-    public Condition (string name, int conditionValue, int conditionDuration, int conditionAddType)
+    public Condition (string name, int conditionValue, int conditionDuration, int conditionAddType, bool isShown = true)
     {
         conditionName = name;
         amount = conditionValue;
         duration = conditionDuration;
         addType = conditionAddType;
+        isVisible = isShown;
     }
     
 }
@@ -55,4 +56,9 @@ public class Speed : Condition
 public class  Finesse: Condition
 {
     public Finesse(int conditionValue, int conditionDuration = -1, int addType = 1) : base("finesse", conditionValue, conditionDuration, addType) { }
+}
+
+public class NaturalScaling: Condition
+{
+    public NaturalScaling(int conditionValue, int conditionDuration = -1, int addType = 3) : base("naturalScaling", conditionValue, conditionDuration, addType, true) { }
 }

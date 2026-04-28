@@ -99,6 +99,7 @@ public class RoomSpawner : MonoBehaviour
 
     public void SpawnStartingRoom()
     {
+        realativeRotation = 0;
         SpawnRoom(Vector2Int.zero, rooms[0]);
     }
     private void SpawnRandomRoom(Vector2Int oneToOnePos)

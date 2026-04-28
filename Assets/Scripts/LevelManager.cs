@@ -13,6 +13,9 @@ public class LevelManager : MonoBehaviour
 
     private bool isBossLevel;
     private int level;
+    private int roundNumber;
+    private int levelRoundNumber;
+
     [SerializeField]
     private GameObject[] bossRooms;
 
@@ -30,6 +33,9 @@ public class LevelManager : MonoBehaviour
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         player = GameObject.Find("Player");
         camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+
+        TurnManager.RoundStarted += IncreaseRoundNumber;
+
     }
 
     // Update is called once per frame
@@ -65,10 +71,14 @@ public class LevelManager : MonoBehaviour
         }
 
     }
+
+    public void IncreaseRoundNumber(TurnManager turnManager)
+    {
+        roundNumber++;
+        levelRoundNumber++;
+    }
     public void ClearLevel()
     {
-
-
 
         if (LevelCleared != null)
         {

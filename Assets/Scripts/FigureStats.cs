@@ -50,6 +50,13 @@ public class FigureStats : MonoBehaviour
 
     public void DisplayConditions(List<Condition> conditions)
     {
+        foreach (Condition condition in conditions)
+        {
+            if (condition.IsVisible)
+            {
+                conditions.Remove(condition);
+            }
+        }
         if (conditions.Count == 0)
         {
             noConditions = true;

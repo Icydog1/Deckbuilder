@@ -82,6 +82,8 @@ public class PlayerControler : Figure
         team = 0;
         //Debug.Log(playerStats);
         GameManager.GameStarted += PreparePlayer;
+        GameManager.ResetGame += ResetPlayer;
+
         GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true)});
         //increasing ability cost doesnt work
         GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
@@ -133,15 +135,19 @@ public class PlayerControler : Figure
             mapManager.showMoveCost(false);
         }
     }
+
+    public void ResetPlayer(GameManager gameManager)
+    {
+        conditions.Clear();
+    }
     public void PreparePlayer(GameManager gameManager)
     {
         maxHealth = 100;
         health = maxHealth;
         playerOneToOneCords = Vector2.zero;
-        conditions.Clear();
         statsDisplayer.SetHealthAndBlock(health, 0);
-        statsDisplayer.DisplayConditions(new List<Condition>());
-        statsDisplayer.Plan(new List<string>());
+        statsDisplayer.DisplayConditions(conditions);
+        statsDisplayer.Plan(actionsRemaining);
         //statsDisplayer.SetConditions(new string[0]);
     }
 

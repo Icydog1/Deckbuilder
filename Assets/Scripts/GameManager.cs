@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     
     private bool nextAction;
     public static event Action<GameManager> GameStarted;
+    public static event Action<GameManager> ResetGame;
 
 
 
@@ -70,6 +71,10 @@ public class GameManager : MonoBehaviour
         //yield return new WaitForEndOfFrame();
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
+        if (ResetGame != null)
+        {
+            ResetGame(this);
+        }
         if (GameStarted != null)
         {
             GameStarted(this);
