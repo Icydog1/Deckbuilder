@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConditionManager : MonoBehaviour
+public class ActionModifier : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -36,7 +36,7 @@ public class ConditionManager : MonoBehaviour
         {
             if (condition.Name == "naturalScaling")
             {
-                modifiedAttack *= (1 + 0.101f * (float)condition.Value);
+                modifiedAttack *= (1 + 0.01f * (float)condition.Value);
             }
         }
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
@@ -73,7 +73,11 @@ public class ConditionManager : MonoBehaviour
         {
             if (condition.Name == "naturalScaling")
             {
-                modifiedMove *= (1 + 0.101f * (float)condition.Value);
+                modifiedMove *= (1 + 0.01f * (float)condition.Value);
+            }
+            if (condition.Name == "distanceSpeedBoost")
+            {
+                modifiedMove *= (1 + 0.03f * (float)condition.Value);
             }
         }
         int finalMove = Mathf.FloorToInt(modifiedMove);
@@ -93,5 +97,20 @@ public class ConditionManager : MonoBehaviour
         }
         int finalAbility = Mathf.FloorToInt(modifiedAbility);
         return finalAbility;
+    }
+
+    public bool ModifyJump(Figure effectedFigure, bool initalJump)
+    {
+        bool modifiedJump = initalJump;
+        List<Condition> conditions = effectedFigure.Conditions;
+        foreach (Condition condition in conditions)
+        {
+            if (condition.Name == "distanceJump")
+            {
+                modifiedJump = true;
+            }
+        }
+        bool finalJump = modifiedJump;
+        return finalJump;
     }
 }

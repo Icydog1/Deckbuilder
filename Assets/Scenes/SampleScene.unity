@@ -3649,7 +3649,6 @@ MonoBehaviour:
   clickedEnemy: {fileID: 0}
   playedCard: {fileID: 0}
   playedCardScript: {fileID: 0}
-  playerOneToOneCords: {x: 0, y: 0}
   actionsRemaining: []
 --- !u!58 &695467239
 CircleCollider2D:
@@ -3899,7 +3898,7 @@ GameObject:
   - component: {fileID: 771261319}
   - component: {fileID: 771261320}
   m_Layer: 0
-  m_Name: ConditionManager
+  m_Name: ActionModifier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5184,10 +5183,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1069799700}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: 0}
-  m_SizeDelta: {x: 300, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1082498010
 MonoBehaviour:

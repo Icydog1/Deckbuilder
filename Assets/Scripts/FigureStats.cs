@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -55,32 +54,39 @@ public class FigureStats : MonoBehaviour
         //Debug.Log("condition count: " + conditions.Count);
         //Debug.Log("Displaed Conditions 1 time");
 
-        for (int i = 0; i < conditions.Count; i++)
+        for (int i = conditions.Count; i > 0; i--)
         {
-            Condition checkedCondition = conditions[i];
-            if (conditions.Count == 0)
+            //Condition checkedCondition = conditions[i-1];
+            //if (conditions.Count == 0)
+            //{
+            //    Debug.Log("no conditions");
+            //}
+            ////Debug.Log("ran 1 time");
+            //Debug.Log("current condition: " + checkedCondition.Name);
+            //Debug.Log("current condition visibility: " + checkedCondition.IsVisible);
+            if (conditions[i - 1].IsVisible == false)
             {
-                Debug.Log("no conditions");
+                //Debug.Log("condition count before: " + conditions.Count);
+
+                //Debug.Log("first condition before: " + conditions[0].Name);
+                ////Debug.Log("didnt display on " + i);
+                //Debug.Log("didnt display " + checkedCondition.Name);
+                conditions.RemoveAt(i-1);
+                //if (conditions.Count != 0)
+                //{
+                //    Debug.Log("first condition after: " + conditions[0].Name);
+                //    Debug.Log("condition count after: " + conditions.Count);
+                //}
             }
-            //Debug.Log("ran 1 time");
-            Debug.Log("current condition: " + checkedCondition.Name);
-            Debug.Log("current condition visibility: " + checkedCondition.IsVisible);
-            if (checkedCondition.IsVisible == false)
-            {
-                //Debug.Log("didnt display on " + i);
-                Debug.Log("didnt display " + checkedCondition.Name);
-                conditions.Remove(checkedCondition);
-                i--;
-            }
         }
-        if (conditions.Count != 0)
-        {
-            Debug.Log("first condition: " + conditions[0].Name);
-        }
-        if (conditions.Count == 0)
-        {
-            Debug.Log("no conditions");
-        }
+        //if (conditions.Count != 0)
+        //{
+        //    Debug.Log("first condition: " + conditions[0].Name);
+        //}
+        //if (conditions.Count == 0)
+        //{
+        //    Debug.Log("no conditions");
+        //}
         if (conditions.Count == 0)
         {
             noConditions = true;
@@ -93,7 +99,7 @@ public class FigureStats : MonoBehaviour
             foreach (Condition condition in conditions)
             {
                 string currentConditionText = "";
-                Debug.Log("displaying condition: " + condition.Name);
+                //Debug.Log("displaying condition: " + condition.Name);
 
                 currentConditionText = condition.Name + " " + condition.Value;
                 if (condition.Duration != -1)

@@ -150,6 +150,42 @@ public class Pathfinder : MonoBehaviour
 
 
     //finds all tiles with a specifc range of a tile
+
+    public int GetDistanceTo(Vector2 newTargetPos, Vector2 selfPos)
+    {
+        currentPos = selfPos;
+        targetPos = newTargetPos;
+        elevations.Clear();
+        checkedTiles.Clear();
+        safeTiles.Clear();
+        unSafeTiles.Clear();
+        impassableTiles.Clear();
+        pathFound = false;
+        //stops when 
+        for (int i = 0; !pathFound; i++)
+        {
+            //elevation equals distance pevius tiles were on
+            currentElevation = i - 1;
+            List<Vector2> currentHeight = new List<Vector2>();
+            elevations.Add(currentHeight);
+            //adds starting tile
+            if (i == 0)
+            {
+                GetTileType(newTargetPos, 0, true);
+            }
+            //each tile spreads to other tiles ignoring move costs
+            else
+            {
+                foreach (Vector2 pos in elevations[currentElevation])
+                {
+                    buildElevation(pos, true, false);
+                }
+
+            }
+
+        }
+        return currentElevation + 1;
+    }
     public void findPosInRange(Vector2 newTargetPos, int range)
     {
         elevations.Clear();
@@ -177,11 +213,11 @@ public class Pathfinder : MonoBehaviour
                 }
 
             }
-            if (i >= 10000)
-            {
-                pathFound = true;
-                Debug.Log("range pathfinding timed out");
-            }
+            //if (i >= 10000)
+            //{
+            //    pathFound = true;
+            //    Debug.Log("range pathfinding timed out");
+            //}
         }
     }
     //builds heightmap with an area as the starting height
@@ -299,7 +335,7 @@ public class Pathfinder : MonoBehaviour
 
             if (i >= 10000)
             {
-                pathFound = true;
+                moveValue = i;
                 Debug.Log("posible path pathfinding timed out");
             }
         }
@@ -315,7 +351,7 @@ public class Pathfinder : MonoBehaviour
             actualPath.Insert(0, currentLocaton);
             currentLocaton = posibleTilesPath[posibleTiles.IndexOf(currentLocaton)];
             killswitch++;
-            if (killswitch > 100)
+            if (killswitch > 10000)
             {
                 Debug.Log(currentLocaton);
                 currentLocaton = selfPos;
@@ -394,7 +430,7 @@ public class Pathfinder : MonoBehaviour
                     if (checktile == currentPos && !pathFromFigure)
                     {
                         pathFound = true;
-                        GameObject border = tile.transform.Find("Border").gameObject;
+                        //GameObject border = tile.transform.Find("Border").gameObject;
                         //border.GetComponent<SpriteRenderer>().color = Color.cyan;
                         safeTiles.Add(checktile);
                         AddToElevation(checktile, tile, range);
@@ -491,6 +527,7 @@ public class Pathfinder : MonoBehaviour
             }
             pos = mapManager.OneToOneToPos(oneToOnePos);
             figure.transform.position = new Vector3(pos.x, pos.y, figure.transform.position.z);
+            figure.GetComponent<Figure>().OneToOnePos = oneToOnePos;
             yield return new WaitForSeconds(newFigureMoveDelay);
         }
         doneMoving = true;

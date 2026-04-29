@@ -27,7 +27,9 @@ public class PlayerControler : Figure
 
     //private PlayerStats playerStats;
     public Card playedCardScript;
-    public Vector2 playerOneToOneCords;
+    //private Vector2 playerOneToOneCords;
+    //public Vector2 PlayerOneToOneCords { get { return playerOneToOneCords; } }
+
 
     public List<System.Action> currentActionQueue = new List<System.Action>();
 
@@ -94,8 +96,8 @@ public class PlayerControler : Figure
     // Update is called once per frame
     void Update()
     {
-        playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
-        oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
+        //playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
+        //oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
         if (isMoving && !isPreformingAnimation)
         {
             if (mouseManager.SelectedObject)
@@ -144,7 +146,7 @@ public class PlayerControler : Figure
     {
         maxHealth = 100;
         health = maxHealth;
-        playerOneToOneCords = Vector2.zero;
+        oneToOnePos = Vector2.zero;
         statsDisplayer.SetHealthAndBlock(health, 0);
         statsDisplayer.DisplayConditions(conditions);
         statsDisplayer.Plan(actionsRemaining);
@@ -157,7 +159,7 @@ public class PlayerControler : Figure
         {
             clickedTile = tile;
             //playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
-            playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
+            //playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
             Vector2 clickedTileCords = clickedTile.transform.position;
             if (isMoving)
             {
@@ -210,7 +212,7 @@ public class PlayerControler : Figure
         actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
         statsDisplayer.Plan(actionsRemaining);
 
-        oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
+        //oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
         if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Door>())
         {
             GameObject door = mapManager.GetTileAtHex(oneToOnePos);
@@ -234,12 +236,12 @@ public class PlayerControler : Figure
             {
                 switch (i)
                 {
-                    case 0: checkpos = playerOneToOneCords + Vector2.up; break;
-                    case 1: checkpos = playerOneToOneCords + Vector2.down; break;
-                    case 2: checkpos = playerOneToOneCords + Vector2.right; break;
-                    case 3: checkpos = playerOneToOneCords + Vector2.left; break;
-                    case 4: checkpos = playerOneToOneCords + Vector2.up + Vector2.right; break;
-                    case 5: checkpos = playerOneToOneCords + Vector2.down + Vector2.left; break;
+                    case 0: checkpos = oneToOnePos + Vector2.up; break;
+                    case 1: checkpos = oneToOnePos + Vector2.down; break;
+                    case 2: checkpos = oneToOnePos + Vector2.right; break;
+                    case 3: checkpos = oneToOnePos + Vector2.left; break;
+                    case 4: checkpos = oneToOnePos + Vector2.up + Vector2.right; break;
+                    case 5: checkpos = oneToOnePos + Vector2.down + Vector2.left; break;
                 }
                 //later add enemy obstical and wall detection
                 if (mapManager.GetTileAtHex(checkpos).GetComponent<Tile>().MoveCost <= moveLeft)
@@ -446,7 +448,7 @@ public class PlayerControler : Figure
     }
     public void Ability(int abilityValue)
     {
-        int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+        int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -468,7 +470,7 @@ public class PlayerControler : Figure
 
             lockpickValue *= variableCardModifier;
         }
-        int finalLockpick = conditionManager.ModifyAbility(this, lockpickValue);
+        int finalLockpick = actionModifier.ModifyAbility(this, lockpickValue);
         //Debug.Log(finalLockpick);
         if (isPlanning)
         {
@@ -477,7 +479,7 @@ public class PlayerControler : Figure
         }
         else
         {
-            currentTile = mapManager.GetTileAtHex(playerOneToOneCords);
+            currentTile = mapManager.GetTileAtHex(oneToOnePos);
             if (currentTile.GetComponent<Lootable>())
             {
                 currentTile.GetComponent<Lootable>().Lockpick(finalLockpick);
@@ -492,7 +494,7 @@ public class PlayerControler : Figure
     }
     public void Draw(int cardCount)
     {
-        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -507,7 +509,7 @@ public class PlayerControler : Figure
     }
     public void GainEnergy(int amount,bool isTop)
     {
-        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -538,7 +540,7 @@ public class PlayerControler : Figure
     }
     public void GainTopEnergy(int amount)
     {
-        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -553,7 +555,7 @@ public class PlayerControler : Figure
     }
     public void GainBottomEnergy(int amount)
     {
-        //int finalAbility = conditionManager.ModifyAbility(this, abilityValue);
+        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
         if (isPlanning)
         {
             string currentDescriptionString = "Gain " + amount + " bottom energy";

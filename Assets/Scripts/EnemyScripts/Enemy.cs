@@ -57,6 +57,16 @@ public class Enemy : Figure
 
     public void GetNewPlan(TurnManager turnManager)
     {
+        oneToOnePos = mapManager.PosToOneToOne(transform.position);
+        int distanceToPlayer = pathfinder.GetDistanceTo(playerControler.OneToOnePos, oneToOnePos);
+        if (distanceToPlayer >= 20)
+        {
+            GainCondition(new DistanceSpeedBoost(distanceToPlayer-20));
+        }
+        if (distanceToPlayer >= 50)
+        {
+            GainCondition(new DistanceJump());
+        }
         PlanDescription = displayedPlan;
         currentPlan.Clear();
         displayedPlan.Clear();
@@ -144,7 +154,7 @@ public class Enemy : Figure
     public void CalculateValues()
     {
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
-        distanceToPlayer = mapManager.GetDistanceBetweenOneToOne(oneToOnePos, playerControler.playerOneToOneCords);
+        distanceToPlayer = mapManager.GetDistanceBetweenOneToOne(oneToOnePos, playerControler.OneToOnePos);
     }
     public override void ActionDone()
     {

@@ -13,7 +13,7 @@ public class Figure : MonoBehaviour
     protected FigureStats statsDisplayer;
     protected PlayerControler playerControler;
     protected Pathfinder pathfinder;
-    protected ConditionManager conditionManager;
+    protected ActionModifier actionModifier;
     protected DeckManager deckManager;
     protected LevelManager levelManager;
 
@@ -24,6 +24,8 @@ public class Figure : MonoBehaviour
     public bool IsPlanning { set { isPlanning = value; } get { return isPlanning; } }
 
     protected Vector2 oneToOnePos;
+    public Vector2 OneToOnePos { get { return oneToOnePos; } set { oneToOnePos = value; } }
+
     protected int preferedRange;
     protected float distanceToPlayer;
     protected bool nextAction;
@@ -54,7 +56,7 @@ public class Figure : MonoBehaviour
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        conditionManager = GameObject.Find("ConditionManager").GetComponent<ConditionManager>();
+        actionModifier = GameObject.Find("ActionModifier").GetComponent<ActionModifier>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
 
@@ -137,7 +139,7 @@ public class Figure : MonoBehaviour
         {
             blockValue *= variableCardModifier;
         }
-        int finalBlock = conditionManager.ModifyBlock(this, blockValue);
+        int finalBlock = actionModifier.ModifyBlock(this, blockValue);
         if (isPlanning)
         {
             //prepareActions.Add(() => Block(finalBlock));
@@ -162,7 +164,7 @@ public class Figure : MonoBehaviour
         {
             attackConditions = new Condition[0];
         }
-        int finalAttack = conditionManager.ModifyAttack(this, attackValue);
+        int finalAttack = actionModifier.ModifyAttack(this, attackValue);
         if (isPlanning)
         {
             string currentDescriptionStart = "";
@@ -233,13 +235,14 @@ public class Figure : MonoBehaviour
         {
             moveValue *= variableCardModifier;
         }
-        int finalMove = conditionManager.ModifyMove(this, moveValue);
+        int finalMove = actionModifier.ModifyMove(this, moveValue);
+        bool finalJump = actionModifier.ModifyJump(this, isJump);
         //Mathf(finalMove,0,)
         if (isPlanning)
         {
             //prepareActions.Add(() => Move(finalMove, isJump));
             string planString = "Move " + finalMove;
-            if (isJump)
+            if (finalJump)
             {
                 planString += " Jump";
             }
@@ -249,11 +252,11 @@ public class Figure : MonoBehaviour
         {
             if (isPlayer)
             {
-                playerControler.ControledMove(finalMove, isJump);
+                playerControler.ControledMove(finalMove, finalJump);
             }
             else
             {
-                StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.playerOneToOneCords, gameObject, finalMove, preferedRange, isJump, canFly));
+                StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
             }
         }
     }
@@ -427,7 +430,7 @@ public class Figure : MonoBehaviour
                 }
                 if (condition.AddType == 3)
                 {
-                    Debug.Log("removed" + conditions[i].Name);
+                    //Debug.Log("removed" + conditions[i].Name);
                     conditions.Remove(conditions[i]);
                     i--;
                 }

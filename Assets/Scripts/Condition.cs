@@ -10,6 +10,10 @@ public class Condition : MonoBehaviour
     private int duration;
     public int Duration { get { return duration; } set { duration = value; } }
 
+    //addType 1: add values
+    //addType 2: add durations
+    //addType 3: override
+
     protected int addType;
     public int AddType { get { return addType; }}
     protected bool isVisible;
@@ -61,4 +65,13 @@ public class  Finesse: Condition
 public class NaturalScaling: Condition
 {
     public NaturalScaling(int conditionValue, int conditionDuration = -1, int addType = 3) : base("naturalScaling", conditionValue, conditionDuration, addType, false) { }
+}
+
+public class DistanceSpeedBoost : Condition
+{
+    public DistanceSpeedBoost(int conditionValue, int conditionDuration = 1, int addType = 3) : base("distanceSpeedBoost", conditionValue, conditionDuration, addType, false) { }
+}
+public class DistanceJump : Condition
+{
+    public DistanceJump(int conditionValue = -1, int conditionDuration = 1, int addType = 3) : base("distanceJump", conditionValue, conditionDuration, addType, false) { }
 }
