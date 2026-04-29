@@ -48,14 +48,38 @@ public class FigureStats : MonoBehaviour
         }
     }
 
-    public void DisplayConditions(List<Condition> conditions)
+    public void DisplayConditions(List<Condition> currentConditions)
     {
-        foreach (Condition condition in conditions)
+        List<Condition> conditions = new List<Condition>(currentConditions);
+        //Debug.Log("first condition: " + conditions[0].Name);
+        //Debug.Log("condition count: " + conditions.Count);
+        //Debug.Log("Displaed Conditions 1 time");
+
+        for (int i = 0; i < conditions.Count; i++)
         {
-            if (condition.IsVisible)
+            Condition checkedCondition = conditions[i];
+            if (conditions.Count == 0)
             {
-                conditions.Remove(condition);
+                Debug.Log("no conditions");
             }
+            //Debug.Log("ran 1 time");
+            Debug.Log("current condition: " + checkedCondition.Name);
+            Debug.Log("current condition visibility: " + checkedCondition.IsVisible);
+            if (checkedCondition.IsVisible == false)
+            {
+                //Debug.Log("didnt display on " + i);
+                Debug.Log("didnt display " + checkedCondition.Name);
+                conditions.Remove(checkedCondition);
+                i--;
+            }
+        }
+        if (conditions.Count != 0)
+        {
+            Debug.Log("first condition: " + conditions[0].Name);
+        }
+        if (conditions.Count == 0)
+        {
+            Debug.Log("no conditions");
         }
         if (conditions.Count == 0)
         {
@@ -69,6 +93,7 @@ public class FigureStats : MonoBehaviour
             foreach (Condition condition in conditions)
             {
                 string currentConditionText = "";
+                Debug.Log("displaying condition: " + condition.Name);
 
                 currentConditionText = condition.Name + " " + condition.Value;
                 if (condition.Duration != -1)

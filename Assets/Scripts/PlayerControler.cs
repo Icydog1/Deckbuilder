@@ -226,6 +226,32 @@ public class PlayerControler : Figure
         {
             ActionDone();
         }
+        else
+        {
+            Vector2 checkpos = Vector2.zero;
+            bool couldMoveMore = false;
+            for (int i = 0; i < 6; i++)
+            {
+                switch (i)
+                {
+                    case 0: checkpos = playerOneToOneCords + Vector2.up; break;
+                    case 1: checkpos = playerOneToOneCords + Vector2.down; break;
+                    case 2: checkpos = playerOneToOneCords + Vector2.right; break;
+                    case 3: checkpos = playerOneToOneCords + Vector2.left; break;
+                    case 4: checkpos = playerOneToOneCords + Vector2.up + Vector2.right; break;
+                    case 5: checkpos = playerOneToOneCords + Vector2.down + Vector2.left; break;
+                }
+                //later add enemy obstical and wall detection
+                if (mapManager.GetTileAtHex(checkpos).GetComponent<Tile>().MoveCost <= moveLeft)
+                {
+                    couldMoveMore = true;
+                }
+            }
+            if (!couldMoveMore)
+            {
+                ActionDone();
+            }
+        }
     }
 
 

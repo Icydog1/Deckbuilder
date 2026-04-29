@@ -4,6 +4,8 @@ using UnityEngine;
 public class FigureStorage : MonoBehaviour
 {
     private List<GameObject> enemies = new List<GameObject>();
+    public List<GameObject> Enemies {  get { return enemies; } set { enemies = value; } }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

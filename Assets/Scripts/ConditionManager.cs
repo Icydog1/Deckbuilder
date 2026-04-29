@@ -36,7 +36,7 @@ public class ConditionManager : MonoBehaviour
         {
             if (condition.Name == "naturalScaling")
             {
-                modifiedAttack *= (1 + 0.00001f * (float)condition.Value);
+                modifiedAttack *= (1 + 0.101f * (float)condition.Value);
             }
         }
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
@@ -73,7 +73,7 @@ public class ConditionManager : MonoBehaviour
         {
             if (condition.Name == "naturalScaling")
             {
-                modifiedMove *= (1 + 0.00001f * (float)condition.Value);
+                modifiedMove *= (1 + 0.101f * (float)condition.Value);
             }
         }
         int finalMove = Mathf.FloorToInt(modifiedMove);

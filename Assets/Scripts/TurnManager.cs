@@ -16,6 +16,7 @@ public class TurnManager : MonoBehaviour
     public Enemy currentEnemyTurnScript;
     public List<GameObject> turnOrder = new List<GameObject>();
     public bool endOfRound, playerTurn, enemyTurn;
+    private LevelManager levelManager;
 
 
     public static event Action<TurnManager> RoundEnded;
@@ -26,6 +27,7 @@ public class TurnManager : MonoBehaviour
         player = GameObject.Find("Player");
         playerControler = player.GetComponent<PlayerControler>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         newRoundMarker = GameObject.Find("NewRoundMarker");
         turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
@@ -107,6 +109,7 @@ public class TurnManager : MonoBehaviour
             //Debug.Log("Round ended");
             RoundEnded(this);
         }
+        levelManager.IncreaseRoundNumber();
         if (RoundStarted != null)
         {
             //Debug.Log("Round Started");

@@ -26,6 +26,11 @@ public class LevelManager : MonoBehaviour
     private List<GameObject> levelSpecific = new List<GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+
+    }
+
     void Start()
     {
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
@@ -34,7 +39,6 @@ public class LevelManager : MonoBehaviour
         player = GameObject.Find("Player");
         camera = GameObject.Find("Main Camera").GetComponent<Camera>();
 
-        TurnManager.RoundStarted += IncreaseRoundNumber;
 
     }
 
@@ -72,10 +76,14 @@ public class LevelManager : MonoBehaviour
 
     }
 
-    public void IncreaseRoundNumber(TurnManager turnManager)
+    public void IncreaseRoundNumber()
     {
         roundNumber++;
         levelRoundNumber++;
+    }
+    public void GetDifficultyModifier(Enemy enemy)
+    {
+        enemy.ApplyCondition(new NaturalScaling(roundNumber));
     }
     public void ClearLevel()
     {

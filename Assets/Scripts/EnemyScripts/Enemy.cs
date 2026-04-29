@@ -21,18 +21,20 @@ public class Enemy : Figure
     private Coroutine currentTurnRoutine;
     protected int actionNum;
     protected EnemyUi enemyStatsDisplayer;
-
+    protected FigureStorage figureStorage;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
+        figureStorage = GameObject.Find("FigureStorage").GetComponent<FigureStorage>();
         LevelManager.LevelCleared += Remove;
         base.Awake();
         enemyName = this.name;
         enemyName = enemyName.Replace("(Clone)", "");
         enemyName = Regex.Replace(enemyName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("EnemyUI").transform.Find("NameText").gameObject.GetComponent<TextMeshProUGUI>().SetText(enemyName);
+        figureStorage.Enemies.Add(gameObject);
     }
     public override void Start()
     {
@@ -73,11 +75,13 @@ public class Enemy : Figure
         }
         currentPlan = new List<System.Action>(plannedMoveSet);
         //Debug.Log("gotInitialPlan");
-        UpdatePlan();
+        levelManager.GetDifficultyModifier(this);
+        //UpdatePlan();
     }
 
     public void UpdatePlan()
     {
+        //Debug.Log("first condition: " + conditions[0].Name);
         PlanDescription = displayedPlan;
         displayedPlan.Clear();
         preferedRange = int.MaxValue;
@@ -88,6 +92,8 @@ public class Enemy : Figure
         }
         enemyStatsDisplayer.Plan(displayedPlan);
         isPlanning = false;
+        //Debug.Log("first condition: " + conditions[0].Name);
+
     }
     public void StartOfTurn()
     {

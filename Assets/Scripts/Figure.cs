@@ -427,20 +427,30 @@ public class Figure : MonoBehaviour
                 }
                 if (condition.AddType == 3)
                 {
+                    Debug.Log("removed" + conditions[i].Name);
                     conditions.Remove(conditions[i]);
+                    i--;
                 }
             }
 
         }
         if (isDuplicate == false)
         {
+            //Debug.Log("added" + condition.Name);
+
             conditions.Add(condition);
+            //Debug.Log("first condition: " + conditions[0].Name);
+
         }
         if (isPlayer)
         {
             deckManager.UpdateCardsDisplay();
         }
+        //Debug.Log("first condition: " + conditions[0].Name);
+
         statsDisplayer.DisplayConditions(conditions);
+        //Debug.Log("first condition: " + conditions[0].Name);
+
         if (!isPlayer)
         {
             GetComponent<Enemy>().UpdatePlan();
