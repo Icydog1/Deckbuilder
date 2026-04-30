@@ -19,6 +19,7 @@ public class TestBoss1 : Boss
 
             () => Block(25)
             ,() => ApplyCondition(new Strength(8, -1))
+            ,() => ApplyCondition(new Speed(6, -1))
         });
         movesSetOrder = new List<int>() { 0, 1, 2 };
 

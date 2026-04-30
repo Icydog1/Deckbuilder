@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using UnityEngine;
@@ -20,7 +21,7 @@ public class Figure : MonoBehaviour
 
     protected bool isMyTurn;
     protected bool isEnemy, isPlayer;
-    protected bool isPlanning;
+    protected bool isPlanning, isPreparingMove;
     public bool IsPlanning { set { isPlanning = value; } get { return isPlanning; } }
 
     protected Vector2 oneToOnePos;
@@ -40,14 +41,17 @@ public class Figure : MonoBehaviour
 
     protected List<string> planDescription = new List<string>();
     public List<string> PlanDescription { set { planDescription = value; } }
-    protected List<System.Action> prepareActions = new List<System.Action>();
-    public List<System.Action> PrepareActions { set { prepareActions = value; } }
+    //protected List<System.Action> prepareActions = new List<System.Action>();
+    //public List<System.Action> PrepareActions { set { prepareActions = value; } }
 
     protected List<Condition> conditions = new List<Condition>();
     public List<Condition> Conditions { set { conditions = value; } get { return conditions; } }
 
     protected int variableCardModifier;
     public int VariableCardModifier { get { return variableCardModifier; } set { variableCardModifier = value; } }
+
+    protected List<GameObject> shownTileBorders = new List<GameObject>();
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Awake()
     {
@@ -133,6 +137,9 @@ public class Figure : MonoBehaviour
         isPlanning = currentPlanningState;
         return displayedString;
     }
+
+
+
     public void Block(int blockValue, bool isVariable = false)
     {
         if (isVariable)
@@ -146,7 +153,7 @@ public class Figure : MonoBehaviour
             string currentDescriptionString = "Block " + finalBlock;
             planDescription.Add(currentDescriptionString);
         }
-        else
+        else if (!isPreparingMove)
         {
             block += finalBlock;
             statsDisplayer.SetHealthAndBlock(health, block);
@@ -212,7 +219,7 @@ public class Figure : MonoBehaviour
             string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             planDescription.Add(attackText);
         }
-        else
+        else if(!isPreparingMove)
         {
             if (isPlayer)
             {
@@ -248,6 +255,26 @@ public class Figure : MonoBehaviour
             }
             planDescription.Add(planString);
         }
+        else if (isPreparingMove)
+        {
+            List<Vector2>[] posibleTiles = pathfinder.PlanposiblePaths(oneToOnePos, gameObject, finalMove, finalJump, canFly);
+            foreach (Vector2 safeTile in posibleTiles[0])
+            {
+                GameObject tile = mapManager.GetTileAtHex(safeTile);
+                GameObject border = tile.transform.Find("Border").gameObject;
+                shownTileBorders.Add(border);
+                border.GetComponent<SpriteRenderer>().color = Color.blue;
+            }
+            foreach (Vector2 unsafeTile in posibleTiles[1])
+            {
+                GameObject tile = mapManager.GetTileAtHex(unsafeTile);
+                GameObject border = tile.transform.Find("Border").gameObject;
+                shownTileBorders.Add(border);
+                border.GetComponent<SpriteRenderer>().color = Color.red;
+            }
+            //posibleTiles[0].AddRange(posibleTiles[1]);
+            //shownTiles = new List<Vector2>(posibleTiles[0]);
+        }
         else
         {
             if (isPlayer)
@@ -260,6 +287,7 @@ public class Figure : MonoBehaviour
             }
         }
     }
+
     public void ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
     {
         ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget);
@@ -373,7 +401,7 @@ public class Figure : MonoBehaviour
             string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             planDescription.Add(conditionText);
         }
-        else
+        else if (!isPreparingMove)
         {
             if (isPlayer)
             {

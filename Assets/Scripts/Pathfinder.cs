@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -85,6 +86,7 @@ public class Pathfinder : MonoBehaviour
         {
             //finds the path from the figure with current movement that gets them as close to player a posible
             findPosiblePaths(selfPos);
+            findActualPath(selfPos);
             //moves along path
             StartCoroutine(MoveAlongPath(currentFigure, selfPos));
             yield return new WaitUntil(() => doneMoving == true);
@@ -107,7 +109,24 @@ public class Pathfinder : MonoBehaviour
         //finds the path from the figure with current movement that gets them as close to player a posible
         //Debug.Log("area done");
         findPosiblePaths(selfPos);
+        findActualPath(selfPos);
         //Debug.Log("path Found");
+    }
+    public List<Vector2>[] PlanposiblePaths(Vector2 selfPos, GameObject self, int newMoveValue, bool jump = false, bool fly = false)
+    {
+        currentFigure = self;
+        moveValue = newMoveValue;
+        isJump = jump;
+        isFly = fly;
+        currentPos = selfPos;
+        //findPathToArea(selfPos, new List<Vector2>() { targetPos });
+        findPosiblePaths(selfPos);
+        List<Vector2>[] posibleTiles = new List<Vector2>[2];
+        posibleTiles[0] = new List<Vector2>(safeTiles);
+        posibleTiles[1] = new List<Vector2>(unSafeTiles);
+        return posibleTiles;
+
+        
     }
 
     public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject self)
@@ -181,6 +200,11 @@ public class Pathfinder : MonoBehaviour
                     buildElevation(pos, true, false);
                 }
 
+            }
+            if (i >= 10000)
+            {
+                pathFound = true;
+                Debug.Log("DistanceTo pathfinding timed out");
             }
 
         }
@@ -310,6 +334,7 @@ public class Pathfinder : MonoBehaviour
         posibleTiles.Clear();
         posibleTilesPath.Clear();
         pathFound = false;
+        //starting at self spread uptward until you run out of movement
         for (int i = 0; i <= moveValue; i++)
         {
             currentElevation = i - 1;
@@ -317,7 +342,6 @@ public class Pathfinder : MonoBehaviour
             elevations.Add(currentHeight);
             if (i == 0)
             {
-
                 elevations[i].Add(selfPos);
                 checkedTiles.Add(selfPos);
                 safeTiles.Add(selfPos);
@@ -339,6 +363,9 @@ public class Pathfinder : MonoBehaviour
                 Debug.Log("posible path pathfinding timed out");
             }
         }
+    }
+    public void findActualPath(Vector2 selfPos)
+    {
         int killswitch = 0;
         GameObject tile = mapManager.GetTileAtHex(furthestPoint);
         GameObject border = tile.transform.Find("Border").gameObject;
@@ -430,27 +457,27 @@ public class Pathfinder : MonoBehaviour
                     if (checktile == currentPos && !pathFromFigure)
                     {
                         pathFound = true;
-                        //GameObject border = tile.transform.Find("Border").gameObject;
-                        //border.GetComponent<SpriteRenderer>().color = Color.cyan;
                         safeTiles.Add(checktile);
                         AddToElevation(checktile, tile, range);
                         endElevation = currentElevation + tile.GetComponent<Tile>().MoveCost;
-                        //Debug.Log(currentElevation + tile.GetComponent<Tile>().MoveCost + " final elevation");
                     }
                     else
                     {
+                        //based on how you move determines if tile is safe,unsafe or impasible
                         GetTileType(checktile, originalTile.GetComponent<Tile>().MoveCost, range, pathFromFigure);
                     }
+                    //if checking posible paths 
                     if (pathFromFigure && !impassableTiles.Contains(checktile))
                     {
+                        //if the tile is safe
                         if (originalSafeTiles.Contains(checktile))
                         {
-                            //for each elevation lower than the 
+                            //for each elevation lower than the current lowest one
                             for (int j = 0; j < furthestElevation; j++)
                             {
+                                //if the tile is in that lower elevation make it the new closest point to goal
                                 if (originalElevations[j].Contains(checktile))
                                 {
-                                    //Debug.Log("new tile");
                                     furthestPoint = checktile;
                                     furthestElevation = j;
                                 }

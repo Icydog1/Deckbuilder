@@ -261,34 +261,35 @@ public class PlayerControler : Figure
     {
         //Debug.Log("clicked" + figure);
         clickedEnemy = figure;
-        if (canPreformActions)
+        if (canPreformActions && isAttacking)
         {
-            if (isAttacking)
+            if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
             {
-                if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
-                {
-                    clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, appliedConditions);
-                    targetsLeft--;
-                    posibleTargets.Remove(figure.GetComponent<Figure>());
-                }
-                if (targetsLeft == 0)
-                {
-                    ActionDone();
-                }
+                clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, appliedConditions);
+                targetsLeft--;
+                posibleTargets.Remove(figure.GetComponent<Figure>());
             }
-            else if (isAppliyingConditions)
+            if (targetsLeft == 0)
             {
-                if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
-                {
-                    clickedEnemy.GetComponent<Figure>().GainConditions(appliedConditions);
-                    targetsLeft--;
-                    posibleTargets.Remove(figure.GetComponent<Figure>());
-                }
-                if (targetsLeft == 0)
-                {
-                    ActionDone();
-                }
+                ActionDone();
             }
+        }
+        else if (canPreformActions && isAppliyingConditions)
+        {
+            if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
+            {
+                clickedEnemy.GetComponent<Figure>().GainConditions(appliedConditions);
+                targetsLeft--;
+                posibleTargets.Remove(figure.GetComponent<Figure>());
+            }
+            if (targetsLeft == 0)
+            {
+                ActionDone();
+            }
+        }
+        else if (figure.GetComponent<Enemy>())
+        {
+            StartCoroutine(figure.GetComponent<Enemy>().DisplayMovePosibilities());
         }
 
     }

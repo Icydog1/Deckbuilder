@@ -53,6 +53,7 @@ public class LevelManager : MonoBehaviour
         isBossLevel = false;
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
+        player.GetComponent<Figure>().OneToOnePos = Vector2.zero;
         roomSpawner.SpawnStartingRoom();
     }
 
@@ -61,6 +62,8 @@ public class LevelManager : MonoBehaviour
         ClearLevel();
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
+        player.GetComponent<Figure>().OneToOnePos = Vector2.zero;
+
         if (!isBossLevel)
         {
             isBossLevel = true;

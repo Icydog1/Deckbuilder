@@ -150,7 +150,21 @@ public class Enemy : Figure
         currentmove++;
         EndTurn();
     }
-
+    public IEnumerator DisplayMovePosibilities()
+    {
+        isPreparingMove = true;
+        for (int i = 0; i < currentPlan.Count; i++)
+        {
+            currentPlan[i]();
+        }
+        isPreparingMove = false;
+        yield return new WaitUntil(() => mouseManager.selectedObject != gameObject);
+        foreach (GameObject border in shownTileBorders)
+        {
+            border.GetComponent<SpriteRenderer>().color = Color.black;
+        }
+        shownTileBorders.Clear();
+    }
     public void CalculateValues()
     {
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
