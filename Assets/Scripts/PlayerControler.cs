@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerControler : Figure
@@ -42,7 +43,7 @@ public class PlayerControler : Figure
     public bool PreformingAbility { get { return preformingAbility; } set { preformingAbility = value; UpdatePlayer(); } }
 
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
-    private int moveLeft, targetsLeft, attackDamageValue;
+    private int moveLeft, targetsLeft, attackDamageValue, repeats;
     private Condition[] appliedConditions;
     private bool canJump, canMove;
     private bool CanJump { set { canJump = value; UpdateMoveType(); } }
@@ -86,9 +87,14 @@ public class PlayerControler : Figure
         GameManager.GameStarted += PreparePlayer;
         GameManager.ResetGame += ResetPlayer;
 
+        //dev mode
+        //GainNewAbility(1, new List<System.Action>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
+
+
         GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true)});
-        //increasing ability cost doesnt work
-        GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
+        GainNewAbility(1, new List<System.Action>() {() => Lockpick(1, true) });
+
+
 
         base.Start();
     }
@@ -123,7 +129,12 @@ public class PlayerControler : Figure
             }
 
         }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            //dev mode
+            GainNewAbility(1, new List<System.Action>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
 
+        }
     }
 
     public void ShowMoveCostDisplay()
@@ -265,7 +276,7 @@ public class PlayerControler : Figure
         {
             if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
             {
-                clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, appliedConditions);
+                clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, repeats, appliedConditions);
                 targetsLeft--;
                 posibleTargets.Remove(figure.GetComponent<Figure>());
             }
@@ -352,7 +363,10 @@ public class PlayerControler : Figure
         if (cardPlayed)
         {
             playedCardScript.StopPlaying = true;
-            CardDone();
+        }
+        if (preformingAction)
+        {
+            ForceEndAction();
         }
         isPlayerTurn = false;
         UpdatePlayer();
@@ -395,7 +409,7 @@ public class PlayerControler : Figure
         }
         nextAction = true;
     }
-    public void CardDone()
+    public void ForceEndAction()
     {
         if (isMoving && moveCostDisplaySetting == "On Move")
         {
@@ -426,13 +440,14 @@ public class PlayerControler : Figure
         }
     }
 
-    public void ControledAttack(int attackValue, int attackRange, int targets, Condition[] attackConditions)
+    public void ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
     {
         actionDone = false;
         isAttacking = true;
         targetsLeft = targets;
         attackDamageValue = attackValue;
         range = attackRange;
+        repeats = times;
         isTargetAEnemy = true;
         appliedConditions = attackConditions;
         posibleTargets = FindPosibleTargets("enemy", attackRange);

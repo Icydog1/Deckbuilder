@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -223,13 +224,13 @@ public class Figure : MonoBehaviour
         {
             if (isPlayer)
             {
-                playerControler.ControledAttack(finalAttack, attackRange, targets, attackConditions);
+                playerControler.ControledAttack(finalAttack, attackRange, targets, repeats, attackConditions);
             }
             else
             {
                 foreach (Figure target in FindTargets("enemy", attackRange, targets))
                 {
-                    target.AttackedFor(finalAttack, attackConditions);
+                    target.AttackedFor(finalAttack, repeats, attackConditions);
                 }
                 ActionDone();
             }
@@ -546,24 +547,29 @@ public class Figure : MonoBehaviour
         }
         return targetedFigures;
     }
-    public void AttackedFor(int attackValue, Condition[] newConditions)
+    public void AttackedFor(int attackValue, int repeats, Condition[] newConditions)
     {
-        if (block > 0)
+        for (int i = 0; i < repeats; i++)
         {
-            int damageBlocked = Mathf.Min(attackValue, block);
-            attackValue -= damageBlocked;
-            block -= damageBlocked;
+            if (block > 0)
+            {
+                int damageBlocked = Mathf.Min(attackValue, block);
+                attackValue -= damageBlocked;
+                block -= damageBlocked;
+            }
+            health -= attackValue;
+            statsDisplayer.SetHealthAndBlock(health, block);
+            if (health <= 0)
+            {
+                Die();
+                break;
+            }
+            else
+            {
+                GainConditions(newConditions);
+            }
         }
-        health -= attackValue;
-        statsDisplayer.SetHealthAndBlock(health, block);
-        if (health <= 0)
-        {
-            Die();
-        }
-        else
-        {
-            GainConditions(newConditions);
-        }
+
     }
     public virtual void Die()
     {

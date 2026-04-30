@@ -5,10 +5,10 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField]
     private List<GameObject> enemy = new List<GameObject>();
-    private int activationDelay = 5;
+    private int activationDelay = 0;//5;
     private int tunsTillActive;
     private TurnManager turnManager;
-    private float spawnChance = 0.1f;
+    private float spawnChance = 1;//0.1f;
     private float spawnHeight = 12;
     private MapManager mapManager;
     private Vector2 OneToOnePos;
@@ -29,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
         }
 
         TurnManager.RoundEnded += AttemptToSpawnEnemy;
-        //LevelManager.LevelCleared += Remove;
+        LevelManager.LevelCleared += Remove;
         tunsTillActive = activationDelay;
     }
 
@@ -63,8 +63,8 @@ public class EnemySpawner : MonoBehaviour
     }
     public void OnDestroy()
     {
-        TurnManager.RoundEnded -= AttemptToSpawnEnemy;
-        LevelManager.LevelCleared -= Remove;
+        //TurnManager.RoundEnded -= AttemptToSpawnEnemy;
+        //LevelManager.LevelCleared -= Remove;
     }
     public void Remove(LevelManager levelManager)
     {

@@ -22,7 +22,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private GameObject stair;
 
-    public static event Action<LevelManager> LevelCleared;
+    public static event Action<LevelManager> LevelCleared, LevelGenerated;
     private List<GameObject> levelSpecific = new List<GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -99,7 +99,11 @@ public class LevelManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
+        if (LevelGenerated != null)
+        {
+            LevelGenerated(this);
+        }
+        
     }
 
     public void BossKilled(Vector2 bossCords)
