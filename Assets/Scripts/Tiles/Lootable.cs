@@ -21,8 +21,16 @@ public class Lootable : MonoBehaviour
     }
     void Start()
     {
-
         lockpickRemainingDisplay.DisplayText(lockpickDifficulty);
+        if (isCard)
+        {
+            transform.Find("BaseTileImage").GetComponent<SpriteRenderer>().color = new Color(0.7433963f, 0.496298f, 0);
+        }
+        else
+        {
+            transform.Find("BaseTileImage").GetComponent<SpriteRenderer>().color = new Color(1, 0.65f, 0);
+
+        }
     }
     // Update is called once per frame
     void Update()
