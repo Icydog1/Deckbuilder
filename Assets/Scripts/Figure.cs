@@ -168,7 +168,8 @@ public class Figure : MonoBehaviour
         if (isPlanning)
         {
             //prepareActions.Add(() => Block(finalBlock));
-            string currentDescriptionString = "Block " + finalBlock;
+            //string currentDescriptionString = "Block " + finalBlock;
+            string currentDescriptionString = "<sprite name=Block> " + finalBlock;
             planDescription.Add(currentDescriptionString);
         }
         else if (!isPreparingMove)
@@ -202,7 +203,9 @@ public class Figure : MonoBehaviour
                 }
             }
             //prepareActions.Add(() => Attack(finalAttack, attackRange, targets));
-            currentDescriptionStart = "Attack " + finalAttack;
+            //currentDescriptionStart = "Attack " + finalAttack;
+            currentDescriptionStart = "<sprite name=Attack> " + finalAttack;
+
             if (repeats > 1)
             {
                 currentDescriptionEnd += " " + repeats + " times ";
@@ -262,11 +265,13 @@ public class Figure : MonoBehaviour
         }
         int finalMove = conditionEffects.ModifyMove(this, moveValue);
         bool finalJump = conditionEffects.ModifyJump(this, isJump);
+        finalMove = Mathf.Clamp(finalMove, 0, 9999999);
         //Mathf(finalMove,0,)
         if (isPlanning)
         {
-            //prepareActions.Add(() => Move(finalMove, isJump));
-            string planString = "Move " + finalMove;
+            //string planString = "Move " + finalMove;
+            string planString = "<sprite name=Move> " + finalMove;
+
             if (finalJump)
             {
                 planString += " Jump";

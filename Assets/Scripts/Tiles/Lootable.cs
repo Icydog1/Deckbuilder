@@ -8,6 +8,8 @@ public class Lootable : MonoBehaviour
     private GameObject lootedTile;
     private RewardManager rewardManager;
     private VariableDisplayer lockpickRemainingDisplay;
+    private VariableDisplayer contentsDisplay;
+
     [SerializeField]
     private bool isCard;
     [SerializeField]
@@ -17,13 +19,13 @@ public class Lootable : MonoBehaviour
     //[SerializeField]
     //private List<int> test = new List<int>();
     [Serializable]
-    public struct reward
+    public struct Reward
     {
         public int rewardType;
         public int rewardAmount;
     }
     [SerializeField]
-    private List<reward> rewards = new List<reward>();
+    private List<Reward> rewards = new List<Reward>();
     private float rarity = 1;
     [SerializeField]
     private int lockpickDifficulty = 10;
@@ -34,6 +36,8 @@ public class Lootable : MonoBehaviour
     {
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
         lockpickRemainingDisplay = transform.Find("TileUI").Find("LockpickRemaningText").GetComponent<VariableDisplayer>();
+        contentsDisplay = transform.Find("TileUI").Find("ContentsText").GetComponent<VariableDisplayer>();
+
     }
     void Start()
     {
@@ -47,6 +51,23 @@ public class Lootable : MonoBehaviour
             transform.Find("BaseTileImage").GetComponent<SpriteRenderer>().color = new Color(1, 0.65f, 0);
 
         }
+        string LootDescription = "";
+        foreach (Reward reward in rewards)
+        {
+            if (reward.rewardType == 1)
+            {
+                LootDescription += "<sprite name=CardReward> ";
+            }
+            else if (reward.rewardType == 2)
+            {
+                LootDescription += "<sprite name=RelicReward> ";
+            }
+            else if (reward.rewardType == 3)
+            {
+                LootDescription += "<sprite name=HealthReward> ";
+            }
+        }
+        contentsDisplay.DisplayString(LootDescription);
     }
     // Update is called once per frame
     void Update()

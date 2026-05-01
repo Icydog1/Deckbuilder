@@ -126,9 +126,9 @@ public class RewardManager : MonoBehaviour
     }
 
 
-    public IEnumerator TileReward(GameObject tile, List<reward> rewards, bool isCard,bool isHealing)
+    public IEnumerator TileReward(GameObject tile, List<Reward> rewards, bool isCard,bool isHealing)
     {
-        foreach (reward reward in rewards)
+        foreach (Reward reward in rewards)
         {
             AnyReward();
             if (reward.rewardType == 1)

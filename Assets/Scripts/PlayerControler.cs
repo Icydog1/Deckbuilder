@@ -468,7 +468,9 @@ public class PlayerControler : Figure
 
         if (isPlanning)
         {
-            string currentDescriptionString = "Ability " + finalAbility;
+            //string currentDescriptionString = "Ability " + finalAbility;
+            string currentDescriptionString = "<sprite name=Ability> " + finalAbility;
+
             planDescription.Add(currentDescriptionString);
         }
         else
