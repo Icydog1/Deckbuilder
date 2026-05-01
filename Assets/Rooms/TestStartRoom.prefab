@@ -6625,6 +6625,18 @@ PrefabInstance:
       propertyPath: lockpickDifficulty
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 8684686368545874521, guid: a2fb0d9ea8ea3964e8c472bc20dfcfc8, type: 3}
+      propertyPath: rewards.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8684686368545874521, guid: a2fb0d9ea8ea3964e8c472bc20dfcfc8, type: 3}
+      propertyPath: rewards.Array.data[1].rewardType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8684686368545874521, guid: a2fb0d9ea8ea3964e8c472bc20dfcfc8, type: 3}
+      propertyPath: rewards.Array.data[1].rewardAmount
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+
 
 public class Figure : MonoBehaviour
 {
@@ -15,7 +10,7 @@ public class Figure : MonoBehaviour
     protected FigureStats statsDisplayer;
     protected PlayerControler playerControler;
     protected Pathfinder pathfinder;
-    protected ActionModifier actionModifier;
+    protected ConditionEffects conditionEffects;
     protected DeckManager deckManager;
     protected LevelManager levelManager;
 
@@ -31,6 +26,7 @@ public class Figure : MonoBehaviour
     protected int preferedRange;
     protected float distanceToPlayer;
     protected bool nextAction;
+    protected bool isDead;
 
     protected int team;
     public int Team { get { return team; } }
@@ -38,6 +34,8 @@ public class Figure : MonoBehaviour
     public bool IsPreformingAnimation { set { isPreformingAnimation = value; } get { return isPreformingAnimation; } }
 
     protected int maxHealth = 1, health, block = 0;
+    public int MaxHealth { get { return maxHealth; } }
+
     protected bool canFly = false;
 
     protected List<string> planDescription = new List<string>();
@@ -61,7 +59,7 @@ public class Figure : MonoBehaviour
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        actionModifier = GameObject.Find("ActionModifier").GetComponent<ActionModifier>();
+        conditionEffects = GameObject.Find("ConditionEffects").GetComponent<ConditionEffects>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
 
@@ -85,7 +83,23 @@ public class Figure : MonoBehaviour
 
     public void baseStartTurn()
     {
+        conditionEffects.StartOfTurnConditons(this);
+        for (int i = 0; i < conditions.Count; i++)
+        {
+            if (conditions[i].IsStartOfTurn && conditions[i].Duration > 0)
+            {
+                conditions[i].Duration--;
+                Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
+            }
+            if (conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
+            {
+                Debug.Log("removed " + conditions[i].Name);
 
+                conditions.RemoveAt(i);
+                i--;
+            }
+        }
+        statsDisplayer.DisplayConditions(conditions);
         block = 0;
         statsDisplayer.SetHealthAndBlock(health, block);
 
@@ -94,13 +108,16 @@ public class Figure : MonoBehaviour
     {
         for (int i = 0; i < conditions.Count; i++)
         {
-            if (conditions[i].Duration > 0)
+            if (!conditions[i].IsStartOfTurn && conditions[i].Duration > 0)
             {
                 conditions[i].Duration--;
+                Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
+
             }
-            if (conditions[i].Duration == 0)
+            if (!conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
             {
-                conditions.Remove(conditions[i]);
+                Debug.Log("removed " + conditions[i].Name);
+                conditions.RemoveAt(i);
                 i--;
             }
         }
@@ -147,7 +164,7 @@ public class Figure : MonoBehaviour
         {
             blockValue *= variableCardModifier;
         }
-        int finalBlock = actionModifier.ModifyBlock(this, blockValue);
+        int finalBlock = conditionEffects.ModifyBlock(this, blockValue);
         if (isPlanning)
         {
             //prepareActions.Add(() => Block(finalBlock));
@@ -172,7 +189,7 @@ public class Figure : MonoBehaviour
         {
             attackConditions = new Condition[0];
         }
-        int finalAttack = actionModifier.ModifyAttack(this, attackValue);
+        int finalAttack = conditionEffects.ModifyAttack(this, attackValue);
         if (isPlanning)
         {
             string currentDescriptionStart = "";
@@ -243,8 +260,8 @@ public class Figure : MonoBehaviour
         {
             moveValue *= variableCardModifier;
         }
-        int finalMove = actionModifier.ModifyMove(this, moveValue);
-        bool finalJump = actionModifier.ModifyJump(this, isJump);
+        int finalMove = conditionEffects.ModifyMove(this, moveValue);
+        bool finalJump = conditionEffects.ModifyJump(this, isJump);
         //Mathf(finalMove,0,)
         if (isPlanning)
         {
@@ -460,7 +477,7 @@ public class Figure : MonoBehaviour
                 if (condition.AddType == 3)
                 {
                     //Debug.Log("removed" + conditions[i].Name);
-                    conditions.Remove(conditions[i]);
+                    conditions.RemoveAt(i);
                     i--;
                 }
             }
@@ -551,25 +568,42 @@ public class Figure : MonoBehaviour
     {
         for (int i = 0; i < repeats; i++)
         {
-            if (block > 0)
-            {
-                int damageBlocked = Mathf.Min(attackValue, block);
-                attackValue -= damageBlocked;
-                block -= damageBlocked;
-            }
-            health -= attackValue;
-            statsDisplayer.SetHealthAndBlock(health, block);
-            if (health <= 0)
-            {
-                Die();
-                break;
-            }
-            else
+            TakeDamage(attackValue);
+            if (!isDead)
             {
                 GainConditions(newConditions);
             }
         }
 
+
+    }
+    public void TakeDamage(int damageValue)
+    {
+        if (block > 0)
+        {
+            int damageBlocked = Mathf.Min(damageValue, block);
+            damageValue -= damageBlocked;
+            block -= damageBlocked;
+        }
+        LoseHealth(damageValue);
+    }
+    public void LoseHealth(int amount)
+    {
+        health -= amount;
+        statsDisplayer.SetHealthAndBlock(health, block);
+        if (health <= 0)
+        {
+            isDead = true;
+            Die();
+        }
+    }
+
+
+    public void Heal(int amount)
+    {
+        health += amount;
+        health = Mathf.Min(health, maxHealth);
+        statsDisplayer.SetHealthAndBlock(health, block);
     }
     public virtual void Die()
     {

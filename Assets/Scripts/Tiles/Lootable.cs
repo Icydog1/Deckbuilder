@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Lootable : MonoBehaviour
@@ -8,6 +10,20 @@ public class Lootable : MonoBehaviour
     private VariableDisplayer lockpickRemainingDisplay;
     [SerializeField]
     private bool isCard;
+    [SerializeField]
+    private bool isHealing;
+    //[SerializeField]
+    //private List<int[]> rewards = new List<int[]>();
+    //[SerializeField]
+    //private List<int> test = new List<int>();
+    [Serializable]
+    public struct reward
+    {
+        public int rewardType;
+        public int rewardAmount;
+    }
+    [SerializeField]
+    private List<reward> rewards = new List<reward>();
     private float rarity = 1;
     [SerializeField]
     private int lockpickDifficulty = 10;
@@ -50,7 +66,7 @@ public class Lootable : MonoBehaviour
         LockpickDifficulty -= lockpickValue;
         if (LockpickDifficulty <= 0)
         {
-            rewardManager.TileReward(gameObject, isCard);
+            StartCoroutine(rewardManager.TileReward(gameObject, rewards, isCard, isHealing));
         }
     }
 }

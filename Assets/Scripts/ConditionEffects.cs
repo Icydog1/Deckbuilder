@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionModifier : MonoBehaviour
+public class ConditionEffects : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -13,12 +13,6 @@ public class ActionModifier : MonoBehaviour
     void Update()
     {
         
-    }
-
-
-    public void GainCondition(Figure effectedFigure, Condition condition)
-    {
-        //conditions.Add(condition);
     }
 
     public int ModifyAttack(Figure effectedFigure, int initalAttack)
@@ -36,7 +30,7 @@ public class ActionModifier : MonoBehaviour
         {
             if (condition.Name == "naturalScaling")
             {
-                modifiedAttack *= (1 + 0.01f * (float)condition.Value);
+                modifiedAttack *= (1 + 0.0025f * (float)condition.Value);
             }
         }
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
@@ -73,7 +67,7 @@ public class ActionModifier : MonoBehaviour
         {
             if (condition.Name == "naturalScaling")
             {
-                modifiedMove *= (1 + 0.01f * (float)condition.Value);
+                modifiedMove *= (1 + 0.0025f * (float)condition.Value);
             }
             if (condition.Name == "distanceSpeedBoost")
             {
@@ -112,5 +106,17 @@ public class ActionModifier : MonoBehaviour
         }
         bool finalJump = modifiedJump;
         return finalJump;
+    }
+
+    public void StartOfTurnConditons(Figure effectedFigure)
+    {
+        List<Condition> conditions = effectedFigure.Conditions;
+        foreach (Condition condition in conditions)
+        {
+            if (condition.Name == "poison")
+            {
+                effectedFigure.LoseHealth(condition.Value);
+            }
+        }
     }
 }

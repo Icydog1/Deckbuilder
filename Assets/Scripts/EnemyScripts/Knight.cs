@@ -15,15 +15,15 @@ public class Knight : Enemy
             () => Move(17)
             ,() => Attack(14)
             ,() => Block(13)
-            ,() => ApplyCondition(new Strength(12, 1))
+            ,() => ApplyCondition(new Strength(18, 2))
         });
         moveSets.Add(new List<System.Action> {
 
             () => Move(7)
             ,() => Attack(8)
             ,() => Block(16)
-            ,() => ApplyCondition(new Speed(16, 1))
-            ,() => ApplyCondition(new Strength(12, 1))
+            ,() => ApplyCondition(new Speed(16, 2))
+            ,() => ApplyCondition(new Strength(12, 2))
 
         });
 

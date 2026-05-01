@@ -13,7 +13,7 @@ public class Pathfinder : MonoBehaviour
     private List<Vector2> currentHeight = new List<Vector2>();
     private List<Vector2> checkedTiles = new List<Vector2>();
     private List<Vector2> safeTiles = new List<Vector2>();
-    private List<Vector2> unSafeTiles = new List<Vector2>();
+    private List<Vector2> unsafeTiles = new List<Vector2>();
     private List<Vector2> impassableTiles = new List<Vector2>();
 
     private List<List<Vector2>> originalElevations = new List<List<Vector2>>();
@@ -123,7 +123,7 @@ public class Pathfinder : MonoBehaviour
         findPosiblePaths(selfPos);
         List<Vector2>[] posibleTiles = new List<Vector2>[2];
         posibleTiles[0] = new List<Vector2>(safeTiles);
-        posibleTiles[1] = new List<Vector2>(unSafeTiles);
+        posibleTiles[1] = new List<Vector2>(unsafeTiles);
         return posibleTiles;
 
         
@@ -177,7 +177,7 @@ public class Pathfinder : MonoBehaviour
         elevations.Clear();
         checkedTiles.Clear();
         safeTiles.Clear();
-        unSafeTiles.Clear();
+        unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
         //stops when 
@@ -215,7 +215,7 @@ public class Pathfinder : MonoBehaviour
         elevations.Clear();
         checkedTiles.Clear();
         safeTiles.Clear();
-        unSafeTiles.Clear();
+        unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
         for (int i = 0; i <= range; i++)
@@ -250,7 +250,7 @@ public class Pathfinder : MonoBehaviour
         elevations.Clear();
         checkedTiles.Clear();
         safeTiles.Clear();
-        unSafeTiles.Clear();
+        unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
         if (targetArea.Contains(selfPos))
@@ -329,7 +329,7 @@ public class Pathfinder : MonoBehaviour
         elevations.Clear();
         checkedTiles.Clear();
         safeTiles.Clear();
-        unSafeTiles.Clear();
+        unsafeTiles.Clear();
         impassableTiles.Clear();
         posibleTiles.Clear();
         posibleTilesPath.Clear();
@@ -426,6 +426,14 @@ public class Pathfinder : MonoBehaviour
         elevations[moveCost + currentElevation].Add(tilePos);
         if (pathFromFigure && moveCost + currentElevation > moveValue)
         {
+            if (safeTiles.Contains(tilePos))
+            {
+                safeTiles.Remove(tilePos);
+            }
+            if (unsafeTiles.Contains(tilePos))
+            {
+                unsafeTiles.Remove(tilePos);
+            }
             impassableTiles.Add(tilePos);
         }
     }
@@ -509,7 +517,7 @@ public class Pathfinder : MonoBehaviour
             {
                 GameObject border = tile.transform.Find("Border").gameObject;
                 //border.GetComponent<SpriteRenderer>().color = Color.yellow;
-                unSafeTiles.Add(checktile);
+                unsafeTiles.Add(checktile);
                 AddToElevation(checktile, tile, range, pathFromFigure, addedCost);
 
             }

@@ -1,25 +1,21 @@
 using System.Collections.Generic;
-using UnityEngine;
-
-public class BasicRangedEnemy : Enemy
+public class Shaman : Enemy
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
         moveSets.Add(new List<System.Action> {
-            () => Move(10)
-            ,() => Attack(15, 5)
+            () => Move(15)
+            ,() => Attack(5,3,1,1,new Condition[] { new Strength(-3,2),new Finesse(-2, 2) })
         });
         moveSets.Add(new List<System.Action> {
-            () => Attack(25, 6)
+            () => Move(15)
+            ,() => Attack(5,3,1,1,new Condition[] { new Dexterity(-3, 2),new Speed(-2,2) })
         });
-        moveSets.Add(new List<System.Action> {
-            () => Move(20)
-            ,() => Attack(20, 4)
-        });
+
+        //movesSetOrder = new List<int>() { 0, 1 };
         maxHealth = 50;
         base.Start();
     }
 }
-

@@ -18,6 +18,8 @@ public class Condition : MonoBehaviour
     public int AddType { get { return addType; }}
     protected bool isVisible;
     public bool IsVisible { get { return isVisible; } }
+    protected bool isStartOfTurn;
+    public bool IsStartOfTurn { get { return isStartOfTurn; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -31,47 +33,53 @@ public class Condition : MonoBehaviour
         
     }
     
-    public Condition (string name, int conditionValue, int conditionDuration, int conditionAddType, bool isShown)
+    public Condition (string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown)
     {
         conditionName = name;
         amount = conditionValue;
         duration = conditionDuration;
         addType = conditionAddType;
         isVisible = isShown;
+        isStartOfTurn = isStartOfTurnCondition;
     }
     
 }
 
 public class Strength : Condition
 {
-    public Strength(int conditionValue, int conditionDuration = -1, int addType = 1) : base("strength", conditionValue, conditionDuration, addType, true) {}
+    public Strength(int conditionValue, int conditionDuration = -1, int addType = 1) : base("strength", conditionValue, conditionDuration, addType, false, true) {}
 }
 
 public class Dexterity : Condition
 {
-    public Dexterity(int conditionValue, int conditionDuration = -1, int addType = 1) : base("dexterity", conditionValue, conditionDuration, addType, true) {}
+    public Dexterity(int conditionValue, int conditionDuration = -1, int addType = 1) : base("dexterity", conditionValue, conditionDuration, addType, false, true) {}
 }
 
 public class Speed : Condition
 {
-    public Speed(int conditionValue, int conditionDuration = -1, int addType = 1) : base("speed", conditionValue, conditionDuration, addType, true) { }
+    public Speed(int conditionValue, int conditionDuration = -1, int addType = 1) : base("speed", conditionValue, conditionDuration, addType, false, true) { }
 }
 
 public class  Finesse: Condition
 {
-    public Finesse(int conditionValue, int conditionDuration = -1, int addType = 1) : base("finesse", conditionValue, conditionDuration, addType, true) { }
+    public Finesse(int conditionValue, int conditionDuration = -1, int addType = 1) : base("finesse", conditionValue, conditionDuration, addType, false, true) { }
 }
 
 public class NaturalScaling: Condition
 {
-    public NaturalScaling(int conditionValue, int conditionDuration = -1, int addType = 3) : base("naturalScaling", conditionValue, conditionDuration, addType, false) { }
+    public NaturalScaling(int conditionValue, int conditionDuration = -1, int addType = 3) : base("naturalScaling", conditionValue, conditionDuration, addType, false, false) { }
 }
 
 public class DistanceSpeedBoost : Condition
 {
-    public DistanceSpeedBoost(int conditionValue, int conditionDuration = 1, int addType = 3) : base("distanceSpeedBoost", conditionValue, conditionDuration, addType, false) { }
+    public DistanceSpeedBoost(int conditionValue, int conditionDuration = 1, int addType = 3) : base("distanceSpeedBoost", conditionValue, conditionDuration, addType, false, false) { }
 }
 public class DistanceJump : Condition
 {
-    public DistanceJump(int conditionValue = -1, int conditionDuration = 1, int addType = 3) : base("distanceJump", conditionValue, conditionDuration, addType, false) { }
+    public DistanceJump(int conditionValue = -1, int conditionDuration = 1, int addType = 3) : base("distanceJump", conditionValue, conditionDuration, addType, false, false) { }
+}
+
+public class Poison : Condition
+{
+    public Poison(int conditionValue, int conditionDuration = -1, int addType = 1) : base("poison", conditionValue, conditionDuration, addType, true, true) { }
 }

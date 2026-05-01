@@ -464,7 +464,7 @@ public class PlayerControler : Figure
     }
     public void Ability(int abilityValue)
     {
-        int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
+        int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -486,7 +486,7 @@ public class PlayerControler : Figure
 
             lockpickValue *= variableCardModifier;
         }
-        int finalLockpick = actionModifier.ModifyAbility(this, lockpickValue);
+        int finalLockpick = conditionEffects.ModifyAbility(this, lockpickValue);
         //Debug.Log(finalLockpick);
         if (isPlanning)
         {
@@ -510,7 +510,7 @@ public class PlayerControler : Figure
     }
     public void Draw(int cardCount)
     {
-        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
+        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -525,7 +525,7 @@ public class PlayerControler : Figure
     }
     public void GainEnergy(int amount,bool isTop)
     {
-        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
+        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -556,7 +556,7 @@ public class PlayerControler : Figure
     }
     public void GainTopEnergy(int amount)
     {
-        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
+        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
@@ -571,7 +571,7 @@ public class PlayerControler : Figure
     }
     public void GainBottomEnergy(int amount)
     {
-        //int finalAbility = actionModifier.ModifyAbility(this, abilityValue);
+        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
         if (isPlanning)
         {
             string currentDescriptionString = "Gain " + amount + " bottom energy";

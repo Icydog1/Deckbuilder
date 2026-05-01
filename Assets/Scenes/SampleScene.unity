@@ -3898,7 +3898,7 @@ GameObject:
   - component: {fileID: 771261319}
   - component: {fileID: 771261320}
   m_Layer: 0
-  m_Name: ActionModifier
+  m_Name: ConditionEffects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4625,6 +4625,7 @@ MonoBehaviour:
   - {fileID: 9218115205761869585, guid: b7cfcb45a7aea784f9ad392550224247, type: 3}
   - {fileID: 646555107119238115, guid: 59e675f0742c088459479abf96ffa8ab, type: 3}
   - {fileID: 8029912300213460181, guid: cb90b68f93b6609438888cd74da852ae, type: 3}
+  - {fileID: 1960072249521237197, guid: d82801326a2bd99469fcb0146038cc93, type: 3}
 --- !u!4 &887113702
 Transform:
   m_ObjectHideFlags: 0
@@ -6323,6 +6324,7 @@ MonoBehaviour:
   - {fileID: 2514901786406067077, guid: b4d5692901c648e44a5534ba1a0bf6b3, type: 3}
   - {fileID: 2761692547563443597, guid: c0372bddbd94f664dad33a34fc27d13f, type: 3}
   - {fileID: 3128490147055996887, guid: 4ba609f19b16f04428296e8b5dc982f5, type: 3}
+  - {fileID: 2550443945361880006, guid: dcef61d6e6b0f8b43ba6cc4a9cf2e3ea, type: 3}
   allRelicRewards:
   - {fileID: 5795666314669812343, guid: 20c7e432cc30b2343a315df4b6c93291, type: 3}
   - {fileID: 7593476723129728348, guid: a6936a00a85b1ac4796a141a3ab6947b, type: 3}

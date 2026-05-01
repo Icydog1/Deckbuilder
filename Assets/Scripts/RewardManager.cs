@@ -1,6 +1,9 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
+using static Lootable;
 
 public class RewardManager : MonoBehaviour
 {
@@ -38,6 +41,8 @@ public class RewardManager : MonoBehaviour
     private float relativeSpaceBetweenRewardCards = 0.5f;
 
     private bool isRewardCard;
+
+    private bool isGettingReward;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -103,9 +108,15 @@ public class RewardManager : MonoBehaviour
     }
     public void AnyReward()
     {
+        isGettingReward = true;
         playerControler.GettingReward = true;
         uIManager.IsGettingReward = true;
-        //playerControler.UpdatePlayer();
+    }
+    public void GainedReward()
+    {
+        isGettingReward = false;
+        playerControler.GettingReward = false;
+        uIManager.IsGettingReward = false;
     }
     public void InitialReward(GameManager gameManager)
     {
@@ -115,14 +126,27 @@ public class RewardManager : MonoBehaviour
     }
 
 
-    public void TileReward(GameObject tile, bool isCard)
+    public IEnumerator TileReward(GameObject tile, List<reward> rewards, bool isCard,bool isHealing)
     {
-        AnyReward();
+        foreach (reward reward in rewards)
+        {
+            AnyReward();
+            if (reward.rewardType == 1)
+            {
+                GenerateReward(3, true);
+            }
+            else if (reward.rewardType == 2)
+            {
+                GenerateReward(3, false);
+            }
+            else if (reward.rewardType == 3)
+            {
+                GainHealing(reward.rewardAmount);
+            }
+            yield return new WaitUntil(() => isGettingReward == false);
+        }
         tileScript = tile.GetComponent<Lootable>();
         tileScript.Looted();
-        //rewardRarity = tileScript.Raity;
-
-        GenerateReward(3, isCard);
     }
     public void BossReward()
     {
@@ -130,6 +154,12 @@ public class RewardManager : MonoBehaviour
         //rewardRarity = tileScript.Raity;
         GenerateReward(3, false);
     }
+    private void GainHealing(int amount)
+    {
+        playerControler.Heal(amount);
+        GainedReward();
+    }
+
     private void GenerateReward(int numberOfRewards, bool isCard = true)
     {
         isRewardCard = isCard;
@@ -213,7 +243,6 @@ public class RewardManager : MonoBehaviour
             Destroy(unselectedReward);
         }
         currentOptions.Clear();
-        playerControler.GettingReward = false;
-        uIManager.IsGettingReward = false;
+        GainedReward();
     }
 }

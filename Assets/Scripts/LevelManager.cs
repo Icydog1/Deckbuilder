@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
     private RoomSpawner roomSpawner;
     private Camera camera;
     private GameObject player;
+    private PlayerControler playerControler;
 
     private bool isBossLevel;
     private int level;
@@ -38,7 +39,7 @@ public class LevelManager : MonoBehaviour
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         player = GameObject.Find("Player");
         camera = GameObject.Find("Main Camera").GetComponent<Camera>();
-
+        playerControler = player.GetComponent<PlayerControler>();
 
     }
 
@@ -53,7 +54,7 @@ public class LevelManager : MonoBehaviour
         isBossLevel = false;
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
-        player.GetComponent<Figure>().OneToOnePos = Vector2.zero;
+        playerControler.OneToOnePos = Vector2.zero;
         roomSpawner.SpawnStartingRoom();
     }
 
@@ -62,7 +63,7 @@ public class LevelManager : MonoBehaviour
         ClearLevel();
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
-        player.GetComponent<Figure>().OneToOnePos = Vector2.zero;
+        playerControler.OneToOnePos = Vector2.zero;
 
         if (!isBossLevel)
         {
@@ -109,6 +110,7 @@ public class LevelManager : MonoBehaviour
     public void BossKilled(Vector2 bossCords)
     {
         rewardManager.BossReward();
+        playerControler.Heal(playerControler.MaxHealth);
         Destroy(mapManager.GetTileAtHex(bossCords));
         levelSpecific.Add(Instantiate(stair, mapManager.OneToOneToPos(bossCords), Quaternion.identity));
 
