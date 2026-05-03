@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 
 public class Condition : MonoBehaviour
@@ -10,6 +12,7 @@ public class Condition : MonoBehaviour
     private int duration;
     public int Duration { get { return duration; } set { duration = value; } }
 
+    //addType 0: new instance (unoffical)
     //addType 1: add values
     //addType 2: add durations
     //addType 3: override
@@ -21,6 +24,11 @@ public class Condition : MonoBehaviour
     protected bool isStartOfTurn;
     public bool IsStartOfTurn { get { return isStartOfTurn; } }
 
+    protected System.Action[] plan;
+    public System.Action[] Plan { get { return plan; } }
+
+    protected string abnormality;
+    public string Abnormality { get { return abnormality; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,8 +40,8 @@ public class Condition : MonoBehaviour
     {
         
     }
-    
-    public Condition (string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown)
+
+    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown, System.Action[] actionPlan = null, string conditionAbnormality = null)
     {
         conditionName = name;
         amount = conditionValue;
@@ -41,6 +49,8 @@ public class Condition : MonoBehaviour
         addType = conditionAddType;
         isVisible = isShown;
         isStartOfTurn = isStartOfTurnCondition;
+        abnormality = conditionAbnormality;
+        plan = actionPlan;
     }
     
 }
@@ -82,4 +92,9 @@ public class DistanceJump : Condition
 public class Poison : Condition
 {
     public Poison(int conditionValue, int conditionDuration = -1, int addType = 1) : base("poison", conditionValue, conditionDuration, addType, true, true) { }
+}
+
+public class NextTurns : Condition
+{
+    public NextTurns(System.Action[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1, int addType = 1, string abnormality = "Delayed Gain") : base("nextTurns", conditionValue, conditionDuration, addType, true, true, nextTurnsAction, abnormality) { }
 }

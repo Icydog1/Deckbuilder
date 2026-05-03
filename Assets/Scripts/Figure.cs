@@ -50,6 +50,9 @@ public class Figure : MonoBehaviour
     public int VariableCardModifier { get { return variableCardModifier; } set { variableCardModifier = value; } }
 
     protected List<GameObject> shownTileBorders = new List<GameObject>();
+    protected List<string> actionAbnormalities = new List<string>();
+    public List<string> ActionAbnormalities { set { actionAbnormalities = value; } get { return actionAbnormalities; } }
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Awake()
@@ -89,11 +92,11 @@ public class Figure : MonoBehaviour
             if (conditions[i].IsStartOfTurn && conditions[i].Duration > 0)
             {
                 conditions[i].Duration--;
-                Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
+                //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
             }
             if (conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
             {
-                Debug.Log("removed " + conditions[i].Name);
+                //Debug.Log("removed " + conditions[i].Name);
 
                 conditions.RemoveAt(i);
                 i--;
@@ -323,106 +326,156 @@ public class Figure : MonoBehaviour
             List<string> individualConditionText = new List<string>();
             string currentDescriptionStart = "";
             string currentDescriptionEnd = "";
-            if (targetType == "self")
-            {
-                currentDescriptionStart += "Gain ";
-                
-                //bool isPositive = false;
-                //foreach (Condition test in newConditions)
-                //{
-                //    if (test.Value > 0)
-                //    {
-                //        isPositive = true;
-                //        break;
-                //    }
-                //}
-                //if (isPositive)
-                //{
-                //    currentDescriptionStart += "Gain ";
-                //}
-                //else
-                //{
-                //    currentDescriptionStart += "Lose ";
-                //}
-                
-            }
-            else
-            {
-                currentDescriptionStart += "Apply ";
 
-                currentDescriptionEnd += " target ";
-
-                if (targets == int.MaxValue)
+            foreach (Condition condition in newConditions)
+            {
+                if (condition.Abnormality != null)
                 {
-                    currentDescriptionEnd += "all";
+                    actionAbnormalities.Add(condition.Abnormality);
+                }
+                string currentDescriptionString = "";
+                //Debug.Log(actionAbnormalities);
+                if (condition.Plan != null)
+                {
+                    foreach (System.Action action in condition.Plan)
+                    {
+                        action();
+                        if (condition.Plan[0] != action)
+                        {
+                            planDescription[planDescription.Count - 2] = planDescription[planDescription.Count - 2] + " and " + planDescription[planDescription.Count - 1];
+                            planDescription.RemoveAt(planDescription.Count - 1);
+                        }
+                    }
+                    //condition.Plan();
+                }
+                if (actionAbnormalities.Contains("Delayed Gain"))
+                {
+                    if (condition.Duration == 1)
+                    {
+                        //planDescription.Add("Next turn");
+                        
+                        planDescription[planDescription.Count - 1] = "Next turn " + planDescription[planDescription.Count - 1];
+                    }
+                    else if (condition.Duration != -1)
+                    {
+                        planDescription[planDescription.Count - 1] = "At the start of the next " + condition.Duration + " turns" + planDescription[planDescription.Count - 1];
+                    }
+                    individualConditionText.Add(currentDescriptionString);
+                }
+
+                if (actionAbnormalities.Contains("Delayed Gain"))
+                {
+
                 }
                 else
                 {
-                    currentDescriptionEnd += targets;
-                }
-                if (targetType == "ally")
-                {
-                    if (targets != 1)
+                    currentDescriptionString = condition.Value + " " + condition.Name;
+                    if (condition.Duration == 1)
                     {
-                        currentDescriptionEnd += " ally";
+                        currentDescriptionString += " this turn";
+                    }
+                    else if (condition.Duration != -1)
+                    {
+                        currentDescriptionString += " for " + condition.Duration + " turns";
+                    }
+                    individualConditionText.Add(currentDescriptionString);
+                }
+
+                if (targetType == "self")
+                {
+                    if (!actionAbnormalities.Contains("Delayed Gain"))
+                    {
+                        currentDescriptionStart += "Gain ";
+
+                    }
+
+
+
+                    //bool isPositive = false;
+                    //foreach (Condition test in newConditions)
+                    //{
+                    //    if (test.Value > 0)
+                    //    {
+                    //        isPositive = true;
+                    //        break;
+                    //    }
+                    //}
+                    //if (isPositive)
+                    //{
+                    //    currentDescriptionStart += "Gain ";
+                    //}
+                    //else
+                    //{
+                    //    currentDescriptionStart += "Lose ";
+                    //}
+
+                }
+                else
+                {
+                    currentDescriptionStart += "Apply ";
+
+                    currentDescriptionEnd += " target ";
+
+                    if (targets == int.MaxValue)
+                    {
+                        currentDescriptionEnd += "all";
                     }
                     else
                     {
-                        currentDescriptionEnd += " allies";
+                        currentDescriptionEnd += targets;
                     }
-                }
-                if (displayTarget)
-                {
-                    if (targetType == "enemy")
+                    if (targetType == "ally")
                     {
                         if (targets != 1)
                         {
-                            currentDescriptionEnd += " enemy";
+                            currentDescriptionEnd += " ally";
                         }
                         else
                         {
-                            currentDescriptionEnd += " enemies";
+                            currentDescriptionEnd += " allies";
+                        }
+                    }
+                    if (displayTarget)
+                    {
+                        if (targetType == "enemy")
+                        {
+                            if (targets != 1)
+                            {
+                                currentDescriptionEnd += " enemy";
+                            }
+                            else
+                            {
+                                currentDescriptionEnd += " enemies";
+                            }
+
+                        }
+                        if (targetType == "self or ally")
+                        {
+                            if (targets != 1)
+                            {
+                                currentDescriptionEnd += " ally or self";
+                            }
+                            else
+                            {
+                                currentDescriptionEnd += " allies or self";
+                            }
                         }
 
                     }
-                    if (targetType == "self or ally")
+                    currentDescriptionEnd += " range " + range;
+                    if (!isPlayer)
                     {
-                        if (targets != 1)
+                        if (preferedRange > range && targetType == "enemy")
                         {
-                            currentDescriptionEnd += " ally or self";
-                        }
-                        else
-                        {
-                            currentDescriptionEnd += " allies or self";
+                            preferedRange = range;
                         }
                     }
-
                 }
-                currentDescriptionEnd += " range " + range;
-                if (!isPlayer)
-                {
-                    if (preferedRange > range && targetType == "enemy")
-                    {
-                        preferedRange = range;
-                    }
-                }
-            }
-            foreach (Condition condition in newConditions)
-            {
-                string currentDescriptionString = currentDescriptionString = condition.Value + " " + condition.Name;
-                if (condition.Duration == 1)
-                {
-                    currentDescriptionString += " this turn";
-                }
-                else if (condition.Duration != -1)
-                {
-                    currentDescriptionString += " for " + condition.Duration + " turns";
-                }
-                individualConditionText.Add(currentDescriptionString);
             }
             string separator = ", ";
             string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             planDescription.Add(conditionText);
+
         }
         else if (!isPreparingMove)
         {
@@ -451,6 +504,28 @@ public class Figure : MonoBehaviour
             }
         }
     }
+    /*
+    public void DelayedApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    {
+        actionAbnormality = "Delayed Gain";
+        if (isPlanning)
+        {
+            ApplyConditions(newConditions, targetType, range, targets, displayTarget);
+        }
+        actionAbnormality = "";
+        ActionDone();
+    }
+    public void GainPower(Condition power, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    {
+        actionAbnormality = "Delayed Gain";
+        if (isPlanning)
+        {
+
+        }
+        actionAbnormality = "";
+        ActionDone();
+    }
+    */
 
     public void GainConditions(Condition[] newConditions)
     {
@@ -486,7 +561,6 @@ public class Figure : MonoBehaviour
                     i--;
                 }
             }
-
         }
         if (isDuplicate == false)
         {

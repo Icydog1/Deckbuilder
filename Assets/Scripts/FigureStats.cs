@@ -6,6 +6,7 @@ public class FigureStats : MonoBehaviour
 {
     protected GameObject healthTextObject, conditionsTextObject, planTextObject;
     protected TextMeshProUGUI healthText, conditionsText, planText;
+    protected Figure figure;
     protected bool noConditions;
     protected bool isPlayerUI = false;
 
@@ -18,6 +19,15 @@ public class FigureStats : MonoBehaviour
         healthText = healthTextObject.GetComponent<TextMeshProUGUI>();
         conditionsText = conditionsTextObject.GetComponent<TextMeshProUGUI>();
         planText = planTextObject.GetComponent<TextMeshProUGUI>();
+        if (isPlayerUI)
+        {
+            figure = GameObject.Find("Player").GetComponent<PlayerControler>();
+        }
+        else
+        {
+            figure = transform.parent.GetComponent<Figure>();
+
+        }
 
         SetHealthAndBlock(100, 0);
         DisplayConditions(new List<Condition>());
@@ -50,43 +60,14 @@ public class FigureStats : MonoBehaviour
     public void DisplayConditions(List<Condition> currentConditions)
     {
         List<Condition> conditions = new List<Condition>(currentConditions);
-        //Debug.Log("first condition: " + conditions[0].Name);
-        //Debug.Log("condition count: " + conditions.Count);
-        //Debug.Log("Displaed Conditions 1 time");
 
         for (int i = conditions.Count; i > 0; i--)
         {
-            //Condition checkedCondition = conditions[i-1];
-            //if (conditions.Count == 0)
-            //{
-            //    Debug.Log("no conditions");
-            //}
-            ////Debug.Log("ran 1 time");
-            //Debug.Log("current condition: " + checkedCondition.Name);
-            //Debug.Log("current condition visibility: " + checkedCondition.IsVisible);
             if (conditions[i - 1].IsVisible == false)
             {
-                //Debug.Log("condition count before: " + conditions.Count);
-
-                //Debug.Log("first condition before: " + conditions[0].Name);
-                ////Debug.Log("didnt display on " + i);
-                //Debug.Log("didnt display " + checkedCondition.Name);
                 conditions.RemoveAt(i-1);
-                //if (conditions.Count != 0)
-                //{
-                //    Debug.Log("first condition after: " + conditions[0].Name);
-                //    Debug.Log("condition count after: " + conditions.Count);
-                //}
             }
         }
-        //if (conditions.Count != 0)
-        //{
-        //    Debug.Log("first condition: " + conditions[0].Name);
-        //}
-        //if (conditions.Count == 0)
-        //{
-        //    Debug.Log("no conditions");
-        //}
         if (conditions.Count == 0)
         {
             noConditions = true;
@@ -100,11 +81,46 @@ public class FigureStats : MonoBehaviour
             {
                 string currentConditionText = "";
                 //Debug.Log("displaying condition: " + condition.Name);
-
-                currentConditionText = condition.Name + " " + condition.Value;
+                currentConditionText = condition.Name;
+                if (condition.Name == "nextTurns")
+                {
+                    currentConditionText = "Start of turn ";
+                }
+                if (condition.Plan != null)
+                {
+                    bool oldIsPlanning = figure.IsPlanning;
+                    figure.IsPlanning = true;
+                    List<string> conditionPlanDescription = new List<string>();
+                    figure.PlanDescription = conditionPlanDescription;
+                    
+                    foreach (System.Action action in condition.Plan)
+                    {
+                        action();
+                        if (condition.Plan[0] != action)
+                        {
+                            conditionPlanDescription[conditionPlanDescription.Count - 2] = conditionPlanDescription[conditionPlanDescription.Count - 2] + " and " + conditionPlanDescription[conditionPlanDescription.Count - 1];
+                            conditionPlanDescription.RemoveAt(conditionPlanDescription.Count - 1);
+                        }
+                    }
+                    
+                    //condition.Plan();
+                    foreach (string actionString in conditionPlanDescription)
+                    {
+                        currentConditionText += actionString;
+                    }
+                    //Debug.Log(conditionPlanDescription + " conditionPlanDescription first");
+                    //Debug.Log(conditionPlanDescription + " conditionPlanDescription");
+                    //Debug.Log(currentConditionText + " currentConditionText");
+                    figure.IsPlanning = oldIsPlanning;
+                    //currentConditionText += conditionPlanDescription;
+                }
+                if (condition.Value != 0)
+                {
+                    currentConditionText += " " + condition.Value + "<sprite name=PlacehoderConditonPower>";
+                }
                 if (condition.Duration != -1)
                 {
-                    currentConditionText += " " + condition.Duration;
+                    currentConditionText += " " + condition.Duration + "<sprite name=PlacehoderConditonDuration>";
                 }
                 individualConditionText.Add(currentConditionText);
             }

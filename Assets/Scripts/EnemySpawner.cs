@@ -5,7 +5,7 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField]
     private List<GameObject> enemy = new List<GameObject>();
-    private int activationDelay = 5;
+    private int activationDelay = 10;
     private int tunsTillActive;
     private TurnManager turnManager;
     private float spawnChance = 0.1f;

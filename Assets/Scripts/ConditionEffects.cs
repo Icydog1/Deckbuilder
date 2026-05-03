@@ -117,6 +117,19 @@ public class ConditionEffects : MonoBehaviour
             {
                 effectedFigure.LoseHealth(condition.Value);
             }
+            if (condition.Name == "nextTurns")
+            {
+                foreach (System.Action action in condition.Plan)
+                {
+                    action();
+                }
+                //condition.Plan();
+
+
+                //GetComponent<NextTurns>.Action();
+                //effectedFigure.Action();
+            }
+
         }
     }
 }

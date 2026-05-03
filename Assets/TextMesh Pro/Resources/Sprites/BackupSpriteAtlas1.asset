@@ -399,7 +399,7 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 63
     m_Scale: 1
-    m_Name: RpgItems2_67
+    m_Name: PlacehoderConditonDuration
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 64
@@ -1593,8 +1593,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 14
       m_Height: 14
-      m_HorizontalBearingX: -7
-      m_HorizontalBearingY: 7
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 13
       m_HorizontalAdvance: 14
     m_GlyphRect:
       m_X: 113
