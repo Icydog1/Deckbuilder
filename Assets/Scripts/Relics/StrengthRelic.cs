@@ -9,13 +9,13 @@ public class StrengthRelic : Relic
     }
     public override void OnGain()
     {
-        playerControler.ApplyCondition(new Strength(1, -1));
+        playerControler.ApplyCondition(new Strength(2, -1));
         base.OnGain();
 
     }
     public override void IncreaseCount()
     {
-        playerControler.ApplyCondition(new Strength(1, -1));
+        playerControler.ApplyCondition(new Strength(2, -1));
         base.IncreaseCount();
     }
 }

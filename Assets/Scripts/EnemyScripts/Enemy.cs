@@ -20,20 +20,20 @@ public class Enemy : Figure
     private Coroutine currentTurnRoutine;
     protected int actionNum;
     protected EnemyUi enemyStatsDisplayer;
-    protected FigureStorage figureStorage;
+    //protected FigureStorage figureStorage;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
-        figureStorage = GameObject.Find("FigureStorage").GetComponent<FigureStorage>();
+        //figureStorage = GameObject.Find("FigureStorage").GetComponent<FigureStorage>();
         LevelManager.LevelCleared += Remove;
         base.Awake();
         enemyName = this.name;
         enemyName = enemyName.Replace("(Clone)", "");
         enemyName = Regex.Replace(enemyName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("EnemyUI").transform.Find("NameText").gameObject.GetComponent<TextMeshProUGUI>().SetText(enemyName);
-        figureStorage.Enemies.Add(gameObject);
+        //figureStorage.Enemies.Add(gameObject);
     }
     public override void Start()
     {

@@ -227,7 +227,7 @@ public class PlayerControler : Figure
         if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Door>())
         {
             GameObject door = mapManager.GetTileAtHex(oneToOnePos);
-            roomSpawner.SpawnRoomsNextToDoor(mapManager.PosToOneToOne(door.transform.position), door.GetComponent<Door>().RoomNextToCords);
+            roomSpawner.SpawnRoomsNextToDoor(door, door.GetComponent<Door>().RoomNextToCords);
         }
         if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Stair>())
         {

@@ -9,13 +9,13 @@ public class DexterityRelic : Relic
     }
     public override void OnGain()
     {
-        playerControler.ApplyCondition(new Dexterity(1, -1));
+        playerControler.ApplyCondition(new Dexterity(2, -1));
         base.OnGain();
 
     }
     public override void IncreaseCount()
     {
-        playerControler.ApplyCondition(new Dexterity(1, -1));
+        playerControler.ApplyCondition(new Dexterity(2, -1));
         base.IncreaseCount();
     }
 }

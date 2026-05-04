@@ -9,38 +9,26 @@ public class Door : MonoBehaviour
     private Vector2 roomNextToCords;
     public Vector2 RoomNextToCords { get { return roomNextToCords; } }
 
-    private MapManager mapManager;
-    private RoomSpawner roomSpawner;
+    public int roomType;
+    public int RoomType { get { return roomType; } }
 
-    private Vector2 oneToOneCords;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        /*
-        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
-        roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
-
-        oneToOneCords = mapManager.PosToOneToOne(transform.position);
-
-        Vector2 checktile = oneToOneCords;
-        for (int i = 0; i < 6; i++)
+        roomType = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>().GetRandomRoomType();
+        GameObject roomPreview = transform.Find("TileUI").Find("RoomPreview").gameObject;
+        VariableDisplayer previewImage = roomPreview.GetComponent<VariableDisplayer>();
+        //previewImage.
+        string displayedText = string.Empty;
+        switch (roomType)
         {
-            switch (i)
-            {
-                case 0: checktile = oneToOneCords + new Vector2(3, -3); break;
-                case 1: checktile = oneToOneCords + new Vector2(6, 3); break;
-                case 2: checktile = oneToOneCords + new Vector2(3, 6); break;
-                case 3: checktile = oneToOneCords + new Vector2(-3, 3); break;
-                case 4: checktile = oneToOneCords + new Vector2(-6, -3); break;
-                case 5: checktile = oneToOneCords + new Vector2(-3, -6); break;
-            }
-            if (roomSpawner)
-            GameObject checkedObject = mapManager.GetTileAtHex(checktile);
-            if (checkedObject && checkedObject.GetComponent<Door>())
-            {
-                checkedObject.GetComponent<Door>().AddRoom(gameObject, oneToOneCords);
-            }
-        */
+            case 0: displayedText = "<sprite name=SpecialRoomIcon>"; break;
+            case 1: displayedText = "<sprite name=NormalRoomIcon>"; break;
+            case 2: displayedText = "<sprite name=HardRoomIcon>"; break;
+            case 3: displayedText = "<sprite name=ReallyHardRoomIcon>"; break;
+
+        }
+        previewImage.DisplayString(displayedText);
     }
 
     // Update is called once per frame

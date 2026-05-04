@@ -8,6 +8,9 @@ public class RoomScript : MonoBehaviour
 
     private Vector2Int oneToOneCords;
     private int roomSize = 8;
+    //[SerializeField]
+    public int roomType = 1;
+    //public int RoomType { get { return roomType} };
 
     [SerializeField]
     private bool isLeftEntrance;
