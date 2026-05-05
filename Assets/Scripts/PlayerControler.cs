@@ -132,7 +132,8 @@ public class PlayerControler : Figure
         if (Input.GetKeyDown(KeyCode.K))
         {
             //dev mode
-            GainNewAbility(1, new List<System.Action>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
+            //GainNewAbility(1, new List<System.Action>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
+            ApplyCondition(new GainAbility(new Ability(2, new List<System.Action>() { () => Move(1, true, true) })));
 
         }
     }
@@ -588,14 +589,31 @@ public class PlayerControler : Figure
     public void GainNewAbility(int cost, List<System.Action> abilities)
     {
 
+        GainAbility(new Ability(cost, abilities));
+    }
+    public void GainAbility(Ability ability)
+    {
         if (isPlanning)
         {
-            string currentDescriptionString = "Gain ability: " + cost + " AP for " + GetPlanString(abilities);
+            string currentDescriptionString = "Gain ability: " + ability.Cost + " AP for " + GetPlanString(ability.Abilities);
             planDescription.Add(currentDescriptionString);
         }
         else
         {
-            abilityManager.GainAbility(cost, abilities);
+            abilityManager.GainAbility(ability);
+            ActionDone();
+        }
+    }
+    public void LoseAbility(Ability ability)
+    {
+        if (isPlanning)
+        {
+            string currentDescriptionString = "Lose ability: " + ability.Cost + " AP for " + GetPlanString(ability.Abilities);
+            planDescription.Add(currentDescriptionString);
+        }
+        else
+        {
+            abilityManager.LoseAbility(ability);
             ActionDone();
         }
     }
@@ -614,7 +632,7 @@ public class PlayerControler : Figure
 
     public override void Die()
     {
-        gameManager.ReStartGame();
+        gameManager.EndGame();
         Debug.Log("You Died");
     }
 

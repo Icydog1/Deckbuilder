@@ -29,6 +29,8 @@ public class Condition : MonoBehaviour
 
     protected string abnormality;
     public string Abnormality { get { return abnormality; } }
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -52,7 +54,14 @@ public class Condition : MonoBehaviour
         abnormality = conditionAbnormality;
         plan = actionPlan;
     }
-    
+    public virtual void OnGain()
+    {
+
+    }
+    public virtual void OnLoss()
+    {
+
+    }
 }
 
 public class Strength : Condition
@@ -97,4 +106,22 @@ public class Poison : Condition
 public class NextTurns : Condition
 {
     public NextTurns(System.Action[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1, int addType = 1, string abnormality = "Delayed Gain") : base("nextTurns", conditionValue, conditionDuration, addType, true, true, nextTurnsAction, abnormality) { }
+}
+
+public class GainAbility : Condition
+{
+    protected Ability gainedAbility;
+    public Ability GainedAbility { get { return gainedAbility; } }
+    public GainAbility(Ability conditionAbility, int conditionValue = 0, int conditionDuration = 1, int addType = 2, string abnormality = "Ability") : base("Gain Ability", conditionValue, conditionDuration, addType, true, true, null, abnormality)
+    {
+        gainedAbility = conditionAbility;
+    }
+    public override void OnGain()
+    {
+        GameObject.Find("Player").GetComponent<PlayerControler>().GainAbility(gainedAbility);
+    }
+    public override void OnLoss()
+    {
+        GameObject.Find("Player").GetComponent<PlayerControler>().LoseAbility(gainedAbility);
+    }
 }

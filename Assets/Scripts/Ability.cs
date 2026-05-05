@@ -5,10 +5,14 @@ using UnityEngine;
 public class Ability : MonoBehaviour
 {
     protected int cost;
+    public int Cost { get { return cost; } }
+
     protected int abilityValue, timesPreformed;
     private int maxTimes;
     private bool isUsed;
     private List<System.Action> abilities = new List<System.Action>();
+    public List<System.Action> Abilities { get { return abilities; } }
+
     protected List<string> description = new List<string>();
 
     private AbilityUI abilityUI;
@@ -18,16 +22,15 @@ public class Ability : MonoBehaviour
     protected MouseManager mouseManager;
     protected AbilityManager abilityManager;
 
-    public int Cost { get { return cost; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    public void Gained()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
 
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
         //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
-        PlayerControler.PlayerTurnStarted += resetAbilityCooldown;
+        PlayerControler.PlayerTurnStarted += ResetAbilityCooldown;
     }
     public void Start()
     {
@@ -39,7 +42,7 @@ public class Ability : MonoBehaviour
     {
         
     }
-    public void resetAbilityCooldown(PlayerControler playerControler)
+    public void ResetAbilityCooldown(PlayerControler playerControler)
     {
         isUsed = false;
         abilityUI.DisplayUsed(false);
@@ -49,7 +52,6 @@ public class Ability : MonoBehaviour
     {
         abilities = preformedAbilities;
         cost = abilityCost;
-        Awake();
     }
     
     public void UpdateDiscription(int abilitiesPointsSpent)

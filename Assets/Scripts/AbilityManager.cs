@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class AbilityManager : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class AbilityManager : MonoBehaviour
 
         AbilityPower = 0;
         PlayerControler.PlayerTurnStarted += ResetAbilityPower;
+        GameManager.ResetGame += ClearAllAbility;
     }
 
     // Update is called once per frame
@@ -39,19 +41,44 @@ public class AbilityManager : MonoBehaviour
         SelectedPower = 0;
     }
 
-    public void GainAbility(int cost, List<System.Action> actions)
+    public void GainAbility(Ability ability)
     {
         //increasing ability cost doesnt work
 
         GameObject newAbilityUIObject = Instantiate(abilityUIObject, abilitiesDescriptions.transform);
         AbilityUI newAbilityUI = newAbilityUIObject.GetComponent<AbilityUI>();
-        Ability newAbility = new Ability(cost, actions);
+        Ability newAbility = ability;
+        newAbility.Gained();
         newAbility.AbilityUI = newAbilityUI;
         abilities.Add(newAbility);
         newAbilityUI.AbilityNumber = abilities.Count - 1;
         newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450-abilities.Count * 50);
 
         UpdateAbilitiesDescription();
+    }
+    public void LoseAbility(Ability ability)
+    {
+        if (abilities.Contains(ability))
+        {
+            PlayerControler.PlayerTurnStarted -= ability.ResetAbilityCooldown;
+            Debug.Log(ability.GetInstanceID());
+
+            Debug.Log(abilities.IndexOf(abilities.Find(x => x.GetInstanceID() == ability.GetInstanceID())));
+            abilities.RemoveAt(abilities.IndexOf(abilities.Find(x => x.GetInstanceID() == ability.GetInstanceID())));
+            //var item = itemList.;
+
+
+        }
+    }
+    public void ClearAllAbility(GameManager gameManager)
+    {
+        foreach (Ability ability in abilities)
+        {
+            PlayerControler.PlayerTurnStarted -= ability.ResetAbilityCooldown;
+
+        }
+
+        abilities.Clear();
     }
 
 

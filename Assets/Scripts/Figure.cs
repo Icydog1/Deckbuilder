@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -97,7 +98,7 @@ public class Figure : MonoBehaviour
             if (conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
             {
                 //Debug.Log("removed " + conditions[i].Name);
-
+                conditions[i].OnLoss();
                 conditions.RemoveAt(i);
                 i--;
             }
@@ -114,12 +115,14 @@ public class Figure : MonoBehaviour
             if (!conditions[i].IsStartOfTurn && conditions[i].Duration > 0)
             {
                 conditions[i].Duration--;
-                Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
+                //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
 
             }
             if (!conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
             {
-                Debug.Log("removed " + conditions[i].Name);
+                //Debug.Log("removed " + conditions[i].Name);
+                conditions[i].OnLoss();
+
                 conditions.RemoveAt(i);
                 i--;
             }
@@ -333,6 +336,13 @@ public class Figure : MonoBehaviour
                 {
                     actionAbnormalities.Add(condition.Abnormality);
                 }
+                if (actionAbnormalities.Contains("Ability"))
+                {
+                    Ability ability;
+                    ability = condition.GetComponent<GainAbility>().GainedAbility;
+                    playerControler.GainNewAbility(ability.Cost, ability.Abilities);
+                }
+
                 string currentDescriptionString = "";
                 //Debug.Log(actionAbnormalities);
                 if (condition.Plan != null)
@@ -550,6 +560,11 @@ public class Figure : MonoBehaviour
                 }
                 if (condition.AddType == 2 && conditions[i].Value == condition.Value)
                 {
+                    if (conditions[i].Duration == -1)
+                    {
+                        Debug.Log("Warrning gained condtion already had one of");
+                    }
+
                     conditions[i].Duration += condition.Duration;
                     isDuplicate = true;
                     break;
@@ -567,6 +582,7 @@ public class Figure : MonoBehaviour
             //Debug.Log("added" + condition.Name);
 
             conditions.Add(condition);
+            condition.OnGain();
             //Debug.Log("first condition: " + conditions[0].Name);
 
         }

@@ -89,6 +89,12 @@ public class LevelManager : MonoBehaviour
     {
         enemy.ApplyCondition(new NaturalScaling(roundNumber));
     }
+    public void ResetGame()
+    {
+        roundNumber = 0;
+        ClearLevel();
+    }
+
     public void ClearLevel()
     {
 

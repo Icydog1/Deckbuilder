@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using NUnit.Framework.Internal;
 using UnityEngine;
-using static UnityEngine.Rendering.GPUSort;
 
 public class RelicManager : MonoBehaviour
 {

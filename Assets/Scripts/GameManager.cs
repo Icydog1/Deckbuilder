@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     private TurnManager turnManager;
     private RoomSpawner roomSpawner;
     private LevelManager levelManager;
+    private GameObject pauseScreenBlocker;
+
 
     
     private bool nextAction;
@@ -30,7 +32,9 @@ public class GameManager : MonoBehaviour
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
 
+        
 
         StartCoroutine(StartGame());
 
@@ -63,11 +67,19 @@ public class GameManager : MonoBehaviour
     {
         nextAction = true;
     }
-//    public IEnumerator ReStartGame()
+    //    public IEnumerator ReStartGame()
+    public void EndGame()
+    {
+        pauseScreenBlocker.GetComponent<Image>().enabled = true;
+        pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(true);
+
+    }
 
     public void ReStartGame()
     {
-        levelManager.ClearLevel();
+        pauseScreenBlocker.GetComponent<Image>().enabled = false;
+        pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(false);
+        levelManager.ResetGame();
         //yield return new WaitForEndOfFrame();
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
