@@ -331,8 +331,8 @@ MonoBehaviour:
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 57
-    m_Scale: 1
-    m_Name: RpgItems1_58
+    m_Scale: 0.85
+    m_Name: Lockpick
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 58
@@ -1146,8 +1146,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 13
       m_Height: 15
-      m_HorizontalBearingX: -2.5
-      m_HorizontalBearingY: 12.5
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 13.5
       m_HorizontalAdvance: 13
     m_GlyphRect:
       m_X: 34
@@ -1450,8 +1450,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 15
       m_Height: 14
-      m_HorizontalBearingX: -7.5
-      m_HorizontalBearingY: 7
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 12
       m_HorizontalAdvance: 15
     m_GlyphRect:
       m_X: 112
