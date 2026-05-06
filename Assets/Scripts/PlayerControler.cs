@@ -10,13 +10,14 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerControler : Figure
 {
-    public bool actionDone, manualEnd;
-    public bool isMoving, isAttacking, isAppliyingConditions;
-    public bool isPlayerTurn;
+    private bool actionDone, manualEnd;
+    private bool isMoving, isAttacking, isAppliyingConditions;
+    private bool isPlayerTurn;
     private GameObject player;
     private RoomSpawner roomSpawner;
-    public GameObject clickedTile, clickedEnemy;
-    public GameObject playedCard;
+    private GameObject clickedTile, clickedEnemy;
+    private GameObject playedCard;
+    public GameObject PlayedCard { get { return playedCard; } set { playedCard = value; } }
     private GameObject currentTile;
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
@@ -62,6 +63,8 @@ public class PlayerControler : Figure
 
     public bool NextAction { get { return nextAction; } set { nextAction = value; } }
     public static event Action<PlayerControler> PlayerTurnStarted;
+    private int kineticBatteryCount;
+    public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
@@ -151,11 +154,12 @@ public class PlayerControler : Figure
 
     public void ResetPlayer(GameManager gameManager)
     {
+        kineticBatteryCount = 0;
         conditions.Clear();
     }
     public void PreparePlayer(GameManager gameManager)
     {
-        GainNewAbility(1, new List<System.Action>() { () => Move(1, false, true) });
+        GainNewAbility(2, new List<System.Action>() { () => Move(1, false, true) });
         GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
         maxHealth = 100;
         health = maxHealth;
@@ -222,7 +226,11 @@ public class PlayerControler : Figure
         moveLeft = pathfinder.MoveLeft;
         //actionsRemaining[0] = actionsRemaining[0];
         //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(.)([A-Z,0-9])", "$1 $2");
-        actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
+        if (actionsRemaining.Count > 0)
+        {
+            actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
+
+        }
         statsDisplayer.Plan(actionsRemaining);
 
         //oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
@@ -398,6 +406,19 @@ public class PlayerControler : Figure
         {
             mapManager.showMoveCost(false);
         }
+        if (isAttacking)
+        {
+            for (int i = 0; i < conditions.Count; i++)
+            {
+                if (conditions[i].Name == "Vigor")
+                {
+                    conditions[i].OnLoss();
+                    conditions.RemoveAt(i);
+                    deckManager.UpdateCardsDisplay();
+                    statsDisplayer.DisplayConditions(conditions);
+                }
+            }
+        }
         isMoving = false;
         CanJump = false;
         isAttacking = false;
@@ -494,7 +515,7 @@ public class PlayerControler : Figure
         //Debug.Log(finalLockpick);
         if (isPlanning)
         {
-            string currentDescriptionString = "Lockpick " + finalLockpick;
+            string currentDescriptionString = finalLockpick + " <sprite name=Lockpick>";
             planDescription.Add(currentDescriptionString);
         }
         else
@@ -653,7 +674,13 @@ public class PlayerControler : Figure
     {
         ShowMoveCostDisplay();
     }
-
+    public override void MoveOneSpace()
+    {
+        if (kineticBatteryCount > 0)
+        {
+            ApplyCondition(new Vigor(kineticBatteryCount), false);
+        }
+    }
 
 
 }

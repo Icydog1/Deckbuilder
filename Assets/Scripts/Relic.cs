@@ -10,14 +10,14 @@ public class Relic : MonoBehaviour
 
     protected string relicName;
     public string RelicName {  get { return relicName; } }
-
-
     protected bool isActive, isUnique;
     public bool IsUnique { get { return isUnique; } }
 
     protected int count;
     protected int rarity = 1;
     public int Rarity { get { return rarity; } }
+
+    protected string relicDesription;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -37,6 +37,10 @@ public class Relic : MonoBehaviour
     }
     public string GetRelicDescription()
     {
+        if (relicDesription != null)
+        {
+            return relicDesription;
+        }
         //Debug.Log("GetRelicDescription");
         List<string> descriptionList = new List<string>();
         playerControler.PlanDescription = descriptionList;

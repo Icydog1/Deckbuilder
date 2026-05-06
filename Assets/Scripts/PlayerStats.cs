@@ -31,11 +31,15 @@ public class PlayerStats : FigureStats
     {
         if (noConditions)
         {
-            planTextObject.transform.position = gameObject.transform.position + new Vector3(0, -0.25f * camera.orthographicSize / 5, 0);
+            planTextObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -35);
+
+            //planTextObject.transform.position = gameObject.transform.position + new Vector3(0, -0.35f * camera.orthographicSize / 5, 0);
         }
         else
         {
-            planTextObject.transform.position = gameObject.transform.position + new Vector3(0, -0.55f * camera.orthographicSize / 5, 0);
+            planTextObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -70);
+
+            //planTextObject.transform.position = gameObject.transform.position + new Vector3(0, -0.7f * camera.orthographicSize / 5, 0);
         }
     }
 

@@ -25,7 +25,7 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Strength")
+            if (condition.Name == "Strength" || condition.Name == "Vigor")
             {
                 modifiedAttack += condition.Value;
             }

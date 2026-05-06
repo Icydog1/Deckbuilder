@@ -1,4 +1,5 @@
 using NUnit.Framework.Internal;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,6 +43,7 @@ public class Pathfinder : MonoBehaviour
     private float figureMoveDelay = 0.1f;
     private bool doneMoving;
     public bool DoneMoving { get { return doneMoving; } set { doneMoving = value; } }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -533,7 +535,8 @@ public class Pathfinder : MonoBehaviour
     }
     public IEnumerator MoveAlongPath(GameObject figure, Vector2 figurePos)
     {
-        figure.GetComponent<Figure>().IsPreformingAnimation = true;
+        Figure figureScript = figure.GetComponent<Figure>();
+        figureScript.IsPreformingAnimation = true;
         float newFigureMoveDelay = figureMoveDelay;
         if (figureElevation >= 10)
         {
@@ -562,11 +565,13 @@ public class Pathfinder : MonoBehaviour
             }
             pos = mapManager.OneToOneToPos(oneToOnePos);
             figure.transform.position = new Vector3(pos.x, pos.y, figure.transform.position.z);
-            figure.GetComponent<Figure>().OneToOnePos = oneToOnePos;
+            figureScript.OneToOnePos = oneToOnePos;
+            figureScript.MoveOneSpace();
             yield return new WaitForSeconds(newFigureMoveDelay);
         }
         doneMoving = true;
-        figure.GetComponent<Figure>().IsPreformingAnimation = false;
+        figureScript.IsPreformingAnimation = false;
+        //yield return null;
     }
     /*
     public Vector2 TakeStep(Vector2 figurePos, int moveLeft)

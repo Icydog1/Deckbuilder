@@ -125,3 +125,7 @@ public class GainAbility : Condition
         GameObject.Find("Player").GetComponent<PlayerControler>().LoseAbility(gainedAbility);
     }
 }
+public class Vigor : Condition
+{
+    public Vigor(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Vigor", conditionValue, conditionDuration, addType, false, true) { }
+}

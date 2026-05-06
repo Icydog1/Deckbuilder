@@ -4,7 +4,7 @@ public class FinesseRelic : Relic
 {
     public override void Awake()
     {
-        relicName = "finesseRelic";
+        relicName = "Finesse Relic";
         base.Awake();
     }
     public override void OnGain()

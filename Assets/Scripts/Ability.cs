@@ -64,7 +64,7 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         playerControler.IsPlanning = true;
         playerControler.PlanDescription = description;
         int potentialTimesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
-        playerControler.VariableCardModifier = potentialTimesPreformed * cost;
+        playerControler.VariableCardModifier = potentialTimesPreformed;
         playerControler.UnmodifiedAction = true;
         foreach (System.Action action in abilities)
         {
@@ -90,17 +90,17 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
                 playerControler.ActionsRemaining = new List<string>(description);
                 abilityManager.AbilityPower -= timesPreformed * cost;
                 abilityManager.SelectedPower = abilityManager.SelectedPower;
-                playerControler.VariableCardModifier = timesPreformed * cost;
+                playerControler.VariableCardModifier = timesPreformed;
                 playerControler.PreformingAbility = true;
                 playerControler.NextAction = false;
-                playerControler.UnmodifiedAction = true;
                 foreach (System.Action action in abilities)
                 {
+                    playerControler.UnmodifiedAction = true;
                     action();
+                    playerControler.UnmodifiedAction = false;
                     yield return new WaitUntil(() => playerControler.NextAction == true);
                     playerControler.NextAction = false;
                 }
-                playerControler.UnmodifiedAction = false;
 
                 //Debug.Log("done");
                 playerControler.PreformingAbility = false;

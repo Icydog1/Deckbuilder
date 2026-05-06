@@ -134,7 +134,7 @@ public class Card : MonoBehaviour
         deckManager.PlayCard(gameObject);
         isCurrentCard = true;
         playerControler.CardPlayed = true;
-        playerControler.playedCard = gameObject;
+        playerControler.PlayedCard = gameObject;
         playerControler.playedCardScript = gameObject.GetComponent<Card>();
         playerControler.UpdatePlayer();
         //currentStep = 0;

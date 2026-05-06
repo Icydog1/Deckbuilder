@@ -4,7 +4,7 @@ public class StrengthRelic : Relic
 {
     public override void Awake()
     {
-        relicName = "permanentStrengthRelic";
+        relicName = "StrengthRelic";
         base.Awake();
     }
     public override void OnGain()

@@ -4,7 +4,7 @@ public class DexterityRelic : Relic
 {
     public override void Awake()
     {
-        relicName = "dexterityRelic";
+        relicName = "Dexterity Relic";
         base.Awake();
     }
     public override void OnGain()

@@ -261,8 +261,20 @@ public class Figure : MonoBehaviour
                     target.AttackedFor(finalAttack, repeats, attackConditions);
                 }
                 ActionDone();
+                for (int i = 0; i < conditions.Count; i++)
+                {
+                    if (conditions[i].Name == "Vigor")
+                    {
+                        conditions[i].OnLoss();
+                        conditions.RemoveAt(i);
+                        GetComponent<Enemy>().UpdatePlan();
+                        statsDisplayer.DisplayConditions(conditions);
+
+                    }
+                }
             }
 
+            
         }
     }
     public void Move(int moveValue, bool isJump = false, bool isVariable = false)
@@ -318,12 +330,12 @@ public class Figure : MonoBehaviour
         }
     }
 
-    public void ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    public void ApplyCondition(Condition condition, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
     {
-        ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget);
+        ApplyConditions(new Condition[] { condition }, isAction , targetType, range, targets, displayTarget);
     }
 
-    public void ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    public void ApplyConditions(Condition[] newConditions, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
     {
         if (isPlanning)
         {
@@ -496,7 +508,10 @@ public class Figure : MonoBehaviour
                 if (targetType == "self")
                 {
                     GainConditions(newConditions);
-                    ActionDone();
+                    if (isAction)
+                    {
+                        ActionDone();
+                    }
                 }
                 else
                 {
@@ -512,7 +527,10 @@ public class Figure : MonoBehaviour
                         target.GainCondition(condition);
                     }
                 }
-                ActionDone();
+                if (isAction)
+                {
+                    ActionDone();
+                }
             }
         }
 
@@ -595,6 +613,7 @@ public class Figure : MonoBehaviour
         }
         if (isPlayer)
         {
+            Debug.Log("updated display");
             deckManager.UpdateCardsDisplay();
         }
         //Debug.Log("first condition: " + conditions[0].Name);
@@ -699,8 +718,6 @@ public class Figure : MonoBehaviour
             Die();
         }
     }
-
-
     public void Heal(int amount)
     {
         health += amount;
@@ -714,5 +731,10 @@ public class Figure : MonoBehaviour
     public virtual void Remove(LevelManager levelManager = null)
     {
         Debug.Log("Base Remove ran");
+    }
+
+    public virtual void MoveOneSpace()
+    {
+
     }
 }

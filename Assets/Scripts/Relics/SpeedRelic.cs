@@ -4,7 +4,7 @@ public class SpeedRelic : Relic
 {
     public override void Awake()
     {
-        relicName = "speedRelic";
+        relicName = "SpeedRelic";
         base.Awake();
     }
     public override void OnGain()
