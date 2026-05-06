@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
     public void ReStartGame()
     {
         pauseScreenBlocker.GetComponent<Image>().enabled = false;
+        mouseManager.MouseOffObject(pauseScreenBlocker.transform.Find("RestartGameButton").gameObject);
         pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(false);
         levelManager.ResetGame();
         //yield return new WaitForEndOfFrame();

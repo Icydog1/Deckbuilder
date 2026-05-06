@@ -54,11 +54,24 @@ public class RewardManager : MonoBehaviour
 
         rewardsLocation = GameObject.Find("Rewards");
 
+        GameManager.GameStarted += GenerateRewardPools;
+        //GenerateRewardPools();
+
+
+    }
+    public void GenerateRewardPools(GameManager gameManager)
+    {
+        commonCardRewards.Clear();
+        uncommonCardRewards.Clear();
+        rareCardRewards.Clear();
+        commonRelicRewards.Clear();
+        uncommonRelicRewards.Clear();
+        rareRelicRewards.Clear();
+
         if (commonProbability + uncommonProbability + rareProbability != 1f)
         {
             Debug.Log("reward probabilitys dont add to 1");
         }
-
         foreach (GameObject card in allCardRewards)
         {
             int cardRarity = card.GetComponent<Card>().Rarity;
@@ -91,7 +104,6 @@ public class RewardManager : MonoBehaviour
                 rareRelicRewards.Add(relic);
             }
         }
-
     }
     void Start()
     {
@@ -235,6 +247,13 @@ public class RewardManager : MonoBehaviour
         }
         else
         {
+            if (reward.GetComponent<Relic>().IsUnique)
+            {
+                commonRelicRewards.Remove(reward);
+                uncommonRelicRewards.Remove(reward);
+                rareRelicRewards.Remove(reward);
+
+            }
             relicManager.GainRelic(reward);
         }
         currentOptions.Remove(reward);

@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ability : MonoBehaviour
+public class Ability : MonoBehaviour//, IEquatable<Ability>
 {
+
     protected int cost;
     public int Cost { get { return cost; } }
 
@@ -32,16 +34,17 @@ public class Ability : MonoBehaviour
         //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
         PlayerControler.PlayerTurnStarted += ResetAbilityCooldown;
     }
-    public void Start()
-    {
-
-
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //public bool Equals(Ability other)
+    //{
+    //    if (other.Abilities == this.abilities && other.Cost == this.Cost)
+    //    {
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
     public void ResetAbilityCooldown(PlayerControler playerControler)
     {
         isUsed = false;
@@ -62,10 +65,13 @@ public class Ability : MonoBehaviour
         playerControler.PlanDescription = description;
         int potentialTimesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
         playerControler.VariableCardModifier = potentialTimesPreformed * cost;
+        playerControler.UnmodifiedAction = true;
         foreach (System.Action action in abilities)
         {
             action();
         }
+        playerControler.UnmodifiedAction = false;
+
         abilityUI.DisplayText(description);
         playerControler.IsPlanning = false;
     }
@@ -87,18 +93,23 @@ public class Ability : MonoBehaviour
                 playerControler.VariableCardModifier = timesPreformed * cost;
                 playerControler.PreformingAbility = true;
                 playerControler.NextAction = false;
+                playerControler.UnmodifiedAction = true;
                 foreach (System.Action action in abilities)
                 {
                     action();
                     yield return new WaitUntil(() => playerControler.NextAction == true);
                     playerControler.NextAction = false;
                 }
+                playerControler.UnmodifiedAction = false;
+
                 //Debug.Log("done");
                 playerControler.PreformingAbility = false;
             }
         }
 
     }
+
+
 }
 
 /*

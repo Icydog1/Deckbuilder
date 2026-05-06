@@ -13,6 +13,8 @@ public class Relic : MonoBehaviour
 
 
     protected bool isActive, isUnique;
+    public bool IsUnique { get { return isUnique; } }
+
     protected int count;
     protected int rarity = 1;
     public int Rarity { get { return rarity; } }
@@ -35,10 +37,13 @@ public class Relic : MonoBehaviour
     }
     public string GetRelicDescription()
     {
+        //Debug.Log("GetRelicDescription");
         List<string> descriptionList = new List<string>();
         playerControler.PlanDescription = descriptionList;
         playerControler.IsPlanning = true;
         OnGain();
+        //Debug.Log("descriptionList: " + descriptionList);
+
         string displayedString = "";
         foreach (string text in descriptionList)
         {
@@ -46,6 +51,8 @@ public class Relic : MonoBehaviour
             displayedString += "\n";
         }
         playerControler.IsPlanning = false;
+        //Debug.Log("displayedString: " + displayedString);
+
         return displayedString;
     }
     public void GainRelic()

@@ -28,6 +28,8 @@ public class Figure : MonoBehaviour
     protected float distanceToPlayer;
     protected bool nextAction;
     protected bool isDead;
+    protected bool unmodifiedAction;
+    public bool UnmodifiedAction { get { return unmodifiedAction; } set { unmodifiedAction = value; } }
 
     protected int team;
     public int Team { get { return team; } }
@@ -175,7 +177,7 @@ public class Figure : MonoBehaviour
         {
             //prepareActions.Add(() => Block(finalBlock));
             //string currentDescriptionString = "Block " + finalBlock;
-            string currentDescriptionString = "<sprite name=Block> " + finalBlock;
+            string currentDescriptionString = finalBlock + " <sprite name=Block>";
             planDescription.Add(currentDescriptionString);
         }
         else if (!isPreparingMove)
@@ -210,7 +212,7 @@ public class Figure : MonoBehaviour
             }
             //prepareActions.Add(() => Attack(finalAttack, attackRange, targets));
             //currentDescriptionStart = "Attack " + finalAttack;
-            currentDescriptionStart = "<sprite name=Attack> " + finalAttack;
+            currentDescriptionStart = finalAttack + " <sprite name=Attack>";
 
             if (repeats > 1)
             {
@@ -271,12 +273,11 @@ public class Figure : MonoBehaviour
         }
         int finalMove = conditionEffects.ModifyMove(this, moveValue);
         bool finalJump = conditionEffects.ModifyJump(this, isJump);
-        finalMove = Mathf.Clamp(finalMove, 0, 9999999);
         //Mathf(finalMove,0,)
         if (isPlanning)
         {
             //string planString = "Move " + finalMove;
-            string planString = "<sprite name=Move> " + finalMove;
+            string planString = finalMove + " <sprite name=Move>";
 
             if (finalJump)
             {
@@ -339,8 +340,13 @@ public class Figure : MonoBehaviour
                 if (actionAbnormalities.Contains("Ability"))
                 {
                     Ability ability;
-                    ability = condition.GetComponent<GainAbility>().GainedAbility;
-                    playerControler.GainNewAbility(ability.Cost, ability.Abilities);
+                    if (condition is GainAbility gainAbilityRef)
+                    {
+                        //Debug.Log(gainAbilityRef.GainedAbility);
+                        ability = gainAbilityRef.GainedAbility;
+                        playerControler.GainNewAbility(ability.Cost, ability.Abilities, condition.Duration);
+
+                    }
                 }
 
                 string currentDescriptionString = "";
@@ -363,21 +369,15 @@ public class Figure : MonoBehaviour
                     if (condition.Duration == 1)
                     {
                         //planDescription.Add("Next turn");
-                        
+
                         planDescription[planDescription.Count - 1] = "Next turn " + planDescription[planDescription.Count - 1];
                     }
                     else if (condition.Duration != -1)
                     {
                         planDescription[planDescription.Count - 1] = "At the start of the next " + condition.Duration + " turns" + planDescription[planDescription.Count - 1];
                     }
-                    individualConditionText.Add(currentDescriptionString);
                 }
-
-                if (actionAbnormalities.Contains("Delayed Gain"))
-                {
-
-                }
-                else
+                if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
                 {
                     currentDescriptionString = condition.Value + " " + condition.Name;
                     if (condition.Duration == 1)
@@ -390,13 +390,11 @@ public class Figure : MonoBehaviour
                     }
                     individualConditionText.Add(currentDescriptionString);
                 }
-
                 if (targetType == "self")
                 {
-                    if (!actionAbnormalities.Contains("Delayed Gain"))
+                    if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
                     {
                         currentDescriptionStart += "Gain ";
-
                     }
 
 
@@ -481,6 +479,10 @@ public class Figure : MonoBehaviour
                         }
                     }
                 }
+                if (condition.Abnormality != null)
+                {
+                    actionAbnormalities.Clear();
+                }
             }
             string separator = ", ";
             string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
@@ -513,6 +515,7 @@ public class Figure : MonoBehaviour
                 ActionDone();
             }
         }
+
     }
     /*
     public void DelayedApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
@@ -555,17 +558,21 @@ public class Figure : MonoBehaviour
                 if (condition.AddType == 1 && conditions[i].Duration == condition.Duration)
                 {
                     conditions[i].Value += condition.Value;
+                    conditions[i].Value = Mathf.Clamp(conditions[i].Value, -9999999, 9999999);
                     isDuplicate = true;
                     break;
                 }
                 if (condition.AddType == 2 && conditions[i].Value == condition.Value)
                 {
-                    if (conditions[i].Duration == -1)
+                    if (conditions[i].Duration == -1 || condition.Duration == -1)
                     {
                         Debug.Log("Warrning gained condtion already had one of");
                     }
-
-                    conditions[i].Duration += condition.Duration;
+                    else
+                    {
+                        conditions[i].Duration += condition.Duration;
+                        conditions[i].Duration = Mathf.Clamp(conditions[i].Duration, 0, 9999999);
+                    }
                     isDuplicate = true;
                     break;
                 }

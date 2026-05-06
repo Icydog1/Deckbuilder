@@ -52,21 +52,27 @@ public class AbilityManager : MonoBehaviour
         newAbility.AbilityUI = newAbilityUI;
         abilities.Add(newAbility);
         newAbilityUI.AbilityNumber = abilities.Count - 1;
-        newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450-abilities.Count * 50);
+        newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - abilities.Count * 50);
 
         UpdateAbilitiesDescription();
     }
     public void LoseAbility(Ability ability)
     {
-        if (abilities.Contains(ability))
+        int abilityIndex = ability.AbilityUI.AbilityNumber;
+        //foreach (Ability testAbility in abilities)
+        //{
+        //    Debug.Log(testAbility); 
+        //    Debug.Log(testAbility.Cost);
+        //    Debug.Log(testAbility.GetHashCode()); 
+        //}
+        PlayerControler.PlayerTurnStarted -= ability.ResetAbilityCooldown;
+        Destroy(ability.AbilityUI.gameObject);
+        abilities.RemoveAt(abilityIndex);
+        for(int i = abilityIndex; i < abilities.Count; i++)
         {
-            PlayerControler.PlayerTurnStarted -= ability.ResetAbilityCooldown;
-            Debug.Log(ability.GetInstanceID());
-
-            Debug.Log(abilities.IndexOf(abilities.Find(x => x.GetInstanceID() == ability.GetInstanceID())));
-            abilities.RemoveAt(abilities.IndexOf(abilities.Find(x => x.GetInstanceID() == ability.GetInstanceID())));
-            //var item = itemList.;
-
+            AbilityUI abilityUI = abilities[i].AbilityUI;
+            abilityUI.gameObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - (abilityUI.AbilityNumber) * 50);
+            abilityUI.AbilityNumber--;
 
         }
     }
@@ -75,7 +81,7 @@ public class AbilityManager : MonoBehaviour
         foreach (Ability ability in abilities)
         {
             PlayerControler.PlayerTurnStarted -= ability.ResetAbilityCooldown;
-
+            Destroy(ability.AbilityUI.gameObject);
         }
 
         abilities.Clear();

@@ -12,7 +12,7 @@ public class AbilityUI : UIButton
     private Color blockerColor = new Color(0.25f, 0.25f, 0.25f, 0.75f);
 
     private int abilityNumber;
-    public int AbilityNumber {  set { abilityNumber = value; } }
+    public int AbilityNumber { get { return abilityNumber; }  set { abilityNumber = value; } }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Awake()
     {

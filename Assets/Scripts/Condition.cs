@@ -66,53 +66,53 @@ public class Condition : MonoBehaviour
 
 public class Strength : Condition
 {
-    public Strength(int conditionValue, int conditionDuration = -1, int addType = 1) : base("strength", conditionValue, conditionDuration, addType, false, true) {}
+    public Strength(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Strength", conditionValue, conditionDuration, addType, false, true) {}
 }
 
 public class Dexterity : Condition
 {
-    public Dexterity(int conditionValue, int conditionDuration = -1, int addType = 1) : base("dexterity", conditionValue, conditionDuration, addType, false, true) {}
+    public Dexterity(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Dexterity", conditionValue, conditionDuration, addType, false, true) {}
 }
 
 public class Speed : Condition
 {
-    public Speed(int conditionValue, int conditionDuration = -1, int addType = 1) : base("speed", conditionValue, conditionDuration, addType, false, true) { }
+    public Speed(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Speed", conditionValue, conditionDuration, addType, false, true) { }
 }
 
 public class  Finesse: Condition
 {
-    public Finesse(int conditionValue, int conditionDuration = -1, int addType = 1) : base("finesse", conditionValue, conditionDuration, addType, false, true) { }
+    public Finesse(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Finesse", conditionValue, conditionDuration, addType, false, true) { }
 }
 
 public class NaturalScaling: Condition
 {
-    public NaturalScaling(int conditionValue, int conditionDuration = -1, int addType = 3) : base("naturalScaling", conditionValue, conditionDuration, addType, false, false) { }
+    public NaturalScaling(int conditionValue, int conditionDuration = -1, int addType = 3) : base("NaturalScaling", conditionValue, conditionDuration, addType, false, false) { }
 }
 
 public class DistanceSpeedBoost : Condition
 {
-    public DistanceSpeedBoost(int conditionValue, int conditionDuration = 1, int addType = 3) : base("distanceSpeedBoost", conditionValue, conditionDuration, addType, false, false) { }
+    public DistanceSpeedBoost(int conditionValue, int conditionDuration = 1, int addType = 3) : base("DistanceSpeedBoost", conditionValue, conditionDuration, addType, false, false) { }
 }
 public class DistanceJump : Condition
 {
-    public DistanceJump(int conditionValue = -1, int conditionDuration = 1, int addType = 3) : base("distanceJump", conditionValue, conditionDuration, addType, false, false) { }
+    public DistanceJump(int conditionValue = -1, int conditionDuration = 1, int addType = 3) : base("DistanceJump", conditionValue, conditionDuration, addType, false, false) { }
 }
 
 public class Poison : Condition
 {
-    public Poison(int conditionValue, int conditionDuration = -1, int addType = 1) : base("poison", conditionValue, conditionDuration, addType, true, true) { }
+    public Poison(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Poison", conditionValue, conditionDuration, addType, true, true) { }
 }
 
 public class NextTurns : Condition
 {
-    public NextTurns(System.Action[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1, int addType = 1, string abnormality = "Delayed Gain") : base("nextTurns", conditionValue, conditionDuration, addType, true, true, nextTurnsAction, abnormality) { }
+    public NextTurns(System.Action[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1, int addType = 1, string abnormality = "Delayed Gain") : base("NextTurns", conditionValue, conditionDuration, addType, true, true, nextTurnsAction, abnormality) { }
 }
 
 public class GainAbility : Condition
 {
     protected Ability gainedAbility;
     public Ability GainedAbility { get { return gainedAbility; } }
-    public GainAbility(Ability conditionAbility, int conditionValue = 0, int conditionDuration = 1, int addType = 2, string abnormality = "Ability") : base("Gain Ability", conditionValue, conditionDuration, addType, true, true, null, abnormality)
+    public GainAbility(Ability conditionAbility, int conditionValue = 0, int conditionDuration = 1, int addType = 2, string abnormality = "Ability") : base("Ability", conditionValue, conditionDuration, addType, true, true, null, abnormality)
     {
         gainedAbility = conditionAbility;
     }

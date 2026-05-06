@@ -91,8 +91,7 @@ public class PlayerControler : Figure
         //GainNewAbility(1, new List<System.Action>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
 
 
-        GainNewAbility(1, new List<System.Action>() {() => Move(1, false ,true)});
-        GainNewAbility(1, new List<System.Action>() {() => Lockpick(1, true) });
+
 
 
 
@@ -132,8 +131,8 @@ public class PlayerControler : Figure
         if (Input.GetKeyDown(KeyCode.K))
         {
             //dev mode
-            //GainNewAbility(1, new List<System.Action>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
-            ApplyCondition(new GainAbility(new Ability(2, new List<System.Action>() { () => Move(1, true, true) })));
+            GainNewAbility(1, new List<System.Action>() { () => Move(1000, true, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
+            //ApplyCondition(new GainAbility(new Ability(2, new List<System.Action>() { () => Move(1, true, true) })));
 
         }
     }
@@ -156,6 +155,8 @@ public class PlayerControler : Figure
     }
     public void PreparePlayer(GameManager gameManager)
     {
+        GainNewAbility(1, new List<System.Action>() { () => Move(1, false, true) });
+        GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
         maxHealth = 100;
         health = maxHealth;
         oneToOnePos = Vector2.zero;
@@ -403,7 +404,7 @@ public class PlayerControler : Figure
         actionDone = true;
         isTargetATile = false;
         isTargetAEnemy = false;
-        if (preformingAction)
+        if (preformingAction && actionsRemaining.Count > 0)
         {
             actionsRemaining.Remove(actionsRemaining[0]);
             statsDisplayer.Plan(actionsRemaining);
@@ -470,7 +471,7 @@ public class PlayerControler : Figure
         if (isPlanning)
         {
             //string currentDescriptionString = "Ability " + finalAbility;
-            string currentDescriptionString = "<sprite name=Ability> " + finalAbility;
+            string currentDescriptionString = finalAbility + "<sprite name=Ability>";
 
             planDescription.Add(currentDescriptionString);
         }
@@ -586,16 +587,28 @@ public class PlayerControler : Figure
             ActionDone();
         }
     }
-    public void GainNewAbility(int cost, List<System.Action> abilities)
+    public void GainNewAbility(int cost, List<System.Action> abilities, int duration = -1)
     {
 
-        GainAbility(new Ability(cost, abilities));
+        GainAbility(new Ability(cost, abilities), duration);
     }
-    public void GainAbility(Ability ability)
+    public void GainAbility(Ability ability, int duration = -1)
     {
         if (isPlanning)
         {
-            string currentDescriptionString = "Gain ability: " + ability.Cost + " AP for " + GetPlanString(ability.Abilities);
+            VariableCardModifier = 1;
+            string currentDescriptionString = "Gain ability";
+            if (duration == 1)
+            {
+                currentDescriptionString += " for this turn";
+            }
+            else if (duration > 1)
+            {
+                currentDescriptionString += " for " + duration + " turns";
+            }
+            unmodifiedAction = true;
+            currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
+            unmodifiedAction = false;
             planDescription.Add(currentDescriptionString);
         }
         else
@@ -608,7 +621,7 @@ public class PlayerControler : Figure
     {
         if (isPlanning)
         {
-            string currentDescriptionString = "Lose ability: " + ability.Cost + " AP for " + GetPlanString(ability.Abilities);
+            string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
             planDescription.Add(currentDescriptionString);
         }
         else
