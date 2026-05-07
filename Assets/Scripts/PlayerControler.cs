@@ -684,6 +684,14 @@ public class PlayerControler : Figure
     }
     public override void MoveOneSpace()
     {
+        for (int i = 0; i < conditions.Count; i++)
+        {
+            if (conditions[i].name == "Untouchable")
+            {
+                Block(conditions[i].Value);
+                //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
+            }
+        }
         if (kineticBatteryCount > 0)
         {
             ApplyCondition(new Vigor(kineticBatteryCount), false);

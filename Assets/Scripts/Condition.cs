@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class Condition : MonoBehaviour
 {
-    private string conditionName;
+    protected string conditionName;
     public string Name { get { return conditionName; } }
-    private int amount;
+    protected string actionName;
+    public string ActionName { get { return actionName; } }
+    protected int amount;
     public int Value { get { return amount; } set { amount = value; } }
 
-    private int duration;
+    protected int duration;
     public int Duration { get { return duration; } set { duration = value; } }
 
     //addType 0: new instance (unoffical)
@@ -128,4 +130,12 @@ public class GainAbility : Condition
 public class Vigor : Condition
 {
     public Vigor(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Vigor", conditionValue, conditionDuration, addType, false, true) { }
+}
+
+public class BlockPerMove : Condition
+{
+    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1, int addType = 1) : base("Untouchable", conditionValue, conditionDuration, addType, true, true)
+    {
+        actionName = "Whenever you move a space gain " + conditionValue + " block";
+    }
 }
