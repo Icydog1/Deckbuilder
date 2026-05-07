@@ -2005,7 +2005,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd631f1637766094e938dbaf4c92b5de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
 --- !u!224 &312641991 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6114251937352318504, guid: a6936a00a85b1ac4796a141a3ab6947b, type: 3}
@@ -2040,9 +2039,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b30667aaff9b8d647aaca9ed68fc22e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedObject: {fileID: 0}
-  clickedObject: {fileID: 0}
-  selectedCardHeightIncrease: 0.25
 --- !u!4 &325978540
 Transform:
   m_ObjectHideFlags: 0
@@ -3727,8 +3723,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd377a45bd98dc44480593fefa9a744c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playedCardScript: {fileID: 0}
-  actionsRemaining: []
 --- !u!58 &695467239
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -6618,6 +6612,7 @@ MonoBehaviour:
   - {fileID: 2550443945361880006, guid: dcef61d6e6b0f8b43ba6cc4a9cf2e3ea, type: 3}
   - {fileID: 4364449978344370282, guid: 68af2036d6ed62147930f8bc6d54fab6, type: 3}
   - {fileID: 8843281192335889498, guid: 33949645877b04747a99a757278066ce, type: 3}
+  - {fileID: 6871229468693359616, guid: 7211e2a4b3352714a9f4289ceded6d73, type: 3}
   allRelicRewards:
   - {fileID: 5795666314669812343, guid: 20c7e432cc30b2343a315df4b6c93291, type: 3}
   - {fileID: 7593476723129728348, guid: a6936a00a85b1ac4796a141a3ab6947b, type: 3}
@@ -6625,6 +6620,7 @@ MonoBehaviour:
   - {fileID: 934518518080193135, guid: d89586f80c388bf4f98d4accac2168ce, type: 3}
   - {fileID: 4864755617491168204, guid: 269d35f56c903154ca4deedf0404b3e0, type: 3}
   - {fileID: 4506035114417295569, guid: 7fc666b1375442c419ee28327a87e009, type: 3}
+  - {fileID: 622119069048453466, guid: feaf70bcaf327a74a9bb631d1cd603ec, type: 3}
 --- !u!4 &1281001567
 Transform:
   m_ObjectHideFlags: 0
@@ -8651,13 +8647,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fdbc0541f27b5c4689bc05cb2a58c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Enemies: []
-  currentTurn: {fileID: 0}
-  currentEnemyTurnScript: {fileID: 0}
-  turnOrder: []
-  endOfRound: 0
-  playerTurn: 0
-  enemyTurn: 0
 --- !u!1 &2079290042
 GameObject:
   m_ObjectHideFlags: 0

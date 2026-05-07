@@ -34,7 +34,7 @@ public class ChangeAbilityPower : UIButton
     {
         for (int timeHeldDown = 2; true; timeHeldDown++)
         {
-            if (mouseManager.selectedObject == gameObject)
+            if (mouseManager.SelectedObject == gameObject)
             {
                 Activate();
             }

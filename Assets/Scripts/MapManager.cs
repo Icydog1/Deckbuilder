@@ -6,7 +6,7 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
     private GameManager gameManager;
-    public GameObject player;
+    private GameObject player;
     private float tileSize = 1, tileWidth, tileHeight;
     public float TileWidth { get { return tileWidth; } }
     public float TileHeight { get { return tileHeight; } }

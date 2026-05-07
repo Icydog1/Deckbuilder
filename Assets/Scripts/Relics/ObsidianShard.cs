@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class StrengthRelic : Relic
+public class ObsidianShard : Relic
 {
     public override void Awake()
     {
-        relicName = "StrengthRelic";
+        relicName = "Obsidian Shard";
         base.Awake();
     }
     public override void OnGain()

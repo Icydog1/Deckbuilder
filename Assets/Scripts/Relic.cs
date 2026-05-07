@@ -39,7 +39,7 @@ public class Relic : MonoBehaviour
     {
         if (relicDesription != null)
         {
-            return relicDesription;
+            return relicName + "\n" + relicDesription;
         }
         //Debug.Log("GetRelicDescription");
         List<string> descriptionList = new List<string>();
@@ -57,7 +57,7 @@ public class Relic : MonoBehaviour
         playerControler.IsPlanning = false;
         //Debug.Log("displayedString: " + displayedString);
 
-        return displayedString;
+        return relicName + "\n" + displayedString;
     }
     public void GainRelic()
     {

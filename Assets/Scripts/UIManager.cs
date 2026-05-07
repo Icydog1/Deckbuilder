@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +9,7 @@ public class UIManager : MonoBehaviour
 
     private bool isPaused, isDisplayingList, isGettingReward;
     public bool IsPaused { set { isPaused = value; UpdateScreen(); } }
-    public bool IsDisplayingList { set { isDisplayingList = value; UpdateScreen(); } }
+    public bool IsDisplayingList { get { return isDisplayingList; } set { isDisplayingList = value; UpdateScreen(); } }
     public bool IsGettingReward { set { isGettingReward = value; UpdateScreen(); } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

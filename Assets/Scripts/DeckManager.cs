@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Jobs;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 public class DeckManager : MonoBehaviour
 {
     public GameManager gameManager;
-
+    //[SerializeField]
     public GameObject hand, deck, discard, play;
     public GameObject Hand { get { return hand; } }
 
@@ -34,11 +35,15 @@ public class DeckManager : MonoBehaviour
     private MouseManager mouseManager;
     private GameObject listDisplayer;
     private UIManager uIManager;
+    private PlayerControler playerControler;
 
-    private bool isDisplayingCards;
+    private bool isDisplayingCards, isChoosingCard;
     public bool IsDisplayingCards { get { return isDisplayingCards; } }
-    
+    private GameObject selectedCard;
+    public GameObject SelectedCard { get { return selectedCard; } set { selectedCard = value; } }
 
+
+    public bool IsChoosingCard { get { return isChoosingCard; } set { isChoosingCard = value; } }
 
 
 
@@ -53,6 +58,7 @@ public class DeckManager : MonoBehaviour
         cardsInEntireDeckDisplay = GameObject.Find("CardsInEntireDeckDisplay").GetComponent<VariableDisplayer>();
         listDisplayer = GameObject.Find("ListDisplayer");
         uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
 
         //Debug.Log(deck.transform.childCount);
         if (startingDeck.Count == 0)
@@ -73,7 +79,7 @@ public class DeckManager : MonoBehaviour
 
         GameManager.ResetGame += ResetDeck;
         GameManager.GameStarted += SpawnStartingDeck;
-        GameManager.GameStarted += DrawStartingHand;
+        //GameManager.GameStarted += DrawStartingHand;
     }
 
     // Update is called once per frame
@@ -116,6 +122,14 @@ public class DeckManager : MonoBehaviour
     {
         DrawNewHand();
     }
+    public void DiscardHand()
+    {
+        List<GameObject> discardedCards = new List<GameObject>(handContents);
+        foreach (GameObject card in discardedCards)
+        {
+            DiscardCard(card);
+        }
+    }
 
     public void DrawNewHand()
     {
@@ -125,11 +139,6 @@ public class DeckManager : MonoBehaviour
         //    DiscardFirstCard();
         //    //Debug.Log("card Discarded");
         //}
-        List<GameObject> discardedCards = new List<GameObject>(handContents);
-        foreach (GameObject card in discardedCards)
-        {
-            DiscardCard(card);
-        }
         DrawCards(startHandSize);
     }
 
@@ -138,6 +147,40 @@ public class DeckManager : MonoBehaviour
         entireDeck.Add(card);
         cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
         MoveTo(card, deck, Random.Range(0, deckContents.Count + 1));
+    }
+    public void DestroyCard(GameObject card)
+    {
+        Card cardScript = card.GetComponent<Card>();
+        if (cardScript.OriginalCard != null)
+        {
+            displayedList.Remove(card);
+            DestroyCard(cardScript.OriginalCard);
+        }
+        cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
+        MoveTo(card, deck, Random.Range(0, deckContents.Count + 1));
+        if (deckContents.Contains(card))
+        {
+            deckContents.Remove(card);
+            cardsInDeckDisplay.DisplayText(deckContents.Count);
+        }
+        if (handContents.Contains(card))
+        {
+            handContents.Remove(card);
+            UpdateHand();
+        }
+        if (discardContents.Contains(card))
+        {
+            discardContents.Remove(card);
+            cardsInDiscardDisplay.DisplayText(discardContents.Count);
+        }
+        if (playContents.Contains(card))
+        {
+            playContents.Remove(card);
+            playerControler.PlayedCardScript.StopPlaying = true;
+            playerControler.ForceEndAction();
+        }
+        entireDeck.Remove(card);
+        Destroy(card);
     }
     public void DrawCards(int count)
     {
@@ -296,7 +339,7 @@ public class DeckManager : MonoBehaviour
 
         }
     }
-    public void DisplayCardsInListByName(string listName, Vector2 pos, int rowLimit, bool randomOrder)
+    public void DisplayCardsInListByName(string listName, Vector2 pos, int rowLimit = 5, bool randomOrder = true)
     {
         List<GameObject> list = GetListByName(listName);
         if (list == displayedListName)
@@ -314,7 +357,7 @@ public class DeckManager : MonoBehaviour
         }
 
     }
-    public void DisplayCardsInList(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit, bool randomOrder)
+    public void DisplayCardsInList(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit = 5, bool randomOrder = true)
     {
         isDisplayingCards = true;
         listDisplayer.SetActive(true);
@@ -323,7 +366,9 @@ public class DeckManager : MonoBehaviour
         displayedListName = cards;
         foreach (GameObject card in cards)
         {
-            displayedList.Add(Instantiate(card));
+            GameObject newCard;
+            displayedList.Add(newCard = Instantiate(card));
+            newCard.GetComponent<Card>().OriginalCard = card;
         }
         float horizontalSpaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
         float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.1f) * cameraScript.widthHeightRatio;
@@ -379,5 +424,19 @@ public class DeckManager : MonoBehaviour
         listDisplayer.SetActive(false);
         uIManager.IsDisplayingList = false;
         displayedListName = null;
+    }
+
+    public IEnumerator ChooseCard(List<GameObject> cardOptions)
+    {
+        selectedCard = null;
+        if (uIManager.IsDisplayingList == true)
+        {
+            StopDisplayingCardsInList();
+        }
+        DisplayCardsInList(cardOptions, listDisplayer.transform.position, relativeSpaceBetweenCardsInHand, 5, false);
+        isChoosingCard = true;
+        yield return new WaitUntil(() => isChoosingCard == false);
+        StopDisplayingCardsInList();
+        selectedCard = null;
     }
 }

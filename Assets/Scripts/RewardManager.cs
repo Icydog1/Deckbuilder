@@ -166,10 +166,19 @@ public class RewardManager : MonoBehaviour
         //rewardRarity = tileScript.Raity;
         GenerateReward(3, false);
     }
-    private void GainHealing(int amount)
+    public void GainHealing(int amount)
     {
         playerControler.Heal(amount);
         GainedReward();
+    }
+    public IEnumerator RemoveCardInDeck()
+    {
+        deckManager.SelectedCard = null; //maybe unnessesry?
+        StartCoroutine(deckManager.ChooseCard(deckManager.entireDeck));
+        yield return new WaitUntil(() => deckManager.SelectedCard != null);
+        deckManager.DestroyCard(deckManager.SelectedCard);
+        deckManager.IsChoosingCard = false;
+
     }
 
     private void GenerateReward(int numberOfRewards, bool isCard = true)

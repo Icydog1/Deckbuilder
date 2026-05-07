@@ -9,11 +9,13 @@ public class MouseManager : MonoBehaviour
 {
     private bool mouseDown, shortClick, dragableClicked;
     public bool MouseDown { get { return mouseDown; } }
+
+
     private float bottomPlayLine = 0.3f, topPlayLine = 0.6f;
     private Vector2 mousePos, worldMousePos;
-    public GameObject selectedObject, clickedObject;
-    public GameObject SelectedObject { get { return selectedObject; } }
-    public GameObject ClickedObject { get { return clickedObject; } }
+    private GameObject selectedObject, clickedObject;
+    public GameObject SelectedObject { get { return selectedObject; } set { selectedObject = value; } }
+    public GameObject ClickedObject { get { return clickedObject; } set { clickedObject = value; } }
     private GameObject hoveredObject;
     private IEnumerator heldButtonRoutine;
 
@@ -29,7 +31,7 @@ public class MouseManager : MonoBehaviour
     private RewardManager rewardManager;
     private TooltipManager tooltipManager;
 
-    public float selectedCardHeightIncrease = 0.25f;
+    private float selectedCardHeightIncrease = 0.25f;
 
 
 
@@ -251,6 +253,10 @@ public class MouseManager : MonoBehaviour
         }
         if (clickedObject != null && clickedObject == selectedObject)
         {
+            if (clickedObject.GetComponent<Card>() && deckManager.IsChoosingCard)
+            {
+                deckManager.SelectedCard = clickedObject;
+            }
             if (clickedObject.GetComponent<Tile>())
             {
                 playerControler.TileClicked(clickedObject);

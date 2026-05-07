@@ -47,7 +47,7 @@ public class Enemy : Figure
         base.Start();
 
         team = 1;
-        turnManager.turnOrder.Add(gameObject);
+        turnManager.TurnOrder.Add(gameObject);
         health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
         GetNewPlan(null);
@@ -157,7 +157,7 @@ public class Enemy : Figure
             currentPlan[i]();
         }
         isPreparingMove = false;
-        yield return new WaitUntil(() => mouseManager.selectedObject != gameObject);
+        yield return new WaitUntil(() => mouseManager.SelectedObject != gameObject);
         foreach (GameObject border in shownTileBorders)
         {
             border.GetComponent<SpriteRenderer>().color = Color.black;

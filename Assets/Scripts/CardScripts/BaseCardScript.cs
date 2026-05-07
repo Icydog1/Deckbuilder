@@ -15,6 +15,9 @@ public class Card : MonoBehaviour
     protected GameObject topGlow, bottomGlow;
     public GameObject TopGlow { get { return topGlow; } }
     public GameObject BottomGlow { get { return bottomGlow; } }
+    protected GameObject originalCard;
+    public GameObject OriginalCard { get { return originalCard; } set { originalCard = value; } }
+
     protected bool isCurrentCard;
     protected int topCost, bottomCost;
     protected bool isTopPlayed, isBottomPlayed;
@@ -35,6 +38,7 @@ public class Card : MonoBehaviour
     protected List<string> bottomDescription = new List<string>();
     protected List<string> currentDescription = new List<string>();
     protected string currentDescriptionString = "";
+    protected string additionalTopDescription, additionalBottomDescription;
 
     [SerializeField]
     protected int rarity = 1;
@@ -90,14 +94,12 @@ public class Card : MonoBehaviour
 
 
 
-    public void AttemptToPlayTop()
+    public virtual void AttemptToPlayTop()
     {
         if (playerControler.TopEnergy >= topCost)
         {
             isTopPlayed = true;
             playerControler.TopEnergy -= topCost;
-
-
             SetPlayed();
         }
         else
@@ -105,7 +107,7 @@ public class Card : MonoBehaviour
             PlayFailed();
         }
     }
-    public void AttemptToPlayBottom()
+    public virtual void AttemptToPlayBottom()
     {
         if (playerControler.BottomEnergy >= bottomCost)
         {
@@ -135,10 +137,10 @@ public class Card : MonoBehaviour
         isCurrentCard = true;
         playerControler.CardPlayed = true;
         playerControler.PlayedCard = gameObject;
-        playerControler.playedCardScript = gameObject.GetComponent<Card>();
+        playerControler.PlayedCardScript = gameObject.GetComponent<Card>();
         playerControler.UpdatePlayer();
         //currentStep = 0;
-        mouseManager.clickedObject = null;
+        mouseManager.ClickedObject = null;
         if (isTopPlayed)
         {
             topGlow.SetActive(true);
@@ -169,8 +171,8 @@ public class Card : MonoBehaviour
 
     public IEnumerator PlayTop()
     {
-        //Debug.Log("topDescriptionCount " + topDescription.Count);
         playerControler.ActionsRemaining = new List<string>(topDescription);
+        playerControler.NextAction = false;
         foreach (System.Action action in topActions)
         {
             if (stopPlaying == false)
@@ -216,13 +218,29 @@ public class Card : MonoBehaviour
         }
         topCostText.DisplayString("<color=red>" + topCost);
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
-        topText.DisplayText(topDescription);
-        bottomText.DisplayText(bottomDescription);
+        if (additionalTopDescription != null)
+        {
+            List<string> newDescription = new List<string>(topDescription);
+            newDescription.Insert(0,additionalTopDescription);
+            topText.DisplayText(newDescription);
+        }
+        else
+        {
+            topText.DisplayText(topDescription);
+        }
+        if (additionalBottomDescription != null)
+        {
+            List<string> newDescription = new List<string>(bottomDescription);
+            newDescription.Insert(0, additionalBottomDescription);
+            bottomText.DisplayText(newDescription);
+        }
+        else
+        {
+            bottomText.DisplayText(bottomDescription);
+        }
+
         playerControler.IsPlanning = false;
     }
-
-
-
     public virtual void PrepareTop()
     {
 
@@ -232,40 +250,4 @@ public class Card : MonoBehaviour
     {
 
     }
-    /*
-
-public void AddToDescription()
-{
-    currentDescription.Add(currentDescriptionString);
-    //Debug.Log(currentDescriptionString);
-    currentDescriptionString = "";
-}
-public void playerControler.Attack(int attackValue, int range = 1)
-{
-    prepareTo.Add(() => playerControler.Attack(attackValue, range));
-    currentDescriptionString = "Attack " + attackValue;
-    if (range > 1)
-    {
-        currentDescriptionString += " range " + range;
-    }
-    AddToDescription();
-}
-
-public void playerControler.Move(int moveValue, bool isJump = false)
-{
-    prepareTo.Add(() => playerControler.Move(moveValue, isJump));
-    currentDescriptionString = "Move " + moveValue;
-    if (isJump)
-    {
-        currentDescriptionString += " Jump";
-    }
-    AddToDescription();
-}
-public void playerControler.Block(int blockValue)
-{
-    prepareTo.Add(() => playerControler.Block(blockValue));
-    currentDescriptionString = "Block " + blockValue;
-    AddToDescription();
-}
-*/
 }

@@ -7,15 +7,16 @@ using UnityEngine;
 public class TurnManager : MonoBehaviour
 {
     //public List<Enemy> EnemiesScripts = new List<Enemy>();
-    public List<GameObject> Enemies = new List<GameObject>();
+    private List<GameObject> enemies = new List<GameObject>();
     private PlayerControler playerControler;
     private DeckManager deckManager;
     private GameObject player;
     private GameObject newRoundMarker;
-    public GameObject currentTurn;
-    public Enemy currentEnemyTurnScript;
-    public List<GameObject> turnOrder = new List<GameObject>();
-    public bool endOfRound, playerTurn, enemyTurn;
+    private GameObject currentTurn;
+    private Enemy currentEnemyTurnScript;
+    private List<GameObject> turnOrder = new List<GameObject>();
+    public List<GameObject> TurnOrder { get { return turnOrder; } }
+    private bool endOfRound, playerTurn, enemyTurn;
     private LevelManager levelManager;
 
 
@@ -103,7 +104,6 @@ public class TurnManager : MonoBehaviour
     public void NextRound()
     {
         currentTurn = turnOrder[0];
-        deckManager.DrawNewHand();
         if (RoundEnded != null)
         {
             //Debug.Log("Round ended");

@@ -28,12 +28,16 @@ public class PlayerControler : Figure
     public string MoveCostDisplaySetting { set { moveCostDisplaySetting = value; ShowMoveCostDisplay(); } }
 
     //private PlayerStats playerStats;
-    public Card playedCardScript;
+    private Card playedCardScript;
+    public Card PlayedCardScript { get { return playedCardScript; } set { playedCardScript = value; } }
+
     //private Vector2 playerOneToOneCords;
     //public Vector2 PlayerOneToOneCords { get { return playerOneToOneCords; } }
 
 
-    public List<System.Action> currentActionQueue = new List<System.Action>();
+    //private List<System.Action> currentActionQueue = new List<System.Action>();
+    //public List<System.Action> CurrentActionQueue { get { return currentActionQueue; } set { currentActionQueue = value; } }
+
 
     private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, preformingAction, canPreformAbilities;
     private bool waitUntilVariable;
@@ -54,7 +58,7 @@ public class PlayerControler : Figure
     private bool isTargetATile, isTargetAEnemy;
     private GameObject selectedTile;
     private List<Figure> posibleTargets;
-    public List<string> actionsRemaining = new List<string>();
+    private List<string> actionsRemaining = new List<string>();
     public List<string> ActionsRemaining { set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
     private int topEnergy, bottomEnergy;
@@ -361,7 +365,8 @@ public class PlayerControler : Figure
         {
             PlayerTurnStarted(this);
         }
-        
+        deckManager.DrawNewHand();
+
         isPlayerTurn = true;
         TopEnergy = 2;
         BottomEnergy = 2;
@@ -384,6 +389,8 @@ public class PlayerControler : Figure
     }
     public void EndTurn()
     {
+        deckManager.DiscardHand();
+
         UpdatePlayer();
         if (canEndTurn)
         {
@@ -432,6 +439,7 @@ public class PlayerControler : Figure
         }
         nextAction = true;
     }
+
     public void ForceEndAction()
     {
         if (isMoving && moveCostDisplaySetting == "On Move")
