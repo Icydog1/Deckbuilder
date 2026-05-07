@@ -15,13 +15,16 @@ public class Defend : Card
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
-        currentActions.Add(() => playerControler.Block(10));
+        yield return StartCoroutine(actionManager.PreformAction(playerControler.Block(10)));
+        //currentActions.Add(() => playerControler.Block(10));
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
+        actionManager.QueueAction(playerControler.Ability(10));
+
         currentActions.Add(() => playerControler.Ability(10));
     }
 }

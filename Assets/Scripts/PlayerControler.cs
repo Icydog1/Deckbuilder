@@ -493,7 +493,7 @@ public class PlayerControler : Figure
         appliedConditions = newConditions;
         posibleTargets = FindPosibleTargets(targetType, conditionsRange);
     }
-    public void Ability(int abilityValue)
+    public IEnumerator Ability(int abilityValue)
     {
         int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
@@ -510,6 +510,7 @@ public class PlayerControler : Figure
             abilityManager.SelectedPower += finalAbility;
             ActionDone();
         }
+        yield return null;
     }
 
     public void Lockpick(int lockpickValue, bool isVariable = false)

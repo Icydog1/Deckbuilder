@@ -18,14 +18,14 @@ public class EntwinedPower : Card
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.Draw(3));
         currentActions.Add(() => playerControler.Attack(15));
         currentActions.Add(() => playerControler.Ability(15));
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.Draw(3));
         currentActions.Add(() => playerControler.Move(15));

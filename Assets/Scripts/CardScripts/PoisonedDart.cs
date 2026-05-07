@@ -12,12 +12,12 @@ public class PoisonedDart : Card
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.Attack(3,3,1,1, new Condition[] { new Poison(3) }));
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.Move(10));
         currentActions.Add(() => playerControler.Ability(10));

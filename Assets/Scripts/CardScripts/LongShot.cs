@@ -14,13 +14,13 @@ using UnityEngine;
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.Attack(15, 4));
 
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.Ability(20));
     }

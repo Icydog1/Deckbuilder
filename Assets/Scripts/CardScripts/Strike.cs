@@ -16,12 +16,12 @@ using UnityEngine;
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.Attack(10));
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.Move(10));
     }

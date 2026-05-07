@@ -14,12 +14,12 @@ public class Prepare : Card
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.ApplyCondition( new NextTurns(new System.Action[] { () => playerControler.GainTopEnergy(2), () => playerControler.Draw(1) })) );
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.ApplyCondition(new NextTurns(new System.Action[] { () => playerControler.GainBottomEnergy(2), () => playerControler.Draw(1) })));
 

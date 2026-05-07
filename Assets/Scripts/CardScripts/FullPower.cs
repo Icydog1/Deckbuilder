@@ -15,14 +15,14 @@
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.Attack(20));
         currentActions.Add(() => playerControler.Attack(20));
 
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.Move(35));
 

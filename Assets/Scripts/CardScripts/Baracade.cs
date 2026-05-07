@@ -12,13 +12,13 @@
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.Block(50));
         currentActions.Add(() => playerControler.ApplyCondition(new Speed(-5, 2)));
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.Block(10));
     }

@@ -41,6 +41,17 @@ public class ActionManager : MonoBehaviour
             QueueAction(Wait());
         }
     }
+    public IEnumerator PreformAction(IEnumerator action)
+    {
+        actionCoroutines.Add(action);
+        if (!loopRunning)
+        {
+            yield return StartCoroutine(StartActionLoop());
+        }
+        Debug.Log("mabie error??");
+        yield return null;
+    }
+
     public void QueueAction(IEnumerator action)
     {
         actionCoroutines.Add(action);
@@ -56,7 +67,7 @@ public class ActionManager : MonoBehaviour
         loopRunning = true;
         while (actionCoroutines.Count > 0)
         {
-            //Debug.Log(actionCoroutines.Count);
+            Debug.Log(actionCoroutines.Count);
             yield return StartCoroutine(actionCoroutines[0]);
             //actionQueue[0]();
 

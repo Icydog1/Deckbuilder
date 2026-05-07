@@ -11,6 +11,7 @@ public class Card : MonoBehaviour
     protected DeckManager deckManager;
     protected CardEffectText topText, bottomText;
     protected VariableDisplayer topCostText, bottomCostText;
+    protected ActionManager actionManager;
 
     protected GameObject topGlow, bottomGlow;
     public GameObject TopGlow { get { return topGlow; } }
@@ -57,6 +58,8 @@ public class Card : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
+        actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
+
         topGlow = transform.Find("TopGlow").gameObject;
         bottomGlow = transform.Find("BottomGlow").gameObject;
         topText = transform.Find("TopEffects").GetComponent<CardEffectText>();
@@ -67,13 +70,16 @@ public class Card : MonoBehaviour
         cardName = cardName.Replace("(Clone)", "");
         cardName = Regex.Replace(cardName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("CardName").gameObject.GetComponent<TextMeshProUGUI>().SetText(cardName);
-
-
+    }
+    public IEnumerator PrepareActions()
+    {
         currentActions = topActions;
-        PrepareTop();
+        yield return StartCoroutine(PrepareTop());
         currentActions = bottomActions;
-        PrepareBottom();
+        yield return StartCoroutine(PrepareBottom());
         deckManager.SetRelativeCardSize(gameObject, 1);
+        PrepareCardDiscription();
+
 
     }
 
@@ -82,7 +88,6 @@ public class Card : MonoBehaviour
         // base class code runs
 
 
-        PrepareCardDiscription();
     }
 
     // Update is called once per frame
@@ -207,10 +212,13 @@ public class Card : MonoBehaviour
         bottomDescription.Clear();
         playerControler.IsPlanning = true;
         playerControler.PlanDescription = topDescription;
+        Debug.Log("started planing");
         foreach (System.Action action in topActions)
         {
             action();
         }
+        Debug.Log("finished planing");
+
         playerControler.PlanDescription = bottomDescription;
         foreach (System.Action action in bottomActions)
         {
@@ -241,12 +249,12 @@ public class Card : MonoBehaviour
 
         playerControler.IsPlanning = false;
     }
-    public virtual void PrepareTop()
+    public virtual IEnumerator PrepareTop()
     {
 
     }
 
-    public virtual void PrepareBottom()
+    public virtual IEnumerator PrepareBottom()
     {
 
     }

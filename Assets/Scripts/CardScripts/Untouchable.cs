@@ -12,13 +12,13 @@ public class Untouchable : Card
     }
 
 
-    public override void PrepareTop()
+    public override IEnumerator PrepareTop()
     {
         currentActions.Add(() => playerControler.ApplyCondition(new BlockPerMove(5, 1)));
 
     }
 
-    public override void PrepareBottom()
+    public override IEnumerator PrepareBottom()
     {
         currentActions.Add(() => playerControler.Move(20,true));
     }

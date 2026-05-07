@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ public class Figure : MonoBehaviour
     protected ConditionEffects conditionEffects;
     protected DeckManager deckManager;
     protected LevelManager levelManager;
+    protected ActionManager actionManager;
 
 
     protected bool isMyTurn;
@@ -68,6 +70,7 @@ public class Figure : MonoBehaviour
         conditionEffects = GameObject.Find("ConditionEffects").GetComponent<ConditionEffects>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
 
         //statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
     }
@@ -166,7 +169,7 @@ public class Figure : MonoBehaviour
 
 
 
-    public void Block(int blockValue, bool isVariable = false)
+    public IEnumerator Block(int blockValue, bool isVariable = false)
     {
         if (isVariable)
         {
@@ -186,9 +189,10 @@ public class Figure : MonoBehaviour
             statsDisplayer.SetHealthAndBlock(health, block);
             ActionDone();
         }
+        yield return null;
     }
 
-    public void Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null, bool isVariable = false)
+    public IEnumerator Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null, bool isVariable = false)
     {
         if (isVariable)
         {
@@ -273,11 +277,10 @@ public class Figure : MonoBehaviour
                     }
                 }
             }
-
-            
         }
+        yield return null;
     }
-    public void Move(int moveValue, bool isJump = false, bool isVariable = false)
+    public IEnumerator Move(int moveValue, bool isJump = false, bool isVariable = false)
     {
         if (isVariable)
         {
@@ -328,6 +331,8 @@ public class Figure : MonoBehaviour
                 StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
             }
         }
+        yield return null;
+
     }
 
     public void ApplyCondition(Condition condition, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
