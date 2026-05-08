@@ -12,16 +12,16 @@ public class ShiftingPower : Card
     }
 
 
-    public override IEnumerator PrepareTop()
+    public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.GainBottomEnergy(1));
-        currentActions.Add(() => playerControler.Draw(1));
+        //currentActions.Add(playerControler.GainBottomEnergy(1));
+        //currentActions.Add(playerControler.Draw(1));
 
     }
 
-    public override IEnumerator PrepareBottom()
+    public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.GainTopEnergy(1));
-        currentActions.Add(() => playerControler.Draw(1));
+        //currentActions.Add(playerControler.GainTopEnergy(1));
+        //currentActions.Add(playerControler.Draw(1));
     }
 }

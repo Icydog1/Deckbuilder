@@ -3723,6 +3723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd377a45bd98dc44480593fefa9a744c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  planDescription: []
 --- !u!58 &695467239
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -10098,7 +10099,6 @@ MonoBehaviour:
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
-  - {fileID: 302779926597923307, guid: bbb5c3560d77b814dab7638a2ad4cfeb, type: 3}
   deckContents: []
   handContents: []
   discardContents: []

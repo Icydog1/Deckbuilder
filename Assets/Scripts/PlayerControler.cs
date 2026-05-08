@@ -138,7 +138,7 @@ public class PlayerControler : Figure
         if (Input.GetKeyDown(KeyCode.K))
         {
             //dev mode
-            GainNewAbility(1, new List<System.Action>() { () => Move(1000, true, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
+            GainNewAbility(1, new List<IEnumerator>() { Move(1000, true, true) }); GainNewAbility(1, new List<IEnumerator>() { Lockpick(1000, true) }); GainNewAbility(1, new List<IEnumerator>() { Block(1000, true) }); GainNewAbility(1, new List<IEnumerator>() { Attack(1000, 100, 1, 1, null, true) });
             //ApplyCondition(new GainAbility(new Ability(2, new List<System.Action>() { () => Move(1, true, true) })));
 
         }
@@ -163,8 +163,8 @@ public class PlayerControler : Figure
     }
     public void PreparePlayer(GameManager gameManager)
     {
-        GainNewAbility(2, new List<System.Action>() { () => Move(1, false, true) });
-        GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
+        //GainNewAbility(2, new List<IEnumerator>() { Move(1, false, true) });
+        //GainNewAbility(1, new List<IEnumerator>() { Lockpick(1, true) });
         maxHealth = 100;
         health = maxHealth;
         oneToOnePos = Vector2.zero;
@@ -421,7 +421,7 @@ public class PlayerControler : Figure
                 {
                     conditions[i].OnLoss();
                     conditions.RemoveAt(i);
-                    deckManager.UpdateCardsDisplay();
+                    StartCoroutine(deckManager.UpdateCardsDisplay());
                     statsDisplayer.DisplayConditions(conditions);
                 }
             }
@@ -513,7 +513,7 @@ public class PlayerControler : Figure
         yield return null;
     }
 
-    public void Lockpick(int lockpickValue, bool isVariable = false)
+    public IEnumerator Lockpick(int lockpickValue, bool isVariable = false)
     {
         if (isVariable)
         {
@@ -541,6 +541,7 @@ public class PlayerControler : Figure
                 ActionDone();
             }
         }
+        yield return null;
     }
     public void Draw(int cardCount)
     {
@@ -617,7 +618,7 @@ public class PlayerControler : Figure
             ActionDone();
         }
     }
-    public void GainNewAbility(int cost, List<System.Action> abilities, int duration = -1)
+    public void GainNewAbility(int cost, List<IEnumerator> abilities, int duration = -1)
     {
 
         GainAbility(new Ability(cost, abilities), duration);

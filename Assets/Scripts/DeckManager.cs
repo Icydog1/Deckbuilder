@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -89,9 +90,9 @@ public class DeckManager : MonoBehaviour
 
     }
 
-    public void PlayCard(GameObject card)
+    public IEnumerator PlayCard(GameObject card)
     {
-        MoveTo(card, play);
+        yield return StartCoroutine(MoveTo(card, play));
     }
     public void ResetDeck(GameManager gameManager)
     {
@@ -139,14 +140,14 @@ public class DeckManager : MonoBehaviour
         //    DiscardFirstCard();
         //    //Debug.Log("card Discarded");
         //}
-        DrawCards(startHandSize);
+        StartCoroutine(DrawCards(startHandSize));
     }
 
-    public void GainCard(GameObject card)
+    public IEnumerator GainCard(GameObject card)
     {
         entireDeck.Add(card);
         cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
-        MoveTo(card, deck, Random.Range(0, deckContents.Count + 1));
+        yield return StartCoroutine(MoveTo(card, deck, Random.Range(0, deckContents.Count + 1)));
     }
     public void DestroyCard(GameObject card)
     {
@@ -182,24 +183,25 @@ public class DeckManager : MonoBehaviour
         entireDeck.Remove(card);
         Destroy(card);
     }
-    public void DrawCards(int count)
+    public IEnumerator DrawCards(int count)
     {
         for (int i = 0; i < count; i++)
         {
-            DrawCard();
+            yield return StartCoroutine(DrawCard());
         }
+        yield return null;
     }
 
-    public void DrawCard()
+    public IEnumerator DrawCard()
     {
         if (deckContents.Count == 0)
         {
-            ReSuffle();
+            yield return StartCoroutine(ReSuffle());
         }
         GameObject currentCard = deckContents[0];
-        MoveTo(currentCard, hand);
+        yield return StartCoroutine(MoveTo(currentCard, hand));
     }
-    public void ReSuffle()
+    public IEnumerator ReSuffle()
     {
         /*
         int discardSize = discardContents.Count;
@@ -211,7 +213,7 @@ public class DeckManager : MonoBehaviour
         */
         while (discardContents.Count > 0)
         {
-            MoveTo(discardContents[0], deck);
+            yield return StartCoroutine(MoveTo(discardContents[0], deck));
         }
         Suffle(ref deckContents);
     }
@@ -230,7 +232,7 @@ public class DeckManager : MonoBehaviour
     }
 
 
-    public void MoveTo(GameObject card, GameObject location, int newIndex = -1)
+    public IEnumerator MoveTo(GameObject card, GameObject location, int newIndex = -1)
     {
 
         foreach (List<GameObject> posibleLocation in posibleCardLocations)
@@ -254,12 +256,13 @@ public class DeckManager : MonoBehaviour
         if (location == hand)
         {
             card.gameObject.SetActive(true);
-            card.GetComponent<Card>().PrepareCardDiscription();
+            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
         }
         if (location == play)
         {
             card.gameObject.SetActive(true);
-            card.GetComponent<Card>().PrepareCardDiscription();
+            Debug.Log("updating card description");
+            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
             SelectCard(card);
         }
         else
@@ -270,7 +273,7 @@ public class DeckManager : MonoBehaviour
         cardsInDeckDisplay.DisplayText(deckContents.Count);
         cardsInDiscardDisplay.DisplayText(discardContents.Count);
 
-        UpdateHand();
+        yield return StartCoroutine(UpdateHand());
     }
 
     public List<GameObject> GetListByName(string listName)
@@ -312,12 +315,12 @@ public class DeckManager : MonoBehaviour
     {
         return (card.transform.localScale.x/BaseCardSize);
     }
-    public void UpdateHand()
+    public IEnumerator UpdateHand()
     {
         handSize = handContents.Count;
         while (handContents.Count > maxHandSize)
         {
-            MoveTo(handContents[handContents.Count - 1], discard);
+            yield return StartCoroutine(MoveTo(handContents[handContents.Count - 1], discard));
         }
         SeperateCards(handContents, hand.transform.position, relativeSpaceBetweenCardsInHand * baseCardSize);
     }
@@ -398,19 +401,19 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public void UpdateCardsDisplay()
+    public IEnumerator UpdateCardsDisplay()
     {
         foreach (GameObject card in displayedList)
         {
-            card.GetComponent<Card>().PrepareCardDiscription();
+            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
         }
         foreach (GameObject card in handContents)
         {
-            card.GetComponent<Card>().PrepareCardDiscription();
+            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
         }
         foreach (GameObject card in playContents)
         {
-            card.GetComponent<Card>().PrepareCardDiscription();
+            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
         }
     }
     public void StopDisplayingCardsInList()

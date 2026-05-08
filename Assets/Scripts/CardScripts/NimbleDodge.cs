@@ -15,13 +15,13 @@ public class NimbleDodge : Card
     }
 
 
-    public override IEnumerator PrepareTop()
+    public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Block(25));
+        currentActions.Add(playerControler.Block(25));
     }
 
-    public override IEnumerator PrepareBottom()
+    public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Move(20, true));
+        currentActions.Add(playerControler.Move(20, true));
     }
 }

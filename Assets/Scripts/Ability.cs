@@ -12,8 +12,8 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
     protected int abilityValue, timesPreformed;
     private int maxTimes;
     private bool isUsed;
-    private List<System.Action> abilities = new List<System.Action>();
-    public List<System.Action> Abilities { get { return abilities; } }
+    private List<IEnumerator> abilities = new List<IEnumerator>();
+    public List<IEnumerator> Abilities { get { return abilities; } }
 
     protected List<string> description = new List<string>();
 
@@ -23,14 +23,16 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
     protected PlayerControler playerControler;
     protected MouseManager mouseManager;
     protected AbilityManager abilityManager;
+    protected ActionManager actionManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Gained()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
-
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
+        actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
+
         //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
         PlayerControler.PlayerTurnStarted += ResetAbilityCooldown;
     }
@@ -51,7 +53,7 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         abilityUI.DisplayUsed(false);
     }
 
-    public Ability(int abilityCost, List<System.Action> preformedAbilities)
+    public Ability(int abilityCost, List<IEnumerator> preformedAbilities)
     {
         abilities = preformedAbilities;
         cost = abilityCost;
@@ -66,9 +68,9 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         int potentialTimesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
         playerControler.VariableCardModifier = potentialTimesPreformed;
         playerControler.UnmodifiedAction = true;
-        foreach (System.Action action in abilities)
+        foreach (IEnumerator action in abilities)
         {
-            action();
+            StartCoroutine(actionManager.PreformAction(action));
         }
         playerControler.UnmodifiedAction = false;
 
@@ -93,10 +95,10 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
                 playerControler.VariableCardModifier = timesPreformed;
                 playerControler.PreformingAbility = true;
                 playerControler.NextAction = false;
-                foreach (System.Action action in abilities)
+                foreach (IEnumerator action in abilities)
                 {
                     playerControler.UnmodifiedAction = true;
-                    action();
+                    yield return StartCoroutine(actionManager.PreformAction(action));
                     playerControler.UnmodifiedAction = false;
                     yield return new WaitUntil(() => playerControler.NextAction == true);
                     playerControler.NextAction = false;

@@ -15,15 +15,15 @@ public class TestDevCard : Card
     }
 
 
-    public override IEnumerator PrepareTop()
+    public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Block(1000));
-        currentActions.Add(() => playerControler.Attack(1000 , 3));
+        currentActions.Add(playerControler.Block(1000));
+        currentActions.Add(playerControler.Attack(1000 , 3));
     }
 
-    public override IEnumerator PrepareBottom()
+    public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Move(1000));
+        currentActions.Add(playerControler.Move(1000));
 
     }
 }

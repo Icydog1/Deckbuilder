@@ -43,7 +43,7 @@ public class Figure : MonoBehaviour
 
     protected bool canFly = false;
 
-    protected List<string> planDescription = new List<string>();
+    public List<string> planDescription = new List<string>();
     public List<string> PlanDescription { set { planDescription = value; } }
     //protected List<System.Action> prepareActions = new List<System.Action>();
     //public List<System.Action> PrepareActions { set { prepareActions = value; } }
@@ -134,7 +134,8 @@ public class Figure : MonoBehaviour
         }
         if (isPlayer)
         {
-            deckManager.UpdateCardsDisplay();
+            StartCoroutine(deckManager.UpdateCardsDisplay());
+
         }
         statsDisplayer.DisplayConditions(conditions);
         turnManager.NextTurn();
@@ -146,15 +147,16 @@ public class Figure : MonoBehaviour
     }
 
 
-    public string GetPlanString(List<System.Action> actions)
+    public string GetPlanString(List<IEnumerator> actions)
     {
         List<string> currentPlanDescription = planDescription;
         bool currentPlanningState = isPlanning;
         planDescription = new List<string>();
         isPlanning = true;
-        foreach (System.Action action in actions)
+        foreach (IEnumerator action in actions)
         {
-            action();
+            StartCoroutine(actionManager.PreformAction(action));
+
         }
         string displayedString = "";
         foreach (string text in planDescription)
@@ -619,7 +621,7 @@ public class Figure : MonoBehaviour
         if (isPlayer)
         {
             Debug.Log("updated display");
-            deckManager.UpdateCardsDisplay();
+            StartCoroutine(deckManager.UpdateCardsDisplay());
         }
         //Debug.Log("first condition: " + conditions[0].Name);
 
