@@ -70,6 +70,8 @@ public class Card : MonoBehaviour
         cardName = cardName.Replace("(Clone)", "");
         cardName = Regex.Replace(cardName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("CardName").gameObject.GetComponent<TextMeshProUGUI>().SetText(cardName);
+
+        StartCoroutine(PrepareActions());
     }
     public IEnumerator PrepareActions()
     {
@@ -251,11 +253,13 @@ public class Card : MonoBehaviour
     }
     public virtual IEnumerator PrepareTop()
     {
+        yield return "Temp";
 
     }
 
     public virtual IEnumerator PrepareBottom()
     {
+        yield return "Temp";
 
     }
 }

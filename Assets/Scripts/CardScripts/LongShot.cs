@@ -16,12 +16,16 @@ using UnityEngine;
 
     public override IEnumerator PrepareTop()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Attack(15, 4));
 
     }
 
     public override IEnumerator PrepareBottom()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Ability(20));
     }
 }

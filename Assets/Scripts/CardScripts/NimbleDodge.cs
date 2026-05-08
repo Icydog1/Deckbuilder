@@ -17,11 +17,15 @@ public class NimbleDodge : Card
 
     public override IEnumerator PrepareTop()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Block(25));
     }
 
     public override IEnumerator PrepareBottom()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Move(20, true));
     }
 }

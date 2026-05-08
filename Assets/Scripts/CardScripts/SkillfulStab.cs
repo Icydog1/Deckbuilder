@@ -1,3 +1,5 @@
+using System.Collections;
+
 public class SkillfulStab : Card
 {
     public override void Start()
@@ -14,6 +16,8 @@ public class SkillfulStab : Card
 
     public override IEnumerator PrepareTop()
     {
+        yield return null;
+
         currentActions.Add(() => playerControler.Attack(10));
         currentActions.Add(() => playerControler.Draw(1));
 
@@ -21,6 +25,8 @@ public class SkillfulStab : Card
 
     public override IEnumerator PrepareBottom()
     {
+        yield return null;
+
         currentActions.Add(() => playerControler.Ability(10));
     }
 }

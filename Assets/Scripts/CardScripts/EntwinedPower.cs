@@ -1,3 +1,5 @@
+using System.Collections;
+
 public class EntwinedPower : Card
 {
     private int additionalCost = 1;
@@ -20,6 +22,8 @@ public class EntwinedPower : Card
 
     public override IEnumerator PrepareTop()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Draw(3));
         currentActions.Add(() => playerControler.Attack(15));
         currentActions.Add(() => playerControler.Ability(15));
@@ -27,6 +31,8 @@ public class EntwinedPower : Card
 
     public override IEnumerator PrepareBottom()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Draw(3));
         currentActions.Add(() => playerControler.Move(15));
         currentActions.Add(() => playerControler.Block(15));

@@ -1,4 +1,5 @@
- public class FullPower : Card
+using System.Collections;
+public class FullPower : Card
 {
 
     public override void Start()
@@ -17,6 +18,7 @@
 
     public override IEnumerator PrepareTop()
     {
+        yield return null;
         currentActions.Add(() => playerControler.Attack(20));
         currentActions.Add(() => playerControler.Attack(20));
 
@@ -24,6 +26,8 @@
 
     public override IEnumerator PrepareBottom()
     {
+        yield return null;
+
         currentActions.Add(() => playerControler.Move(35));
 
     }

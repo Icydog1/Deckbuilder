@@ -1,4 +1,7 @@
+using System.Collections;
+
 public class Untouchable : Card
+
 {
     public override void Start()
     {
@@ -14,12 +17,16 @@ public class Untouchable : Card
 
     public override IEnumerator PrepareTop()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.ApplyCondition(new BlockPerMove(5, 1)));
 
     }
 
     public override IEnumerator PrepareBottom()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Move(20,true));
     }
 }

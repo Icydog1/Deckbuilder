@@ -1,4 +1,5 @@
- public class Baracade : Card
+using System.Collections;
+public class Baracade : Card
 {
     public override void Start()
     {
@@ -14,12 +15,16 @@
 
     public override IEnumerator PrepareTop()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Block(50));
         currentActions.Add(() => playerControler.ApplyCondition(new Speed(-5, 2)));
     }
 
     public override IEnumerator PrepareBottom()
     {
+        yield return "Temp";
+
         currentActions.Add(() => playerControler.Block(10));
     }
 }
