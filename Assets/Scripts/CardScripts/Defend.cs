@@ -23,10 +23,8 @@ public class Defend : Card
 
     public override IEnumerator PrepareBottom()
     {
-        yield return StartCoroutine(actionManager.PreformAction(playerControler.Ability(10)));
+        actionManager.QueueAction(playerControler.Ability(10));
 
-        //actionManager.QueueAction(playerControler.Ability(10));
-
-        //currentActions.Add(() => playerControler.Ability(10));
+        currentActions.Add(() => playerControler.Ability(10));
     }
 }

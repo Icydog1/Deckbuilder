@@ -17,16 +17,12 @@ public class TestDevCard : Card
 
     public override IEnumerator PrepareTop()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.Block(1000));
         currentActions.Add(() => playerControler.Attack(1000 , 3));
     }
 
     public override IEnumerator PrepareBottom()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.Move(1000));
 
     }

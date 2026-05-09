@@ -1,5 +1,3 @@
-using System.Collections;
-
 public class ShiftingPower : Card
 {
     public override void Start()
@@ -16,8 +14,6 @@ public class ShiftingPower : Card
 
     public override IEnumerator PrepareTop()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.GainBottomEnergy(1));
         currentActions.Add(() => playerControler.Draw(1));
 
@@ -25,8 +21,6 @@ public class ShiftingPower : Card
 
     public override IEnumerator PrepareBottom()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.GainTopEnergy(1));
         currentActions.Add(() => playerControler.Draw(1));
     }

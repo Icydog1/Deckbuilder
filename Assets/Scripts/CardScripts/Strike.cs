@@ -18,15 +18,11 @@ using UnityEngine;
 
     public override IEnumerator PrepareTop()
     {
-
-        yield return StartCoroutine(actionManager.PreformAction(playerControler.Attack(10)));
-
+        currentActions.Add(() => playerControler.Attack(10));
     }
 
     public override IEnumerator PrepareBottom()
     {
-
-        yield return StartCoroutine(actionManager.PreformAction(playerControler.Move(10)));
-
+        currentActions.Add(() => playerControler.Move(10));
     }
 }

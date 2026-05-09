@@ -1,5 +1,3 @@
-using System.Collections;
-
 public class PoisonedDart : Card
 {
     public override void Start()
@@ -16,15 +14,11 @@ public class PoisonedDart : Card
 
     public override IEnumerator PrepareTop()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.Attack(3,3,1,1, new Condition[] { new Poison(3) }));
     }
 
     public override IEnumerator PrepareBottom()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.Move(10));
         currentActions.Add(() => playerControler.Ability(10));
 

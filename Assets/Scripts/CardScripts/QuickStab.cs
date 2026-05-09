@@ -17,15 +17,11 @@ using UnityEngine;
 
     public override IEnumerator PrepareTop()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.Attack(10));
     }
 
     public override IEnumerator PrepareBottom()
     {
-        yield return "Temp";
-
         currentActions.Add(() => playerControler.Move(25));
 
     }
