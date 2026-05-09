@@ -27,7 +27,7 @@ public class ChangeAbilityPower : UIButton
 
     public override void Activate()
     {
-        abilityManager.SelectedPower += powerIncrease;
+        StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower + powerIncrease));
     }
 
     public IEnumerator HoldClick()

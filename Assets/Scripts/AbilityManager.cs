@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.Rendering.DebugUI;
 
 public class AbilityManager : MonoBehaviour
 {
@@ -8,7 +10,7 @@ public class AbilityManager : MonoBehaviour
     public int AbilityPower {  get { return abilityPower; } set { abilityPower = value; avaliblePowerDisplay.DisplayText(abilityPower); } }
 
     private int selectedPower = 0;
-    public int SelectedPower { get { return selectedPower; } set { selectedPower = Mathf.Max(Mathf.Min(value, abilityPower),0); UpdateAbilitiesDescription(); selectedPowerDisplay.DisplayText(selectedPower); } }
+    public int SelectedPower { get { return selectedPower; } }
 
     private List<Ability> abilities = new List<Ability>();
     [SerializeField]
@@ -32,16 +34,25 @@ public class AbilityManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
+    public IEnumerator SetSelectedPower(int power)
+    {
+        selectedPower = Mathf.Clamp(power, 0, abilityPower);
+        yield return StartCoroutine(UpdateAbilitiesDescription());
+        selectedPowerDisplay.DisplayText(selectedPower);
+    }
+
 
     public void ResetAbilityPower(PlayerControler playerControler)
     {
         AbilityPower = 0;
-        SelectedPower = 0;
+        //SelectedPower = 0;
+        StartCoroutine(SetSelectedPower(0));
+
     }
 
-    public void GainAbility(Ability ability)
+    public IEnumerator GainAbility(Ability ability)
     {
         //increasing ability cost doesnt work
 
@@ -54,7 +65,7 @@ public class AbilityManager : MonoBehaviour
         newAbilityUI.AbilityNumber = abilities.Count - 1;
         newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - abilities.Count * 50);
 
-        UpdateAbilitiesDescription();
+        yield return StartCoroutine(UpdateAbilitiesDescription());
     }
     public void LoseAbility(Ability ability)
     {
@@ -88,11 +99,11 @@ public class AbilityManager : MonoBehaviour
     }
 
 
-    public void UpdateAbilitiesDescription()
+    public IEnumerator UpdateAbilitiesDescription()
     {
         foreach (Ability ability in abilities)
         {
-            ability.UpdateDiscription(selectedPower);
+            yield return StartCoroutine(ability.UpdateDiscription(selectedPower));
             //convert x ability to y reasorce
         }
     }

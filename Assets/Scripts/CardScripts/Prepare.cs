@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class Prepare : Card
@@ -14,14 +16,14 @@ public class Prepare : Card
     }
 
 
-    public override IEnumerator PrepareTop()
+    public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.ApplyCondition( new NextTurns(new System.Action[] { () => playerControler.GainTopEnergy(2), () => playerControler.Draw(1) })) );
+        currentActions.Add(() => playerControler.ApplyCondition( new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainTopEnergy(2), () => playerControler.Draw(1) })) );
     }
 
-    public override IEnumerator PrepareBottom()
+    public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.ApplyCondition(new NextTurns(new System.Action[] { () => playerControler.GainBottomEnergy(2), () => playerControler.Draw(1) })));
+        currentActions.Add(() => playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainBottomEnergy(2), () => playerControler.Draw(1) })));
 
 
     }

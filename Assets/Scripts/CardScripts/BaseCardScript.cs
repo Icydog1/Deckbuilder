@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -31,11 +32,14 @@ public class Card : MonoBehaviour
 
     protected bool isPreparingTop;
 
-    protected List<System.Action> topActions = new List<System.Action>();
-    protected List<System.Action> bottomActions = new List<System.Action>();
-    protected List<System.Action> currentActions = new List<System.Action>();
+	protected List<Func<IEnumerator>> topActions = new List<Func<IEnumerator>>();
+	protected List<Func<IEnumerator>> bottomActions = new List<Func<IEnumerator>>();
+	protected List<Func<IEnumerator>> currentActions = new List<Func<IEnumerator>>();
+	//protected List<IEnumerator> topActions = new List<IEnumerator>();
+	//protected List<IEnumerator> bottomActions = new List<IEnumerator>();
+	//protected List<IEnumerator> currentActions = new List<IEnumerator>();
 
-    protected List<string> topDescription = new List<string>();
+	protected List<string> topDescription = new List<string>();
     protected List<string> bottomDescription = new List<string>();
     protected List<string> currentDescription = new List<string>();
     protected string currentDescriptionString = "";
@@ -70,17 +74,20 @@ public class Card : MonoBehaviour
         cardName = cardName.Replace("(Clone)", "");
         cardName = Regex.Replace(cardName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("CardName").gameObject.GetComponent<TextMeshProUGUI>().SetText(cardName);
-    }
-    public IEnumerator PrepareActions()
-    {
-        currentActions = topActions;
-        yield return StartCoroutine(PrepareTop());
-        currentActions = bottomActions;
-        yield return StartCoroutine(PrepareBottom());
+
         deckManager.SetRelativeCardSize(gameObject, 1);
-        PrepareCardDiscription();
 
 
+        currentActions = topActions;
+        PrepareTop();
+        currentActions = bottomActions;
+        PrepareBottom();
+        //StartCoroutine(PrepareCardDiscription());
+    }
+
+    public IEnumerator FirstSpawned()
+    {
+        yield return StartCoroutine(PrepareCardDiscription());
     }
 
     public virtual void Start()
@@ -105,7 +112,7 @@ public class Card : MonoBehaviour
         {
             isTopPlayed = true;
             playerControler.TopEnergy -= topCost;
-            SetPlayed();
+            StartCoroutine(SetPlayed());
         }
         else
         {
@@ -119,7 +126,7 @@ public class Card : MonoBehaviour
             isBottomPlayed = true;
             playerControler.BottomEnergy -= bottomCost;
 
-            SetPlayed();
+            StartCoroutine(SetPlayed());
 
         }
         else
@@ -133,12 +140,13 @@ public class Card : MonoBehaviour
         topGlow.SetActive(false);
         bottomGlow.SetActive(false);
         mouseManager.MouseOffObject(gameObject);
-        deckManager.UpdateHand();
+		StartCoroutine(deckManager.UpdateHand());
     }
 
-    public void SetPlayed()
+    public IEnumerator SetPlayed()
     {
-        deckManager.PlayCard(gameObject);
+        //Debug.Log("started playing");
+        yield return StartCoroutine(deckManager.PlayCard(gameObject));
         isCurrentCard = true;
         playerControler.CardPlayed = true;
         playerControler.PlayedCard = gameObject;
@@ -149,12 +157,12 @@ public class Card : MonoBehaviour
         if (isTopPlayed)
         {
             topGlow.SetActive(true);
-            StartCoroutine(PlayTop());
+            yield return StartCoroutine(PlayTop());
         }
         if (isBottomPlayed)
         {
             bottomGlow.SetActive(true);
-            StartCoroutine(PlayBottom());
+            yield return StartCoroutine(PlayBottom());
         }
     }
 
@@ -167,7 +175,7 @@ public class Card : MonoBehaviour
         playerControler.UpdatePlayer();
         topGlow.SetActive(false);
         bottomGlow.SetActive(false);
-        deckManager.DiscardCard(gameObject);
+		StartCoroutine(deckManager.DiscardCard(gameObject));
         mouseManager.MouseOffObject(gameObject);
         stopPlaying = false;
         //Debug.Log("done playing");
@@ -177,14 +185,15 @@ public class Card : MonoBehaviour
     public IEnumerator PlayTop()
     {
         playerControler.ActionsRemaining = new List<string>(topDescription);
-        playerControler.NextAction = false;
-        foreach (System.Action action in topActions)
+        //playerControler.NextAction = false;
+        foreach (Func<IEnumerator> action in topActions)
         {
             if (stopPlaying == false)
             {
-                action();
-                yield return new WaitUntil(() => playerControler.NextAction == true);
-                playerControler.NextAction = false;
+                yield return StartCoroutine(actionManager.PreformAction(action()));
+
+                //yield return new WaitUntil(() => playerControler.NextAction == true);
+                //playerControler.NextAction = false;
             }
         }
         DonePlaying();
@@ -193,37 +202,53 @@ public class Card : MonoBehaviour
     public IEnumerator PlayBottom()
     {
         playerControler.ActionsRemaining = new List<string>(bottomDescription);
-        playerControler.NextAction = false;
-        foreach (System.Action action in bottomActions)
+        //playerControler.NextAction = false;
+        foreach (Func<IEnumerator> action in bottomActions)
         {
             if (stopPlaying == false)
             {
-                action();
-                yield return new WaitUntil(() => playerControler.NextAction == true);
-                playerControler.NextAction = false;
+                yield return StartCoroutine(actionManager.PreformAction(action()));
+
+                //yield return new WaitUntil(() => playerControler.NextAction == true);
+                //playerControler.NextAction = false;
             }
         }
         DonePlaying();
     }
 
-    public void PrepareCardDiscription()
+    public IEnumerator PrepareCardDiscription()
     {
-        topDescription.Clear();
+		//if (topDescription.Count > 0)
+		//{
+		//    Debug.Log("old card description " + topDescription[0]);
+		//    Debug.Log("new number of actions " + topActions.Count);
+		//}
+		//currentActions = topActions;
+		//PrepareTop();
+		//currentActions = bottomActions;
+		//PrepareBottom();
+		topDescription.Clear();
         bottomDescription.Clear();
-        playerControler.IsPlanning = true;
-        playerControler.PlanDescription = topDescription;
-        Debug.Log("started planing");
-        foreach (System.Action action in topActions)
+        //playerControler.IsPlanning = true;
+        //playerControler.PlanDescription = topDescription;
+        //Debug.Log("started planing");
+        foreach (Func<IEnumerator> action in topActions)
         {
-            action();
-        }
-        Debug.Log("finished planing");
+            yield return StartCoroutine(actionManager.PreformAction(action(), topDescription));
 
-        playerControler.PlanDescription = bottomDescription;
-        foreach (System.Action action in bottomActions)
+		}
+		//Debug.Log("finished planing");
+
+		//playerControler.PlanDescription = bottomDescription;
+		foreach (Func<IEnumerator> action in bottomActions)
         {
-            action();
+            //playerControler.PlanDescription = bottomDescription;
+
+            yield return StartCoroutine(actionManager.PreformAction(action(), bottomDescription));
         }
+		//actionManager.PlanToList = null;
+
+		//playerControler.PlanDescription = null;
         topCostText.DisplayString("<color=red>" + topCost);
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
         if (additionalTopDescription != null)
@@ -246,15 +271,21 @@ public class Card : MonoBehaviour
         {
             bottomText.DisplayText(bottomDescription);
         }
+        //Debug.Log("new number of descriptions " + topDescription.Count);
 
-        playerControler.IsPlanning = false;
+        //if (topDescription.Count > 0)
+        //{
+        //    Debug.Log("new card description " + topDescription[0]);
+        //}
+
+        //playerControler.IsPlanning = false;
     }
-    public virtual IEnumerator PrepareTop()
+    public virtual void PrepareTop()
     {
 
     }
 
-    public virtual IEnumerator PrepareBottom()
+    public virtual void PrepareBottom()
     {
 
     }

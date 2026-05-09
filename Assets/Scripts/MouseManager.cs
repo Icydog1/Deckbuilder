@@ -245,7 +245,7 @@ public class MouseManager : MonoBehaviour
                 }
                 else
                 {
-                    deckManager.UpdateHand();
+                    StartCoroutine(deckManager.UpdateHand());
                 }
                 deckManager.hand.transform.SetAsFirstSibling();
             }

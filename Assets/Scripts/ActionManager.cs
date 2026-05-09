@@ -1,22 +1,33 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ActionManager : MonoBehaviour
 {
     protected PlayerControler playerControler;
 
 
-    private List<System.Action> actionQueue = new List<System.Action>();
-    private List<IEnumerator> actionCoroutines = new List<IEnumerator>();
+    //private List<Func<IEnumerator>> actionQueue = new List<Func<IEnumerator>>();
+    private List<IEnumerator> actionQueue = new List<IEnumerator>();
+    private List<IEnumerator> planQueue = new List<IEnumerator>();
+    private List<List<string>> planToQueue = new List<List<string>>();
+    public List<string> PlanToList { get { return planToQueue[0]; } set { planToQueue[0] = value; } }
+    //private IEnumerator test;
+    //private Func<IEnumerator> test2;
 
-    public List<System.Action> ActionQueue { get { return actionQueue; } set { actionQueue = value;} }
-    private bool loopRunning;
+    //public List<Func<IEnumerator>> ActionQueue { get { return actionQueue; } set { actionQueue = value;} }
+    private bool actionLoopRunning, planLoopRunning;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
 
+        //test = Test();
+        //test = Test();
+        //test2 = Test;
+        //test2 = () => Test(2);
 
         //actionQueue.Add(() => StartCoroutine(Test()));
         //actionCoroutines.Add(StartCoroutine(Test()));
@@ -37,50 +48,86 @@ public class ActionManager : MonoBehaviour
             //QueueAction(() => StartCoroutine(Wait()));
             //actionCoroutines.Add(StartCoroutine(Wait()));
             //QueueAction(WaitUntilRewardSelected());
-
-            QueueAction(Wait());
+            //StartCoroutine(test2());
         }
     }
-    public IEnumerator PreformAction(IEnumerator action)
+    public IEnumerator PreformAction(IEnumerator action, List<string> planTo = null)
     {
-        actionCoroutines.Add(action);
-        if (!loopRunning)
+        IEnumerator newAction = action;
+        if (planTo != null)
         {
-            yield return StartCoroutine(StartActionLoop());
+            planQueue.Add(action);
+            planToQueue.Add(planTo);
+            if (!planLoopRunning)
+            {
+                yield return StartCoroutine(StartPlanActionLoop());
+            }
+            yield return new WaitUntil(() => planLoopRunning == false);
+
         }
-        Debug.Log("mabie error??");
+        else
+        {
+            actionQueue.Add(action);
+            if (!actionLoopRunning)
+            {
+                yield return StartCoroutine(StartActionLoop());
+            }
+            yield return new WaitUntil(() => actionLoopRunning == false);
+
+        }
+        //Debug.Log("mabie error??");
         yield return null;
     }
 
-    public void QueueAction(IEnumerator action)
+    public IEnumerator StartPlanActionLoop()
     {
-        actionCoroutines.Add(action);
-        if (!loopRunning)
+        //Debug.Log("started action loop");
+
+        planLoopRunning = true;
+        playerControler.IsPlanning = true;
+        while (planQueue.Count > 0)
         {
-            StartCoroutine(StartActionLoop());
+            //Debug.Log("started plan");
+            //Debug.Log(actionCoroutines.Count
+            yield return StartCoroutine(planQueue[0]);
+            //yield return new WaitForSeconds(0.5f);
+            //Debug.Log("ended plan");
+
+            //actionQueue[0]();
+
+            planQueue.RemoveAt(0);
+            planToQueue.RemoveAt(0);
+
         }
-        //StartActionLoop();
+        playerControler.IsPlanning = false;
+        planLoopRunning = false;
+        yield return null;
     }
 
     public IEnumerator StartActionLoop()
     {
-        loopRunning = true;
-        while (actionCoroutines.Count > 0)
+        actionLoopRunning = true;
+        while (actionQueue.Count > 0)
         {
-            Debug.Log(actionCoroutines.Count);
-            yield return StartCoroutine(actionCoroutines[0]);
+            if (planLoopRunning)
+            {
+                yield return new WaitUntil(() => planLoopRunning == false);
+            }
+            //Debug.Log(actionCoroutines.Count);
+            yield return StartCoroutine(actionQueue[0]);
+            //yield return new WaitForSeconds(0.5f);
             //actionQueue[0]();
 
-            actionCoroutines.RemoveAt(0);
+            actionQueue.RemoveAt(0);
         }
-        loopRunning = false;
+        actionLoopRunning = false;
         yield return null;
 
     }
 
-    public IEnumerator Test()
+    public IEnumerator Test(int param)
     {
-        Debug.Log("test");
+        Debug.Log("test" + param);
         yield return null;
     }
     public IEnumerator Wait()

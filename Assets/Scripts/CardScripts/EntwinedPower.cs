@@ -18,14 +18,14 @@ public class EntwinedPower : Card
     }
 
 
-    public override IEnumerator PrepareTop()
+    public override void PrepareTop()
     {
         currentActions.Add(() => playerControler.Draw(3));
         currentActions.Add(() => playerControler.Attack(15));
         currentActions.Add(() => playerControler.Ability(15));
     }
 
-    public override IEnumerator PrepareBottom()
+    public override void PrepareBottom()
     {
         currentActions.Add(() => playerControler.Draw(3));
         currentActions.Add(() => playerControler.Move(15));
@@ -40,7 +40,7 @@ public class EntwinedPower : Card
             isTopPlayed = true;
             playerControler.TopEnergy -= topCost;
             playerControler.BottomEnergy -= additionalCost;
-            SetPlayed();
+            StartCoroutine(SetPlayed());
         }
         else
         {
@@ -54,9 +54,9 @@ public class EntwinedPower : Card
             isBottomPlayed = true;
             playerControler.TopEnergy -= additionalCost;
             playerControler.BottomEnergy -= bottomCost;
-            SetPlayed();
-        }
-        else
+			StartCoroutine(SetPlayed());
+		}
+		else
         {
             PlayFailed();
         }

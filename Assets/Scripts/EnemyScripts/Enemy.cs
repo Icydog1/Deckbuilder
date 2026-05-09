@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -11,11 +12,11 @@ public class Enemy : Figure
     private string enemyName;
     protected delegate void moveSetsMethod();
     //protected List<moveSetsMethod> moveSets = new List<moveSetsMethod>();
-    protected List<List<System.Action>> moveSets = new List<List<System.Action>>();
+    protected List<List<Func<IEnumerator>>> moveSets = new List<List<Func<IEnumerator>>>();
     protected List<int> movesSetOrder = new List<int>() { -1};
     protected int currentmove = 0;
-    protected List<System.Action> currentPlan = new List<System.Action>();
-    protected List<System.Action> plannedMoveSet;
+    protected List<Func<IEnumerator>> currentPlan = new List<Func<IEnumerator>>();
+    protected List<Func<IEnumerator>> plannedMoveSet;
     protected List<string> displayedPlan = new List<string>();
     private Coroutine currentTurnRoutine;
     protected int actionNum;
@@ -34,6 +35,7 @@ public class Enemy : Figure
         enemyName = Regex.Replace(enemyName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("EnemyUI").transform.Find("NameText").gameObject.GetComponent<TextMeshProUGUI>().SetText(enemyName);
         //figureStorage.Enemies.Add(gameObject);
+
     }
     public override void Start()
     {
@@ -50,23 +52,24 @@ public class Enemy : Figure
         turnManager.TurnOrder.Add(gameObject);
         health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
-        GetNewPlan(null);
-
+        StartCoroutine(GetNewPlan(null));
     }
 
-    public void GetNewPlan(TurnManager turnManager)
+
+    public IEnumerator GetNewPlan(TurnManager turnManager)
     {
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
         int distanceToPlayer = pathfinder.GetDistanceTo(playerControler.OneToOnePos, oneToOnePos);
         if (distanceToPlayer >= 20)
         {
-            GainCondition(new DistanceSpeedBoost(distanceToPlayer-20));
+            yield return StartCoroutine(actionManager.PreformAction(GainCondition(new DistanceSpeedBoost(distanceToPlayer - 20))));
+
         }
         if (distanceToPlayer >= 50)
         {
             GainCondition(new DistanceJump());
         }
-        PlanDescription = displayedPlan;
+        //actionManager.PlanToList = displayedPlan;
         currentPlan.Clear();
         displayedPlan.Clear();
         if (currentmove == movesSetOrder.Count)
@@ -75,29 +78,31 @@ public class Enemy : Figure
         }
         if (movesSetOrder[currentmove] == -1)
         {
-            plannedMoveSet = moveSets[Random.Range(0, moveSets.Count)];
+            plannedMoveSet = moveSets[UnityEngine.Random.Range(0, moveSets.Count)];
         }
         else
         {
             //Debug.Log(movesSetOrder[currentmove]);
             plannedMoveSet = moveSets[movesSetOrder[currentmove]];
         }
-        currentPlan = new List<System.Action>(plannedMoveSet);
+        currentPlan = new List<Func<IEnumerator>>(plannedMoveSet);
         //Debug.Log("gotInitialPlan");
         levelManager.GetDifficultyModifier(this);
+        yield return StartCoroutine(UpdatePlan());
+
         //UpdatePlan();
     }
 
-    public void UpdatePlan()
+    public IEnumerator UpdatePlan()
     {
         //Debug.Log("first condition: " + conditions[0].Name);
-        PlanDescription = displayedPlan;
+        //actionManager.PlanToList = displayedPlan;
         displayedPlan.Clear();
         preferedRange = int.MaxValue;
         isPlanning = true;
         for (int i = 0; i < currentPlan.Count; i++)
         {
-            currentPlan[i]();
+            yield return StartCoroutine(actionManager.PreformAction(currentPlan[i](), displayedPlan));
         }
         enemyStatsDisplayer.Plan(displayedPlan);
         isPlanning = false;
@@ -138,13 +143,13 @@ public class Enemy : Figure
     public IEnumerator TakeTurn()
     {
         StartOfTurn();
-        yield return new WaitUntil(() => nextAction == true);
-        nextAction = false;
+        //yield return new WaitUntil(() => nextAction == true);
+        //nextAction = false;
         for (int i = 0; i < currentPlan.Count; i++)
         {
-            currentPlan[i]();
-            yield return new WaitUntil(() => nextAction == true);
-            nextAction = false;
+            yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
+            //yield return new WaitUntil(() => nextAction == true);
+            //nextAction = false;
         }
         currentmove++;
         EndTurn();

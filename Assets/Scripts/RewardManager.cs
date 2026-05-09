@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using static Lootable;
@@ -145,11 +146,11 @@ public class RewardManager : MonoBehaviour
             AnyReward();
             if (reward.rewardType == 1)
             {
-                GenerateReward(3, true);
+                yield return StartCoroutine(GenerateReward(3, true));
             }
             else if (reward.rewardType == 2)
             {
-                GenerateReward(3, false);
+                yield return StartCoroutine(GenerateReward(3, false));
             }
             else if (reward.rewardType == 3)
             {
@@ -164,7 +165,7 @@ public class RewardManager : MonoBehaviour
     {
         AnyReward();
         //rewardRarity = tileScript.Raity;
-        GenerateReward(3, false);
+        StartCoroutine(GenerateReward(3, false));
     }
     public void GainHealing(int amount)
     {
@@ -181,7 +182,7 @@ public class RewardManager : MonoBehaviour
 
     }
 
-    private void GenerateReward(int numberOfRewards, bool isCard = true)
+    private IEnumerator GenerateReward(int numberOfRewards, bool isCard = true)
     {
         isRewardCard = isCard;
         List<GameObject> potentialRewards = new List<GameObject>();
@@ -241,9 +242,15 @@ public class RewardManager : MonoBehaviour
             GameObject createdReward = Instantiate(reward, rewardsLocation.transform);
             createdReward.AddComponent<IsReward>();
             currentOptions.Add(createdReward);
+            if (isCard)
+            {
+                yield return StartCoroutine(createdReward.GetComponent<Card>().PrepareCardDiscription());
+
+                //yield return StartCoroutine(createdReward.GetComponent<Card>().FirstSpawned());
+            }
         }
         deckManager.SeperateCards(currentOptions, rewardsLocation.transform.position, relativeSpaceBetweenRewardCards);
-
+        yield return null;
     }
     public void RewardSelected(GameObject reward)
     {
@@ -251,7 +258,7 @@ public class RewardManager : MonoBehaviour
         Destroy(reward.GetComponent<IsReward>());
         if (isRewardCard)
         {
-            deckManager.GainCard(reward);
+            StartCoroutine(deckManager.GainCard(reward));
 
         }
         else

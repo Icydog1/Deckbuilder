@@ -7,8 +7,9 @@ public class Relic : MonoBehaviour
     protected PlayerControler playerControler;
     protected RelicManager relicManager;
     protected VariableDisplayer countDisplay;
+	protected ActionManager actionManager;
 
-    protected string relicName;
+	protected string relicName;
     public string RelicName {  get { return relicName; } }
     protected bool isActive, isUnique;
     public bool IsUnique { get { return isUnique; } }
@@ -18,6 +19,7 @@ public class Relic : MonoBehaviour
     public int Rarity { get { return rarity; } }
 
     protected string relicDesription;
+    protected List<string> relicDescriptionList = new List<string>();
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,12 +28,14 @@ public class Relic : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         relicManager = GameObject.Find("RelicManager").GetComponent<RelicManager>();
         countDisplay = transform.Find("RelicCountText").GetComponent<VariableDisplayer>();
-        //GainRelic();
-        //IncreaseCount();
-    }
+		actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
 
-    // Update is called once per frame
-    void Update()
+		//GainRelic();
+		//IncreaseCount();
+	}
+
+	// Update is called once per frame
+	void Update()
     {
         
     }
@@ -42,31 +46,32 @@ public class Relic : MonoBehaviour
             return relicName + "\n" + relicDesription;
         }
         //Debug.Log("GetRelicDescription");
-        List<string> descriptionList = new List<string>();
-        playerControler.PlanDescription = descriptionList;
-        playerControler.IsPlanning = true;
+        //actionManager.PlanToList = descriptionList;
+        //playerControler.IsPlanning = true;
+        relicDescriptionList = new List<string>();
         OnGain();
         //Debug.Log("descriptionList: " + descriptionList);
 
         string displayedString = "";
-        foreach (string text in descriptionList)
+        foreach (string text in relicDescriptionList)
         {
             displayedString += text;
             displayedString += "\n";
         }
-        playerControler.IsPlanning = false;
+        //playerControler.IsPlanning = false;
         //Debug.Log("displayedString: " + displayedString);
 
         return relicName + "\n" + displayedString;
     }
     public void GainRelic()
     {
-        playerControler.IsPlanning = false;
+        //playerControler.IsPlanning = false;
+        relicDescriptionList = null;
         OnGain();
     }
     public virtual void OnGain()
     {
-        if (!playerControler.IsPlanning)
+        if (relicDescriptionList == null)
         {
             count = 1;
             if (!isUnique)

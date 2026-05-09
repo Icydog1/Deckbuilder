@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -43,10 +44,10 @@ public class Figure : MonoBehaviour
 
     protected bool canFly = false;
 
-    protected List<string> planDescription = new List<string>();
-    public List<string> PlanDescription { set { planDescription = value; } }
-    //protected List<System.Action> prepareActions = new List<System.Action>();
-    //public List<System.Action> PrepareActions { set { prepareActions = value; } }
+    //private List<string> actionManager.PlanToList = new List<string>();
+    //public List<string> actionManager.PlanToList { set { actionManager.PlanToList = value; } }
+    //protected List<Func<IEnumerator>> prepareActions = new List<Func<IEnumerator>>();
+    //public List<Func<IEnumerator>> PrepareActions { set { prepareActions = value; } }
 
     protected List<Condition> conditions = new List<Condition>();
     public List<Condition> Conditions { set { conditions = value; } get { return conditions; } }
@@ -134,7 +135,8 @@ public class Figure : MonoBehaviour
         }
         if (isPlayer)
         {
-            deckManager.UpdateCardsDisplay();
+            StartCoroutine(deckManager.UpdateCardsDisplay());
+
         }
         statsDisplayer.DisplayConditions(conditions);
         turnManager.NextTurn();
@@ -146,23 +148,24 @@ public class Figure : MonoBehaviour
     }
 
 
-    public string GetPlanString(List<System.Action> actions)
+    public string GetPlanString(List<Func<IEnumerator>> actions)
     {
-        List<string> currentPlanDescription = planDescription;
+        List<string> currentPlanDescription = actionManager.PlanToList;
         bool currentPlanningState = isPlanning;
-        planDescription = new List<string>();
+        actionManager.PlanToList = new List<string>();
         isPlanning = true;
-        foreach (System.Action action in actions)
+        foreach (Func<IEnumerator> action in actions)
         {
-            action();
+            StartCoroutine(actionManager.PreformAction(action()));
+
         }
         string displayedString = "";
-        foreach (string text in planDescription)
+        foreach (string text in actionManager.PlanToList)
         {
             displayedString += text;
             displayedString += " ";
         }
-        planDescription = currentPlanDescription;
+        actionManager.PlanToList = currentPlanDescription;
         isPlanning = currentPlanningState;
         return displayedString;
     }
@@ -181,7 +184,8 @@ public class Figure : MonoBehaviour
             //prepareActions.Add(() => Block(finalBlock));
             //string currentDescriptionString = "Block " + finalBlock;
             string currentDescriptionString = finalBlock + " <sprite name=Block>";
-            planDescription.Add(currentDescriptionString);
+            //Debug.Log("planned " + currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else if (!isPreparingMove)
         {
@@ -250,13 +254,13 @@ public class Figure : MonoBehaviour
             }
             string separator = ", ";
             string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
-            planDescription.Add(attackText);
+            actionManager.PlanToList.Add(attackText);
         }
         else if(!isPreparingMove)
         {
             if (isPlayer)
             {
-                playerControler.ControledAttack(finalAttack, attackRange, targets, repeats, attackConditions);
+                yield return StartCoroutine(playerControler.ControledAttack(finalAttack, attackRange, targets, repeats, attackConditions));
             }
             else
             {
@@ -271,7 +275,7 @@ public class Figure : MonoBehaviour
                     {
                         conditions[i].OnLoss();
                         conditions.RemoveAt(i);
-                        GetComponent<Enemy>().UpdatePlan();
+                        yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
                         statsDisplayer.DisplayConditions(conditions);
 
                     }
@@ -298,7 +302,7 @@ public class Figure : MonoBehaviour
             {
                 planString += " Jump";
             }
-            planDescription.Add(planString);
+            actionManager.PlanToList.Add(planString);
         }
         else if (isPreparingMove)
         {
@@ -324,23 +328,23 @@ public class Figure : MonoBehaviour
         {
             if (isPlayer)
             {
-                playerControler.ControledMove(finalMove, finalJump);
+                yield return StartCoroutine(playerControler.ControledMove(finalMove, finalJump));
             }
             else
             {
-                StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
+                yield return StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
             }
         }
-        yield return null;
+        //yield return null;
 
     }
 
-    public void ApplyCondition(Condition condition, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    public IEnumerator ApplyCondition(Condition condition, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
     {
-        ApplyConditions(new Condition[] { condition }, isAction , targetType, range, targets, displayTarget);
+        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, isAction , targetType, range, targets, displayTarget));
     }
 
-    public void ApplyConditions(Condition[] newConditions, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    public IEnumerator ApplyConditions(Condition[] newConditions, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
     {
         if (isPlanning)
         {
@@ -370,13 +374,13 @@ public class Figure : MonoBehaviour
                 //Debug.Log(actionAbnormalities);
                 if (condition.Plan != null)
                 {
-                    foreach (System.Action action in condition.Plan)
+                    foreach (Func<IEnumerator> action in condition.Plan)
                     {
                         action();
                         if (condition.Plan[0] != action)
                         {
-                            planDescription[planDescription.Count - 2] = planDescription[planDescription.Count - 2] + " and " + planDescription[planDescription.Count - 1];
-                            planDescription.RemoveAt(planDescription.Count - 1);
+                            actionManager.PlanToList[actionManager.PlanToList.Count - 2] = actionManager.PlanToList[actionManager.PlanToList.Count - 2] + " and " + actionManager.PlanToList[actionManager.PlanToList.Count - 1];
+                            actionManager.PlanToList.RemoveAt(actionManager.PlanToList.Count - 1);
                         }
                     }
                     //condition.Plan();
@@ -385,13 +389,13 @@ public class Figure : MonoBehaviour
                 {
                     if (condition.Duration == 1)
                     {
-                        //planDescription.Add("Next turn");
+                        //actionManager.PlanToList.Add("Next turn");
 
-                        planDescription[planDescription.Count - 1] = "Next turn " + planDescription[planDescription.Count - 1];
+                        actionManager.PlanToList[actionManager.PlanToList.Count - 1] = "Next turn " + actionManager.PlanToList[actionManager.PlanToList.Count - 1];
                     }
                     else if (condition.Duration != -1)
                     {
-                        planDescription[planDescription.Count - 1] = "At the start of the next " + condition.Duration + " turns" + planDescription[planDescription.Count - 1];
+                        actionManager.PlanToList[actionManager.PlanToList.Count - 1] = "At the start of the next " + condition.Duration + " turns" + actionManager.PlanToList[actionManager.PlanToList.Count - 1];
                     }
                 }
                 if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
@@ -503,7 +507,7 @@ public class Figure : MonoBehaviour
             }
             string separator = ", ";
             string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
-            planDescription.Add(conditionText);
+            actionManager.PlanToList.Add(conditionText);
 
         }
         else if (!isPreparingMove)
@@ -512,7 +516,7 @@ public class Figure : MonoBehaviour
             {
                 if (targetType == "self")
                 {
-                    GainConditions(newConditions);
+                    yield return StartCoroutine(GainConditions(newConditions));
                     if (isAction)
                     {
                         ActionDone();
@@ -520,7 +524,7 @@ public class Figure : MonoBehaviour
                 }
                 else
                 {
-                    playerControler.ControledApplyConditions(newConditions, targetType, range, targets);
+                    yield return StartCoroutine(playerControler.ControledApplyConditions(newConditions, targetType, range, targets));
                 }
             }
             else
@@ -529,7 +533,7 @@ public class Figure : MonoBehaviour
                 {
                     foreach (Condition condition in newConditions)
                     {
-                        target.GainCondition(condition);
+                        yield return StartCoroutine(target.GainCondition(condition));
                     }
                 }
                 if (isAction)
@@ -563,14 +567,14 @@ public class Figure : MonoBehaviour
     }
     */
 
-    public void GainConditions(Condition[] newConditions)
+    public IEnumerator GainConditions(Condition[] newConditions)
     {
         foreach (Condition condition in newConditions)
         {
-            GainCondition(condition);
+            yield return StartCoroutine(GainCondition(condition));
         }
     }
-    public void GainCondition(Condition condition)
+    public IEnumerator GainCondition(Condition condition)
     {
         //Debug.Log("GainedCondition");
         bool isDuplicate = false;
@@ -619,7 +623,7 @@ public class Figure : MonoBehaviour
         if (isPlayer)
         {
             Debug.Log("updated display");
-            deckManager.UpdateCardsDisplay();
+            yield return StartCoroutine(deckManager.UpdateCardsDisplay());
         }
         //Debug.Log("first condition: " + conditions[0].Name);
 
@@ -628,7 +632,7 @@ public class Figure : MonoBehaviour
 
         if (!isPlayer)
         {
-            GetComponent<Enemy>().UpdatePlan();
+            yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
         }
     }
     public List<Figure> FindTargets(string targetType, int range = 1, int targets = 1)

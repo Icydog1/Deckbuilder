@@ -1,19 +1,20 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 public class Goblin : Enemy
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        moveSets.Add(new List<System.Action> {
+        moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(25)
             ,() => Attack(10)
         });
-        moveSets.Add(new List<System.Action> {
+        moveSets.Add(new List<Func<IEnumerator>> {
             () => Attack(25)
         });
-        moveSets.Add(new List<System.Action> {
+        moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(15)
             ,() => Attack(15)
         });

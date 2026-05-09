@@ -35,8 +35,8 @@ public class PlayerControler : Figure
     //public Vector2 PlayerOneToOneCords { get { return playerOneToOneCords; } }
 
 
-    //private List<System.Action> currentActionQueue = new List<System.Action>();
-    //public List<System.Action> CurrentActionQueue { get { return currentActionQueue; } set { currentActionQueue = value; } }
+    //private List<Func<IEnumerator>> currentActionQueue = new List<Func<IEnumerator>>();
+    //public List<Func<IEnumerator>> CurrentActionQueue { get { return currentActionQueue; } set { currentActionQueue = value; } }
 
 
     private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, preformingAction, canPreformAbilities;
@@ -95,7 +95,7 @@ public class PlayerControler : Figure
         GameManager.ResetGame += ResetPlayer;
 
         //dev mode
-        //GainNewAbility(1, new List<System.Action>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
+        //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) });
 
 
 
@@ -138,8 +138,15 @@ public class PlayerControler : Figure
         if (Input.GetKeyDown(KeyCode.K))
         {
             //dev mode
-            GainNewAbility(1, new List<System.Action>() { () => Move(1000, true, true) }); GainNewAbility(1, new List<System.Action>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Block(1000, true) }); GainNewAbility(1, new List<System.Action>() { () => Attack(1000, 100, 1, 1, null, true) });
-            //ApplyCondition(new GainAbility(new Ability(2, new List<System.Action>() { () => Move(1, true, true) })));
+            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Move(1000, true, true) })));
+            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) })));
+            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) })));
+            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) })));
+
+            //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) });
+            //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) });
+            //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) });
+            //ApplyCondition(new GainAbility(new Ability(2, new List<Func<IEnumerator>>() { () => Move(1, true, true) })));
 
         }
     }
@@ -163,8 +170,8 @@ public class PlayerControler : Figure
     }
     public void PreparePlayer(GameManager gameManager)
     {
-        GainNewAbility(2, new List<System.Action>() { () => Move(1, false, true) });
-        GainNewAbility(1, new List<System.Action>() { () => Lockpick(1, true) });
+        StartCoroutine(actionManager.PreformAction(GainNewAbility(2, new List<Func<IEnumerator>>() {() => Move(1, false, true) })));
+        StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() {() => Lockpick(1, true) })));
         maxHealth = 100;
         health = maxHealth;
         oneToOnePos = Vector2.zero;
@@ -387,9 +394,9 @@ public class PlayerControler : Figure
         UpdatePlayer();
         base.baseEndTurn();
     }
-    public void EndTurn()
+    public IEnumerator EndTurn()
     {
-        deckManager.DiscardHand();
+        yield return StartCoroutine(deckManager.DiscardHand());
 
         UpdatePlayer();
         if (canEndTurn)
@@ -421,7 +428,7 @@ public class PlayerControler : Figure
                 {
                     conditions[i].OnLoss();
                     conditions.RemoveAt(i);
-                    deckManager.UpdateCardsDisplay();
+                    StartCoroutine(deckManager.UpdateCardsDisplay());
                     statsDisplayer.DisplayConditions(conditions);
                 }
             }
@@ -458,7 +465,7 @@ public class PlayerControler : Figure
     }
 
 
-    public void ControledMove(int moveValue, bool isJump = false)
+    public IEnumerator ControledMove(int moveValue, bool isJump = false)
     {
         actionDone = false;
         isMoving = true;
@@ -469,9 +476,10 @@ public class PlayerControler : Figure
         {
             ShowMoveCostDisplay();
         }
+        yield return new WaitUntil(() => isMoving == false);        
     }
 
-    public void ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
+    public IEnumerator ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
     {
         actionDone = false;
         isAttacking = true;
@@ -482,9 +490,11 @@ public class PlayerControler : Figure
         isTargetAEnemy = true;
         appliedConditions = attackConditions;
         posibleTargets = FindPosibleTargets("enemy", attackRange);
+        yield return new WaitUntil(() => isAttacking == false);
+
     }
 
-    public void ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
+    public IEnumerator ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
     {
         actionDone = false;
         isAppliyingConditions = true;
@@ -492,6 +502,8 @@ public class PlayerControler : Figure
         range = conditionsRange;
         appliedConditions = newConditions;
         posibleTargets = FindPosibleTargets(targetType, conditionsRange);
+        yield return null;
+        //yield return StartCoroutine(); // select targets
     }
     public IEnumerator Ability(int abilityValue)
     {
@@ -501,19 +513,19 @@ public class PlayerControler : Figure
         {
             //string currentDescriptionString = "Ability " + finalAbility;
             string currentDescriptionString = finalAbility + "<sprite name=Ability>";
-
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {
             abilityManager.AbilityPower += finalAbility;
-            abilityManager.SelectedPower += finalAbility;
+            //abilityManager.SelectedPower += finalAbility;
+            yield return StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower + finalAbility));
             ActionDone();
         }
         yield return null;
     }
 
-    public void Lockpick(int lockpickValue, bool isVariable = false)
+    public IEnumerator Lockpick(int lockpickValue, bool isVariable = false)
     {
         if (isVariable)
         {
@@ -525,7 +537,7 @@ public class PlayerControler : Figure
         if (isPlanning)
         {
             string currentDescriptionString = finalLockpick + " <sprite name=Lockpick>";
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {
@@ -541,19 +553,20 @@ public class PlayerControler : Figure
                 ActionDone();
             }
         }
+        yield return null;
     }
-    public void Draw(int cardCount)
+    public IEnumerator Draw(int cardCount)
     {
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
             string currentDescriptionString = "Draw " + cardCount + " card";
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {
-            deckManager.DrawCards(cardCount);
+            yield return StartCoroutine(deckManager.DrawCards(cardCount));
             ActionDone();
         }
     }
@@ -573,7 +586,7 @@ public class PlayerControler : Figure
                 currentDescriptionString += " bottom";
             }
             currentDescriptionString += " energy";
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {
@@ -588,41 +601,44 @@ public class PlayerControler : Figure
             ActionDone();
         }
     }
-    public void GainTopEnergy(int amount)
+    public IEnumerator GainTopEnergy(int amount)
     {
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
             string currentDescriptionString = "Gain " + amount + " top energy";
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {
             TopEnergy += amount;
             ActionDone();
         }
+        yield return null;
     }
-    public void GainBottomEnergy(int amount)
+    public IEnumerator GainBottomEnergy(int amount)
     {
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
         if (isPlanning)
         {
             string currentDescriptionString = "Gain " + amount + " bottom energy";
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {
             BottomEnergy += amount;
             ActionDone();
         }
-    }
-    public void GainNewAbility(int cost, List<System.Action> abilities, int duration = -1)
-    {
+        yield return null;
 
-        GainAbility(new Ability(cost, abilities), duration);
     }
-    public void GainAbility(Ability ability, int duration = -1)
+    public IEnumerator GainNewAbility(int cost, List<Func<IEnumerator>> abilities, int duration = -1)
+    {
+        //Debug.Log(abilities[0]());
+        yield return StartCoroutine(GainAbility(new Ability(cost, abilities), duration));
+    }
+    public IEnumerator GainAbility(Ability ability, int duration = -1)
     {
         if (isPlanning)
         {
@@ -639,20 +655,21 @@ public class PlayerControler : Figure
             unmodifiedAction = true;
             currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
             unmodifiedAction = false;
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {
-            abilityManager.GainAbility(ability);
+            yield return StartCoroutine(abilityManager.GainAbility(ability));
             ActionDone();
         }
+        yield return null;
     }
     public void LoseAbility(Ability ability)
     {
         if (isPlanning)
         {
             string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
-            planDescription.Add(currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
         {

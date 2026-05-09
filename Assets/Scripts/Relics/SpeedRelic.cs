@@ -1,4 +1,6 @@
-using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class SpeedRelic : Relic
 {
@@ -9,13 +11,15 @@ public class SpeedRelic : Relic
     }
     public override void OnGain()
     {
-        playerControler.ApplyCondition(new Speed(2, -1));
+        StartCoroutine(actionManager.PreformAction(playerControler.GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.ApplyCondition(new Speed(2, -1)) })), relicDescriptionList));
+
         base.OnGain();
 
     }
     public override void IncreaseCount()
     {
-        playerControler.ApplyCondition(new Speed(2, -1));
+        StartCoroutine(actionManager.PreformAction(playerControler.GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.ApplyCondition(new Speed(2, -1)) })), relicDescriptionList));
+
         base.IncreaseCount();
     }
 }

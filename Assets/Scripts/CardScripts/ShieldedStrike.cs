@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class ShieldedStrike : Card
@@ -14,16 +16,16 @@ public class ShieldedStrike : Card
     }
 
 
-    public override IEnumerator PrepareTop()
+    public override void PrepareTop()
     {
         currentActions.Add(() => playerControler.Block(10));
         currentActions.Add(() => playerControler.Attack(10));
     }
 
-    public override IEnumerator PrepareBottom()
+    public override void PrepareBottom()
     {
         currentActions.Add(() => playerControler.Ability(10));
-        currentActions.Add(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<System.Action>() { () => playerControler.Block(1, true) }))));
+        currentActions.Add(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Block(1, true) }))));
         
     }
 }

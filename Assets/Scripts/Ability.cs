@@ -12,8 +12,8 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
     protected int abilityValue, timesPreformed;
     private int maxTimes;
     private bool isUsed;
-    private List<System.Action> abilities = new List<System.Action>();
-    public List<System.Action> Abilities { get { return abilities; } }
+    private List<Func<IEnumerator>> abilities = new List<Func<IEnumerator>>();
+    public List<Func<IEnumerator>> Abilities { get { return abilities; } }
 
     protected List<string> description = new List<string>();
 
@@ -23,14 +23,16 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
     protected PlayerControler playerControler;
     protected MouseManager mouseManager;
     protected AbilityManager abilityManager;
+    protected ActionManager actionManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Gained()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
-
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
+        actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
+
         //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
         PlayerControler.PlayerTurnStarted += ResetAbilityCooldown;
     }
@@ -51,29 +53,41 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         abilityUI.DisplayUsed(false);
     }
 
-    public Ability(int abilityCost, List<System.Action> preformedAbilities)
+    public Ability(int abilityCost, List<Func<IEnumerator>> preformedAbilities)
     {
         abilities = preformedAbilities;
         cost = abilityCost;
     }
     
-    public void UpdateDiscription(int abilitiesPointsSpent)
+    public IEnumerator UpdateDiscription(int abilitiesPointsSpent)
     {
 
         description.Clear();
-        playerControler.IsPlanning = true;
-        playerControler.PlanDescription = description;
+        //playerControler.IsPlanning = true;
+        //actionManager.PlanToList = description;
         int potentialTimesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
         playerControler.VariableCardModifier = potentialTimesPreformed;
         playerControler.UnmodifiedAction = true;
-        foreach (System.Action action in abilities)
+        foreach (Func<IEnumerator> action in abilities)
         {
-            action();
+            //if (!(action != null))
+            //{
+            //    Debug.Log("action null");
+            //}
+            //if (description == null)
+            //{
+            //    Debug.Log("description null");
+            //}
+            //IEnumerator test = actionManager.PreformAction(action(), description);
+            //Debug.Log(actionManager);
+            yield return abilityManager.StartCoroutine(actionManager.PreformAction(action(), description));
+
         }
         playerControler.UnmodifiedAction = false;
 
         abilityUI.DisplayText(description);
-        playerControler.IsPlanning = false;
+        //playerControler.IsPlanning = false;
+        //yield return null;
     }
 
     public IEnumerator PreformAbility(int abilitiesPointsSpent)
@@ -89,14 +103,16 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
                 mouseManager.MouseOffObject(abilityUI.gameObject);
                 playerControler.ActionsRemaining = new List<string>(description);
                 abilityManager.AbilityPower -= timesPreformed * cost;
-                abilityManager.SelectedPower = abilityManager.SelectedPower;
+                //abilityManager.SelectedPower = abilityManager.SelectedPower;
+                yield return abilityManager.StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower));
+
                 playerControler.VariableCardModifier = timesPreformed;
                 playerControler.PreformingAbility = true;
                 playerControler.NextAction = false;
-                foreach (System.Action action in abilities)
+                foreach (Func<IEnumerator> action in abilities)
                 {
                     playerControler.UnmodifiedAction = true;
-                    action();
+                    yield return abilityManager.StartCoroutine(actionManager.PreformAction(action()));
                     playerControler.UnmodifiedAction = false;
                     yield return new WaitUntil(() => playerControler.NextAction == true);
                     playerControler.NextAction = false;

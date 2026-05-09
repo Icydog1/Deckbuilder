@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -26,8 +28,8 @@ public class Condition : MonoBehaviour
     protected bool isStartOfTurn;
     public bool IsStartOfTurn { get { return isStartOfTurn; } }
 
-    protected System.Action[] plan;
-    public System.Action[] Plan { get { return plan; } }
+    protected Func<IEnumerator>[] plan;
+    public Func<IEnumerator>[] Plan { get { return plan; } }
 
     protected string abnormality;
     public string Abnormality { get { return abnormality; } }
@@ -45,7 +47,7 @@ public class Condition : MonoBehaviour
         
     }
 
-    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown, System.Action[] actionPlan = null, string conditionAbnormality = null)
+    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown, Func<IEnumerator>[] actionPlan = null, string conditionAbnormality = null)
     {
         conditionName = name;
         amount = conditionValue;
@@ -107,7 +109,7 @@ public class Poison : Condition
 
 public class NextTurns : Condition
 {
-    public NextTurns(System.Action[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1, int addType = 1, string abnormality = "Delayed Gain") : base("NextTurns", conditionValue, conditionDuration, addType, true, true, nextTurnsAction, abnormality) { }
+    public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1, int addType = 1, string abnormality = "Delayed Gain") : base("NextTurns", conditionValue, conditionDuration, addType, true, true, nextTurnsAction, abnormality) { }
 }
 
 public class GainAbility : Condition

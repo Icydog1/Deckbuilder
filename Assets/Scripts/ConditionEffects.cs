@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,18 +27,19 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Strength" || condition.Name == "Vigor")
-            {
-                modifiedAttack += condition.Value;
-            }
-        }
-        foreach (Condition condition in conditions)
-        {
             if (condition.Name == "NaturalScaling")
             {
                 modifiedAttack *= (1 + 0.0025f * (float)condition.Value);
             }
         }
+        foreach (Condition condition in conditions)
+        {
+            if (condition.Name == "Strength" || condition.Name == "Vigor")
+            {
+                modifiedAttack += condition.Value;
+            }
+        }
+
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
         finalAttack = Mathf.Clamp(finalAttack, 0, 9999999);
         return finalAttack;
@@ -73,13 +76,6 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Speed")
-            {
-                modifiedMove += condition.Value;
-            }
-        }
-        foreach (Condition condition in conditions)
-        {
             if (condition.Name == "NaturalScaling")
             {
                 modifiedMove *= (1 + 0.0025f * (float)condition.Value);
@@ -89,6 +85,14 @@ public class ConditionEffects : MonoBehaviour
                 modifiedMove *= (1 + 0.03f * (float)condition.Value);
             }
         }
+        foreach (Condition condition in conditions)
+        {
+            if (condition.Name == "Speed")
+            {
+                modifiedMove += condition.Value;
+            }
+        }
+
         int finalMove = Mathf.FloorToInt(modifiedMove);
         finalMove = Mathf.Clamp(finalMove, 0, 9999999);
 
@@ -146,7 +150,7 @@ public class ConditionEffects : MonoBehaviour
             }
             if (condition.Name == "NextTurns")
             {
-                foreach (System.Action action in condition.Plan)
+                foreach (Func<IEnumerator> action in condition.Plan)
                 {
                     action();
                 }
