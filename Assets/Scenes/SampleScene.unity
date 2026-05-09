@@ -3723,7 +3723,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd377a45bd98dc44480593fefa9a744c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planDescription: []
 --- !u!58 &695467239
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -8037,7 +8036,7 @@ Transform:
   m_GameObject: {fileID: 1827067159}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.2664448, y: 0.1335581, z: -9.865923}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -14,13 +14,13 @@ public class SkillfulStab : Card
 
     public override void PrepareTop()
     {
-        currentActions.Add(playerControler.Attack(10));
-        //currentActions.Add(playerControler.Draw(1));
+        currentActions.Add(() => playerControler.Attack(10));
+        currentActions.Add(() => playerControler.Draw(1));
 
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(playerControler.Ability(10));
+        currentActions.Add(() => playerControler.Ability(10));
     }
 }

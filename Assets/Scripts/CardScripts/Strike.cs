@@ -18,11 +18,11 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        currentActions.Add(playerControler.Attack(10));
+        currentActions.Add(() => playerControler.Attack(10));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(playerControler.Move(10));
+        currentActions.Add(() => playerControler.Move(10));
     }
 }

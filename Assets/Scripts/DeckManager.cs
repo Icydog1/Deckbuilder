@@ -123,12 +123,12 @@ public class DeckManager : MonoBehaviour
     {
         DrawNewHand();
     }
-    public void DiscardHand()
+    public IEnumerator DiscardHand()
     {
         List<GameObject> discardedCards = new List<GameObject>(handContents);
         foreach (GameObject card in discardedCards)
         {
-            DiscardCard(card);
+            yield return StartCoroutine(DiscardCard(card));
         }
     }
 
@@ -261,7 +261,7 @@ public class DeckManager : MonoBehaviour
         if (location == play)
         {
             card.gameObject.SetActive(true);
-            Debug.Log("updating card description");
+            //Debug.Log("updating card description");
             yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
             SelectCard(card);
         }
@@ -286,9 +286,10 @@ public class DeckManager : MonoBehaviour
         GameObject firstCard = handContents[0];
         DiscardCard(firstCard);
     }
-    public void DiscardCard(GameObject currentCard)
+    public IEnumerator DiscardCard(GameObject currentCard)
     {
-        MoveTo(currentCard, discard);
+        yield return StartCoroutine(MoveTo(currentCard, discard));
+
     }
     public void SelectCard(GameObject card)
     {

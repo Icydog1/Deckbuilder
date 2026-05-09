@@ -16,12 +16,12 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        currentActions.Add(playerControler.Attack(15, 4));
+        currentActions.Add(() => playerControler.Attack(15, 4));
 
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(playerControler.Ability(20));
+        currentActions.Add(() => playerControler.Ability(20));
     }
 }

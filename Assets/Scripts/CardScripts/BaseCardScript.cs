@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -31,11 +32,14 @@ public class Card : MonoBehaviour
 
     protected bool isPreparingTop;
 
-    protected List<IEnumerator> topActions = new List<IEnumerator>();
-    protected List<IEnumerator> bottomActions = new List<IEnumerator>();
-    protected List<IEnumerator> currentActions = new List<IEnumerator>();
+	protected List<Func<IEnumerator>> topActions = new List<Func<IEnumerator>>();
+	protected List<Func<IEnumerator>> bottomActions = new List<Func<IEnumerator>>();
+	protected List<Func<IEnumerator>> currentActions = new List<Func<IEnumerator>>();
+	//protected List<IEnumerator> topActions = new List<IEnumerator>();
+	//protected List<IEnumerator> bottomActions = new List<IEnumerator>();
+	//protected List<IEnumerator> currentActions = new List<IEnumerator>();
 
-    protected List<string> topDescription = new List<string>();
+	protected List<string> topDescription = new List<string>();
     protected List<string> bottomDescription = new List<string>();
     protected List<string> currentDescription = new List<string>();
     protected string currentDescriptionString = "";
@@ -81,12 +85,8 @@ public class Card : MonoBehaviour
         //StartCoroutine(PrepareCardDiscription());
     }
 
-    public IEnumerator Drawn()
+    public IEnumerator FirstSpawned()
     {
-        currentActions = topActions;
-        PrepareTop();
-        currentActions = bottomActions;
-        PrepareBottom();
         yield return StartCoroutine(PrepareCardDiscription());
     }
 
@@ -140,12 +140,12 @@ public class Card : MonoBehaviour
         topGlow.SetActive(false);
         bottomGlow.SetActive(false);
         mouseManager.MouseOffObject(gameObject);
-        deckManager.UpdateHand();
+		StartCoroutine(deckManager.UpdateHand());
     }
 
     public IEnumerator SetPlayed()
     {
-        Debug.Log("started playing");
+        //Debug.Log("started playing");
         yield return StartCoroutine(deckManager.PlayCard(gameObject));
         isCurrentCard = true;
         playerControler.CardPlayed = true;
@@ -175,7 +175,7 @@ public class Card : MonoBehaviour
         playerControler.UpdatePlayer();
         topGlow.SetActive(false);
         bottomGlow.SetActive(false);
-        deckManager.DiscardCard(gameObject);
+		StartCoroutine(deckManager.DiscardCard(gameObject));
         mouseManager.MouseOffObject(gameObject);
         stopPlaying = false;
         //Debug.Log("done playing");
@@ -186,11 +186,11 @@ public class Card : MonoBehaviour
     {
         playerControler.ActionsRemaining = new List<string>(topDescription);
         //playerControler.NextAction = false;
-        foreach (IEnumerator action in topActions)
+        foreach (Func<IEnumerator> action in topActions)
         {
             if (stopPlaying == false)
             {
-                yield return StartCoroutine(actionManager.PreformAction(action));
+                yield return StartCoroutine(actionManager.PreformAction(action()));
 
                 //yield return new WaitUntil(() => playerControler.NextAction == true);
                 //playerControler.NextAction = false;
@@ -203,11 +203,11 @@ public class Card : MonoBehaviour
     {
         playerControler.ActionsRemaining = new List<string>(bottomDescription);
         //playerControler.NextAction = false;
-        foreach (IEnumerator action in bottomActions)
+        foreach (Func<IEnumerator> action in bottomActions)
         {
             if (stopPlaying == false)
             {
-                yield return StartCoroutine(actionManager.PreformAction(action));
+                yield return StartCoroutine(actionManager.PreformAction(action()));
 
                 //yield return new WaitUntil(() => playerControler.NextAction == true);
                 //playerControler.NextAction = false;
@@ -218,32 +218,37 @@ public class Card : MonoBehaviour
 
     public IEnumerator PrepareCardDiscription()
     {
-        if (topDescription.Count > 0)
-        {
-            Debug.Log("old card description " + topDescription[0]);
-            Debug.Log("new number of actions " + topActions.Count);
-        }
-        topDescription.Clear();
+		//if (topDescription.Count > 0)
+		//{
+		//    Debug.Log("old card description " + topDescription[0]);
+		//    Debug.Log("new number of actions " + topActions.Count);
+		//}
+		//currentActions = topActions;
+		//PrepareTop();
+		//currentActions = bottomActions;
+		//PrepareBottom();
+		topDescription.Clear();
         bottomDescription.Clear();
         //playerControler.IsPlanning = true;
         //playerControler.PlanDescription = topDescription;
         //Debug.Log("started planing");
-        foreach (IEnumerator action in topActions)
+        foreach (Func<IEnumerator> action in topActions)
         {
-            //playerControler.PlanDescription = topDescription;
+            yield return StartCoroutine(actionManager.PreformAction(action(), topDescription));
 
-            yield return StartCoroutine(actionManager.PreformAction(action, topDescription));
-        }
-        //Debug.Log("finished planing");
+		}
+		//Debug.Log("finished planing");
 
-        //playerControler.PlanDescription = bottomDescription;
-        foreach (IEnumerator action in bottomActions)
+		//playerControler.PlanDescription = bottomDescription;
+		foreach (Func<IEnumerator> action in bottomActions)
         {
             //playerControler.PlanDescription = bottomDescription;
 
-            yield return StartCoroutine(actionManager.PreformAction(action, topDescription));
+            yield return StartCoroutine(actionManager.PreformAction(action(), bottomDescription));
         }
-        playerControler.PlanDescription = null;
+		//actionManager.PlanToList = null;
+
+		//playerControler.PlanDescription = null;
         topCostText.DisplayString("<color=red>" + topCost);
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
         if (additionalTopDescription != null)
@@ -266,12 +271,12 @@ public class Card : MonoBehaviour
         {
             bottomText.DisplayText(bottomDescription);
         }
-        Debug.Log("new number of descriptions " + topDescription.Count);
+        //Debug.Log("new number of descriptions " + topDescription.Count);
 
-        if (topDescription.Count > 0)
-        {
-            Debug.Log("new card description " + topDescription[0]);
-        }
+        //if (topDescription.Count > 0)
+        //{
+        //    Debug.Log("new card description " + topDescription[0]);
+        //}
 
         //playerControler.IsPlanning = false;
     }

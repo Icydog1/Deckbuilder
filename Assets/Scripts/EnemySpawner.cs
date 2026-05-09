@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ public class EnemySpawner : MonoBehaviour
             Debug.Log("Warning: " + gameObject + " tried to summonBase enemy");
         }
 
-        TurnManager.RoundEnded += AttemptToSpawnEnemy;
+        TurnManager.RoundEndedFunctions += AttemptToSpawnEnemy;
         LevelManager.LevelCleared += Remove;
         tunsTillActive = activationDelay;
     }
@@ -54,12 +55,14 @@ public class EnemySpawner : MonoBehaviour
                 Debug.Log("spawn obstructed");
             }
         }
+        //yield return null;
         //Debug.Log("attempted to spawn");
     }
 
     public void SpawnEnemy()
     {
         Instantiate(enemy[Random.Range(0,enemy.Count)], new Vector3(transform.position.x, transform.position.y, spawnHeight), Quaternion.identity);
+        //yield return null;
     }
     public void OnDestroy()
     {
@@ -68,7 +71,7 @@ public class EnemySpawner : MonoBehaviour
     }
     public void Remove(LevelManager levelManager)
     {
-        TurnManager.RoundEnded -= AttemptToSpawnEnemy;
+        TurnManager.RoundEndedFunctions -= AttemptToSpawnEnemy;
         LevelManager.LevelCleared -= Remove;
         Destroy(gameObject);
     }

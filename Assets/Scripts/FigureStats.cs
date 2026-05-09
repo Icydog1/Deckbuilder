@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,6 +9,9 @@ public class FigureStats : MonoBehaviour
     protected GameObject healthTextObject, conditionsTextObject, planTextObject;
     protected TextMeshProUGUI healthText, conditionsText, planText;
     protected Figure figure;
+    protected ActionManager actionManager;
+
+
     protected bool noConditions;
     protected bool isPlayerUI = false;
 
@@ -19,6 +24,8 @@ public class FigureStats : MonoBehaviour
         healthText = healthTextObject.GetComponent<TextMeshProUGUI>();
         conditionsText = conditionsTextObject.GetComponent<TextMeshProUGUI>();
         planText = planTextObject.GetComponent<TextMeshProUGUI>();
+        actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
+
         if (isPlayerUI)
         {
             figure = GameObject.Find("Player").GetComponent<PlayerControler>();
@@ -91,9 +98,9 @@ public class FigureStats : MonoBehaviour
                     bool oldIsPlanning = figure.IsPlanning;
                     figure.IsPlanning = true;
                     List<string> conditionPlanDescription = new List<string>();
-                    figure.PlanDescription = conditionPlanDescription;
+                    actionManager.PlanToList = conditionPlanDescription;
                     
-                    foreach (System.Action action in condition.Plan)
+                    foreach (Func<IEnumerator> action in condition.Plan)
                     {
                         action();
                         if (condition.Plan[0] != action)

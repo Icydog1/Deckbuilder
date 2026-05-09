@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 public class Shaman : Enemy
 {
@@ -5,11 +7,11 @@ public class Shaman : Enemy
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Start()
     {
-        moveSets.Add(new List<System.Action> {
+        moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(15)
             ,() => Attack(5,3,1,1,new Condition[] { new Strength(-3,2),new Finesse(-2, 2) })
         });
-        moveSets.Add(new List<System.Action> {
+        moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(15)
             ,() => Attack(5,3,1,1,new Condition[] { new Dexterity(-3, 2),new Speed(-2,2) })
         });

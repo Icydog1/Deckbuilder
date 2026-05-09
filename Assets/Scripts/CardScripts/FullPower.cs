@@ -17,14 +17,14 @@
 
     public override void PrepareTop()
     {
-        currentActions.Add(playerControler.Attack(20));
-        currentActions.Add(playerControler.Attack(20));
+        currentActions.Add(() => playerControler.Attack(20));
+        currentActions.Add(() => playerControler.Attack(20));
 
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(playerControler.Move(35));
+        currentActions.Add(() => playerControler.Move(35));
 
     }
 }

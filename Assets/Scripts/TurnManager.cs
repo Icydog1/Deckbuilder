@@ -20,8 +20,12 @@ public class TurnManager : MonoBehaviour
     private LevelManager levelManager;
 
 
-    public static event Action<TurnManager> RoundEnded;
-    public static event Action<TurnManager> RoundStarted;
+    public static event Action<TurnManager> RoundEndedFunctions;
+    public static event Action<TurnManager> RoundStartedFunctions;
+
+    public static event Func<TurnManager,IEnumerator> RoundEnded;
+    public static event Func<TurnManager, IEnumerator> RoundStarted;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -75,7 +79,7 @@ public class TurnManager : MonoBehaviour
         if (turnOrder.IndexOf(currentTurn) + 1 == turnOrder.Count)
         {
             endOfRound = true;
-            NextRound();
+            StartCoroutine(NextRound());
         }
         else
         {
@@ -101,20 +105,31 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    public void NextRound()
+    public IEnumerator NextRound()
     {
         currentTurn = turnOrder[0];
+        if (RoundEndedFunctions != null)
+        {
+            //Debug.Log("Round ended");
+            RoundEndedFunctions(this);
+        }
         if (RoundEnded != null)
         {
             //Debug.Log("Round ended");
-            RoundEnded(this);
+            yield return StartCoroutine(RoundEnded(this));
         }
         levelManager.IncreaseRoundNumber();
-        if (RoundStarted != null)
+        if (RoundStartedFunctions != null)
         {
             //Debug.Log("Round Started");
-            RoundStarted(this);
+            RoundStartedFunctions(this);
         }
+        if (RoundStarted != null)
+        {
+            //Debug.Log("Round ended");
+            yield return StartCoroutine(RoundStarted(this));
+        }
+
 
 
         NextTurn();

@@ -20,16 +20,16 @@ public class EntwinedPower : Card
 
     public override void PrepareTop()
     {
-        //currentActions.Add(playerControler.Draw(3));
-        currentActions.Add(playerControler.Attack(15));
-        currentActions.Add(playerControler.Ability(15));
+        currentActions.Add(() => playerControler.Draw(3));
+        currentActions.Add(() => playerControler.Attack(15));
+        currentActions.Add(() => playerControler.Ability(15));
     }
 
     public override void PrepareBottom()
     {
-        //currentActions.Add(playerControler.Draw(3));
-        currentActions.Add(playerControler.Move(15));
-        currentActions.Add(playerControler.Block(15));
+        currentActions.Add(() => playerControler.Draw(3));
+        currentActions.Add(() => playerControler.Move(15));
+        currentActions.Add(() => playerControler.Block(15));
     }
 
 

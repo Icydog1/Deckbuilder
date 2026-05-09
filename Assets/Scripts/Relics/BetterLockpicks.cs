@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,8 +15,7 @@ public class BetterLockpicks : Relic
     }
     public override void OnGain()
     {
-        playerControler.GainAbility(new Ability(1, new List<IEnumerator>() { playerControler.Lockpick(2, true) }));
-
+        StartCoroutine(actionManager.PreformAction(playerControler.GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Lockpick(2, true) })), relicDescriptionList));
         base.OnGain();
 
     }
