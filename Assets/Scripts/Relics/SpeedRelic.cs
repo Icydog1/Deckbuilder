@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class SpeedRelic : Relic
 {
@@ -9,17 +10,20 @@ public class SpeedRelic : Relic
         relicName = "SpeedRelic";
         base.Awake();
     }
-    public override void OnGain()
+    public override IEnumerator OnGain()
     {
-        StartCoroutine(actionManager.PreformAction(playerControler.GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.ApplyCondition(new Speed(2, -1)) })), relicDescriptionList));
+		yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new Speed(2, -1)), relicDescriptionList));
 
-        base.OnGain();
-
-    }
-    public override void IncreaseCount()
+		yield return StartCoroutine(base.OnGain());
+		if (relicDescriptionList != null && relicDescriptionList.Count > 0)
+		{
+			relicDescriptionList[0] = Regex.Replace(relicDescriptionList[0], "(. )([0-9]+)( .)", "$1<color=#009f9f>$2<color=white>$3");
+		}
+	}
+    public override IEnumerator IncreaseCount()
     {
-        StartCoroutine(actionManager.PreformAction(playerControler.GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.ApplyCondition(new Speed(2, -1)) })), relicDescriptionList));
+		yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new Speed(2, -1)), relicDescriptionList));
 
-        base.IncreaseCount();
+		yield return StartCoroutine(base.IncreaseCount());
     }
 }

@@ -18,7 +18,7 @@ public class Prepare : Card
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.ApplyCondition( new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainTopEnergy(2), () => playerControler.Draw(1) })) );
+        currentActions.Add(() => playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainTopEnergy(2), () => playerControler.Draw(1) })));
     }
 
     public override void PrepareBottom()

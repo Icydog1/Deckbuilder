@@ -1,5 +1,5 @@
+using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Relic : MonoBehaviour
@@ -39,37 +39,41 @@ public class Relic : MonoBehaviour
     {
         
     }
-    public string GetRelicDescription()
+    public IEnumerator GetRelicDescription(System.Action<string> callback)
     {
         if (relicDesription != null)
         {
-            return relicName + "\n" + relicDesription;
-        }
-        //Debug.Log("GetRelicDescription");
-        //actionManager.PlanToList = descriptionList;
-        //playerControler.IsPlanning = true;
-        relicDescriptionList = new List<string>();
-        OnGain();
-        //Debug.Log("descriptionList: " + descriptionList);
+            callback?.Invoke(relicName + "\n" + relicDesription);
 
-        string displayedString = "";
-        foreach (string text in relicDescriptionList)
+        }
+        else
         {
-            displayedString += text;
-            displayedString += "\n";
-        }
-        //playerControler.IsPlanning = false;
-        //Debug.Log("displayedString: " + displayedString);
+            //Debug.Log("GetRelicDescription");
+            //actionManager.PlanToList = descriptionList;
+            //playerControler.IsPlanning = true;
+            relicDescriptionList = new List<string>();
+            yield return StartCoroutine(OnGain());
+            //Debug.Log("descriptionList: " + descriptionList);
 
-        return relicName + "\n" + displayedString;
+            string displayedString = "";
+            foreach (string text in relicDescriptionList)
+            {
+                displayedString += text;
+                displayedString += "\n";
+            }
+            //playerControler.IsPlanning = false;
+            //Debug.Log("displayedString: " + displayedString);
+
+            callback?.Invoke(relicName + "\n" + displayedString);
+        }
     }
-    public void GainRelic()
+    public IEnumerator GainRelic()
     {
         //playerControler.IsPlanning = false;
         relicDescriptionList = null;
-        OnGain();
+        yield return StartCoroutine(OnGain());
     }
-    public virtual void OnGain()
+    public virtual IEnumerator OnGain()
     {
         if (relicDescriptionList == null)
         {
@@ -79,12 +83,14 @@ public class Relic : MonoBehaviour
                 countDisplay.DisplayText(count);
             }
         }
+        yield return null;
 
     }
-    public virtual void IncreaseCount()
+    public virtual IEnumerator IncreaseCount()
     {
         count++;
         countDisplay.DisplayText(count);
+        yield return null;
     }
 
 }

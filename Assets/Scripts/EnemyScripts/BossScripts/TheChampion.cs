@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class TheChampion : Boss
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public override void Start()
+    public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(15)
@@ -24,8 +24,8 @@ public class TheChampion : Boss
         });
         movesSetOrder = new List<int>() { 0, 1, 2 };
 
-        maxHealth = 500;
-        base.Start();
+        maxHealth = 300;
+        base.Awake();
     }
 
 }

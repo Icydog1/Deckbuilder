@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
@@ -25,11 +26,12 @@ public class RewardManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> allRelicRewards = new List<GameObject>();
-    private List<GameObject> commonRelicRewards = new List<GameObject>();
+    public List<GameObject> commonRelicRewards = new List<GameObject>();
     private List<GameObject> uncommonRelicRewards = new List<GameObject>();
     private List<GameObject> rareRelicRewards = new List<GameObject>();
 
-
+    [SerializeField]
+    private List<GameObject> testCardRewards = new List<GameObject>();
 
     private List<GameObject> currentOptions = new List<GameObject>();
 
@@ -55,7 +57,7 @@ public class RewardManager : MonoBehaviour
 
         rewardsLocation = GameObject.Find("Rewards");
 
-        GameManager.GameStarted += GenerateRewardPools;
+        GameManager.GameStartedFunctions += GenerateRewardPools;
         //GenerateRewardPools();
 
 
@@ -89,6 +91,10 @@ public class RewardManager : MonoBehaviour
                 rareCardRewards.Add(card);
             }
         }
+        if (testCardRewards.Count > 0)
+        {
+            commonCardRewards = testCardRewards;
+        }
         foreach (GameObject relic in allRelicRewards)
         {
             int relicRarity = relic.GetComponent<Relic>().Rarity;
@@ -108,7 +114,7 @@ public class RewardManager : MonoBehaviour
     }
     void Start()
     {
-        //GameManager.GameStarted += InitialReward;
+        //GameManager.GameStartedFunctions += InitialReward;
 
         isRewardCard = true;
 
@@ -131,12 +137,12 @@ public class RewardManager : MonoBehaviour
         playerControler.GettingReward = false;
         uIManager.IsGettingReward = false;
     }
-    public void InitialReward(GameManager gameManager)
-    {
-        AnyReward();
-        GenerateReward(3);
+    //public void InitialReward(GameManager gameManager)
+    //{
+    //    AnyReward();
+    //    GenerateReward(3);
 
-    }
+    //}
 
 
     public IEnumerator TileReward(GameObject tile, List<Reward> rewards, bool isCard,bool isHealing)
@@ -174,12 +180,7 @@ public class RewardManager : MonoBehaviour
     }
     public IEnumerator RemoveCardInDeck()
     {
-        deckManager.SelectedCard = null; //maybe unnessesry?
-        StartCoroutine(deckManager.ChooseCard(deckManager.entireDeck));
-        yield return new WaitUntil(() => deckManager.SelectedCard != null);
-        deckManager.DestroyCard(deckManager.SelectedCard);
-        deckManager.IsChoosingCard = false;
-
+        yield return StartCoroutine(deckManager.ChooseCard(deckManager.entireDeck, (result) => deckManager.DestroyCard(result)));
     }
 
     private IEnumerator GenerateReward(int numberOfRewards, bool isCard = true)
@@ -188,7 +189,7 @@ public class RewardManager : MonoBehaviour
         List<GameObject> potentialRewards = new List<GameObject>();
         for (int i = 0; i < numberOfRewards; i++)
         {
-            float randomProbability = Random.Range(0, 1);
+            float randomProbability = UnityEngine.Random.Range(0, 1);
             List<GameObject> currentRewardPool = new List<GameObject>();
             if (randomProbability <= commonProbability)
             {
@@ -234,7 +235,7 @@ public class RewardManager : MonoBehaviour
                     currentRewardPool.Remove(reward);
                 }
             }
-            potentialRewards.Add(currentRewardPool[Random.Range(0, currentRewardPool.Count)]);
+            potentialRewards.Add(currentRewardPool[UnityEngine.Random.Range(0, currentRewardPool.Count)]);
 
         }
         foreach (GameObject reward in potentialRewards)
@@ -252,13 +253,13 @@ public class RewardManager : MonoBehaviour
         deckManager.SeperateCards(currentOptions, rewardsLocation.transform.position, relativeSpaceBetweenRewardCards);
         yield return null;
     }
-    public void RewardSelected(GameObject reward)
+    public IEnumerator RewardSelected(GameObject reward)
     {
         //Debug.Log(reward + " selected");
         Destroy(reward.GetComponent<IsReward>());
         if (isRewardCard)
         {
-            StartCoroutine(deckManager.GainCard(reward));
+            yield return StartCoroutine(deckManager.GainCard(reward));
 
         }
         else
@@ -270,7 +271,7 @@ public class RewardManager : MonoBehaviour
                 rareRelicRewards.Remove(reward);
 
             }
-            relicManager.GainRelic(reward);
+            yield return StartCoroutine(relicManager.GainRelic(reward));
         }
         currentOptions.Remove(reward);
         foreach (GameObject unselectedReward in currentOptions)

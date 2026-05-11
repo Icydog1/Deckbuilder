@@ -34,7 +34,7 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
 
         //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
-        PlayerControler.PlayerTurnStarted += ResetAbilityCooldown;
+        PlayerControler.PlayerTurnStartedFuntions += ResetAbilityCooldown;
     }
     //public bool Equals(Ability other)
     //{
@@ -49,8 +49,11 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
     //}
     public void ResetAbilityCooldown(PlayerControler playerControler)
     {
-        isUsed = false;
-        abilityUI.DisplayUsed(false);
+        if (isUsed)
+        {
+            isUsed = false;
+            abilityUI.DisplayUsed(false);
+        }
     }
 
     public Ability(int abilityCost, List<Func<IEnumerator>> preformedAbilities)

@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+
 
 public class DevouringFlame : Relic
 {
@@ -8,15 +10,15 @@ public class DevouringFlame : Relic
         relicName = "Devouring Flame";
         base.Awake();
     }
-    public override void OnGain()
+    public override IEnumerator OnGain()
     {
-        StartCoroutine(GameObject.Find("RewardManager").GetComponent<RewardManager>().RemoveCardInDeck());
-        base.OnGain();
+        yield return StartCoroutine(actionManager.PreformAction(GameObject.Find("RewardManager").GetComponent<RewardManager>().RemoveCardInDeck()));
+        yield return StartCoroutine(base.OnGain());
 
     }
-    public override void IncreaseCount()
+    public override IEnumerator IncreaseCount()
     {
-        StartCoroutine(GameObject.Find("RewardManager").GetComponent<RewardManager>().RemoveCardInDeck());
-        base.IncreaseCount();
+        yield return StartCoroutine(actionManager.PreformAction(GameObject.Find("RewardManager").GetComponent<RewardManager>().RemoveCardInDeck()));
+        yield return StartCoroutine(base.IncreaseCount());
     }
 }

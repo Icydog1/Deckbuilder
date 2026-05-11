@@ -48,10 +48,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4224284647817024277, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+      objectReference: {fileID: 21300000, guid: ccc94655ef9f73a449e09042247fb207, type: 3}
+    - target: {fileID: 4224284647817024277, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7937341576073900677, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 8350222529430960376, guid: d02b0a223b84b8a4783c803b59234e20, type: 3}
     - target: {fileID: 9091752245490153435, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_Name
       value: Goblin

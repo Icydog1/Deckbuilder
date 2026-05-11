@@ -128,7 +128,7 @@ public class MouseManager : MonoBehaviour
         if (selectedObject.GetComponent<Hoverable>())
         {
             hoveredObject = selectedObject;
-            tooltipManager.StartHoveringOver(hoveredObject);
+            StartCoroutine(tooltipManager.StartHoveringOver(hoveredObject));
         }
         if (playerControler.CanMove && selectedObject.GetComponent<Tile>() && mouseDown)
         {
@@ -267,11 +267,11 @@ public class MouseManager : MonoBehaviour
             }
             if (clickedObject.GetComponent<Figure>())
             {
-                playerControler.FigureClicked(clickedObject);
+                StartCoroutine(playerControler.FigureClicked(clickedObject));
             }
             if (clickedObject.GetComponent<IsReward>())
             {
-                rewardManager.RewardSelected(clickedObject);
+                StartCoroutine(rewardManager.RewardSelected(clickedObject));
             }
         }
         if (selectedObject && selectedObject.GetComponent<Tile>() && playerControler.CanMove)

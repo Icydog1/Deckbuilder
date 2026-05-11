@@ -35,9 +35,14 @@ public class Enemy : Figure
         enemyName = Regex.Replace(enemyName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("EnemyUI").transform.Find("NameText").gameObject.GetComponent<TextMeshProUGUI>().SetText(enemyName);
         //figureStorage.Enemies.Add(gameObject);
-
+        
     }
     public override void Start()
+    {
+
+    }
+
+    public override IEnumerator LoadFigure()
     {
         if (moveSets.Count == 0)
         {
@@ -46,16 +51,14 @@ public class Enemy : Figure
         enemyStatsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
         statsDisplayer = enemyStatsDisplayer;
         isEnemy = true;
-        base.Start();
+        yield return StartCoroutine(base.LoadFigure());
 
         team = 1;
         turnManager.TurnOrder.Add(gameObject);
         health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
-        StartCoroutine(GetNewPlan(null));
+        yield return StartCoroutine(GetNewPlan(null));
     }
-
-
     public IEnumerator GetNewPlan(TurnManager turnManager)
     {
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
@@ -67,7 +70,9 @@ public class Enemy : Figure
         }
         if (distanceToPlayer >= 50)
         {
-            GainCondition(new DistanceJump());
+            yield return StartCoroutine(actionManager.PreformAction(GainCondition(new DistanceJump())));
+            Debug.Log("need to ModifyJump");
+            //GainCondition(new DistanceJump());
         }
         //actionManager.PlanToList = displayedPlan;
         currentPlan.Clear();
@@ -109,9 +114,9 @@ public class Enemy : Figure
         //Debug.Log("first condition: " + conditions[0].Name);
 
     }
-    public void StartOfTurn()
+    public IEnumerator StartOfTurn()
     {
-        base.baseStartTurn();
+        yield return StartCoroutine(baseStartTurn());
         if (preferedRange == int.MaxValue)
         {
             preferedRange = 1;
@@ -122,11 +127,11 @@ public class Enemy : Figure
         nextAction = true;
     }
 
-    public void EndTurn()
+    public IEnumerator EndTurn()
     {
         GameObject border = transform.Find("Border").gameObject;
         border.GetComponent<SpriteRenderer>().color = Color.black;
-        base.baseEndTurn();
+        yield return StartCoroutine(baseEndTurn());
     }
     public void StartStopTurn(bool isStart)
     {
@@ -142,7 +147,7 @@ public class Enemy : Figure
     }
     public IEnumerator TakeTurn()
     {
-        StartOfTurn();
+        yield return StartCoroutine(StartOfTurn());
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
         for (int i = 0; i < currentPlan.Count; i++)
@@ -152,14 +157,14 @@ public class Enemy : Figure
             //nextAction = false;
         }
         currentmove++;
-        EndTurn();
+        yield return StartCoroutine(EndTurn());
     }
     public IEnumerator DisplayMovePosibilities()
     {
         isPreparingMove = true;
         for (int i = 0; i < currentPlan.Count; i++)
         {
-            currentPlan[i]();
+            yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
         }
         isPreparingMove = false;
         yield return new WaitUntil(() => mouseManager.SelectedObject != gameObject);

@@ -1,7 +1,8 @@
-using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework.Internal;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -28,7 +29,7 @@ public class Pathfinder : MonoBehaviour
     private Vector2 furthestPoint;
     private int furthestElevation;
 
-    private bool pathFound, inRange;
+    private bool pathFound, inRange, noMove;
     private int endElevation;
     private bool isJump, isFly;
     private int moveValue;
@@ -75,6 +76,7 @@ public class Pathfinder : MonoBehaviour
         isJump = jump;
         isFly = fly;
         inRange = false;
+        noMove = false;
         currentPos = selfPos;
         targetPos = newTargetPos;
         //finds posible spots that woul be good with ending on
@@ -84,7 +86,7 @@ public class Pathfinder : MonoBehaviour
         //builds heightmap out from ending spots
         findPathToArea(selfPos, posibleLocations);
         //Debug.Log("area done");
-        if (!inRange)
+        if (!noMove)
         {
             //finds the path from the figure with current movement that gets them as close to player a posible
             findPosiblePaths(selfPos);
@@ -255,10 +257,17 @@ public class Pathfinder : MonoBehaviour
         unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
+        //if mover is already in a desired location
         if (targetArea.Contains(selfPos))
         {
             endElevation = 0;
-            inRange = true;
+            noMove = true;
+        }
+        else if (targetArea.Count == 0)
+        {
+            endElevation = 0;
+            noMove = true;
+            Debug.Log("No valid hex to move to");
         }
         else
         {
@@ -299,8 +308,9 @@ public class Pathfinder : MonoBehaviour
 
             }
             //failsafe in case somting fais so it isnt a infinite loop
-            if (i >= 10000)
+            if (i >= 9999)
             {
+                noMove = true;
                 endElevation = 0;
                 //Debug.Log("area pathfinding timed out");
             }
@@ -569,7 +579,7 @@ public class Pathfinder : MonoBehaviour
             figureScript.MoveOneSpace();
             yield return new WaitForSeconds(newFigureMoveDelay);
         }
-        doneMoving = true;
+        //doneMoving = true;
         figureScript.IsPreformingAnimation = false;
         //yield return null;
     }

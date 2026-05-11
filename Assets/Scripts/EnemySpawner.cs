@@ -9,13 +9,13 @@ public class EnemySpawner : MonoBehaviour
     private int activationDelay = 10;
     private int tunsTillActive;
     private TurnManager turnManager;
-    private float spawnChance = 0.1f;
+    private float spawnChance = 0.02f;
     private float spawnHeight = 12;
     private MapManager mapManager;
     private Vector2 OneToOnePos;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();

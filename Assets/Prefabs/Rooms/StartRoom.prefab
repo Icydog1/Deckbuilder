@@ -9366,10 +9366,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: EmptyTile (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 1923694383205235012, guid: 6a43720f7b6dcd24ebb98e1f94340e3d, type: 3}
-      propertyPath: moveCost
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

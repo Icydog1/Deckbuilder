@@ -27,14 +27,14 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "NaturalScaling")
+            if (condition.ConditionName == "NaturalScaling")
             {
                 modifiedAttack *= (1 + 0.0025f * (float)condition.Value);
             }
         }
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Strength" || condition.Name == "Vigor")
+            if (condition.ConditionName == "Strength" || condition.ConditionName == "Vigor")
             {
                 modifiedAttack += condition.Value;
             }
@@ -55,7 +55,7 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Dexterity")
+            if (condition.ConditionName == "Dexterity")
             {
                 modifiedBlock += condition.Value;
             }
@@ -76,18 +76,18 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "NaturalScaling")
+            if (condition.ConditionName == "NaturalScaling")
             {
                 modifiedMove *= (1 + 0.0025f * (float)condition.Value);
             }
-            if (condition.Name == "DistanceSpeedBoost")
+            if (condition.ConditionName == "DistanceSpeedBoost")
             {
                 modifiedMove *= (1 + 0.03f * (float)condition.Value);
             }
         }
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Speed")
+            if (condition.ConditionName == "Speed")
             {
                 modifiedMove += condition.Value;
             }
@@ -109,7 +109,7 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Finesse")
+            if (condition.ConditionName == "Finesse")
             {
                 modifiedAbility += condition.Value;
             }
@@ -130,8 +130,9 @@ public class ConditionEffects : MonoBehaviour
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "DistanceJump")
+            if (condition.ConditionName == "DistanceJump")
             {
+                Debug.Log("ModifyJump");
                 modifiedJump = true;
             }
         }
@@ -139,20 +140,20 @@ public class ConditionEffects : MonoBehaviour
         return finalJump;
     }
 
-    public void StartOfTurnConditons(Figure effectedFigure)
+    public IEnumerator StartOfTurnConditons(Figure effectedFigure)
     {
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
-            if (condition.Name == "Poison")
+            if (condition.ConditionName == "Poison")
             {
                 effectedFigure.LoseHealth(condition.Value);
             }
-            if (condition.Name == "NextTurns")
+            if (condition.ConditionName == "NextTurns")
             {
                 foreach (Func<IEnumerator> action in condition.Plan)
                 {
-                    action();
+                    yield return StartCoroutine(action());
                 }
                 //condition.Plan();
 

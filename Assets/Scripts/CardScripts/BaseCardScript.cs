@@ -246,9 +246,10 @@ public class Card : MonoBehaviour
 
             yield return StartCoroutine(actionManager.PreformAction(action(), bottomDescription));
         }
-		//actionManager.PlanToList = null;
+        //actionManager.PlanToList = null;
 
-		//playerControler.PlanDescription = null;
+        //playerControler.PlanDescription = null;
+        //Debug.Log(topCostText);
         topCostText.DisplayString("<color=red>" + topCost);
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
         if (additionalTopDescription != null)

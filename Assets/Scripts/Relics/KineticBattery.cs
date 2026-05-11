@@ -1,21 +1,28 @@
+using System.Collections;
+using System.Text.RegularExpressions;
+
 public class KineticBattery : Relic
 {
     public override void Awake()
     {
         relicName = "Kinetic Battery";
-        relicDesription = "Whenever you move a space gain 1 Vigor";
+        relicDesription = "Whenever you move a space gain <color=#009f9f>1<color=white> Vigor";
         base.Awake();
     }
-    public override void OnGain()
+    public override IEnumerator OnGain()
     {
         playerControler.KineticBatteryCount++;
-        base.OnGain();
+        yield return StartCoroutine(base.OnGain());
+		if (relicDescriptionList != null && relicDescriptionList.Count > 0)
+		{
+			relicDescriptionList[0] = Regex.Replace(relicDescriptionList[0], "(. )([0-9]+)( .)", "$1<color=#009f9f>$2<color=white>$3");
+		}
+	}
+    public override IEnumerator IncreaseCount()
+    {
+        playerControler.KineticBatteryCount++;
+        yield return StartCoroutine(base.IncreaseCount());
 
-    }
-    public override void IncreaseCount()
-    {
-        playerControler.KineticBatteryCount++;
-        base.IncreaseCount();
     }
 }
 

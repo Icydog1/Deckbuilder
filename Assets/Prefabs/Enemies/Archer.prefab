@@ -50,11 +50,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1161383769121814814, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1161383769121814814, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1161383769121814814, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_LocalScale.z
@@ -66,11 +66,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_LocalScale.z
@@ -78,12 +78,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_ConstrainProportionsScale
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4224284647817024277, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -977745964, guid: 3a02acd16b2099046841a7e9a6778cad, type: 3}
+      objectReference: {fileID: 21300000, guid: 3a02acd16b2099046841a7e9a6778cad, type: 3}
+    - target: {fileID: 4224284647817024277, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5055452038678413160, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_Enabled
       value: 0

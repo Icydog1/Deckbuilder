@@ -74,13 +74,11 @@ public class Figure : MonoBehaviour
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
 
         //statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
+        actionManager.PrepareAction(LoadFigure());
     }
     public virtual void Start()
     {
-        health = maxHealth;
 
-
-        statsDisplayer.SetHealthAndBlock(health, block);
     }
 
     // Update is called once per frame
@@ -89,11 +87,19 @@ public class Figure : MonoBehaviour
         
     }
 
-    
-
-    public void baseStartTurn()
+    public virtual IEnumerator LoadFigure()
     {
-        conditionEffects.StartOfTurnConditons(this);
+        health = maxHealth;
+
+
+        statsDisplayer.SetHealthAndBlock(health, block);
+        yield return null;
+    }
+
+    public IEnumerator baseStartTurn()
+    {
+        //Debug.Log(gameObject + " is takeing turn");
+        yield return StartCoroutine(conditionEffects.StartOfTurnConditons(this));
         for (int i = 0; i < conditions.Count; i++)
         {
             if (conditions[i].IsStartOfTurn && conditions[i].Duration > 0)
@@ -103,18 +109,18 @@ public class Figure : MonoBehaviour
             }
             if (conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
             {
-                //Debug.Log("removed " + conditions[i].Name);
-                conditions[i].OnLoss();
+                //Debug.Log("removed " + conditions[i].ConditionName + "at start of turn");
+                yield return StartCoroutine(conditions[i].OnLoss());
                 conditions.RemoveAt(i);
                 i--;
             }
         }
-        statsDisplayer.DisplayConditions(conditions);
+        yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
         block = 0;
         statsDisplayer.SetHealthAndBlock(health, block);
 
     }
-    public void baseEndTurn()
+    public IEnumerator baseEndTurn()
     {
         for (int i = 0; i < conditions.Count; i++)
         {
@@ -127,8 +133,9 @@ public class Figure : MonoBehaviour
             if (!conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
             {
                 //Debug.Log("removed " + conditions[i].Name);
-                conditions[i].OnLoss();
+                //Debug.Log("removed " + conditions[i].ConditionName + "at end of turn");
 
+                yield return StartCoroutine(conditions[i].OnLoss());
                 conditions.RemoveAt(i);
                 i--;
             }
@@ -138,7 +145,8 @@ public class Figure : MonoBehaviour
             StartCoroutine(deckManager.UpdateCardsDisplay());
 
         }
-        statsDisplayer.DisplayConditions(conditions);
+        yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
+        //Debug.Log(gameObject + " is ending turn");
         turnManager.NextTurn();
     }
 
@@ -147,27 +155,25 @@ public class Figure : MonoBehaviour
         Debug.Log("Base ActionDone ran");
     }
 
-
-    public string GetPlanString(List<Func<IEnumerator>> actions)
+    public IEnumerator GetPlanString(List<Func<IEnumerator>> actions, System.Action<string> callback)
     {
-        List<string> currentPlanDescription = actionManager.PlanToList;
-        bool currentPlanningState = isPlanning;
-        actionManager.PlanToList = new List<string>();
-        isPlanning = true;
+        List<string> planDescription = new List<string>();
         foreach (Func<IEnumerator> action in actions)
         {
-            StartCoroutine(actionManager.PreformAction(action()));
-
+            yield return StartCoroutine(actionManager.PreformAction(action(), planDescription));
         }
         string displayedString = "";
-        foreach (string text in actionManager.PlanToList)
+        foreach (string text in planDescription)
         {
             displayedString += text;
             displayedString += " ";
         }
-        actionManager.PlanToList = currentPlanDescription;
-        isPlanning = currentPlanningState;
-        return displayedString;
+        //yeild return displayedString;
+        //Debug.Log(displayedString);
+        //Debug.Log(actionManager.PlanToList[0]);
+
+        callback?.Invoke(displayedString);
+
     }
 
 
@@ -240,7 +246,7 @@ public class Figure : MonoBehaviour
                 currentDescriptionStart += " and apply ";
                 foreach (Condition condition in attackConditions)
                 {
-                    string currentDescriptionString = currentDescriptionString = condition.Value + " " + condition.Name;
+                    string currentDescriptionString = currentDescriptionString = condition.Value + " " + condition.ConditionName;
                     if (condition.Duration == 1)
                     {
                         currentDescriptionString += " this turn";
@@ -266,17 +272,17 @@ public class Figure : MonoBehaviour
             {
                 foreach (Figure target in FindTargets("enemy", attackRange, targets))
                 {
-                    target.AttackedFor(finalAttack, repeats, attackConditions);
+                    yield return StartCoroutine(target.AttackedFor(finalAttack, repeats, attackConditions));
                 }
                 ActionDone();
                 for (int i = 0; i < conditions.Count; i++)
                 {
-                    if (conditions[i].Name == "Vigor")
+                    if (conditions[i].ConditionName == "Vigor")
                     {
-                        conditions[i].OnLoss();
+                        yield return StartCoroutine(conditions[i].OnLoss());
                         conditions.RemoveAt(i);
                         yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
-                        statsDisplayer.DisplayConditions(conditions);
+                        yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
 
                     }
                 }
@@ -363,44 +369,53 @@ public class Figure : MonoBehaviour
                     Ability ability;
                     if (condition is GainAbility gainAbilityRef)
                     {
-                        //Debug.Log(gainAbilityRef.GainedAbility);
+                        //List<string> conditionPlan = new List<string>();
+                        //Debug.Log("About to gain ablility");
                         ability = gainAbilityRef.GainedAbility;
-                        playerControler.GainNewAbility(ability.Cost, ability.Abilities, condition.Duration);
+                        yield return StartCoroutine(actionManager.PreformAction(playerControler.GainNewAbility(ability.Cost, ability.Abilities, condition.Duration), individualConditionText));
+                        //Debug.Log("finished gaining ablility");
 
+                        //individualConditionText.Add(currentDescriptionString);
                     }
                 }
 
                 string currentDescriptionString = "";
+
                 //Debug.Log(actionAbnormalities);
                 if (condition.Plan != null)
                 {
+                    List<string> conditionPlan = new List<string>();
+
                     foreach (Func<IEnumerator> action in condition.Plan)
                     {
-                        action();
-                        if (condition.Plan[0] != action)
-                        {
-                            actionManager.PlanToList[actionManager.PlanToList.Count - 2] = actionManager.PlanToList[actionManager.PlanToList.Count - 2] + " and " + actionManager.PlanToList[actionManager.PlanToList.Count - 1];
-                            actionManager.PlanToList.RemoveAt(actionManager.PlanToList.Count - 1);
-                        }
+                        yield return StartCoroutine(actionManager.PreformAction(action(), conditionPlan));
+                        //if (condition.Plan[0] != action)
+                        //{
+                        //    conditionPlan[conditionPlan.Count - 2] = conditionPlan[conditionPlan.Count - 2] + " and " + conditionPlan[conditionPlan.Count - 1];
+                        //    conditionPlan.RemoveAt(conditionPlan.Count - 1);
+                        //}
                     }
+                    currentDescriptionString = string.Join(" and ", conditionPlan);
+                    individualConditionText.Add(currentDescriptionString);
                     //condition.Plan();
-                }
-                if (actionAbnormalities.Contains("Delayed Gain"))
+                    if (actionAbnormalities.Contains("Delayed Gain"))
                 {
                     if (condition.Duration == 1)
                     {
                         //actionManager.PlanToList.Add("Next turn");
 
-                        actionManager.PlanToList[actionManager.PlanToList.Count - 1] = "Next turn " + actionManager.PlanToList[actionManager.PlanToList.Count - 1];
+                        individualConditionText[individualConditionText.Count - 1] = "Next turn " + individualConditionText[individualConditionText.Count - 1];
                     }
                     else if (condition.Duration != -1)
                     {
-                        actionManager.PlanToList[actionManager.PlanToList.Count - 1] = "At the start of the next " + condition.Duration + " turns" + actionManager.PlanToList[actionManager.PlanToList.Count - 1];
+                        actionManager.PlanToList[individualConditionText.Count - 1] = "At the start of the next " + condition.Duration + " turns" + individualConditionText[individualConditionText.Count - 1];
                     }
                 }
+                }
+
                 if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
                 {
-                    currentDescriptionString = condition.Value + " " + condition.Name;
+                    currentDescriptionString = condition.Value + " " + condition.ConditionName;
                     if (condition.Duration == 1)
                     {
                         currentDescriptionString += " this turn";
@@ -580,8 +595,13 @@ public class Figure : MonoBehaviour
         bool isDuplicate = false;
         for (int i = 0; i < conditions.Count; i++)
         {
-            if (conditions[i].Name == condition.Name)
+            if (conditions[i].ConditionName == condition.ConditionName)
             {
+                //add type 0 = ceat new instance
+                //if (condition.AddType == 0)
+                //{
+
+                //}
                 if (condition.AddType == 1 && conditions[i].Duration == condition.Duration)
                 {
                     conditions[i].Value += condition.Value;
@@ -609,25 +629,26 @@ public class Figure : MonoBehaviour
                     conditions.RemoveAt(i);
                     i--;
                 }
+
             }
         }
         if (isDuplicate == false)
         {
-            //Debug.Log("added" + condition.Name);
+            //Debug.Log("added" + condition.ConditionName);
 
             conditions.Add(condition);
-            condition.OnGain();
+            yield return StartCoroutine(condition.OnGain());
             //Debug.Log("first condition: " + conditions[0].Name);
 
         }
         if (isPlayer)
         {
-            Debug.Log("updated display");
+            //Debug.Log("updated display");
             yield return StartCoroutine(deckManager.UpdateCardsDisplay());
         }
         //Debug.Log("first condition: " + conditions[0].Name);
 
-        statsDisplayer.DisplayConditions(conditions);
+        yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
         //Debug.Log("first condition: " + conditions[0].Name);
 
         if (!isPlayer)
@@ -694,14 +715,14 @@ public class Figure : MonoBehaviour
         }
         return targetedFigures;
     }
-    public void AttackedFor(int attackValue, int repeats, Condition[] newConditions)
+    public IEnumerator AttackedFor(int attackValue, int repeats, Condition[] newConditions)
     {
         for (int i = 0; i < repeats; i++)
         {
             TakeDamage(attackValue);
             if (!isDead)
             {
-                GainConditions(newConditions);
+                yield return StartCoroutine(GainConditions(newConditions));
             }
         }
 

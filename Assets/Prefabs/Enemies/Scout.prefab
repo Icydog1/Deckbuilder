@@ -60,9 +60,25 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224284647817024277, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ec0092c66c116c041a89992d132d2463, type: 3}
+    - target: {fileID: 7937341576073900677, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -6741659098857355048, guid: 9e219e35043adac4d8400cbfe64e8c55, type: 3}
     - target: {fileID: 9091752245490153435, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_Name
-      value: BasicRangedEnemy
+      value: Scout
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

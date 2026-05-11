@@ -1,4 +1,5 @@
-using UnityEngine;
+using System.Collections;
+using System.Text.RegularExpressions;
 
 public class FinesseRelic : Relic
 {
@@ -7,15 +8,20 @@ public class FinesseRelic : Relic
         relicName = "Finesse Relic";
         base.Awake();
     }
-    public override void OnGain()
+    public override IEnumerator OnGain()
     {
-        playerControler.ApplyCondition(new Finesse(2, -1));
-        base.OnGain();
+        yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new Finesse(2, -1)), relicDescriptionList));
+        yield return StartCoroutine(base.OnGain());
+        if (relicDescriptionList != null && relicDescriptionList.Count > 0)
+        {
+            relicDescriptionList[0] = Regex.Replace(relicDescriptionList[0], "(. )([0-9]+)( .)", "$1<color=#009f9f>$2<color=white>$3");
+        }
 
     }
-    public override void IncreaseCount()
+    public override IEnumerator IncreaseCount()
     {
-        playerControler.ApplyCondition(new Finesse(2, -1));
-        base.IncreaseCount();
+        yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new Finesse(2, -1)), relicDescriptionList));
+        yield return StartCoroutine(base.IncreaseCount());
+
     }
 }

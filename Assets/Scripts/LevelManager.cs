@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -23,7 +24,9 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private GameObject stair;
 
-    public static event Action<LevelManager> LevelCleared, LevelGenerated;
+    public static event Action<LevelManager> LevelCleared, LevelGeneratedFuntions;
+    public static event Func<LevelManager, IEnumerator> LevelGenerated;
+
     private List<GameObject> levelSpecific = new List<GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -58,9 +61,9 @@ public class LevelManager : MonoBehaviour
         roomSpawner.SpawnStartingRoom();
     }
 
-    public void GoUpLevel()
+    public IEnumerator GoUpLevel()
     {
-        ClearLevel();
+        yield return StartCoroutine(ClearLevel());
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
         playerControler.OneToOnePos = Vector2.zero;
@@ -89,13 +92,13 @@ public class LevelManager : MonoBehaviour
     {
         enemy.ApplyCondition(new NaturalScaling(roundNumber));
     }
-    public void ResetGame()
+    public IEnumerator ResetGame()
     {
         roundNumber = 0;
-        ClearLevel();
+        yield return StartCoroutine(ClearLevel());
     }
 
-    public void ClearLevel()
+    public IEnumerator ClearLevel()
     {
 
         if (LevelCleared != null)
@@ -106,11 +109,17 @@ public class LevelManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        if (LevelGeneratedFuntions != null)
+        {
+            LevelGeneratedFuntions(this);
+        }
         if (LevelGenerated != null)
         {
-            LevelGenerated(this);
+            yield return StartCoroutine(LevelGenerated(this));
         }
         
+
+
     }
 
     public void BossKilled(Vector2 bossCords)

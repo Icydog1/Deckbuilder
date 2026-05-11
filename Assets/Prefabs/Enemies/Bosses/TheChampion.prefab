@@ -8,6 +8,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 918997829167053083, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 918997829167053083, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219928215087187144, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1aeaece10eb179b43a8980af6215ebd4, type: 3}
     - target: {fileID: 2781974311769089904, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -48,9 +60,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4924326248737957208, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -3862683252318349893, guid: f0fb58c1f1ab79245ac4c0c70ca88d9c, type: 3}
     - target: {fileID: 6079233605370273798, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
       propertyPath: m_Name
-      value: TestBoss
+      value: TheChampion
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

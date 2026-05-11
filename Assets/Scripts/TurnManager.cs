@@ -98,7 +98,7 @@ public class TurnManager : MonoBehaviour
             }
             if (currentTurn == player)
             {
-                playerControler.StartTurn();
+                StartCoroutine(playerControler.StartTurn());
                 playerTurn = true;
             }
 
@@ -135,13 +135,13 @@ public class TurnManager : MonoBehaviour
         NextTurn();
     }
 
-    public void ResetTurnOrder(LevelManager levelManager = null)
+    public IEnumerator ResetTurnOrder(LevelManager levelManager = null)
     {
         turnOrder.Clear();
         turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
         currentTurn = turnOrder[1];
-        playerControler.ForceEndTurn();
+        yield return StartCoroutine(playerControler.ForceEndTurn());
     }
 
 

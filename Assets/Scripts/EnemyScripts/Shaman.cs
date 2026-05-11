@@ -5,7 +5,7 @@ public class Shaman : Enemy
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public override void Start()
+    public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(15)
@@ -18,6 +18,6 @@ public class Shaman : Enemy
 
         //movesSetOrder = new List<int>() { 0, 1 };
         maxHealth = 50;
-        base.Start();
+        base.Awake();
     }
 }

@@ -44,11 +44,11 @@ public class AbilityManager : MonoBehaviour
     }
 
 
-    public void ResetAbilityPower(PlayerControler playerControler)
+    public IEnumerator ResetAbilityPower(PlayerControler playerControler)
     {
         AbilityPower = 0;
         //SelectedPower = 0;
-        StartCoroutine(SetSelectedPower(0));
+        yield return StartCoroutine(SetSelectedPower(0));
 
     }
 
@@ -70,13 +70,7 @@ public class AbilityManager : MonoBehaviour
     public void LoseAbility(Ability ability)
     {
         int abilityIndex = ability.AbilityUI.AbilityNumber;
-        //foreach (Ability testAbility in abilities)
-        //{
-        //    Debug.Log(testAbility); 
-        //    Debug.Log(testAbility.Cost);
-        //    Debug.Log(testAbility.GetHashCode()); 
-        //}
-        PlayerControler.PlayerTurnStarted -= ability.ResetAbilityCooldown;
+        PlayerControler.PlayerTurnStartedFuntions -= ability.ResetAbilityCooldown;
         Destroy(ability.AbilityUI.gameObject);
         abilities.RemoveAt(abilityIndex);
         for(int i = abilityIndex; i < abilities.Count; i++)
@@ -91,7 +85,7 @@ public class AbilityManager : MonoBehaviour
     {
         foreach (Ability ability in abilities)
         {
-            PlayerControler.PlayerTurnStarted -= ability.ResetAbilityCooldown;
+            PlayerControler.PlayerTurnStartedFuntions -= ability.ResetAbilityCooldown;
             Destroy(ability.AbilityUI.gameObject);
         }
 

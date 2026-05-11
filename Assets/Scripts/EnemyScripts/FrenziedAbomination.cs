@@ -5,7 +5,7 @@ public class FrenziedAbomination : Enemy
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public override void Start()
+    public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(5)
@@ -15,6 +15,6 @@ public class FrenziedAbomination : Enemy
         });
 
         maxHealth = 100;
-        base.Start();
+        base.Awake();
     }
 }

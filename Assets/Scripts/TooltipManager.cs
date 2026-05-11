@@ -1,3 +1,4 @@
+using System.Collections;
 using NUnit.Framework.Internal;
 using TMPro;
 using UnityEngine;
@@ -18,13 +19,13 @@ public class TooltipManager : MonoBehaviour
     }
 
     //showToolTip
-    public void StartHoveringOver(GameObject gameObject)
+    public IEnumerator StartHoveringOver(GameObject gameObject)
     {
         transform.position = gameObject.transform.position;
         transform.GetChild(0).gameObject.SetActive(true);
         if (gameObject.GetComponent<Relic>())
         {
-            SetText(gameObject.GetComponent<Relic>().GetRelicDescription());
+            yield return StartCoroutine(gameObject.GetComponent<Relic>().GetRelicDescription((result) => { SetText(result); }));
         }
     }
 

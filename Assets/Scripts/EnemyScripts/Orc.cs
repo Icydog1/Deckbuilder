@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-public class TestEnemy5 : Enemy
+public class Orc : Enemy
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public override void Start()
+    public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(25)
@@ -18,6 +18,6 @@ public class TestEnemy5 : Enemy
 
         movesSetOrder = new List<int>() {0,1};
         maxHealth = 50;
-        base.Start();
+        base.Awake();
     }
 }

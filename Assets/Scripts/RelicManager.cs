@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,7 +43,7 @@ public class RelicManager : MonoBehaviour
         }
         relicObjects.Clear();
     }
-    public void TestGainRelic(GameManager gameManager)
+    public IEnumerator TestGainRelic(GameManager gameManager)
     {
         GameObject tester = GameObject.Find("StartRelics");
         List<GameObject> testObjects = new List<GameObject>();
@@ -54,24 +55,24 @@ public class RelicManager : MonoBehaviour
         {
             if (relic.activeInHierarchy)
             {
-                GainRelic(relic);
+                yield return StartCoroutine(GainRelic(relic));
             }
         }
 
     }
-    public void GainRelic(GameObject relic)
+    public IEnumerator GainRelic(GameObject relic)
     {
         Relic relicSript = relic.GetComponent<Relic>();
 
         if (relics.ContainsKey(relicSript.RelicName))
         {
             Relic newRelicSript = relics[relicSript.RelicName];
-            newRelicSript.IncreaseCount();
+            yield return StartCoroutine(newRelicSript.IncreaseCount());
             Destroy(relic);
         }
         else 
         {
-            relicSript.GainRelic();
+            yield return StartCoroutine(relicSript.GainRelic());
             relicObjects.Add(relic);
             relics.Add(relicSript.RelicName, relicSript);
             relic.transform.SetParent(relicDisplayer.transform);

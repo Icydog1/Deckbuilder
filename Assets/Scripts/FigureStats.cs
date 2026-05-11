@@ -37,7 +37,7 @@ public class FigureStats : MonoBehaviour
         }
 
         SetHealthAndBlock(100, 0);
-        DisplayConditions(new List<Condition>());
+        StartCoroutine(DisplayConditions(new List<Condition>()));
         Plan(new List<string>());
 
     }
@@ -64,7 +64,7 @@ public class FigureStats : MonoBehaviour
         }
     }
 
-    public void DisplayConditions(List<Condition> currentConditions)
+    public IEnumerator DisplayConditions(List<Condition> currentConditions)
     {
         List<Condition> conditions = new List<Condition>(currentConditions);
 
@@ -87,38 +87,35 @@ public class FigureStats : MonoBehaviour
             foreach (Condition condition in conditions)
             {
                 string currentConditionText = "";
-                //Debug.Log("displaying condition: " + condition.Name);
-                currentConditionText = condition.Name;
-                if (condition.Name == "nextTurns")
+                //Debug.Log("displaying condition: " + condition.ConditionName);
+                currentConditionText = condition.ConditionName;
+                if (condition.ConditionName == "NextTurns")
                 {
                     currentConditionText = "Start of turn ";
                 }
                 if (condition.Plan != null)
                 {
-                    bool oldIsPlanning = figure.IsPlanning;
-                    figure.IsPlanning = true;
-                    List<string> conditionPlanDescription = new List<string>();
-                    actionManager.PlanToList = conditionPlanDescription;
-                    
+                    List<string> conditionPlanDescription = new List<string>();                    
                     foreach (Func<IEnumerator> action in condition.Plan)
                     {
-                        action();
-                        if (condition.Plan[0] != action)
-                        {
-                            conditionPlanDescription[conditionPlanDescription.Count - 2] = conditionPlanDescription[conditionPlanDescription.Count - 2] + " and " + conditionPlanDescription[conditionPlanDescription.Count - 1];
-                            conditionPlanDescription.RemoveAt(conditionPlanDescription.Count - 1);
-                        }
+                        yield return StartCoroutine(actionManager.PreformAction( action(), conditionPlanDescription));
+                        //if (condition.Plan[0] != action)
+                        //{
+                        //    conditionPlanDescription[conditionPlanDescription.Count - 2] = conditionPlanDescription[conditionPlanDescription.Count - 2] + " and " + conditionPlanDescription[conditionPlanDescription.Count - 1];
+                        //    conditionPlanDescription.RemoveAt(conditionPlanDescription.Count - 1);
+                        //}
                     }
-                    
+                    currentConditionText += string.Join(" and ", conditionPlanDescription);
+
+
                     //condition.Plan();
-                    foreach (string actionString in conditionPlanDescription)
-                    {
-                        currentConditionText += actionString;
-                    }
+                    //foreach (string actionString in conditionPlanDescription)
+                    //{
+                    //    currentConditionText += actionString;
+                    //}
                     //Debug.Log(conditionPlanDescription + " conditionPlanDescription first");
                     //Debug.Log(conditionPlanDescription + " conditionPlanDescription");
                     //Debug.Log(currentConditionText + " currentConditionText");
-                    figure.IsPlanning = oldIsPlanning;
                     //currentConditionText += conditionPlanDescription;
                 }
                 if (condition.Value != 0)

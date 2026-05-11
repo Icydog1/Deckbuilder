@@ -48,9 +48,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2788094401541435078, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224284647817024277, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d9c416cb629d1e14d9fd79688974f830, type: 3}
+    - target: {fileID: 7937341576073900677, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -4193428291713317599, guid: 7d199f334c25747479fe44acfe373b59, type: 3}
     - target: {fileID: 9091752245490153435, guid: d0e175f1db3040f42b4360a2b5e7dc55, type: 3}
       propertyPath: m_Name
-      value: TestEnemy5
+      value: Orc
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

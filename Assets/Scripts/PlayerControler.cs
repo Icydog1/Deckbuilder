@@ -66,7 +66,10 @@ public class PlayerControler : Figure
     public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
     public bool NextAction { get { return nextAction; } set { nextAction = value; } }
-    public static event Action<PlayerControler> PlayerTurnStarted;
+    public static event Action<PlayerControler> PlayerTurnStartedFuntions;
+    public static event Func<PlayerControler, IEnumerator> PlayerTurnStarted;
+
+    
     private int kineticBatteryCount;
     public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
 
@@ -138,10 +141,7 @@ public class PlayerControler : Figure
         if (Input.GetKeyDown(KeyCode.K))
         {
             //dev mode
-            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Move(1000, true, true) })));
-            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) })));
-            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) })));
-            StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) })));
+            StartCoroutine(CheatMode());
 
             //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) });
             //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) });
@@ -150,6 +150,14 @@ public class PlayerControler : Figure
 
         }
     }
+    public IEnumerator CheatMode()
+    {
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Move(1000, true, true) })));
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) })));
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) })));
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) })));
+    }
+
 
     public void ShowMoveCostDisplay()
     {
@@ -168,15 +176,15 @@ public class PlayerControler : Figure
         kineticBatteryCount = 0;
         conditions.Clear();
     }
-    public void PreparePlayer(GameManager gameManager)
+    public IEnumerator PreparePlayer(GameManager gameManager)
     {
-        StartCoroutine(actionManager.PreformAction(GainNewAbility(2, new List<Func<IEnumerator>>() {() => Move(1, false, true) })));
-        StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() {() => Lockpick(1, true) })));
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(2, new List<Func<IEnumerator>>() {() => Move(1, false, true) })));
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() {() => Lockpick(1, true) })));
         maxHealth = 100;
         health = maxHealth;
         oneToOnePos = Vector2.zero;
         statsDisplayer.SetHealthAndBlock(health, 0);
-        statsDisplayer.DisplayConditions(conditions);
+        yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
         statsDisplayer.Plan(actionsRemaining);
         //statsDisplayer.SetConditions(new string[0]);
     }
@@ -222,8 +230,8 @@ public class PlayerControler : Figure
     public IEnumerator MoveAlongPath()
     {
         pathfinder.MoveLeft = moveLeft;
-        StartCoroutine(pathfinder.MoveAlongPath(gameObject, oneToOnePos));
-        yield return new WaitUntil(() => pathfinder.DoneMoving == true);
+        yield return StartCoroutine(pathfinder.MoveAlongPath(gameObject, oneToOnePos));
+        //yield return new WaitUntil(() => pathfinder.DoneMoving == true);
         pathfinder.DoneMoving = false;
         foreach (Vector2 tileCords in pathfinder.ActualPath)
         {
@@ -240,7 +248,6 @@ public class PlayerControler : Figure
         if (actionsRemaining.Count > 0)
         {
             actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
-
         }
         statsDisplayer.Plan(actionsRemaining);
 
@@ -248,17 +255,22 @@ public class PlayerControler : Figure
         if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Door>())
         {
             GameObject door = mapManager.GetTileAtHex(oneToOnePos);
+            Debug.Log("opened door");
             roomSpawner.SpawnRoomsNextToDoor(door, door.GetComponent<Door>().RoomNextToCords);
+            //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
+            Debug.Log("room spawned");
+            yield return StartCoroutine(actionManager.PreformPreparedActions());
+            Debug.Log("ran perpared actions");
         }
         if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Stair>())
         {
 
-            levelManager.GoUpLevel();
-
+            yield return StartCoroutine(levelManager.GoUpLevel());
+            yield return StartCoroutine(actionManager.PreformPreparedActions());
         }
         else if (moveLeft == 0)
         {
-            ActionDone();
+            EndAction();
         }
         else
         {
@@ -289,7 +301,7 @@ public class PlayerControler : Figure
     }
 
 
-    public void FigureClicked(GameObject figure)
+    public IEnumerator FigureClicked(GameObject figure)
     {
         //Debug.Log("clicked" + figure);
         clickedEnemy = figure;
@@ -297,12 +309,25 @@ public class PlayerControler : Figure
         {
             if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
             {
-                clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, repeats, appliedConditions);
                 targetsLeft--;
                 posibleTargets.Remove(figure.GetComponent<Figure>());
+                yield return StartCoroutine(clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, repeats, appliedConditions));
             }
             if (targetsLeft == 0)
             {
+                if (isAttacking)
+                {
+                    for (int i = 0; i < conditions.Count; i++)
+                    {
+                        if (conditions[i].ConditionName == "Vigor")
+                        {
+                            yield return StartCoroutine(conditions[i].OnLoss());
+                            conditions.RemoveAt(i);
+                            yield return StartCoroutine(deckManager.UpdateCardsDisplay());
+                            yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
+                        }
+                    }
+                }
                 ActionDone();
             }
         }
@@ -316,7 +341,7 @@ public class PlayerControler : Figure
             }
             if (targetsLeft == 0)
             {
-                ActionDone();
+                EndAction();
             }
         }
         else if (figure.GetComponent<Enemy>())
@@ -366,21 +391,25 @@ public class PlayerControler : Figure
         }
     }
 
-    public void StartTurn()
+    public IEnumerator StartTurn()
     {
+        if (PlayerTurnStartedFuntions != null)
+        {
+            PlayerTurnStartedFuntions(this);
+        }
         if (PlayerTurnStarted != null)
         {
-            PlayerTurnStarted(this);
+            yield return StartCoroutine(PlayerTurnStarted(this));
         }
-        deckManager.DrawNewHand();
+        yield return StartCoroutine(deckManager.DrawNewHand());
 
         isPlayerTurn = true;
         TopEnergy = 2;
         BottomEnergy = 2;
-        base.baseStartTurn();
+        yield return StartCoroutine(baseStartTurn());
     }
 
-    public void ForceEndTurn()
+    public IEnumerator ForceEndTurn()
     {
         if (cardPlayed)
         {
@@ -390,21 +419,22 @@ public class PlayerControler : Figure
         {
             ForceEndAction();
         }
-        isPlayerTurn = false;
-        UpdatePlayer();
-        base.baseEndTurn();
+        yield return StartCoroutine(EndTurn());
     }
-    public IEnumerator EndTurn()
+    public IEnumerator AtemptToEndTurn()
     {
-        yield return StartCoroutine(deckManager.DiscardHand());
-
         UpdatePlayer();
         if (canEndTurn)
         {
-            isPlayerTurn = false;
-            UpdatePlayer();
-            base.baseEndTurn();
+            yield return StartCoroutine(EndTurn());
         }
+    }
+    public IEnumerator EndTurn()
+    {
+        UpdatePlayer();
+        yield return StartCoroutine(deckManager.DiscardHand());
+        isPlayerTurn = false;
+        yield return StartCoroutine(base.baseEndTurn());
     }
     public void ManualEnd()
     {
@@ -420,19 +450,7 @@ public class PlayerControler : Figure
         {
             mapManager.showMoveCost(false);
         }
-        if (isAttacking)
-        {
-            for (int i = 0; i < conditions.Count; i++)
-            {
-                if (conditions[i].Name == "Vigor")
-                {
-                    conditions[i].OnLoss();
-                    conditions.RemoveAt(i);
-                    StartCoroutine(deckManager.UpdateCardsDisplay());
-                    statsDisplayer.DisplayConditions(conditions);
-                }
-            }
-        }
+
         isMoving = false;
         CanJump = false;
         isAttacking = false;
@@ -449,20 +467,46 @@ public class PlayerControler : Figure
 
     public void ForceEndAction()
     {
-        if (isMoving && moveCostDisplaySetting == "On Move")
-        {
-            mapManager.showMoveCost(false);
-        }
-        isMoving = false;
-        CanJump = false;
-        isAttacking = false;
-        actionDone = true;
-        isTargetATile = false;
-        isTargetAEnemy = false;
+        EndAction();
+
         actionsRemaining.Clear();
         statsDisplayer.Plan(actionsRemaining);
         nextAction = true;
     }
+    public void EndAction()
+    {
+        if (preformingAction && actionsRemaining.Count > 0)
+        {
+            actionsRemaining.Remove(actionsRemaining[0]);
+            statsDisplayer.Plan(actionsRemaining);
+        }
+        if (isMoving)
+        {
+            isMoving = false;
+            CanJump = false;
+
+            moveLeft = 0;
+            if (isMoving && moveCostDisplaySetting == "On Move")
+            {
+                mapManager.showMoveCost(false);
+            }
+        }
+        if (isAttacking)
+        {
+            isAttacking = false;
+            targetsLeft = 0;
+        }
+        if (preformingAction && actionsRemaining.Count > 0)
+        {
+            actionsRemaining.Remove(actionsRemaining[0]);
+            statsDisplayer.Plan(actionsRemaining);
+        }
+        isTargetATile = false; //?
+        isTargetAEnemy = false; //?
+        nextAction = true; //?
+        actionDone = true; //?
+    }
+
 
 
     public IEnumerator ControledMove(int moveValue, bool isJump = false)
@@ -570,7 +614,7 @@ public class PlayerControler : Figure
             ActionDone();
         }
     }
-    public void GainEnergy(int amount,bool isTop)
+    public IEnumerator GainEnergy(int amount,bool isTop)
     {
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
@@ -600,6 +644,7 @@ public class PlayerControler : Figure
             }
             ActionDone();
         }
+        yield return null;
     }
     public IEnumerator GainTopEnergy(int amount)
     {
@@ -635,8 +680,11 @@ public class PlayerControler : Figure
     }
     public IEnumerator GainNewAbility(int cost, List<Func<IEnumerator>> abilities, int duration = -1)
     {
+        //Debug.Log("start of gaining ablility");
         //Debug.Log(abilities[0]());
         yield return StartCoroutine(GainAbility(new Ability(cost, abilities), duration));
+        //Debug.Log("end of gaining ablility");
+
     }
     public IEnumerator GainAbility(Ability ability, int duration = -1)
     {
@@ -653,7 +701,13 @@ public class PlayerControler : Figure
                 currentDescriptionString += " for " + duration + " turns";
             }
             unmodifiedAction = true;
-            currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
+            string planString = string.Empty;
+            yield return StartCoroutine(GetPlanString(ability.Abilities ,(result) => { planString = result; }));
+            currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + planString;
+            //Debug.Log(currentDescriptionString);
+            //Debug.Log(planString);
+
+            //currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
             unmodifiedAction = false;
             actionManager.PlanToList.Add(currentDescriptionString);
         }
@@ -664,11 +718,15 @@ public class PlayerControler : Figure
         }
         yield return null;
     }
-    public void LoseAbility(Ability ability)
+    public IEnumerator LoseAbility(Ability ability)
     {
         if (isPlanning)
         {
-            string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
+            string planString = string.Empty;
+            yield return StartCoroutine(GetPlanString(ability.Abilities, (result) => { planString = result; }));
+            string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + planString;
+
+            //string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
             actionManager.PlanToList.Add(currentDescriptionString);
         }
         else
@@ -704,15 +762,17 @@ public class PlayerControler : Figure
     {
         for (int i = 0; i < conditions.Count; i++)
         {
-            if (conditions[i].name == "Untouchable")
+            if (conditions[i].ConditionName == "Untouchable")
             {
-                Block(conditions[i].Value);
+                actionManager.QueueAction(actionManager.PreformAction(Block(conditions[i].Value)));
                 //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
             }
         }
         if (kineticBatteryCount > 0)
         {
-            ApplyCondition(new Vigor(kineticBatteryCount), false);
+            actionManager.QueueAction(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount), false)));
+            //Debug.Log("Queued kineticBattery");
+            
         }
     }
 

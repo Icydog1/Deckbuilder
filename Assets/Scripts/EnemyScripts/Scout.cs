@@ -6,7 +6,7 @@ public class Scout : Enemy
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public override void Start()
+    public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(10)
@@ -20,7 +20,7 @@ public class Scout : Enemy
             ,() => Attack(20, 4)
         });
         maxHealth = 50;
-        base.Start();
+        base.Awake();
     }
 }
 

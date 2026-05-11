@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
-using Unity.Jobs;
 using UnityEngine;
+using static Lootable;
 
 public class DeckManager : MonoBehaviour
 {
@@ -79,8 +79,8 @@ public class DeckManager : MonoBehaviour
         posibleCardLocations.Add(playContents);
 
         GameManager.ResetGame += ResetDeck;
-        GameManager.GameStarted += SpawnStartingDeck;
-        //GameManager.GameStarted += DrawStartingHand;
+        GameManager.GameStartedFunctions += SpawnStartingDeck;
+        //GameManager.GameStartedFunctions += DrawStartingHand;
     }
 
     // Update is called once per frame
@@ -118,11 +118,6 @@ public class DeckManager : MonoBehaviour
         }
         Suffle(ref deckContents);
     }
-
-    public void DrawStartingHand(GameManager gameManager)
-    {
-        DrawNewHand();
-    }
     public IEnumerator DiscardHand()
     {
         List<GameObject> discardedCards = new List<GameObject>(handContents);
@@ -132,7 +127,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public void DrawNewHand()
+    public IEnumerator DrawNewHand()
     {
         //int cardsInHand = handSize;
         //for (int i = 0; i < cardsInHand; i++)
@@ -140,25 +135,25 @@ public class DeckManager : MonoBehaviour
         //    DiscardFirstCard();
         //    //Debug.Log("card Discarded");
         //}
-        StartCoroutine(DrawCards(startHandSize));
+        yield return StartCoroutine(DrawCards(startHandSize));
     }
 
     public IEnumerator GainCard(GameObject card)
     {
         entireDeck.Add(card);
         cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
-        yield return StartCoroutine(MoveTo(card, deck, Random.Range(0, deckContents.Count + 1)));
+        yield return StartCoroutine(MoveTo(card, deck, UnityEngine.Random.Range(0, deckContents.Count + 1)));
     }
-    public void DestroyCard(GameObject card)
+    public IEnumerator DestroyCard(GameObject card)
     {
         Card cardScript = card.GetComponent<Card>();
         if (cardScript.OriginalCard != null)
         {
             displayedList.Remove(card);
-            DestroyCard(cardScript.OriginalCard);
+            yield return StartCoroutine(DestroyCard(cardScript.OriginalCard));
         }
         cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
-        MoveTo(card, deck, Random.Range(0, deckContents.Count + 1));
+        yield return StartCoroutine(MoveTo(card, deck, UnityEngine.Random.Range(0, deckContents.Count + 1)));
         if (deckContents.Contains(card))
         {
             deckContents.Remove(card);
@@ -167,7 +162,7 @@ public class DeckManager : MonoBehaviour
         if (handContents.Contains(card))
         {
             handContents.Remove(card);
-            UpdateHand();
+            yield return StartCoroutine(UpdateHand());
         }
         if (discardContents.Contains(card))
         {
@@ -225,7 +220,7 @@ public class DeckManager : MonoBehaviour
         int listsize = tempList.Count;
         for (int i = 0; i < listsize; i++)
         {
-            GameObject currentCard = tempList[Random.Range(0, tempList.Count)];
+            GameObject currentCard = tempList[UnityEngine.Random.Range(0, tempList.Count)];
             list.Add(currentCard);
             tempList.Remove(currentCard);
         }
@@ -357,11 +352,11 @@ public class DeckManager : MonoBehaviour
                 StopDisplayingCardsInList();
 
             }
-            DisplayCardsInList(list, pos, relativeSpaceBetweenCardsInHand, rowLimit, randomOrder);
+            StartCoroutine(DisplayCardsInList(list, pos, relativeSpaceBetweenCardsInHand, rowLimit, randomOrder));
         }
 
     }
-    public void DisplayCardsInList(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit = 5, bool randomOrder = true)
+    public IEnumerator DisplayCardsInList(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit = 5, bool randomOrder = true)
     {
         isDisplayingCards = true;
         listDisplayer.SetActive(true);
@@ -373,6 +368,7 @@ public class DeckManager : MonoBehaviour
             GameObject newCard;
             displayedList.Add(newCard = Instantiate(card));
             newCard.GetComponent<Card>().OriginalCard = card;
+
         }
         float horizontalSpaceBetweenCards = relativeSpaceBetweenCards * cameraScript.widthHeightRatio;
         float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.1f) * cameraScript.widthHeightRatio;
@@ -386,15 +382,17 @@ public class DeckManager : MonoBehaviour
             displayedList = new List<GameObject>();
             while (cardsInList.Count > 0)
             {
-                GameObject currentCard = cardsInList[Random.Range(0, cardsInList.Count)];
+                GameObject currentCard = cardsInList[UnityEngine.Random.Range(0, cardsInList.Count)];
                 displayedList.Add(currentCard);
                 cardsInList.Remove(currentCard);
             }
         }
         foreach (GameObject card in displayedList)
         {
-            card.transform.SetParent(listDisplayer.transform);
             card.SetActive(true);
+            card.transform.localScale = Vector3.zero;
+            card.transform.SetParent(listDisplayer.transform);
+            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
             SetRelativeCardSize(card, 1);
             int row = Mathf.FloorToInt(displayedList.IndexOf(card) / rowLimit);
             int column = displayedList.IndexOf(card) % rowLimit;
@@ -430,17 +428,18 @@ public class DeckManager : MonoBehaviour
         displayedListName = null;
     }
 
-    public IEnumerator ChooseCard(List<GameObject> cardOptions)
+    public IEnumerator ChooseCard(List<GameObject> cardOptions, Func<GameObject,IEnumerator> chosenCard)
     {
-        selectedCard = null;
         if (uIManager.IsDisplayingList == true)
         {
             StopDisplayingCardsInList();
         }
-        DisplayCardsInList(cardOptions, listDisplayer.transform.position, relativeSpaceBetweenCardsInHand, 5, false);
+        yield return StartCoroutine(DisplayCardsInList(cardOptions, listDisplayer.transform.position, relativeSpaceBetweenCardsInHand, 5, false));
         isChoosingCard = true;
-        yield return new WaitUntil(() => isChoosingCard == false);
-        StopDisplayingCardsInList();
         selectedCard = null;
+        yield return new WaitUntil(() => selectedCard != null);
+        yield return StartCoroutine(chosenCard(selectedCard.GetComponent<Card>().OriginalCard));
+        selectedCard = null;
+        StopDisplayingCardsInList();
     }
 }

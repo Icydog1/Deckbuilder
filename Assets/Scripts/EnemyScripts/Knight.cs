@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Knight : Enemy
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public override void Start()
+    public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(16)
@@ -28,6 +28,6 @@ public class Knight : Enemy
         });
 
         maxHealth = 68;
-        base.Start();
+        base.Awake();
     }
 }
