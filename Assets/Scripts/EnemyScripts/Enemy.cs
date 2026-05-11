@@ -131,6 +131,7 @@ public class Enemy : Figure
     {
         GameObject border = transform.Find("Border").gameObject;
         border.GetComponent<SpriteRenderer>().color = Color.black;
+        Debug.Log(gameObject + " ended turn");
         yield return StartCoroutine(baseEndTurn());
     }
     public void StartStopTurn(bool isStart)
@@ -147,17 +148,26 @@ public class Enemy : Figure
     }
     public IEnumerator TakeTurn()
     {
+        Debug.Log(gameObject + " started taking turn");
         yield return StartCoroutine(StartOfTurn());
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
+        Debug.Log(gameObject + " started main action sequence");
+
         for (int i = 0; i < currentPlan.Count; i++)
         {
             yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
+            Debug.Log(gameObject + " toook 1 action");
+
             //yield return new WaitUntil(() => nextAction == true);
             //nextAction = false;
         }
+        Debug.Log(gameObject + " ended main action sequence");
+
         currentmove++;
         yield return StartCoroutine(EndTurn());
+        Debug.Log(gameObject + " ended turn");
+
     }
     public IEnumerator DisplayMovePosibilities()
     {

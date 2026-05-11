@@ -62,7 +62,11 @@ public class ActionManager : MonoBehaviour
             yield return StartCoroutine(planStack.Pop());
             //planStack.RemoveAt(planStack.Count-1);
             planToStack.Pop(); //RemoveAt(planToStack.Count - 1);
-            playerControler.IsPlanning = false;
+            if (planToStack.Count == 0)
+            {
+                playerControler.IsPlanning = false;
+
+            }
         }
         else
         {
@@ -100,13 +104,13 @@ public class ActionManager : MonoBehaviour
     }
     public void PrepareAction(IEnumerator action)
     {
-        Debug.Log("queued action");
+        //Debug.Log("queued action");
 
         preparedQueue.Enqueue(action);
     }
     public IEnumerator PreformPreparedActions()
     {
-        Debug.Log("ran perpared actions");
+        //Debug.Log("ran perpared actions");
         while (preparedQueue.Count > 0)
         {
             yield return StartCoroutine(preparedQueue.Dequeue());

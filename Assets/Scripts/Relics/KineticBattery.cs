@@ -6,7 +6,7 @@ public class KineticBattery : Relic
     public override void Awake()
     {
         relicName = "Kinetic Battery";
-        relicDesription = "Whenever you move a space gain <color=#009f9f>1<color=white> Vigor";
+        relicDesription = "Every 3 spaces you move gain <color=#009f9f>1<color=white> Vigor";
         base.Awake();
     }
     public override IEnumerator OnGain()

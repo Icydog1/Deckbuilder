@@ -410,6 +410,7 @@ public class DeckManager : MonoBehaviour
         {
             yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
         }
+        //Debug.Log("Prepeared Hand");
         foreach (GameObject card in playContents)
         {
             yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());

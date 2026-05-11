@@ -32,8 +32,8 @@ public class Condition : MonoBehaviour
     protected Func<IEnumerator>[] plan;
     public Func<IEnumerator>[] Plan { get { return plan; } }
 
-    protected string abnormality;
-    public string Abnormality { get { return abnormality; } }
+    protected string[] abnormality;
+    public string[] Abnormality { get { return abnormality; } }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -48,8 +48,9 @@ public class Condition : MonoBehaviour
         
     }
 
-    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown, Func<IEnumerator>[] actionPlan = null, string conditionAbnormality = null)
+    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown, string[] conditionAbnormality = null, Func<IEnumerator>[] actionPlan = null)
     {
+        Debug.Log("base Condition generated");
         conditionName = name;
         amount = conditionValue;
         duration = conditionDuration;
@@ -58,9 +59,12 @@ public class Condition : MonoBehaviour
         isStartOfTurn = isStartOfTurnCondition;
         abnormality = conditionAbnormality;
         plan = actionPlan;
+        actionName = name;
     }
     public virtual IEnumerator OnGain()
     {
+        //Debug.Log("Gaind Condition");
+
         yield return null;
     }
     public virtual IEnumerator OnLoss()
@@ -84,7 +88,7 @@ public class Speed : Condition
     public Speed(int conditionValue, int conditionDuration = -1) : base("Speed", conditionValue, conditionDuration, 1, false, true) { }
 }
 
-public class  Finesse: Condition
+public class Finesse: Condition
 {
     public Finesse(int conditionValue, int conditionDuration = -1) : base("Finesse", conditionValue, conditionDuration, 1, false, true) { }
 }
@@ -110,14 +114,14 @@ public class Poison : Condition
 
 public class NextTurns : Condition
 {
-    public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1) : base("NextTurns", conditionValue, conditionDuration, 0, true, true, nextTurnsAction, "Delayed Gain") { }
+    public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1) : base("NextTurns", conditionValue, conditionDuration, 0, true, true, new string[] { "Delayed Gain", "No Self Target Description" }, nextTurnsAction) { }
 }
 
 public class GainAbility : Condition
 {
     protected Ability gainedAbility;
     public Ability GainedAbility { get { return gainedAbility; } }
-    public GainAbility(Ability conditionAbility, int conditionValue = 0, int conditionDuration = 1) : base("Ability", conditionValue, conditionDuration, 2, false, true, null, "Ability")
+    public GainAbility(Ability conditionAbility, int conditionValue = 0, int conditionDuration = 1) : base("Ability", conditionValue, conditionDuration, 2, false, true, new string[] { "Ability", "No Self Target Description" })
     {
         conditionEffects = GameObject.Find("ConditionEffects").GetComponent<ConditionEffects>();
 
@@ -140,7 +144,7 @@ public class Vigor : Condition
 
 public class BlockPerMove : Condition
 {
-    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1, int addType = 1) : base("Untouchable", conditionValue, conditionDuration, addType, true, true)
+    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1, int addType = 1) : base("Untouchable", conditionValue, conditionDuration, addType, true, true, new string[] { "No Value Description", "No Self Target Description" } )
     {
         actionName = "Whenever you move a space gain " + conditionValue + " block";
     }

@@ -14,7 +14,7 @@ public class Untouchable : Card
 
     public override void PrepareTop()
     {
-        //currentActions.Add(() => playerControler.ApplyCondition(new BlockPerMove(5, 1)));
+        currentActions.Add(() => playerControler.ApplyCondition(new BlockPerMove(5, 1)));
 
     }
 

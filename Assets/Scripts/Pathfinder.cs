@@ -92,9 +92,9 @@ public class Pathfinder : MonoBehaviour
             findPosiblePaths(selfPos);
             findActualPath(selfPos);
             //moves along path
-            StartCoroutine(MoveAlongPath(currentFigure, selfPos));
-            yield return new WaitUntil(() => doneMoving == true);
-            doneMoving = false;
+            yield return StartCoroutine(MoveAlongPath(currentFigure, selfPos));
+            //yield return new WaitUntil(() => doneMoving == true);
+            //doneMoving = false;
         }
 
         self.GetComponent<Figure>().ActionDone();
@@ -576,7 +576,7 @@ public class Pathfinder : MonoBehaviour
             pos = mapManager.OneToOneToPos(oneToOnePos);
             figure.transform.position = new Vector3(pos.x, pos.y, figure.transform.position.z);
             figureScript.OneToOnePos = oneToOnePos;
-            figureScript.MoveOneSpace();
+            yield return StartCoroutine(figureScript.MoveOneSpace());
             yield return new WaitForSeconds(newFigureMoveDelay);
         }
         //doneMoving = true;

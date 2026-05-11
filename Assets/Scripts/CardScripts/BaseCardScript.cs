@@ -39,7 +39,7 @@ public class Card : MonoBehaviour
 	//protected List<IEnumerator> bottomActions = new List<IEnumerator>();
 	//protected List<IEnumerator> currentActions = new List<IEnumerator>();
 
-	protected List<string> topDescription = new List<string>();
+	public List<string> topDescription = new List<string>();
     protected List<string> bottomDescription = new List<string>();
     protected List<string> currentDescription = new List<string>();
     protected string currentDescriptionString = "";
@@ -232,11 +232,11 @@ public class Card : MonoBehaviour
         //playerControler.IsPlanning = true;
         //playerControler.PlanDescription = topDescription;
         //Debug.Log("started planing");
+        playerControler.UnmodifiedAction = false;
         foreach (Func<IEnumerator> action in topActions)
         {
             yield return StartCoroutine(actionManager.PreformAction(action(), topDescription));
-
-		}
+        }
 		//Debug.Log("finished planing");
 
 		//playerControler.PlanDescription = bottomDescription;
@@ -262,6 +262,7 @@ public class Card : MonoBehaviour
         {
             topText.DisplayText(topDescription);
         }
+        //Debug.Log("Updated Top Description");
         if (additionalBottomDescription != null)
         {
             List<string> newDescription = new List<string>(bottomDescription);

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 
 public class Figure : MonoBehaviour
@@ -49,7 +50,7 @@ public class Figure : MonoBehaviour
     //protected List<Func<IEnumerator>> prepareActions = new List<Func<IEnumerator>>();
     //public List<Func<IEnumerator>> PrepareActions { set { prepareActions = value; } }
 
-    protected List<Condition> conditions = new List<Condition>();
+    public List<Condition> conditions = new List<Condition>();
     public List<Condition> Conditions { set { conditions = value; } get { return conditions; } }
 
     protected int variableCardModifier;
@@ -197,13 +198,14 @@ public class Figure : MonoBehaviour
         {
             block += finalBlock;
             statsDisplayer.SetHealthAndBlock(health, block);
-            ActionDone();
+            //ActionDone();
         }
         yield return null;
     }
 
     public IEnumerator Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null, bool isVariable = false)
     {
+
         if (isVariable)
         {
             attackValue *= variableCardModifier;
@@ -215,6 +217,8 @@ public class Figure : MonoBehaviour
         int finalAttack = conditionEffects.ModifyAttack(this, attackValue);
         if (isPlanning)
         {
+            //Debug.Log("Planned Attack");
+
             string currentDescriptionStart = "";
             string currentDescriptionEnd = "";
             if (!isPlayer)
@@ -274,7 +278,7 @@ public class Figure : MonoBehaviour
                 {
                     yield return StartCoroutine(target.AttackedFor(finalAttack, repeats, attackConditions));
                 }
-                ActionDone();
+                //ActionDone();
                 for (int i = 0; i < conditions.Count; i++)
                 {
                     if (conditions[i].ConditionName == "Vigor")
@@ -338,7 +342,10 @@ public class Figure : MonoBehaviour
             }
             else
             {
+                Debug.Log(gameObject + " started pathfinding");
                 yield return StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
+                Debug.Log(gameObject + " finished pathfinding");
+
             }
         }
         //yield return null;
@@ -362,7 +369,11 @@ public class Figure : MonoBehaviour
             {
                 if (condition.Abnormality != null)
                 {
-                    actionAbnormalities.Add(condition.Abnormality);
+                    foreach (string abnormality in condition.Abnormality)
+                    {
+                        actionAbnormalities.Add(abnormality);
+
+                    }
                 }
                 if (actionAbnormalities.Contains("Ability"))
                 {
@@ -415,7 +426,15 @@ public class Figure : MonoBehaviour
 
                 if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
                 {
-                    currentDescriptionString = condition.Value + " " + condition.ConditionName;
+                    if (actionAbnormalities.Contains("No Value Description"))
+                    {
+                        currentDescriptionString = condition.ActionName;
+                    }
+                    else
+                    {
+                        currentDescriptionString = condition.Value + " " + condition.ActionName;
+
+                    }
                     if (condition.Duration == 1)
                     {
                         currentDescriptionString += " this turn";
@@ -428,7 +447,7 @@ public class Figure : MonoBehaviour
                 }
                 if (targetType == "self")
                 {
-                    if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
+                    if (!actionAbnormalities.Contains("No Self Target Description"))
                     {
                         currentDescriptionStart += "Gain ";
                     }
@@ -523,19 +542,22 @@ public class Figure : MonoBehaviour
             string separator = ", ";
             string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             actionManager.PlanToList.Add(conditionText);
-
         }
         else if (!isPreparingMove)
         {
+            Debug.Log("Applied Condition");
+
             if (isPlayer)
             {
                 if (targetType == "self")
                 {
+                    Debug.Log("Gained Condition");
+
                     yield return StartCoroutine(GainConditions(newConditions));
-                    if (isAction)
-                    {
-                        ActionDone();
-                    }
+                    //if (isAction)
+                    //{
+                    //    ActionDone();
+                    //}
                 }
                 else
                 {
@@ -548,13 +570,17 @@ public class Figure : MonoBehaviour
                 {
                     foreach (Condition condition in newConditions)
                     {
+                        Debug.Log("applieing Condition");
+
                         yield return StartCoroutine(target.GainCondition(condition));
+                        Debug.Log("applied Condition");
+
                     }
                 }
-                if (isAction)
-                {
-                    ActionDone();
-                }
+                //if (isAction)
+                //{
+                //    ActionDone();
+                //}
             }
         }
 
@@ -643,7 +669,7 @@ public class Figure : MonoBehaviour
         }
         if (isPlayer)
         {
-            //Debug.Log("updated display");
+            Debug.Log("updated display");
             yield return StartCoroutine(deckManager.UpdateCardsDisplay());
         }
         //Debug.Log("first condition: " + conditions[0].Name);
@@ -763,8 +789,8 @@ public class Figure : MonoBehaviour
         Debug.Log("Base Remove ran");
     }
 
-    public virtual void MoveOneSpace()
+    public virtual IEnumerator MoveOneSpace()
     {
-
+        yield return null;
     }
 }

@@ -19,6 +19,7 @@ public class ConditionEffects : MonoBehaviour
 
     public int ModifyAttack(Figure effectedFigure, int initalAttack)
     {
+        //Debug.Log("Modifing Attack");
         if (effectedFigure.UnmodifiedAction)
         {
             return initalAttack;
@@ -34,8 +35,10 @@ public class ConditionEffects : MonoBehaviour
         }
         foreach (Condition condition in conditions)
         {
+            Debug.Log("checked " + condition.ConditionName);
             if (condition.ConditionName == "Strength" || condition.ConditionName == "Vigor")
             {
+                Debug.Log("Added Attack");
                 modifiedAttack += condition.Value;
             }
         }

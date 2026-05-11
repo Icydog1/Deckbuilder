@@ -59,7 +59,7 @@ public class PlayerControler : Figure
     private GameObject selectedTile;
     private List<Figure> posibleTargets;
     private List<string> actionsRemaining = new List<string>();
-    public List<string> ActionsRemaining { set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
+    public List<string> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
     private int topEnergy, bottomEnergy;
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
@@ -70,7 +70,7 @@ public class PlayerControler : Figure
     public static event Func<PlayerControler, IEnumerator> PlayerTurnStarted;
 
     
-    private int kineticBatteryCount;
+    private int kineticBatteryCount, kineticBatterySteps;
     public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -173,6 +173,7 @@ public class PlayerControler : Figure
 
     public void ResetPlayer(GameManager gameManager)
     {
+        kineticBatterySteps = 0;
         kineticBatteryCount = 0;
         conditions.Clear();
     }
@@ -446,6 +447,7 @@ public class PlayerControler : Figure
 
     public override void ActionDone()
     {
+        //Somthing breaks game but want to convert most actions to EndAction as plans dont go away
         if (isMoving && moveCostDisplaySetting == "On Move")
         {
             mapManager.showMoveCost(false);
@@ -564,7 +566,7 @@ public class PlayerControler : Figure
             abilityManager.AbilityPower += finalAbility;
             //abilityManager.SelectedPower += finalAbility;
             yield return StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower + finalAbility));
-            ActionDone();
+            //ActionDone();
         }
         yield return null;
     }
@@ -594,7 +596,7 @@ public class PlayerControler : Figure
             }
             else
             {
-                ActionDone();
+                //ActionDone();
             }
         }
         yield return null;
@@ -611,7 +613,7 @@ public class PlayerControler : Figure
         else
         {
             yield return StartCoroutine(deckManager.DrawCards(cardCount));
-            ActionDone();
+            //ActionDone();
         }
     }
     public IEnumerator GainEnergy(int amount,bool isTop)
@@ -642,7 +644,7 @@ public class PlayerControler : Figure
             {
                 BottomEnergy += amount;
             }
-            ActionDone();
+            //ActionDone();
         }
         yield return null;
     }
@@ -658,7 +660,7 @@ public class PlayerControler : Figure
         else
         {
             TopEnergy += amount;
-            ActionDone();
+            //ActionDone();
         }
         yield return null;
     }
@@ -673,7 +675,7 @@ public class PlayerControler : Figure
         else
         {
             BottomEnergy += amount;
-            ActionDone();
+            //ActionDone();
         }
         yield return null;
 
@@ -714,7 +716,7 @@ public class PlayerControler : Figure
         else
         {
             yield return StartCoroutine(abilityManager.GainAbility(ability));
-            ActionDone();
+            //ActionDone();
         }
         yield return null;
     }
@@ -758,21 +760,27 @@ public class PlayerControler : Figure
     {
         ShowMoveCostDisplay();
     }
-    public override void MoveOneSpace()
+    public override IEnumerator MoveOneSpace()
     {
         for (int i = 0; i < conditions.Count; i++)
         {
             if (conditions[i].ConditionName == "Untouchable")
             {
-                actionManager.QueueAction(actionManager.PreformAction(Block(conditions[i].Value)));
+                yield return StartCoroutine(actionManager.PreformAction(Block(conditions[i].Value)));
                 //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
             }
         }
         if (kineticBatteryCount > 0)
         {
-            actionManager.QueueAction(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount), false)));
+            kineticBatterySteps++;
+            if (kineticBatterySteps == 3)
+            {
+                yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount), false)));
+                kineticBatterySteps = 0;
+            }
+
             //Debug.Log("Queued kineticBattery");
-            
+
         }
     }
 
