@@ -11,6 +11,10 @@ public class ActionManager : MonoBehaviour
 
     //private List<Func<IEnumerator>> actionStack = new List<Func<IEnumerator>>();
     private Stack<IEnumerator> actionStack = new Stack<IEnumerator>();
+    private Stack<string> actionStackNames = new Stack<string>();
+    public Stack<string> ActionStackNames { get { return actionStackNames; } set { actionStackNames = value;} }
+
+
     private Stack<IEnumerator> planStack = new Stack<IEnumerator>();
     private Queue<IEnumerator> actionQueue = new Queue<IEnumerator>();
     private Queue<IEnumerator> preparedQueue = new Queue<IEnumerator>();
@@ -72,6 +76,9 @@ public class ActionManager : MonoBehaviour
         {
             actionStack.Push(action);
             yield return StartCoroutine(actionStack.Pop());
+
+            //actionStack.Add(action);
+            //yield return StartCoroutine(actionStack[actionStack.Count - 1]);
             //actionStack.RemoveAt(actionStack.Count - 1);
         }
         if (actionStack.Count == 0 && planStack.Count == 0)

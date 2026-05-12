@@ -35,7 +35,7 @@ public class ConditionEffects : MonoBehaviour
         }
         foreach (Condition condition in conditions)
         {
-            Debug.Log("checked " + condition.ConditionName);
+            //Debug.Log("checked " + condition.ConditionName);
             if (condition.ConditionName == "Strength" || condition.ConditionName == "Vigor")
             {
                 Debug.Log("Added Attack");

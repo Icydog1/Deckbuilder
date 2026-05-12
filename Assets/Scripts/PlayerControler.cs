@@ -2,11 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Tilemaps;
-using UnityEngine.UIElements;
-using static UnityEngine.Rendering.DebugUI;
+
 
 public class PlayerControler : Figure
 {
@@ -68,16 +65,16 @@ public class PlayerControler : Figure
     public bool NextAction { get { return nextAction; } set { nextAction = value; } }
     public static event Action<PlayerControler> PlayerTurnStartedFuntions;
     public static event Func<PlayerControler, IEnumerator> PlayerTurnStarted;
-
     
     private int kineticBatteryCount, kineticBatterySteps;
     public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
 
+    private int level, potentialLevel, XP, XPThreshold;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
         player = GameObject.Find("Player");
-        statsDisplayer = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
+        statsDisplayer = GameObject.Find("PlayerStats").GetComponent<FigureStats>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
         topEnergyDisplay = GameObject.Find("TopEnergyDisplay").GetComponent<VariableDisplayer>();
@@ -181,7 +178,12 @@ public class PlayerControler : Figure
     {
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(2, new List<Func<IEnumerator>>() {() => Move(1, false, true) })));
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() {() => Lockpick(1, true) })));
+        level = 1;
+        potentialLevel = 1;
+        XP = 0;
+        XPThreshold = 10;
         maxHealth = 100;
+        statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
         health = maxHealth;
         oneToOnePos = Vector2.zero;
         statsDisplayer.SetHealthAndBlock(health, 0);
@@ -296,7 +298,7 @@ public class PlayerControler : Figure
             }
             if (!couldMoveMore)
             {
-                ActionDone();
+                EndAction();
             }
         }
     }
@@ -329,7 +331,7 @@ public class PlayerControler : Figure
                         }
                     }
                 }
-                ActionDone();
+                EndAction();
             }
         }
         else if (canPreformActions && isAppliyingConditions)
@@ -441,7 +443,8 @@ public class PlayerControler : Figure
     {
         if ((cardPlayed || preformingAbility) && isPlayerTurn)
         {
-            ActionDone();
+            EndAction();
+            //ActionDone();
         }
     }
 
@@ -475,15 +478,12 @@ public class PlayerControler : Figure
         statsDisplayer.Plan(actionsRemaining);
         nextAction = true;
     }
-    public void EndAction()
+    public override void EndAction()
     {
-        if (preformingAction && actionsRemaining.Count > 0)
+
+        if (actionManager.ActionStackNames.Peek() == "Move")
         {
-            actionsRemaining.Remove(actionsRemaining[0]);
-            statsDisplayer.Plan(actionsRemaining);
-        }
-        if (isMoving)
-        {
+            //Debug.Log("Ended Move");
             isMoving = false;
             CanJump = false;
 
@@ -493,20 +493,40 @@ public class PlayerControler : Figure
                 mapManager.showMoveCost(false);
             }
         }
-        if (isAttacking)
+        else if (actionManager.ActionStackNames.Peek() == "Ability")
         {
+            //Debug.Log("Ended Ability");
+
+        }
+        else if(actionManager.ActionStackNames.Peek() == "Block")
+        {
+            //Debug.Log("Ended block");
+        }
+        else if (actionManager.ActionStackNames.Peek() == "Attack")
+        {
+            //Debug.Log("Ended Attack");
             isAttacking = false;
             targetsLeft = 0;
         }
+        else if (actionManager.ActionStackNames.Peek() == "Condition")
+        {
+            //Debug.Log("Ended Condition");
+        }
+        else
+        {
+            Debug.Log("Unspecified action ended");
+        }
+        actionManager.ActionStackNames.Pop();
         if (preformingAction && actionsRemaining.Count > 0)
         {
             actionsRemaining.Remove(actionsRemaining[0]);
             statsDisplayer.Plan(actionsRemaining);
         }
-        isTargetATile = false; //?
-        isTargetAEnemy = false; //?
-        nextAction = true; //?
-        actionDone = true; //?
+
+        //isTargetATile = false; //?
+        //isTargetAEnemy = false; //?
+        //nextAction = true; //?
+        //actionDone = true; //?
     }
 
 
@@ -522,7 +542,8 @@ public class PlayerControler : Figure
         {
             ShowMoveCostDisplay();
         }
-        yield return new WaitUntil(() => isMoving == false);        
+        yield return new WaitUntil(() => isMoving == false);
+
     }
 
     public IEnumerator ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
@@ -563,10 +584,11 @@ public class PlayerControler : Figure
         }
         else
         {
+            actionManager.ActionStackNames.Push("Ability");
             abilityManager.AbilityPower += finalAbility;
             //abilityManager.SelectedPower += finalAbility;
             yield return StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower + finalAbility));
-            //ActionDone();
+            EndAction();
         }
         yield return null;
     }
@@ -783,6 +805,28 @@ public class PlayerControler : Figure
 
         }
     }
+    public void GainXP(int abount)
+    {
+        XP += abount;
+        while (XP >= XPThreshold)
+        {
+            PotentialLevelUp();
+        }
+        statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
+    }
+    public void PotentialLevelUp()
+    {
+        potentialLevel++;
+        XP -= XPThreshold;
+        XPThreshold += 2;
+        //temp
+        LevelUp();
+    }
 
+    public void LevelUp()
+    {
+        level = potentialLevel;
+        statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
+    }
 
 }

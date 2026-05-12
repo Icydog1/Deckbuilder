@@ -9,21 +9,21 @@ public class Knight : Enemy
     {
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(16)
-            ,() => Attack(23)
+            ,() => Attack(18)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
 
-            () => Move(17)
-            ,() => Attack(14)
+            () => Move(13)
+            ,() => Attack(13)
             ,() => Block(13)
-            ,() => ApplyCondition(new Strength(12, 2))
+            ,() => ApplyCondition(new Strength(7, 2))
         });
         moveSets.Add(new List<Func<IEnumerator>> {
 
             () => Move(7)
             ,() => Attack(8)
             ,() => Block(16)
-            ,() => ApplyCondition(new Strength(18, 2))
+            ,() => ApplyCondition(new Strength(14, 2))
 
         });
 

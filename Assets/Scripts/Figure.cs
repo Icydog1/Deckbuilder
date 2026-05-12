@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 
 public class Figure : MonoBehaviour
@@ -92,7 +90,6 @@ public class Figure : MonoBehaviour
     {
         health = maxHealth;
 
-
         statsDisplayer.SetHealthAndBlock(health, block);
         yield return null;
     }
@@ -155,7 +152,11 @@ public class Figure : MonoBehaviour
     {
         Debug.Log("Base ActionDone ran");
     }
-
+    public virtual void EndAction()
+    {
+        Debug.Log("Base EndAction ran");
+    }
+    
     public IEnumerator GetPlanString(List<Func<IEnumerator>> actions, System.Action<string> callback)
     {
         List<string> planDescription = new List<string>();
@@ -196,16 +197,18 @@ public class Figure : MonoBehaviour
         }
         else if (!isPreparingMove)
         {
+            actionManager.ActionStackNames.Push("Block");
             block += finalBlock;
             statsDisplayer.SetHealthAndBlock(health, block);
             //ActionDone();
+            EndAction();
+
         }
         yield return null;
     }
 
     public IEnumerator Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null, bool isVariable = false)
     {
-
         if (isVariable)
         {
             attackValue *= variableCardModifier;
@@ -268,6 +271,7 @@ public class Figure : MonoBehaviour
         }
         else if(!isPreparingMove)
         {
+            actionManager.ActionStackNames.Push("Attack");
             if (isPlayer)
             {
                 yield return StartCoroutine(playerControler.ControledAttack(finalAttack, attackRange, targets, repeats, attackConditions));
@@ -290,6 +294,7 @@ public class Figure : MonoBehaviour
 
                     }
                 }
+                EndAction();
             }
         }
         yield return null;
@@ -336,6 +341,7 @@ public class Figure : MonoBehaviour
         }
         else
         {
+            actionManager.ActionStackNames.Push("Move");
             if (isPlayer)
             {
                 yield return StartCoroutine(playerControler.ControledMove(finalMove, finalJump));
@@ -345,6 +351,7 @@ public class Figure : MonoBehaviour
                 Debug.Log(gameObject + " started pathfinding");
                 yield return StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
                 Debug.Log(gameObject + " finished pathfinding");
+                EndAction();
 
             }
         }
@@ -545,19 +552,21 @@ public class Figure : MonoBehaviour
         }
         else if (!isPreparingMove)
         {
-            Debug.Log("Applied Condition");
+            //Debug.Log("Applied Condition");
+            actionManager.ActionStackNames.Push("Condition");
 
             if (isPlayer)
             {
                 if (targetType == "self")
                 {
-                    Debug.Log("Gained Condition");
+                    //Debug.Log("Gained Condition");
 
                     yield return StartCoroutine(GainConditions(newConditions));
                     //if (isAction)
                     //{
                     //    ActionDone();
                     //}
+                    EndAction();
                 }
                 else
                 {
@@ -570,13 +579,14 @@ public class Figure : MonoBehaviour
                 {
                     foreach (Condition condition in newConditions)
                     {
-                        Debug.Log("applieing Condition");
+                        //Debug.Log("applieing Condition");
 
                         yield return StartCoroutine(target.GainCondition(condition));
-                        Debug.Log("applied Condition");
+                        //Debug.Log("applied Condition");
 
                     }
                 }
+                EndAction();
                 //if (isAction)
                 //{
                 //    ActionDone();
@@ -669,7 +679,7 @@ public class Figure : MonoBehaviour
         }
         if (isPlayer)
         {
-            Debug.Log("updated display");
+            //Debug.Log("updated display");
             yield return StartCoroutine(deckManager.UpdateCardsDisplay());
         }
         //Debug.Log("first condition: " + conditions[0].Name);

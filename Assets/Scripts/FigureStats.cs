@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static Unity.Collections.AllocatorManager;
 
 public class FigureStats : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class FigureStats : MonoBehaviour
         healthText = healthTextObject.GetComponent<TextMeshProUGUI>();
         conditionsText = conditionsTextObject.GetComponent<TextMeshProUGUI>();
         planText = planTextObject.GetComponent<TextMeshProUGUI>();
+
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
 
         if (isPlayerUI)
@@ -169,4 +171,9 @@ public class FigureStats : MonoBehaviour
         //Debug.Log(movesDisplay);
         planText.text = "Plan: " + movesDisplay;
     }
+    public virtual void SetLeveAndXP(int Level, int potenialLevel, int XP, int XPThreshold)
+    {
+        //levelAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
+    }
+
 }

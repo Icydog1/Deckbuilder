@@ -22,6 +22,7 @@ public class Enemy : Figure
     protected int actionNum;
     protected EnemyUi enemyStatsDisplayer;
     //protected FigureStorage figureStorage;
+    protected int XPValue = 5;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -194,6 +195,11 @@ public class Enemy : Figure
         CalculateValues();
         nextAction = true;
     }
+    public override void EndAction()
+    {
+        //CalculateValues();
+        //nextAction = true;
+    }
     public void showHideTooltip(bool show)
     {
 
@@ -202,6 +208,7 @@ public class Enemy : Figure
     public override void Die()
     {
         Destroy(gameObject);
+        playerControler.GainXP(XPValue);
     }
 
     public override void Remove(LevelManager levelManager = null)

@@ -50,7 +50,7 @@ public class Condition : MonoBehaviour
 
     public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, bool isShown, string[] conditionAbnormality = null, Func<IEnumerator>[] actionPlan = null)
     {
-        Debug.Log("base Condition generated");
+        //Debug.Log("base Condition generated");
         conditionName = name;
         amount = conditionValue;
         duration = conditionDuration;
