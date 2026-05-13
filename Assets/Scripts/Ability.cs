@@ -117,8 +117,8 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
                     playerControler.UnmodifiedAction = true;
                     yield return abilityManager.StartCoroutine(actionManager.PreformAction(action()));
                     playerControler.UnmodifiedAction = false;
-                    yield return new WaitUntil(() => playerControler.NextAction == true);
-                    playerControler.NextAction = false;
+                    //yield return new WaitUntil(() => playerControler.NextAction == true);
+                    //playerControler.NextAction = false;
                 }
 
                 //Debug.Log("done");

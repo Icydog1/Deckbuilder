@@ -15,7 +15,6 @@ public class PlayerControler : Figure
     private GameObject clickedTile, clickedEnemy;
     private GameObject playedCard;
     public GameObject PlayedCard { get { return playedCard; } set { playedCard = value; } }
-    private GameObject currentTile;
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
     private GameManager gameManager;
@@ -54,6 +53,12 @@ public class PlayerControler : Figure
     private int range;
     private bool isTargetATile, isTargetAEnemy;
     private GameObject selectedTile;
+    private GameObject interactButton;
+    private GameObject currentTile;
+    public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
+
+    //public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
+
     private List<Figure> posibleTargets;
     private List<string> actionsRemaining = new List<string>();
     public List<string> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
@@ -70,6 +75,9 @@ public class PlayerControler : Figure
     public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
 
     private int level, potentialLevel, XP, XPThreshold;
+    public int Level { get { return level; } set { level = value; } }
+    public int PotentialLevel { get { return potentialLevel; } set { potentialLevel = value; } }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
@@ -81,6 +89,8 @@ public class PlayerControler : Figure
         bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
+        interactButton = GameObject.Find("InteractButton");
+        //interactButton.SetActive(false);
 
         base.Awake(); 
     }
@@ -91,7 +101,7 @@ public class PlayerControler : Figure
         isPlayer = true;
         team = 0;
         //Debug.Log(playerStats);
-        GameManager.GameStarted += PreparePlayer;
+        GameManager.LateGameStarted += PreparePlayer;
         GameManager.ResetGame += ResetPlayer;
 
         //dev mode
@@ -108,8 +118,7 @@ public class PlayerControler : Figure
     // Update is called once per frame
     void Update()
     {
-        //playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
-        //oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
+
         if (isMoving && !isPreformingAnimation)
         {
             if (mouseManager.SelectedObject)
@@ -186,6 +195,7 @@ public class PlayerControler : Figure
         statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
         health = maxHealth;
         oneToOnePos = Vector2.zero;
+        currentTile = mapManager.GetTileAtHex(oneToOnePos);
         statsDisplayer.SetHealthAndBlock(health, 0);
         yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
         statsDisplayer.Plan(actionsRemaining);
@@ -197,8 +207,7 @@ public class PlayerControler : Figure
         if (isTargetATile && canPreformActions)
         {
             clickedTile = tile;
-            //playerHexCords = mapManager.GetPosInHexCords(player.transform.position);
-            //playerOneToOneCords = mapManager.PosToOneToOne(player.transform.position);
+
             Vector2 clickedTileCords = clickedTile.transform.position;
             if (isMoving)
             {
@@ -253,19 +262,25 @@ public class PlayerControler : Figure
             actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
         }
         statsDisplayer.Plan(actionsRemaining);
-
-        //oneToOnePos = mapManager.PosToOneToOne(player.transform.position);
-        if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Door>())
+        if (currentTile.GetComponent<Interactable>())
         {
-            GameObject door = mapManager.GetTileAtHex(oneToOnePos);
-            Debug.Log("opened door");
-            roomSpawner.SpawnRoomsNextToDoor(door, door.GetComponent<Door>().RoomNextToCords);
-            //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
-            Debug.Log("room spawned");
-            yield return StartCoroutine(actionManager.PreformPreparedActions());
-            Debug.Log("ran perpared actions");
+            interactButton.SetActive(true);
         }
-        if (mapManager.GetTileAtHex(oneToOnePos).GetComponent<Stair>())
+        else
+        {
+            interactButton.SetActive(false);
+        }
+        if (currentTile.GetComponent<Door>())
+        {
+            //Debug.Log("opened door");
+            roomSpawner.SpawnRoomsNextToDoor(currentTile, currentTile.GetComponent<Door>().RoomNextToCords);
+            //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
+            //Debug.Log("room spawned");
+            currentTile = mapManager.GetTileAtHex(oneToOnePos);
+            yield return StartCoroutine(actionManager.PreformPreparedActions());
+            //Debug.Log("ran perpared actions");
+        }
+        if (currentTile.GetComponent<Stair>())
         {
 
             yield return StartCoroutine(levelManager.GoUpLevel());
@@ -301,6 +316,7 @@ public class PlayerControler : Figure
                 EndAction();
             }
         }
+
     }
 
 
@@ -823,10 +839,11 @@ public class PlayerControler : Figure
         LevelUp();
     }
 
-    public void LevelUp()
+    public IEnumerator LevelUp()
     {
-        level = potentialLevel;
+        level++;
         statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
+        yield return StartCoroutine(rewardManager.LevelUpReward());
     }
 
 }

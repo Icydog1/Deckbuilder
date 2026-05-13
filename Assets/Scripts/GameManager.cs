@@ -21,8 +21,9 @@ public class GameManager : MonoBehaviour
     public static event Action<GameManager> GameStartedFunctions;
     public static event Action<GameManager> ResetGame;
     public static event Func<GameManager, IEnumerator> GameStarted;
+    public static event Func<GameManager, IEnumerator> LateGameStarted;
 
-    
+
 
 
 
@@ -65,8 +66,11 @@ public class GameManager : MonoBehaviour
         {
             yield return StartCoroutine(GameStarted(this));
         }
-        
         levelManager.StartLevel();
+        if (LateGameStarted != null)
+        {
+            yield return StartCoroutine(LateGameStarted(this));
+        }
         //roomSpawner.SpawnStartingRoom();
         turnManager.StartTakingTurns();
     }
@@ -88,7 +92,9 @@ public class GameManager : MonoBehaviour
         pauseScreenBlocker.GetComponent<Image>().enabled = false;
         mouseManager.MouseOffObject(pauseScreenBlocker.transform.Find("RestartGameButton").gameObject);
         pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(false);
+        Debug.Log("ReStarted Game 1");
         yield return StartCoroutine(levelManager.ResetGame());
+        Debug.Log("ReStarted Game 2");
         //yield return new WaitForEndOfFrame();
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
@@ -100,12 +106,18 @@ public class GameManager : MonoBehaviour
         {
             GameStartedFunctions(this);
         }
+        Debug.Log("ReStarted Game 3");
+
         if (GameStarted != null)
         {
             yield return StartCoroutine(GameStarted(this));
         }
+        Debug.Log("ReStarted Game 4");
         levelManager.StartLevel();
-
+        if (LateGameStarted != null)
+        {
+            yield return StartCoroutine(LateGameStarted(this));
+        }
         //roomSpawner.SpawnStartingRoom();
         turnManager.StartTakingTurns();
     }

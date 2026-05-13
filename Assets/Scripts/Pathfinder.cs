@@ -576,6 +576,10 @@ public class Pathfinder : MonoBehaviour
             pos = mapManager.OneToOneToPos(oneToOnePos);
             figure.transform.position = new Vector3(pos.x, pos.y, figure.transform.position.z);
             figureScript.OneToOnePos = oneToOnePos;
+            if (figure.name == "Player")
+            {
+                figure.GetComponent<PlayerControler>().CurrentTile = mapManager.GetTileAtHex(oneToOnePos);
+            }
             yield return StartCoroutine(figureScript.MoveOneSpace());
             yield return new WaitForSeconds(newFigureMoveDelay);
         }

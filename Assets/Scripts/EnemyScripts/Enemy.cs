@@ -72,18 +72,22 @@ public class Enemy : Figure
         if (distanceToPlayer >= 50)
         {
             yield return StartCoroutine(actionManager.PreformAction(GainCondition(new DistanceJump())));
-            Debug.Log("need to ModifyJump");
             //GainCondition(new DistanceJump());
         }
         //actionManager.PlanToList = displayedPlan;
         currentPlan.Clear();
         displayedPlan.Clear();
+        Debug.Log("new plan with move" + currentmove);
+
         if (currentmove == movesSetOrder.Count)
         {
+            Debug.Log("Reset plan");
             currentmove = 0;
         }
         if (movesSetOrder[currentmove] == -1)
         {
+            Debug.Log("random plan");
+
             plannedMoveSet = moveSets[UnityEngine.Random.Range(0, moveSets.Count)];
         }
         else
@@ -132,7 +136,7 @@ public class Enemy : Figure
     {
         GameObject border = transform.Find("Border").gameObject;
         border.GetComponent<SpriteRenderer>().color = Color.black;
-        Debug.Log(gameObject + " ended turn");
+        //Debug.Log(gameObject + " ended turn");
         yield return StartCoroutine(baseEndTurn());
     }
     public void StartStopTurn(bool isStart)
@@ -149,25 +153,25 @@ public class Enemy : Figure
     }
     public IEnumerator TakeTurn()
     {
-        Debug.Log(gameObject + " started taking turn");
+        //Debug.Log(gameObject + " started taking turn");
         yield return StartCoroutine(StartOfTurn());
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
-        Debug.Log(gameObject + " started main action sequence");
+        //Debug.Log(gameObject + " started main action sequence");
 
         for (int i = 0; i < currentPlan.Count; i++)
         {
             yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
-            Debug.Log(gameObject + " toook 1 action");
+            //Debug.Log(gameObject + " toook 1 action");
 
             //yield return new WaitUntil(() => nextAction == true);
             //nextAction = false;
         }
-        Debug.Log(gameObject + " ended main action sequence");
+        //Debug.Log(gameObject + " ended main action sequence");
 
         currentmove++;
         yield return StartCoroutine(EndTurn());
-        Debug.Log(gameObject + " ended turn");
+        //Debug.Log(gameObject + " ended turn");
 
     }
     public IEnumerator DisplayMovePosibilities()

@@ -48,7 +48,7 @@ public class Figure : MonoBehaviour
     //protected List<Func<IEnumerator>> prepareActions = new List<Func<IEnumerator>>();
     //public List<Func<IEnumerator>> PrepareActions { set { prepareActions = value; } }
 
-    public List<Condition> conditions = new List<Condition>();
+    protected List<Condition> conditions = new List<Condition>();
     public List<Condition> Conditions { set { conditions = value; } get { return conditions; } }
 
     protected int variableCardModifier;
@@ -89,8 +89,8 @@ public class Figure : MonoBehaviour
     public virtual IEnumerator LoadFigure()
     {
         health = maxHealth;
-
         statsDisplayer.SetHealthAndBlock(health, block);
+
         yield return null;
     }
 
@@ -348,9 +348,9 @@ public class Figure : MonoBehaviour
             }
             else
             {
-                Debug.Log(gameObject + " started pathfinding");
+                //Debug.Log(gameObject + " started pathfinding");
                 yield return StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
-                Debug.Log(gameObject + " finished pathfinding");
+                //Debug.Log(gameObject + " finished pathfinding");
                 EndAction();
 
             }

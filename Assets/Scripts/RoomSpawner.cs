@@ -150,6 +150,8 @@ public class RoomSpawner : MonoBehaviour
 
     public void SpawnStartingRoom()
     {
+        Debug.Log("Spawned Starting Room");
+
         realativeRotation = 0;
         SpawnRoom(Vector2Int.zero, rooms[0]);
     }

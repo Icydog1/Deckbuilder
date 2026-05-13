@@ -167,6 +167,12 @@ public class RewardManager : MonoBehaviour
         tileScript = tile.GetComponent<Lootable>();
         tileScript.Looted();
     }
+    public IEnumerator LevelUpReward()
+    {
+        AnyReward();
+        yield return StartCoroutine(GenerateReward(5, false));
+        yield return new WaitUntil(() => isGettingReward == false);
+    }
     public void BossReward()
     {
         AnyReward();
