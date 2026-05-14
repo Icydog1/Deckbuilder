@@ -197,7 +197,7 @@ public class RewardManager : MonoBehaviour
     }
     public IEnumerator RemoveCardInDeck()
     {
-        yield return StartCoroutine(deckManager.ChooseCard(deckManager.entireDeck, (result) => deckManager.DestroyCard(result)));
+        yield return StartCoroutine(deckManager.ChooseCard(deckManager.EntireDeck, (result) => deckManager.DestroyCard(result)));
     }
 
     private IEnumerator GenerateReward(int numberOfRewards, bool isCard = true)

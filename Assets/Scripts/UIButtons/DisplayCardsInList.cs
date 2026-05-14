@@ -14,7 +14,7 @@ public class DisplayCardsInList : UIButton
     protected override void Awake()
     {
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        listDisplayer = GameObject.Find("ListDisplayer");
+        //listDisplayer = GameObject.Find("ListDisplayer");
         base.Awake();
     }
 
@@ -26,6 +26,6 @@ public class DisplayCardsInList : UIButton
 
     public override void Activate()
     {
-        deckManager.DisplayCardsInListByName(listName, listDisplayer.transform.position, 5, isRandomOrder);
+        deckManager.DisplayCardsInListByName(listName, transform.position, 5, isRandomOrder);
     }
 }

@@ -1,32 +1,37 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.UI;
 using static Lootable;
 
 public class DeckManager : MonoBehaviour
 {
-    public GameManager gameManager;
-    //[SerializeField]
-    public GameObject hand, deck, discard, play;
+    private GameManager gameManager;
+    [SerializeField]
+    private GameObject hand, deck, discard, play;
     public GameObject Hand { get { return hand; } }
+    [SerializeField]
+    private List<GameObject> startingDeck = new List<GameObject>();
 
-    public List<GameObject> entireDeck, startingDeck = new List<GameObject>();
-    public List<GameObject> deckContents, handContents, discardContents, playContents = new List<GameObject>();
+    public List<GameObject> entireDeck = new List<GameObject>();
+    public List<GameObject> deckContents = new List<GameObject>(), handContents = new List<GameObject>(), discardContents = new List<GameObject>(), playContents = new List<GameObject>();
     public List<GameObject> DeckContents {  get { return deckContents; } }
     public List<GameObject> DiscardContents { get { return discardContents; } }
     public List<GameObject> EntireDeck { get { return entireDeck; } }
 
     private List<GameObject> displayedList = new List<GameObject>();
     private List<GameObject> displayedListName;
-    private List<List<GameObject>> posibleCardLocations = new List<List<GameObject>>();
+    private Dictionary<string,List<GameObject>> posibleCardLocations = new Dictionary<string,List<GameObject>>();
     private VariableDisplayer cardsInDeckDisplay, cardsInDiscardDisplay, cardsInEntireDeckDisplay;
     private float relativeSpaceBetweenCardsInHand = 0.35f;
     //if change set hand positon
     private float baseCardSize = 0.9f;
     public float BaseCardSize { get { return baseCardSize; } }
 
-    private float selectedCardHeightIncrease = 0.25f;
+    private float selectedCardHeightIncrease = 100f;
 
     private int handSize;
     private int maxHandSize = 10;
@@ -34,6 +39,7 @@ public class DeckManager : MonoBehaviour
     private int startHandSize = 5;
     private CameraScript cameraScript;
     private MouseManager mouseManager;
+    [SerializeField]
     private GameObject listDisplayer;
     private UIManager uIManager;
     private PlayerControler playerControler;
@@ -57,7 +63,7 @@ public class DeckManager : MonoBehaviour
         cardsInDeckDisplay = GameObject.Find("CardsInDeckDisplay").GetComponent<VariableDisplayer>();
         cardsInDiscardDisplay = GameObject.Find("CardsInDiscardDisplay").GetComponent<VariableDisplayer>();
         cardsInEntireDeckDisplay = GameObject.Find("CardsInEntireDeckDisplay").GetComponent<VariableDisplayer>();
-        listDisplayer = GameObject.Find("ListDisplayer");
+        //listDisplayer = GameObject.Find("ListDisplayer");
         uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
 
@@ -73,10 +79,10 @@ public class DeckManager : MonoBehaviour
         //deckContents = new List<GameObject>(startingDeck);
         //entireDeck = new List<GameObject>(startingDeck);
 
-        posibleCardLocations.Add(deckContents);
-        posibleCardLocations.Add(handContents);
-        posibleCardLocations.Add(discardContents);
-        posibleCardLocations.Add(playContents);
+        posibleCardLocations.Add("deck", deckContents);
+        posibleCardLocations.Add("hand", handContents);
+        posibleCardLocations.Add("discard", discardContents);
+        posibleCardLocations.Add("play", playContents);
 
         GameManager.ResetGame += ResetDeck;
         GameManager.GameStartedFunctions += SpawnStartingDeck;
@@ -116,6 +122,7 @@ public class DeckManager : MonoBehaviour
             newCard.transform.SetParent(deck.transform);
             newCard.gameObject.SetActive(false);
         }
+        cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
         Suffle(ref deckContents);
     }
     public IEnumerator DiscardHand()
@@ -229,22 +236,30 @@ public class DeckManager : MonoBehaviour
 
     public IEnumerator MoveTo(GameObject card, GameObject location, int newIndex = -1)
     {
-
-        foreach (List<GameObject> posibleLocation in posibleCardLocations)
+        GameObject cardLocation = card.transform.parent.gameObject;
+        string locationName = cardLocation.name.ToLower();
+        if (posibleCardLocations.ContainsKey(locationName))
         {
-            if (posibleLocation.Contains(card))
-            {
-                posibleLocation.Remove(card);
-            }
+            posibleCardLocations[locationName].Remove(card);
         }
+        //foreach (KeyValuePair<string, List<GameObject>> posibleLocation in posibleCardLocations)
+        //{
+        //    if (posibleLocation.Contains(card))
+        //    {
+        //        posibleLocation.Remove(card);
+        //    }
+        //}
         DeSelectCard(card);
         if (newIndex != -1)
         {
-            GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
+            //GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
+            posibleCardLocations[location.name.ToLower()].Insert(newIndex, card);
         }
         else
         {
-            GetListByName(location.name.ToLower() + "Contents").Add(card);
+            posibleCardLocations[location.name.ToLower()].Add(card);
+
+            //GetListByName(location.name.ToLower() + "Contents").Add(card);
         }
         card.transform.SetParent(location.transform);
         card.transform.position = location.transform.position;
@@ -290,17 +305,41 @@ public class DeckManager : MonoBehaviour
     {
         if (GetRelativeCardSize(card) < 1.5f)
         {
-            card.transform.SetAsLastSibling();
+            Canvas canvas = card.AddComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingLayerName = "Card";
+            card.AddComponent<GraphicRaycaster>();
+            //card.transform.SetAsLastSibling();
             SetRelativeCardSize(card, 2);
-            card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+            //card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+            card.GetComponent<RectTransform>().anchoredPosition = card.GetComponent<RectTransform>().anchoredPosition + new Vector2(0, selectedCardHeightIncrease);
+            //Debug.Log("selected " + card);
         }
     }
     public void DeSelectCard(GameObject card)
     {
+
+        Canvas canvas = card.GetComponent<Canvas>();
+        GraphicRaycaster raycaster = card.GetComponent<GraphicRaycaster>();
+
+        if (canvas != null)
+        {
+            Destroy(raycaster);            
+            Destroy(canvas);
+            //Debug.Log("deselected " + card);
+
+        }
         if (GetRelativeCardSize(card) > 1.5f && !playContents.Contains(card))
         {
+            //Debug.Log("deselected " + card);
             SetRelativeCardSize(card, 1);
-            card.transform.position = card.transform.position - new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+            //card.transform.position = card.transform.position - new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+            if (!isDisplayingCards)
+            {
+                card.GetComponent<RectTransform>().anchoredPosition = card.GetComponent<RectTransform>().anchoredPosition - new Vector2(0, selectedCardHeightIncrease);
+            }
+
+
         }
     }
     public void SetRelativeCardSize(GameObject card, float size)
@@ -360,6 +399,7 @@ public class DeckManager : MonoBehaviour
     {
         isDisplayingCards = true;
         listDisplayer.SetActive(true);
+        Transform storeTo = listDisplayer.transform.Find("Viewport").transform.Find("Content");
         uIManager.IsDisplayingList = true;
         displayedList.Clear();
         displayedListName = cards;
@@ -391,12 +431,12 @@ public class DeckManager : MonoBehaviour
         {
             card.SetActive(true);
             card.transform.localScale = Vector3.zero;
-            card.transform.SetParent(listDisplayer.transform);
+            card.transform.SetParent(storeTo);
             yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
             SetRelativeCardSize(card, 1);
-            int row = Mathf.FloorToInt(displayedList.IndexOf(card) / rowLimit);
-            int column = displayedList.IndexOf(card) % rowLimit;
-            card.transform.position = new Vector3(pos.x + (column - (rowLimit/2)) * horizontalSpaceBetweenCards, pos.y - row * VerticalSpaceBetweenCards, card.transform.position.z);
+            //int row = Mathf.FloorToInt(displayedList.IndexOf(card) / rowLimit);
+            //int column = displayedList.IndexOf(card) % rowLimit;
+            //card.transform.position = new Vector3(pos.x + (column - (rowLimit/2)) * horizontalSpaceBetweenCards, pos.y - row * VerticalSpaceBetweenCards, card.transform.position.z);
         }
     }
 

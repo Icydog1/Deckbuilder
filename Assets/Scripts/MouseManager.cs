@@ -65,10 +65,6 @@ public class MouseManager : MonoBehaviour
             mouseDown = false;
             MouseReleased();
         }
-        if (selectedObject && selectedObject.GetComponent<Card>())
-        {
-            deckManager.SelectCard(selectedObject);
-        }
         if (clickedObject && clickedObject.GetComponent<Dragable>() && playerControler.CanPlayCards == true && clickedObject.GetComponent<Card>() != null)
         {
             //Debug.Log(worldMousePos);
@@ -95,6 +91,11 @@ public class MouseManager : MonoBehaviour
     }
     public void MouseOnObject(GameObject newObject)
     {
+        if (newObject == selectedObject)
+        {
+            Debug.Log("same object");
+
+        }
         float newheight = transform.position.z;
 
         if (mouseOver.Count == 0)
@@ -110,6 +111,10 @@ public class MouseManager : MonoBehaviour
                 selectedObject = item;
                 selectedHeight = mouseOverHeights[mouseOver.IndexOf(item)];
             }
+        }
+        if (selectedObject.GetComponent<Card>())
+        {
+            deckManager.SelectCard(selectedObject);
         }
         if (selectedObject.GetComponent<Selectable>())
         {
@@ -203,8 +208,11 @@ public class MouseManager : MonoBehaviour
         if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.CanPlayCards == true)
         {
             dragableClicked = true;
-            deckManager.hand.transform.SetAsLastSibling();
-            clickedObject.transform.SetAsLastSibling();
+            //Canvas canvas = clickedObject.AddComponent<Canvas>();
+            //canvas.overrideSorting = true;
+            //canvas.sortingLayerName = "Card";
+            //deckManager.Hand.transform.SetAsLastSibling();
+            //clickedObject.transform.SetAsLastSibling();
             StartCoroutine(ShortFirstClick());
         }
 
@@ -222,7 +230,6 @@ public class MouseManager : MonoBehaviour
         {
             StopCoroutine(heldButtonRoutine);
         }
-
         if (clickedObject && clickedObject.GetComponent<UIButton>())
         {
             GameObject image = clickedObject.transform.Find("Image").gameObject;
@@ -230,7 +237,7 @@ public class MouseManager : MonoBehaviour
         }
         if (dragableClicked && !shortClick)
         {
-
+            //Debug.Log("stoped draging");
             if (clickedObject.GetComponent<Card>() != null)
             {
                 if (mousePos.y > topPlayLine * Screen.height)
@@ -247,7 +254,8 @@ public class MouseManager : MonoBehaviour
                 {
                     StartCoroutine(deckManager.UpdateHand());
                 }
-                deckManager.hand.transform.SetAsFirstSibling();
+                //deckManager.DeSelectCard(clickedObject);
+                //deckManager.Hand.transform.SetAsFirstSibling();
             }
             dragableClicked = false;
         }

@@ -1,9 +1,10 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraScript : MonoBehaviour
 {
-    private float scroll;
+    private float scrollAmount;
     private float scrollSpeed = 10;
     private float xSpeed, ySpeed, camSpeed = 3;
     private float maxZoom = 500, minZoom = 1f;
@@ -31,7 +32,6 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-
         xSpeed = Input.GetAxis("Horizontal");
         ySpeed = Input.GetAxis("Vertical");
         if (Input.GetKeyDown(KeyCode.Space))
@@ -51,10 +51,18 @@ public class CameraScript : MonoBehaviour
         {
             transform.position = new Vector3(player.transform.position.x, player.transform.position.y, transform.position.z);
         }
-        if (Input.GetAxis("Mouse ScrollWheel") != 0)
+
+        if ((Input.GetAxis("Mouse ScrollWheel") != 0 && !deckManager.IsDisplayingCards) || Input.GetAxis("Keyboard ScrollWheel") != 0)
         {
-            scroll = Input.GetAxis("Mouse ScrollWheel");
-            cam.orthographicSize -= scroll * scrollSpeed;
+            if (Input.GetAxis("Mouse ScrollWheel") != 0 && !deckManager.IsDisplayingCards)
+            {
+                scrollAmount = Input.GetAxis("Mouse ScrollWheel");
+            }
+            else
+            {
+                scrollAmount = Input.GetAxis("Keyboard ScrollWheel") * Time.deltaTime * 3;
+            }
+            cam.orthographicSize -= scrollAmount * scrollSpeed;
             if (cam.orthographicSize <= minZoom)
             {
                 cam.orthographicSize = minZoom;
@@ -64,9 +72,11 @@ public class CameraScript : MonoBehaviour
                 cam.orthographicSize = maxZoom;
             }
             zoom = cam.orthographicSize;
-            
+
             StartCoroutine(resolutionChanged());
         }
+
+
 
         if (xSpeed != 0 || ySpeed != 0)
         {
