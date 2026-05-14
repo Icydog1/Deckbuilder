@@ -20,6 +20,7 @@ public class Scout : Enemy
             ,() => Attack(20, 4)
         });
         maxHealth = 50;
+        XPValue = 3;
         base.Awake();
     }
 }

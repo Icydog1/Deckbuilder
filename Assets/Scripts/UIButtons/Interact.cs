@@ -20,9 +20,7 @@ public class Interact : UIButton
 
     public override void Activate()
     {
-
         //Debug.Log("Clicked button");
         playerControler.CurrentTile.GetComponent<Interactable>().Interacted();
-
     }
 }

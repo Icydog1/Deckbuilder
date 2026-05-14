@@ -29,7 +29,7 @@ public class Enemy : Figure
     public override void Awake()
     {
         //figureStorage = GameObject.Find("FigureStorage").GetComponent<FigureStorage>();
-        LevelManager.LevelCleared += Remove;
+        LevelManager.LevelClearedFuntions += Remove;
         base.Awake();
         enemyName = this.name;
         enemyName = enemyName.Replace("(Clone)", "");
@@ -59,9 +59,12 @@ public class Enemy : Figure
         health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
         yield return StartCoroutine(GetNewPlan(null));
+        //Debug.Log("Finished loading");
+
     }
     public IEnumerator GetNewPlan(TurnManager turnManager)
     {
+        //Debug.Log("Geting plan");
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
         int distanceToPlayer = pathfinder.GetDistanceTo(playerControler.OneToOnePos, oneToOnePos);
         if (distanceToPlayer >= 20)
@@ -77,16 +80,17 @@ public class Enemy : Figure
         //actionManager.PlanToList = displayedPlan;
         currentPlan.Clear();
         displayedPlan.Clear();
-        Debug.Log("new plan with move" + currentmove);
+        //Debug.Log("new plan with move" + currentmove);
 
         if (currentmove == movesSetOrder.Count)
         {
-            Debug.Log("Reset plan");
+            //Debug.Log("Reset plan");
             currentmove = 0;
         }
+        //Debug.Log(gameObject + "Current enemy plan");
         if (movesSetOrder[currentmove] == -1)
         {
-            Debug.Log("random plan");
+            //Debug.Log("random plan");
 
             plannedMoveSet = moveSets[UnityEngine.Random.Range(0, moveSets.Count)];
         }
@@ -101,6 +105,8 @@ public class Enemy : Figure
         yield return StartCoroutine(UpdatePlan());
 
         //UpdatePlan();
+        //Debug.Log("Finished getting plan");
+
     }
 
     public IEnumerator UpdatePlan()
@@ -162,6 +168,9 @@ public class Enemy : Figure
         for (int i = 0; i < currentPlan.Count; i++)
         {
             yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
+            displayedPlan.RemoveAt(0);
+            enemyStatsDisplayer.Plan(displayedPlan);
+
             //Debug.Log(gameObject + " toook 1 action");
 
             //yield return new WaitUntil(() => nextAction == true);
@@ -213,23 +222,26 @@ public class Enemy : Figure
     {
         Destroy(gameObject);
         playerControler.GainXP(XPValue);
-    }
-
-    public override void Remove(LevelManager levelManager = null)
-    {
-        Destroy(gameObject);
-    }
-
-    public void OnDestroy()
-    {
         if (isMyTurn)
         {
             StartStopTurn(false);
             turnManager.NextTurn();
         }
         TurnManager.RoundStarted -= GetNewPlan;
-        LevelManager.LevelCleared -= Remove;
+        LevelManager.LevelClearedFuntions -= Remove;
         turnManager.RemoveFromTurnOrder(gameObject);
+    }
 
+    public override void Remove(LevelManager levelManager = null)
+    {
+        Destroy(gameObject);
+        if (isMyTurn)
+        {
+            StartStopTurn(false);
+            turnManager.NextTurn();
+        }
+        TurnManager.RoundStarted -= GetNewPlan;
+        LevelManager.LevelClearedFuntions -= Remove;
+        turnManager.RemoveFromTurnOrder(gameObject);
     }
 }

@@ -18,6 +18,8 @@ public class Orc : Enemy
 
         movesSetOrder = new List<int>() {0,1};
         maxHealth = 50;
+        XPValue = 3;
+
         base.Awake();
     }
 }

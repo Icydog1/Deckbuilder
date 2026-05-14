@@ -3833,11 +3833,7 @@ PrefabInstance:
       objectReference: {fileID: 4123394013621000764, guid: 08398da0b0ea6d94f8f8f6d948e4a3c1, type: 3}
     - target: {fileID: 135766697542557908, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_Name
-      value: SpawnerEmptyTile (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 962881970466219636, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: moveCost
-      value: 8
+      value: SpawnerEmptyTile (5)
       objectReference: {fileID: 0}
     - target: {fileID: 2235903300036056375, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -58017,11 +58013,7 @@ PrefabInstance:
       objectReference: {fileID: 4123394013621000764, guid: 08398da0b0ea6d94f8f8f6d948e4a3c1, type: 3}
     - target: {fileID: 135766697542557908, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_Name
-      value: SpawnerEmptyTile (3)
-      objectReference: {fileID: 0}
-    - target: {fileID: 962881970466219636, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: moveCost
-      value: 8
+      value: SpawnerEmptyTile (4)
       objectReference: {fileID: 0}
     - target: {fileID: 2235903300036056375, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -74581,11 +74573,7 @@ PrefabInstance:
       objectReference: {fileID: 4123394013621000764, guid: 08398da0b0ea6d94f8f8f6d948e4a3c1, type: 3}
     - target: {fileID: 135766697542557908, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_Name
-      value: SpawnerEmptyTile (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 962881970466219636, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: moveCost
-      value: 8
+      value: SpawnerEmptyTile (3)
       objectReference: {fileID: 0}
     - target: {fileID: 2235903300036056375, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -90668,20 +90656,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 502482658808102963}
     m_Modifications:
     - target: {fileID: -6030925323836033974, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: enemy.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -6030925323836033974, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: 'enemy.Array.data[0]'
       value: 
       objectReference: {fileID: 4123394013621000764, guid: 08398da0b0ea6d94f8f8f6d948e4a3c1, type: 3}
     - target: {fileID: 135766697542557908, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_Name
-      value: SpawnerEmptyTile (5)
-      objectReference: {fileID: 0}
-    - target: {fileID: 962881970466219636, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: moveCost
-      value: 8
+      value: SpawnerEmptyTile (2)
       objectReference: {fileID: 0}
     - target: {fileID: 2235903300036056375, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -93657,11 +93637,7 @@ PrefabInstance:
       objectReference: {fileID: 4123394013621000764, guid: 08398da0b0ea6d94f8f8f6d948e4a3c1, type: 3}
     - target: {fileID: 135766697542557908, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_Name
-      value: SpawnerEmptyTile
-      objectReference: {fileID: 0}
-    - target: {fileID: 962881970466219636, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: moveCost
-      value: 8
+      value: SpawnerEmptyTile (1)
       objectReference: {fileID: 0}
     - target: {fileID: 2235903300036056375, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -106250,20 +106226,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 502482658808102963}
     m_Modifications:
     - target: {fileID: -6030925323836033974, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: enemy.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -6030925323836033974, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: 'enemy.Array.data[0]'
       value: 
       objectReference: {fileID: 4123394013621000764, guid: 08398da0b0ea6d94f8f8f6d948e4a3c1, type: 3}
     - target: {fileID: 135766697542557908, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_Name
-      value: SpawnerEmptyTile (4)
-      objectReference: {fileID: 0}
-    - target: {fileID: 962881970466219636, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
-      propertyPath: moveCost
-      value: 8
+      value: SpawnerEmptyTile
       objectReference: {fileID: 0}
     - target: {fileID: 2235903300036056375, guid: 67c4bd4dcbb6fa140b05a93af98db5d4, type: 3}
       propertyPath: m_LocalPosition.x

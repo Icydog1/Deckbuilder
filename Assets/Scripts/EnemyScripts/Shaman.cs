@@ -18,6 +18,7 @@ public class Shaman : Enemy
 
         //movesSetOrder = new List<int>() { 0, 1 };
         maxHealth = 50;
+        XPValue = 4;
         base.Awake();
     }
 }

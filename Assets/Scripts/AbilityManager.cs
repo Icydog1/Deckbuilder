@@ -39,6 +39,7 @@ public class AbilityManager : MonoBehaviour
     public IEnumerator SetSelectedPower(int power)
     {
         selectedPower = Mathf.Clamp(power, 0, abilityPower);
+        //Debug.Log("Set power");
         yield return StartCoroutine(UpdateAbilitiesDescription());
         selectedPowerDisplay.DisplayText(selectedPower);
     }
@@ -64,7 +65,7 @@ public class AbilityManager : MonoBehaviour
         abilities.Add(newAbility);
         newAbilityUI.AbilityNumber = abilities.Count - 1;
         newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - abilities.Count * 50);
-
+        //Debug.Log("Gained ability");
         yield return StartCoroutine(UpdateAbilitiesDescription());
     }
     public void LoseAbility(Ability ability)
@@ -95,6 +96,14 @@ public class AbilityManager : MonoBehaviour
 
     public IEnumerator UpdateAbilitiesDescription()
     {
+        //Debug.Log("start " + abilities.Count);
+        //for (int i = 0; i < abilities.Count; i++)
+        //{
+        //    yield return StartCoroutine(abilities[i].UpdateDiscription(selectedPower));
+
+        //}
+        //Debug.Log("end " + abilities.Count);
+
         foreach (Ability ability in abilities)
         {
             yield return StartCoroutine(ability.UpdateDiscription(selectedPower));

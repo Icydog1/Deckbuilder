@@ -1,9 +1,7 @@
-
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 public class GameManager : MonoBehaviour
 {
@@ -54,6 +52,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartGame()
     {
+        //move out
         yield return new WaitForEndOfFrame();
 
         //yield return new WaitUntil(() => nextAction == true);
@@ -62,17 +61,34 @@ public class GameManager : MonoBehaviour
         {
             GameStartedFunctions(this);
         }
+
         if (GameStarted != null)
         {
-            yield return StartCoroutine(GameStarted(this));
+            Delegate[] listeners = GameStarted.GetInvocationList();
+            foreach (Delegate action in listeners)
+            {
+                //tells computer that action takes a TurnManager and outputs a IEnumerator
+                var callback = (Func<GameManager, IEnumerator>)action;
+                //runs action now that it is the correct type
+                yield return StartCoroutine(callback(this));
+            }
+            //yield return StartCoroutine(GameStarted(this));
         }
         levelManager.StartLevel();
         if (LateGameStarted != null)
         {
-            yield return StartCoroutine(LateGameStarted(this));
+            Delegate[] listeners = LateGameStarted.GetInvocationList();
+            foreach (Delegate action in listeners)
+            {
+                //tells computer that action takes a TurnManager and outputs a IEnumerator
+                var callback = (Func<GameManager, IEnumerator>)action;
+                //runs action now that it is the correct type
+                yield return StartCoroutine(callback(this));
+            }
+            //yield return StartCoroutine(LateGameStarted(this));
         }
         //roomSpawner.SpawnStartingRoom();
-        turnManager.StartTakingTurns();
+        yield return StartCoroutine(turnManager.StartTakingTurns());
     }
 
     public void StepDone()
@@ -86,15 +102,16 @@ public class GameManager : MonoBehaviour
         pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(true);
 
     }
-
     public IEnumerator ReStartGame()
     {
         pauseScreenBlocker.GetComponent<Image>().enabled = false;
         mouseManager.MouseOffObject(pauseScreenBlocker.transform.Find("RestartGameButton").gameObject);
         pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(false);
-        Debug.Log("ReStarted Game 1");
+        //Debug.Log("ReStarted Game 1");
         yield return StartCoroutine(levelManager.ResetGame());
-        Debug.Log("ReStarted Game 2");
+
+        //Debug.Log("ReStarted Game 2");
+
         //yield return new WaitForEndOfFrame();
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
@@ -102,23 +119,7 @@ public class GameManager : MonoBehaviour
         {
             ResetGame(this);
         }
-        if (GameStartedFunctions != null)
-        {
-            GameStartedFunctions(this);
-        }
-        Debug.Log("ReStarted Game 3");
-
-        if (GameStarted != null)
-        {
-            yield return StartCoroutine(GameStarted(this));
-        }
-        Debug.Log("ReStarted Game 4");
-        levelManager.StartLevel();
-        if (LateGameStarted != null)
-        {
-            yield return StartCoroutine(LateGameStarted(this));
-        }
-        //roomSpawner.SpawnStartingRoom();
-        turnManager.StartTakingTurns();
+        StartCoroutine(StartGame());
     }
+
 }

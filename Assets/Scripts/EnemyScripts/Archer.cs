@@ -14,6 +14,8 @@ public class Archer : Enemy
         });
 
         maxHealth = 50;
+        XPValue = 3;
+
         base.Awake();
     }
 }

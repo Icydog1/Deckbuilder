@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-public class SpeedRelic : Relic
+public class WindscarSandals : Relic
 {
     public override void Awake()
     {

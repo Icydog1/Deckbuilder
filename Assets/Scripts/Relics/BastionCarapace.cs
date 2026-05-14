@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Text.RegularExpressions;
 
-public class DexterityRelic : Relic
+public class BastionCarapace : Relic
 {
     public override void Awake()
     {
-        relicName = "Dexterity Relic";
         base.Awake();
     }
     public override IEnumerator OnGain()

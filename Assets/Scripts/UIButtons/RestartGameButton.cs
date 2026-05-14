@@ -27,6 +27,6 @@ public class RestartGameButton : UIButton
 
     public override void Activate()
     {
-        StartCoroutine(gameManager.ReStartGame());
+        gameManager.StartCoroutine(gameManager.ReStartGame());
     }
 }

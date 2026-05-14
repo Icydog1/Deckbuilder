@@ -15,6 +15,8 @@ public class FrenziedAbomination : Enemy
         });
 
         maxHealth = 100;
+        XPValue = 4;
+
         base.Awake();
     }
 }

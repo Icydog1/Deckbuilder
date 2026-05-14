@@ -641,7 +641,7 @@ public class Figure : MonoBehaviour
                 if (condition.AddType == 1 && conditions[i].Duration == condition.Duration)
                 {
                     conditions[i].Value += condition.Value;
-                    conditions[i].Value = Mathf.Clamp(conditions[i].Value, -9999999, 9999999);
+                    conditions[i].Value = Mathf.Clamp(conditions[i].Value, -99999, 99999);
                     isDuplicate = true;
                     break;
                 }
@@ -654,7 +654,7 @@ public class Figure : MonoBehaviour
                     else
                     {
                         conditions[i].Duration += condition.Duration;
-                        conditions[i].Duration = Mathf.Clamp(conditions[i].Duration, 0, 9999999);
+                        conditions[i].Duration = Mathf.Clamp(conditions[i].Duration, 0, 99999);
                     }
                     isDuplicate = true;
                     break;

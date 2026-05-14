@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Text.RegularExpressions;
 
-public class FinesseRelic : Relic
+public class MemoryCoil : Relic
 {
     public override void Awake()
     {
-        relicName = "Finesse Relic";
         base.Awake();
     }
     public override IEnumerator OnGain()

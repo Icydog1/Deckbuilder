@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class BetterLockpicks : Relic
+public class PhantomLockpicks : Relic
 {
     public override void Awake()
     {
-        relicName = "Better Lockpicks";
         isUnique = true;
         base.Awake();
     }

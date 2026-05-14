@@ -12,6 +12,7 @@ public class LevelManager : MonoBehaviour
     private Camera camera;
     private GameObject player;
     private PlayerControler playerControler;
+    private TurnManager turnManager;
 
     private bool isBossLevel;
     private int level;
@@ -24,8 +25,9 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private GameObject stair;
 
-    public static event Action<LevelManager> LevelCleared, LevelGeneratedFuntions;
+    public static event Action<LevelManager> LevelClearedFuntions, LevelGeneratedFuntions;
     public static event Func<LevelManager, IEnumerator> LevelGenerated;
+    public static event Func<LevelManager, IEnumerator> LevelCleared;
 
     private List<GameObject> levelSpecific = new List<GameObject>();
 
@@ -43,6 +45,7 @@ public class LevelManager : MonoBehaviour
         player = GameObject.Find("Player");
         camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         playerControler = player.GetComponent<PlayerControler>();
+        turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
 
     }
 
@@ -55,11 +58,11 @@ public class LevelManager : MonoBehaviour
     {
         level = 1;
         isBossLevel = false;
-        player.transform.position = new Vector3(0, 0, player.transform.position.z);
+        //player.transform.position = new Vector3(0, 0, player.transform.position.z);
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
-        playerControler.OneToOnePos = Vector2.zero;
+        //playerControler.OneToOnePos = Vector2.zero;
         roomSpawner.SpawnStartingRoom();
-        Debug.Log("Started Level Room");
+        //Debug.Log("Started Level Room");
 
     }
 
@@ -82,7 +85,7 @@ public class LevelManager : MonoBehaviour
             isBossLevel = false;
             roomSpawner.SpawnStartingRoom();
         }
-
+        StartCoroutine(turnManager.StartTakingTurns());
     }
 
     public void IncreaseRoundNumber()
@@ -98,34 +101,38 @@ public class LevelManager : MonoBehaviour
     {
         roundNumber = 0;
         yield return StartCoroutine(ClearLevel());
-        Debug.Log("ResetGame");
+        //Debug.Log("ResetGame");
     }
 
     public IEnumerator ClearLevel()
     {
-        Debug.Log("Clear Level 1");
-
+        //Debug.Log("Clear Level 1");
+        
+        if (LevelClearedFuntions != null)
+        {
+            LevelClearedFuntions(this);
+        }
         if (LevelCleared != null)
         {
-            LevelCleared(this);
+            yield return StartCoroutine(LevelCleared(this));
         }
         foreach (GameObject gameObject in levelSpecific)
         {
             Destroy(gameObject);
         }
-        Debug.Log("Clear Level 2");
+        //Debug.Log("Clear Level 2");
 
         if (LevelGeneratedFuntions != null)
         {
             LevelGeneratedFuntions(this);
         }
+        //Debug.Log("Clear Level 3");
+
         if (LevelGenerated != null)
         {
             yield return StartCoroutine(LevelGenerated(this));
         }
-        Debug.Log("Clear Level 3");
-
-
+        //Debug.Log("Clear Level 4");
 
     }
 

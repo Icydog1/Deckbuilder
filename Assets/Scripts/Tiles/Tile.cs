@@ -17,7 +17,7 @@ public class Tile : MonoBehaviour
 
     void Awake()
     {
-        LevelManager.LevelCleared += Remove;
+        LevelManager.LevelClearedFuntions += Remove;
         if (moveCost < 1)
         {
             moveCost = 1;
@@ -57,7 +57,7 @@ public class Tile : MonoBehaviour
 
     public void OnDestroy()
     {
-        LevelManager.LevelCleared -= Remove;
+        LevelManager.LevelClearedFuntions -= Remove;
 
     }
 }

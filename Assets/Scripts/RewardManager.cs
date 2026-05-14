@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using static Lootable;
+using static UnityEngine.GraphicsBuffer;
 
 public class RewardManager : MonoBehaviour
 {
@@ -19,6 +21,7 @@ public class RewardManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> allCardRewards = new List<GameObject>();
+    private List<List<GameObject>> cardRewardsLists = new List<List<GameObject>>();
     private List<GameObject> commonCardRewards = new List<GameObject>();
     private List<GameObject> uncommonCardRewards = new List<GameObject>();
     private List<GameObject> rareCardRewards = new List<GameObject>();
@@ -26,6 +29,7 @@ public class RewardManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> allRelicRewards = new List<GameObject>();
+    private List<List<GameObject>> relicRewardsLists = new List<List<GameObject>>();
     public List<GameObject> commonRelicRewards = new List<GameObject>();
     private List<GameObject> uncommonRelicRewards = new List<GameObject>();
     private List<GameObject> rareRelicRewards = new List<GameObject>();
@@ -34,6 +38,7 @@ public class RewardManager : MonoBehaviour
     private List<GameObject> testCardRewards = new List<GameObject>();
 
     private List<GameObject> currentOptions = new List<GameObject>();
+    private List<GameObject> currentOptionsPrefabs = new List<GameObject>();
 
     private Lootable tileScript;
     private int rewardRarity;
@@ -54,9 +59,13 @@ public class RewardManager : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         relicManager = GameObject.Find("RelicManager").GetComponent<RelicManager>();
-
         rewardsLocation = GameObject.Find("Rewards");
-
+        cardRewardsLists.Add(commonCardRewards);
+        cardRewardsLists.Add(uncommonCardRewards);
+        cardRewardsLists.Add(rareCardRewards);
+        relicRewardsLists.Add(commonRelicRewards);
+        relicRewardsLists.Add(uncommonRelicRewards);
+        relicRewardsLists.Add(rareRelicRewards);
         GameManager.GameStartedFunctions += GenerateRewardPools;
         //GenerateRewardPools();
 
@@ -78,18 +87,19 @@ public class RewardManager : MonoBehaviour
         foreach (GameObject card in allCardRewards)
         {
             int cardRarity = card.GetComponent<Card>().Rarity;
-            if (cardRarity == 1)
-            {
-                commonCardRewards.Add(card);
-            }
-            else if (cardRarity == 2)
-            {
-                uncommonCardRewards.Add(card);
-            }
-            else
-            {
-                rareCardRewards.Add(card);
-            }
+            cardRewardsLists[cardRarity-1].Add(card);
+            //if (cardRarity == 1)
+            //{
+            //    commonCardRewards.Add(card);
+            //}
+            //else if (cardRarity == 2)
+            //{
+            //    uncommonCardRewards.Add(card);
+            //}
+            //else
+            //{
+            //    rareCardRewards.Add(card);
+            //}
         }
         if (testCardRewards.Count > 0)
         {
@@ -98,18 +108,19 @@ public class RewardManager : MonoBehaviour
         foreach (GameObject relic in allRelicRewards)
         {
             int relicRarity = relic.GetComponent<Relic>().Rarity;
-            if (relicRarity == 1)
-            {
-                commonRelicRewards.Add(relic);
-            }
-            else if (relicRarity == 2)
-            {
-                uncommonRelicRewards.Add(relic);
-            }
-            else
-            {
-                rareRelicRewards.Add(relic);
-            }
+            relicRewardsLists[relicRarity - 1].Add(relic);
+            //if (relicRarity == 1)
+            //{
+            //    commonRelicRewards.Add(relic);
+            //}
+            //else if (relicRarity == 2)
+            //{
+            //    uncommonRelicRewards.Add(relic);
+            //}
+            //else
+            //{
+            //    rareRelicRewards.Add(relic);
+            //}
         }
     }
     void Start()
@@ -244,6 +255,7 @@ public class RewardManager : MonoBehaviour
             potentialRewards.Add(currentRewardPool[UnityEngine.Random.Range(0, currentRewardPool.Count)]);
 
         }
+        currentOptionsPrefabs = potentialRewards;
         foreach (GameObject reward in potentialRewards)
         {
             GameObject createdReward = Instantiate(reward, rewardsLocation.transform);
@@ -266,16 +278,18 @@ public class RewardManager : MonoBehaviour
         if (isRewardCard)
         {
             yield return StartCoroutine(deckManager.GainCard(reward));
-
         }
         else
         {
             if (reward.GetComponent<Relic>().IsUnique)
             {
-                commonRelicRewards.Remove(reward);
-                uncommonRelicRewards.Remove(reward);
-                rareRelicRewards.Remove(reward);
+                Relic rewardScript = reward.GetComponent<Relic>();
+                //GameObject originalRelic = relicRewardsLists[rewardScript.Rarity - 1].Find(obj => obj.GetComponent<Relic>().RelicName == rewardScript.RelicName);
+                relicRewardsLists[rewardScript.Rarity - 1].Remove(currentOptionsPrefabs[currentOptions.IndexOf(reward)]);
 
+                //if (originalRelic != null)
+                //{
+                //}
             }
             yield return StartCoroutine(relicManager.GainRelic(reward));
         }

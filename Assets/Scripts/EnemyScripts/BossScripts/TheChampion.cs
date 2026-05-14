@@ -25,6 +25,8 @@ public class TheChampion : Boss
         movesSetOrder = new List<int>() { 0, 1, 2 };
 
         maxHealth = 300;
+        XPValue = 30;
+
         base.Awake();
     }
 

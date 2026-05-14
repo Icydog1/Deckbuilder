@@ -20,6 +20,7 @@ public class Goblin : Enemy
         });
         //movesSetOrder = new List<int>() { 0, 1 };
         maxHealth = 50;
+        XPValue = 2;
         base.Awake();
     }
 }

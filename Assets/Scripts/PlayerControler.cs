@@ -163,7 +163,7 @@ public class PlayerControler : Figure
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) })));
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) })));
     }
-
+    
 
     public void ShowMoveCostDisplay()
     {
@@ -272,19 +272,17 @@ public class PlayerControler : Figure
         }
         if (currentTile.GetComponent<Door>())
         {
-            //Debug.Log("opened door");
             roomSpawner.SpawnRoomsNextToDoor(currentTile, currentTile.GetComponent<Door>().RoomNextToCords);
             //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
-            //Debug.Log("room spawned");
-            currentTile = mapManager.GetTileAtHex(oneToOnePos);
+            //loads enemies that spawned
             yield return StartCoroutine(actionManager.PreformPreparedActions());
-            //Debug.Log("ran perpared actions");
+            //updates current tile as it is no longer a door
+            currentTile = mapManager.GetTileAtHex(oneToOnePos);
         }
         if (currentTile.GetComponent<Stair>())
         {
-
+            //yield return StartCoroutine(actionManager.PreformPreparedActions());
             yield return StartCoroutine(levelManager.GoUpLevel());
-            yield return StartCoroutine(actionManager.PreformPreparedActions());
         }
         else if (moveLeft == 0)
         {
@@ -412,6 +410,7 @@ public class PlayerControler : Figure
 
     public IEnumerator StartTurn()
     {
+        //Debug.Log("started turn");
         if (PlayerTurnStartedFuntions != null)
         {
             PlayerTurnStartedFuntions(this);
@@ -438,6 +437,7 @@ public class PlayerControler : Figure
         {
             ForceEndAction();
         }
+        //Debug.Log("ended turn");
         yield return StartCoroutine(EndTurn());
     }
     public IEnumerator AtemptToEndTurn()
@@ -606,7 +606,6 @@ public class PlayerControler : Figure
             yield return StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower + finalAbility));
             EndAction();
         }
-        yield return null;
     }
 
     public IEnumerator Lockpick(int lockpickValue, bool isVariable = false)
@@ -772,7 +771,7 @@ public class PlayerControler : Figure
         else
         {
             abilityManager.LoseAbility(ability);
-            ActionDone();
+            //ActionDone();
         }
     }
     public IEnumerator WaitUntilRewardSelected()

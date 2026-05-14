@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Relic : MonoBehaviour
@@ -29,10 +30,12 @@ public class Relic : MonoBehaviour
         relicManager = GameObject.Find("RelicManager").GetComponent<RelicManager>();
         countDisplay = transform.Find("RelicCountText").GetComponent<VariableDisplayer>();
 		actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
-
-		//GainRelic();
-		//IncreaseCount();
-	}
+        relicName = this.name;
+        relicName = relicName.Replace("(Clone)", "");
+        relicName = Regex.Replace(relicName, "(.)([A-Z,0-9])", "$1 $2");
+        //GainRelic();
+        //IncreaseCount();
+    }
 
 	// Update is called once per frame
 	void Update()

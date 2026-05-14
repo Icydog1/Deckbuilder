@@ -7,7 +7,7 @@ using UnityEngine;
 public class TurnManager : MonoBehaviour
 {
     //public List<Enemy> EnemiesScripts = new List<Enemy>();
-    private List<GameObject> enemies = new List<GameObject>();
+    //private List<GameObject> enemies = new List<GameObject>();
     private PlayerControler playerControler;
     private DeckManager deckManager;
     private GameObject player;
@@ -16,7 +16,9 @@ public class TurnManager : MonoBehaviour
     private Enemy currentEnemyTurnScript;
     private List<GameObject> turnOrder = new List<GameObject>();
     public List<GameObject> TurnOrder { get { return turnOrder; } }
-    private bool endOfRound, playerTurn, enemyTurn;
+    //private bool endOfRound, playerTurn, enemyTurn;
+    private bool takingTurns;
+
     private LevelManager levelManager;
 
 
@@ -36,22 +38,18 @@ public class TurnManager : MonoBehaviour
         newRoundMarker = GameObject.Find("NewRoundMarker");
         turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
-        LevelManager.LevelGenerated += ResetTurnOrder;
-
+        LevelManager.LevelCleared += ResetTurnOrder;
     }
     private void Start()
     {
     }
-    public void StartTakingTurns()
+    public IEnumerator StartTakingTurns()
     {
+        takingTurns = true;
+        //Debug.Log(turnOrder.Count);
         currentTurn = turnOrder[0];
-        if (RoundStarted != null)
-        {
-            RoundStarted(this);
-        }
-        NextTurn();
+        yield return StartCoroutine(StartOfRound());
     }
-
 
     // Update is called once per frame
     void Update()
@@ -74,38 +72,46 @@ public class TurnManager : MonoBehaviour
     }
     public void NextTurn()
     {
-        //Debug.Log("next turn");
-        playerTurn = false;
-        if (turnOrder.IndexOf(currentTurn) + 1 == turnOrder.Count)
+        if (takingTurns)
         {
-            endOfRound = true;
-            StartCoroutine(NextRound());
-        }
-        else
-        {
-            currentTurn = turnOrder[turnOrder.IndexOf(currentTurn) + 1];
-            if (currentTurn.GetComponent<Enemy>())
+            //Debug.Log("next turn");
+            //playerTurn = false;
+            if (turnOrder.IndexOf(currentTurn) + 1 == turnOrder.Count)
             {
-                currentEnemyTurnScript = currentTurn.GetComponent<Enemy>();
-                currentEnemyTurnScript.StartStopTurn(true);
-                //currentEnemyTurnScript.isMyTurn = true;
-                enemyTurn = true;
+                //endOfRound = true;
+                StartCoroutine(NextRound());
             }
             else
             {
-                currentEnemyTurnScript = null;
-                enemyTurn = false;
+                currentTurn = turnOrder[turnOrder.IndexOf(currentTurn) + 1];
+                if (currentTurn.GetComponent<Enemy>())
+                {
+                    currentEnemyTurnScript = currentTurn.GetComponent<Enemy>();
+                    currentEnemyTurnScript.StartStopTurn(true);
+                    //currentEnemyTurnScript.isMyTurn = true;
+                    //enemyTurn = true;
+                }
+                else
+                {
+                    currentEnemyTurnScript = null;
+                    //enemyTurn = false;
+                }
+                if (currentTurn == player)
+                {
+                    StartCoroutine(playerControler.StartTurn());
+                    //playerTurn = true;
+                }
             }
-            if (currentTurn == player)
-            {
-                StartCoroutine(playerControler.StartTurn());
-                playerTurn = true;
-            }
-
         }
     }
 
     public IEnumerator NextRound()
+    {
+        yield return StartCoroutine(EndOfRound());
+        yield return StartCoroutine(StartOfRound());
+
+    }
+    public IEnumerator EndOfRound()
     {
         currentTurn = turnOrder[0];
         if (RoundEndedFunctions != null)
@@ -118,6 +124,10 @@ public class TurnManager : MonoBehaviour
             //Debug.Log("Round ended");
             yield return StartCoroutine(RoundEnded(this));
         }
+    }
+    public IEnumerator StartOfRound()
+    {
+
         levelManager.IncreaseRoundNumber();
         if (RoundStartedFunctions != null)
         {
@@ -126,23 +136,41 @@ public class TurnManager : MonoBehaviour
         }
         if (RoundStarted != null)
         {
-            //Debug.Log("Round ended");
-            yield return StartCoroutine(RoundStarted(this));
+            //Debug.Log(RoundStarted);
+            Delegate[] listeners = RoundStarted.GetInvocationList();
+            foreach (Delegate action in listeners)
+            {
+                //tells computer that action takes a TurnManager and outputs a IEnumerator
+                var callback = (Func<TurnManager, IEnumerator>)action;
+                //runs action now that it is the correct type
+                yield return StartCoroutine(callback(this));
+            }
         }
-
-
-
         NextTurn();
     }
 
     public IEnumerator ResetTurnOrder(LevelManager levelManager = null)
     {
+        takingTurns = false;
+        if (currentTurn == player)
+        {
+            yield return StartCoroutine(playerControler.ForceEndTurn());
+        }
+        yield return StartCoroutine(EndRound());
+
         turnOrder.Clear();
         turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
-        currentTurn = turnOrder[1];
-        yield return StartCoroutine(playerControler.ForceEndTurn());
+        currentTurn = turnOrder[0];
     }
-
-
+    public IEnumerator EndRound()
+    {
+        takingTurns = false;
+        if (currentTurn == player)
+        {
+            yield return StartCoroutine(playerControler.ForceEndTurn());
+        }
+        yield return StartCoroutine(EndOfRound());
+        takingTurns = true;
+    }
 }

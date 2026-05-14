@@ -205,7 +205,7 @@ public class Pathfinder : MonoBehaviour
                 }
 
             }
-            if (i >= 10000)
+            if (i >= 100000)
             {
                 pathFound = true;
                 Debug.Log("DistanceTo pathfinding timed out");
@@ -241,7 +241,7 @@ public class Pathfinder : MonoBehaviour
                 }
 
             }
-            //if (i >= 10000)
+            //if (i >= 100000)
             //{
             //    pathFound = true;
             //    Debug.Log("range pathfinding timed out");
@@ -369,7 +369,7 @@ public class Pathfinder : MonoBehaviour
                 }
             }
 
-            if (i >= 10000)
+            if (i >= 100000)
             {
                 moveValue = i;
                 Debug.Log("posible path pathfinding timed out");
@@ -390,7 +390,7 @@ public class Pathfinder : MonoBehaviour
             actualPath.Insert(0, currentLocaton);
             currentLocaton = posibleTilesPath[posibleTiles.IndexOf(currentLocaton)];
             killswitch++;
-            if (killswitch > 10000)
+            if (killswitch > 100000)
             {
                 Debug.Log(currentLocaton);
                 currentLocaton = selfPos;

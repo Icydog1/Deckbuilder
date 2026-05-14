@@ -55,7 +55,7 @@ public class RoomSpawner : MonoBehaviour
 
         }
         BuildRoomProbabilities(initialRoomWeights);
-        LevelManager.LevelCleared += ClearRooms;
+        LevelManager.LevelClearedFuntions += ClearRooms;
     }
 
     // Update is called once per frame
@@ -150,7 +150,7 @@ public class RoomSpawner : MonoBehaviour
 
     public void SpawnStartingRoom()
     {
-        Debug.Log("Spawned Starting Room");
+        //Debug.Log("Spawned Starting Room");
 
         realativeRotation = 0;
         SpawnRoom(Vector2Int.zero, rooms[0]);
