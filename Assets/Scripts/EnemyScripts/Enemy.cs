@@ -14,6 +14,7 @@ public class Enemy : Figure
     //protected List<moveSetsMethod> moveSets = new List<moveSetsMethod>();
     protected List<List<Func<IEnumerator>>> moveSets = new List<List<Func<IEnumerator>>>();
     protected List<int> movesSetOrder = new List<int>() { -1};
+    protected List<int> initialMoves = new List<int>();
     protected int currentmove = 0;
     protected List<Func<IEnumerator>> currentPlan = new List<Func<IEnumerator>>();
     protected List<Func<IEnumerator>> plannedMoveSet;
@@ -36,7 +37,10 @@ public class Enemy : Figure
         enemyName = Regex.Replace(enemyName, "(.)([A-Z,0-9])", "$1 $2");
         transform.Find("EnemyUI").transform.Find("NameText").gameObject.GetComponent<TextMeshProUGUI>().SetText(enemyName);
         //figureStorage.Enemies.Add(gameObject);
-        
+        enemyStatsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
+        isEnemy = true;
+        statsDisplayer = enemyStatsDisplayer;
+        team = 1;
     }
     public override void Start()
     {
@@ -49,12 +53,7 @@ public class Enemy : Figure
         {
             Debug.Log("Warning no planed movesets on " + gameObject);
         }
-        enemyStatsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
-        statsDisplayer = enemyStatsDisplayer;
-        isEnemy = true;
         yield return StartCoroutine(base.LoadFigure());
-
-        team = 1;
         turnManager.TurnOrder.Add(gameObject);
         health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
@@ -81,24 +80,55 @@ public class Enemy : Figure
         currentPlan.Clear();
         displayedPlan.Clear();
         //Debug.Log("new plan with move" + currentmove);
-
-        if (currentmove == movesSetOrder.Count)
+        if (initialMoves.Count > 0)
         {
-            //Debug.Log("Reset plan");
-            currentmove = 0;
-        }
-        //Debug.Log(gameObject + "Current enemy plan");
-        if (movesSetOrder[currentmove] == -1)
-        {
-            //Debug.Log("random plan");
-
-            plannedMoveSet = moveSets[UnityEngine.Random.Range(0, moveSets.Count)];
+            if (currentmove == initialMoves.Count)
+            {
+                //Debug.Log("Reset plan");
+                currentmove = 0;
+                initialMoves.Clear();
+            }
         }
         else
         {
-            //Debug.Log(movesSetOrder[currentmove]);
-            plannedMoveSet = moveSets[movesSetOrder[currentmove]];
+            if (currentmove == movesSetOrder.Count)
+            {
+                //Debug.Log("Reset plan");
+                currentmove = 0;
+            }
         }
+        if (initialMoves.Count > 0)
+        {
+            //Debug.Log(gameObject + "Current enemy plan");
+            if (initialMoves[currentmove] == -1)
+            {
+                //Debug.Log("random plan");
+
+                plannedMoveSet = moveSets[UnityEngine.Random.Range(0, moveSets.Count)];
+            }
+            else
+            {
+                //Debug.Log(movesSetOrder[currentmove]);
+                plannedMoveSet = moveSets[initialMoves[currentmove]];
+            }
+        }
+        else
+        {
+
+            //Debug.Log(gameObject + "Current enemy plan");
+            if (movesSetOrder[currentmove] == -1)
+            {
+                //Debug.Log("random plan");
+
+                plannedMoveSet = moveSets[UnityEngine.Random.Range(0, moveSets.Count)];
+            }
+            else
+            {
+                //Debug.Log(movesSetOrder[currentmove]);
+                plannedMoveSet = moveSets[movesSetOrder[currentmove]];
+            }
+        }
+
         currentPlan = new List<Func<IEnumerator>>(plannedMoveSet);
         //Debug.Log("gotInitialPlan");
         levelManager.GetDifficultyModifier(this);
@@ -127,6 +157,11 @@ public class Enemy : Figure
     }
     public IEnumerator StartOfTurn()
     {
+        if (distanceToPlayer >= 50)
+        {
+            yield return StartCoroutine(actionManager.PreformAction(GainCondition(new DistanceJump())));
+            //GainCondition(new DistanceJump());
+        }
         yield return StartCoroutine(baseStartTurn());
         if (preferedRange == int.MaxValue)
         {

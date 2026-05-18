@@ -113,10 +113,10 @@ public class TurnManager : MonoBehaviour
     }
     public IEnumerator EndOfRound()
     {
+        //Debug.Log("Round ended");
         currentTurn = turnOrder[0];
         if (RoundEndedFunctions != null)
         {
-            //Debug.Log("Round ended");
             RoundEndedFunctions(this);
         }
         if (RoundEnded != null)
@@ -146,6 +146,7 @@ public class TurnManager : MonoBehaviour
                 yield return StartCoroutine(callback(this));
             }
         }
+        //Debug.Log("Round started");
         NextTurn();
     }
 

@@ -10,9 +10,15 @@ public class FrenziedAbomination : Enemy
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(5)
             ,() => Attack(5)
-            ,() => ApplyCondition(new Strength(4, 5))
-            ,() => ApplyCondition(new Speed(4, 5))
+            ,() => ApplyCondition(new Strength(4))
+            ,() => ApplyCondition(new Speed(4))
         });
+        moveSets.Add(new List<Func<IEnumerator>> {
+            () => Move(5)
+            ,() => Attack(5)
+        });
+        initialMoves = new List<int>() { 0, 0, 0, 0, 0 };
+        movesSetOrder = new List<int>() { 1 };
 
         maxHealth = 100;
         XPValue = 4;

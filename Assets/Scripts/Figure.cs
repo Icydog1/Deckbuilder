@@ -42,6 +42,7 @@ public class Figure : MonoBehaviour
     public int MaxHealth { get { return maxHealth; } }
 
     protected bool canFly = false;
+    public bool CanFly { set { canFly = value; } get { return canFly; } }
 
     //private List<string> actionManager.PlanToList = new List<string>();
     //public List<string> actionManager.PlanToList { set { actionManager.PlanToList = value; } }
@@ -108,7 +109,7 @@ public class Figure : MonoBehaviour
             if (conditions[i].IsStartOfTurn && conditions[i].Duration == 0)
             {
                 //Debug.Log("removed " + conditions[i].ConditionName + "at start of turn");
-                yield return StartCoroutine(conditions[i].OnLoss());
+                yield return StartCoroutine(conditions[i].OnLoss(this));
                 conditions.RemoveAt(i);
                 i--;
             }
@@ -133,7 +134,7 @@ public class Figure : MonoBehaviour
                 //Debug.Log("removed " + conditions[i].Name);
                 //Debug.Log("removed " + conditions[i].ConditionName + "at end of turn");
 
-                yield return StartCoroutine(conditions[i].OnLoss());
+                yield return StartCoroutine(conditions[i].OnLoss(this));
                 conditions.RemoveAt(i);
                 i--;
             }
@@ -287,7 +288,7 @@ public class Figure : MonoBehaviour
                 {
                     if (conditions[i].ConditionName == "Vigor")
                     {
-                        yield return StartCoroutine(conditions[i].OnLoss());
+                        yield return StartCoroutine(conditions[i].OnLoss(this));
                         conditions.RemoveAt(i);
                         yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
                         yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
@@ -313,7 +314,7 @@ public class Figure : MonoBehaviour
             //string planString = "Move " + finalMove;
             string planString = finalMove + " <sprite name=Move>";
 
-            if (finalJump)
+            if (finalJump && !canFly)
             {
                 planString += " Jump";
             }
@@ -349,7 +350,17 @@ public class Figure : MonoBehaviour
             else
             {
                 //Debug.Log(gameObject + " started pathfinding");
-                yield return StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
+                if (distanceToPlayer < 50)
+                {
+                    //Debug.Log("old pathfining");
+                    yield return StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
+                }
+                else
+                {
+                    //Debug.Log("new pathfining");
+                    yield return StartCoroutine(pathfinder.NewPathfindTowards(oneToOnePos, playerControler.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
+
+                }
                 //Debug.Log(gameObject + " finished pathfinding");
                 EndAction();
 
@@ -673,7 +684,7 @@ public class Figure : MonoBehaviour
             //Debug.Log("added" + condition.ConditionName);
 
             conditions.Add(condition);
-            yield return StartCoroutine(condition.OnGain());
+            yield return StartCoroutine(condition.OnGain(this));
             //Debug.Log("first condition: " + conditions[0].Name);
 
         }
@@ -801,6 +812,6 @@ public class Figure : MonoBehaviour
 
     public virtual IEnumerator MoveOneSpace()
     {
-        yield return null;
+        yield break;
     }
 }

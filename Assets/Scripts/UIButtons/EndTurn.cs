@@ -20,6 +20,6 @@ public class EndTurn : UIButton
 
     public override void Activate()
     {
-        StartCoroutine(playerControler.EndTurn());
+        StartCoroutine(playerControler.AtemptToEndTurn());
     }
 }

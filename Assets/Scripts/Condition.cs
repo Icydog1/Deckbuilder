@@ -61,13 +61,13 @@ public class Condition : MonoBehaviour
         plan = actionPlan;
         actionName = name;
     }
-    public virtual IEnumerator OnGain()
+    public virtual IEnumerator OnGain(Figure figure)
     {
         //Debug.Log("Gaind Condition");
 
         yield return null;
     }
-    public virtual IEnumerator OnLoss()
+    public virtual IEnumerator OnLoss(Figure figure)
     {
         yield return null;
     }
@@ -127,25 +127,41 @@ public class GainAbility : Condition
 
         gainedAbility = conditionAbility;
     }
-    public override IEnumerator OnGain()
+    public override IEnumerator OnGain(Figure figure)
     {
         //Debug.Log("gained condtion");
         yield return conditionEffects.StartCoroutine(GameObject.Find("Player").GetComponent<PlayerControler>().GainAbility(gainedAbility));
     }
-    public override IEnumerator OnLoss()
+    public override IEnumerator OnLoss(Figure figure)
     {
         yield return conditionEffects.StartCoroutine(GameObject.Find("Player").GetComponent<PlayerControler>().LoseAbility(gainedAbility));
     }
 }
 public class Vigor : Condition
 {
-    public Vigor(int conditionValue, int conditionDuration = -1, int addType = 1) : base("Vigor", conditionValue, conditionDuration, addType, false, true) { }
+    public Vigor(int conditionValue, int conditionDuration = -1) : base("Vigor", conditionValue, conditionDuration, 1, false, true) { }
 }
 
 public class BlockPerMove : Condition
 {
-    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1, int addType = 1) : base("Untouchable", conditionValue, conditionDuration, addType, true, true, new string[] { "No Value Description", "No Self Target Description" } )
+    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1) : base("Untouchable", conditionValue, conditionDuration, 1, true, true, new string[] { "No Value Description", "No Self Target Description" } )
     {
         actionName = "Whenever you move a space gain " + conditionValue + " block";
+    }
+}
+
+public class Flight : Condition
+{
+    public Flight(int conditionDuration = -1) : base("Flight", 0, conditionDuration, 2, false, true) { }
+    public override IEnumerator OnGain(Figure figure)
+    {
+        //Debug.Log("gained condtion");
+        figure.CanFly = true;
+        yield break;
+    }
+    public override IEnumerator OnLoss(Figure figure)
+    {
+        figure.CanFly = false;
+        yield break;
     }
 }

@@ -16,7 +16,8 @@ public class Orc : Enemy
             () => ApplyCondition(new Strength(4))
         });
 
-        movesSetOrder = new List<int>() {0,1};
+        initialMoves = new List<int>() { 0, 1, 0, 1, 0, 1};
+        movesSetOrder = new List<int>() { 0 };
         maxHealth = 50;
         XPValue = 3;
 

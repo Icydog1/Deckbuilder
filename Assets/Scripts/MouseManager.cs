@@ -252,6 +252,7 @@ public class MouseManager : MonoBehaviour
                 }
                 else
                 {
+                    MouseOffObject(clickedObject);
                     StartCoroutine(deckManager.UpdateHand());
                 }
                 //deckManager.DeSelectCard(clickedObject);

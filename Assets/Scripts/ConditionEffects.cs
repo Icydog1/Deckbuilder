@@ -139,7 +139,7 @@ public class ConditionEffects : MonoBehaviour
         {
             if (condition.ConditionName == "DistanceJump")
             {
-                Debug.Log("ModifyJump");
+                //Debug.Log("ModifyJump");
                 modifiedJump = true;
             }
         }

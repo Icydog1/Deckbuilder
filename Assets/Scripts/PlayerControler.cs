@@ -194,6 +194,7 @@ public class PlayerControler : Figure
         maxHealth = 100;
         statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
         health = maxHealth;
+        transform.position = new Vector3 (0,0,transform.position.z);
         oneToOnePos = Vector2.zero;
         currentTile = mapManager.GetTileAtHex(oneToOnePos);
         statsDisplayer.SetHealthAndBlock(health, 0);
@@ -217,6 +218,7 @@ public class PlayerControler : Figure
     }
     public void PlanMove(GameObject tile)
     {
+        //Debug.Log("moveing twords " + tile + " at " + mapManager.PosToOneToOne(tile.transform.position));
         if (!isPreformingAnimation)
         {
             foreach (Vector2 tileCords in pathfinder.ActualPath)
@@ -338,7 +340,7 @@ public class PlayerControler : Figure
                     {
                         if (conditions[i].ConditionName == "Vigor")
                         {
-                            yield return StartCoroutine(conditions[i].OnLoss());
+                            yield return StartCoroutine(conditions[i].OnLoss(this));
                             conditions.RemoveAt(i);
                             yield return StartCoroutine(deckManager.UpdateCardsDisplay());
                             yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
@@ -453,6 +455,7 @@ public class PlayerControler : Figure
         UpdatePlayer();
         yield return StartCoroutine(deckManager.DiscardHand());
         isPlayerTurn = false;
+        yield return StartCoroutine(pathfinder.BuildPlayerElevationMap());
         yield return StartCoroutine(base.baseEndTurn());
     }
     public void ManualEnd()
