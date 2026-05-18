@@ -242,7 +242,7 @@ public class Figure : MonoBehaviour
             }
             if (attackRange > 1)
             {
-                currentDescriptionEnd += " range " + attackRange;
+                currentDescriptionEnd += " " + attackRange + " <sprite name=Range>";
             }
             if (targets > 1)
             {
@@ -370,19 +370,19 @@ public class Figure : MonoBehaviour
 
     }
 
-    public IEnumerator ApplyCondition(Condition condition, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    public IEnumerator ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true)
     {
-        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, isAction , targetType, range, targets, displayTarget));
+        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget, isAction));
     }
 
-    public IEnumerator ApplyConditions(Condition[] newConditions, bool isAction = true, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
+    public IEnumerator ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true)
     {
         if (isPlanning)
         {
             List<string> individualConditionText = new List<string>();
             string currentDescriptionStart = "";
             string currentDescriptionEnd = "";
-
+            bool abnormal = false;
             foreach (Condition condition in newConditions)
             {
                 if (condition.Abnormality != null)
@@ -392,6 +392,7 @@ public class Figure : MonoBehaviour
                         actionAbnormalities.Add(abnormality);
 
                     }
+                    abnormal = true;
                 }
                 if (actionAbnormalities.Contains("Ability"))
                 {
@@ -463,103 +464,111 @@ public class Figure : MonoBehaviour
                     }
                     individualConditionText.Add(currentDescriptionString);
                 }
-                if (targetType == "self")
+            }
+            if (targetType == "self")
+            {
+                if (!actionAbnormalities.Contains("No Self Target Description"))
                 {
-                    if (!actionAbnormalities.Contains("No Self Target Description"))
-                    {
-                        currentDescriptionStart += "Gain ";
-                    }
+                    currentDescriptionStart += "Gain ";
+                }
 
 
 
-                    //bool isPositive = false;
-                    //foreach (Condition test in newConditions)
-                    //{
-                    //    if (test.Value > 0)
-                    //    {
-                    //        isPositive = true;
-                    //        break;
-                    //    }
-                    //}
-                    //if (isPositive)
-                    //{
-                    //    currentDescriptionStart += "Gain ";
-                    //}
-                    //else
-                    //{
-                    //    currentDescriptionStart += "Lose ";
-                    //}
+                //bool isPositive = false;
+                //foreach (Condition test in newConditions)
+                //{
+                //    if (test.Value > 0)
+                //    {
+                //        isPositive = true;
+                //        break;
+                //    }
+                //}
+                //if (isPositive)
+                //{
+                //    currentDescriptionStart += "Gain ";
+                //}
+                //else
+                //{
+                //    currentDescriptionStart += "Lose ";
+                //}
 
+            }
+            else
+            {
+                currentDescriptionStart += "Apply ";
+                if (targets != 1)
+                {
+                    currentDescriptionEnd += " target ";
+                }
+                if (targets == 1)
+                {
+                    
+                }
+                else if (targets == int.MaxValue)
+                {
+                    currentDescriptionEnd += "all";
                 }
                 else
                 {
-                    currentDescriptionStart += "Apply ";
-
-                    currentDescriptionEnd += " target ";
-
-                    if (targets == int.MaxValue)
+                    currentDescriptionEnd += targets;
+                }
+                if (targetType == "ally")
+                {
+                    if (targets != 1)
                     {
-                        currentDescriptionEnd += "all";
+                        currentDescriptionEnd += " ally";
                     }
                     else
                     {
-                        currentDescriptionEnd += targets;
+                        currentDescriptionEnd += " allies";
                     }
-                    if (targetType == "ally")
+                }
+                if (displayTarget)
+                {
+                    if (targetType == "enemy")
                     {
                         if (targets != 1)
                         {
-                            currentDescriptionEnd += " ally";
+                            currentDescriptionEnd += " enemy";
                         }
                         else
                         {
-                            currentDescriptionEnd += " allies";
-                        }
-                    }
-                    if (displayTarget)
-                    {
-                        if (targetType == "enemy")
-                        {
-                            if (targets != 1)
-                            {
-                                currentDescriptionEnd += " enemy";
-                            }
-                            else
-                            {
-                                currentDescriptionEnd += " enemies";
-                            }
-
-                        }
-                        if (targetType == "self or ally")
-                        {
-                            if (targets != 1)
-                            {
-                                currentDescriptionEnd += " ally or self";
-                            }
-                            else
-                            {
-                                currentDescriptionEnd += " allies or self";
-                            }
+                            currentDescriptionEnd += " enemies";
                         }
 
                     }
-                    currentDescriptionEnd += " range " + range;
-                    if (!isPlayer)
+                    if (targetType == "self or ally")
                     {
-                        if (preferedRange > range && targetType == "enemy")
+                        if (targets != 1)
                         {
-                            preferedRange = range;
+                            currentDescriptionEnd += " ally or self";
+                        }
+                        else
+                        {
+                            currentDescriptionEnd += " allies or self";
                         }
                     }
+
                 }
-                if (condition.Abnormality != null)
+                if (range != 1)
                 {
-                    actionAbnormalities.Clear();
+                    currentDescriptionEnd += " " + range + " <sprite name=Range>";
+                }
+                if (!isPlayer)
+                {
+                    if (preferedRange > range && targetType == "enemy")
+                    {
+                        preferedRange = range;
+                    }
                 }
             }
             string separator = ", ";
             string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             actionManager.PlanToList.Add(conditionText);
+            if (abnormal)
+            {
+                actionAbnormalities.Clear();
+            }
         }
         else if (!isPreparingMove)
         {
@@ -638,7 +647,7 @@ public class Figure : MonoBehaviour
     }
     public IEnumerator GainCondition(Condition condition)
     {
-        //Debug.Log("GainedCondition");
+        Debug.Log("GainedCondition");
         bool isDuplicate = false;
         for (int i = 0; i < conditions.Count; i++)
         {

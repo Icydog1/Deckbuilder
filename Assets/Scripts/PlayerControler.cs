@@ -354,6 +354,7 @@ public class PlayerControler : Figure
         {
             if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
             {
+                Debug.Log("applied condition");
                 clickedEnemy.GetComponent<Figure>().GainConditions(appliedConditions);
                 targetsLeft--;
                 posibleTargets.Remove(figure.GetComponent<Figure>());
@@ -815,7 +816,7 @@ public class PlayerControler : Figure
             kineticBatterySteps++;
             if (kineticBatterySteps == 3)
             {
-                yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount), false)));
+                yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount), "self", 1, 1, false, false)));
                 kineticBatterySteps = 0;
             }
 

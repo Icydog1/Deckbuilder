@@ -284,6 +284,7 @@ public class DeckManager : MonoBehaviour
         cardsInDiscardDisplay.DisplayText(discardContents.Count);
 
         yield return StartCoroutine(UpdateHand());
+        
     }
 
     public List<GameObject> GetListByName(string listName)
@@ -329,6 +330,7 @@ public class DeckManager : MonoBehaviour
             //Debug.Log("deselected " + card);
 
         }
+        //Debug.Log(GetRelativeCardSize(card));
         if (GetRelativeCardSize(card) > 1.5f && !playContents.Contains(card))
         {
             //Debug.Log("deselected " + card);
@@ -372,7 +374,10 @@ public class DeckManager : MonoBehaviour
             card.transform.position = new Vector3((((float)numberOfCards - 1) / 2 - cards.IndexOf(card)) * spaceBetweenCards + pos.x, pos.y, card.transform.position.z);
             if (GetRelativeCardSize(card) > 1.5f)
             {
-                card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+                //card.transform.position = card.transform.position + new Vector3(0, selectedCardHeightIncrease * baseCardSize * cameraScript.zoom, 0);
+
+                card.GetComponent<RectTransform>().anchoredPosition = card.GetComponent<RectTransform>().anchoredPosition + new Vector2(0, selectedCardHeightIncrease);
+
             }
 
         }
@@ -399,6 +404,7 @@ public class DeckManager : MonoBehaviour
     {
         isDisplayingCards = true;
         listDisplayer.SetActive(true);
+        listDisplayer.GetComponent<RectTransform>().sizeDelta = new Vector2(listDisplayer.GetComponent<RectTransform>().sizeDelta.x, listDisplayer.transform.parent.GetComponent<RectTransform>().sizeDelta.y-100);
         Transform storeTo = listDisplayer.transform.Find("Viewport").transform.Find("Content");
         uIManager.IsDisplayingList = true;
         displayedList.Clear();

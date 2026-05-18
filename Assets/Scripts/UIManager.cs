@@ -34,14 +34,18 @@ public class UIManager : MonoBehaviour
         if (isPaused)
         {
             pauseScreenBlocker.enabled = true;
+            pauseScreenBlocker.GetComponent<RectTransform>().sizeDelta = pauseScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
         }
         else if (isDisplayingList)
         {
             listDisplayerScreenBlocker.enabled = true;
+            listDisplayerScreenBlocker.GetComponent<RectTransform>().sizeDelta = listDisplayerScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
         }
         else if (isGettingReward)
         {
             rewardScreenBlocker.enabled = true;
+            listDisplayerScreenBlocker.GetComponent<RectTransform>().sizeDelta = listDisplayerScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
+
         }
     }
 }

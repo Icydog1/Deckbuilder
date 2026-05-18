@@ -99,6 +99,8 @@ public class GameManager : MonoBehaviour
     public void EndGame()
     {
         pauseScreenBlocker.GetComponent<Image>().enabled = true;
+        pauseScreenBlocker.GetComponent<RectTransform>().sizeDelta = pauseScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
+
         pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(true);
 
     }

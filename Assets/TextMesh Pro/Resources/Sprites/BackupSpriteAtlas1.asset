@@ -84,7 +84,7 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: RpgItems2_0
+    m_Name: Range
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 1
@@ -585,8 +585,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 14
       m_Height: 14
-      m_HorizontalBearingX: -7
-      m_HorizontalBearingY: 7
+      m_HorizontalBearingX: -3
+      m_HorizontalBearingY: 12
       m_HorizontalAdvance: 14
     m_GlyphRect:
       m_X: 1
