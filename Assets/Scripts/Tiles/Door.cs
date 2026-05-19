@@ -8,14 +8,17 @@ public class Door : MonoBehaviour
     private GameObject roomNextTo = null;
     private Vector2 roomNextToCords;
     public Vector2 RoomNextToCords { get { return roomNextToCords; } }
-
-    public int roomType;
+    [SerializeField]
+    private int roomType = -1;
     public int RoomType { get { return roomType; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        roomType = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>().GetRandomRoomType();
+        if (roomType == -1)
+        {
+            roomType = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>().GetRandomRoomType();
+        }
         GameObject roomPreview = transform.Find("TileUI").Find("RoomPreview").gameObject;
         VariableDisplayer previewImage = roomPreview.GetComponent<VariableDisplayer>();
         //previewImage.
@@ -23,9 +26,10 @@ public class Door : MonoBehaviour
         switch (roomType)
         {
             case 0: displayedText = "<sprite name=SpecialRoomIcon>"; break;
-            case 1: displayedText = "<sprite name=NormalRoomIcon>"; break;
-            case 2: displayedText = "<sprite name=HardRoomIcon>"; break;
-            case 3: displayedText = "<sprite name=ReallyHardRoomIcon>"; break;
+            case 1: displayedText = "<sprite name=EasyRoomIcon>"; break;
+            case 2: displayedText = "<sprite name=NormalRoomIcon>"; break;
+            case 3: displayedText = "<sprite name=HardRoomIcon>"; break;
+            case 4: displayedText = "<sprite name=QuestRoomIcon>"; break;
 
         }
         previewImage.DisplayString(displayedText);

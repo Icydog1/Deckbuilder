@@ -12,13 +12,19 @@ public class RoomSpawner : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> rooms;
-    private List<GameObject> specialRooms = new List<GameObject>(), normalRooms = new List<GameObject>(), hardRooms = new List<GameObject>(), reallyHardRoomIcon = new List<GameObject>();
-    private List<GameObject>[] roomTypes => new List<GameObject>[] { specialRooms, normalRooms, hardRooms, reallyHardRoomIcon };
+    private List<GameObject> specialRooms = new List<GameObject>();
+    private List<GameObject> easyRooms = new List<GameObject>();
+    private List<GameObject> normalRooms = new List<GameObject>();
+    private List<GameObject> hardRooms = new List<GameObject>();
+    private List<GameObject> questRooms = new List<GameObject>();
 
-    //[SerializeField]
-    private float[] roomTypeWeights = { 0, 1, 0.7f, 0.3f };
+    private List<GameObject>[] roomTypes => new List<GameObject>[] { specialRooms, easyRooms, normalRooms, hardRooms, questRooms };
+
+    //probability that a given door is a specific room type
+    private float[] roomTypeWeights = { 0, 1, 0.7f, 0.3f, 0.2f };
     private float[] roomTypeProbabilities;
 
+    //not used right now was how likly each room was to spawn
     private float[] initialRoomWeights = {0,1,1,1,1,0.3f}; //, 0.6f, 0.05f 
     private float[] roomProbabilities;
     private float realativeRotation = 0;
@@ -68,28 +74,15 @@ public class RoomSpawner : MonoBehaviour
         foreach (GameObject room in rooms)
         {
             RoomScript roomScript = room.GetComponent<RoomScript>();
-            if (roomScript.roomType == 0)
+            switch (roomScript.roomType)
             {
-                specialRooms.Add(room);
+                case 0: specialRooms.Add(room); break;
+                case 1: easyRooms.Add(room); break;
+                case 2: normalRooms.Add(room); break;
+                case 3: hardRooms.Add(room); break;
+                case 4: questRooms.Add(room); break;
+                default: Debug.Log("No room type assigned"); specialRooms.Add(room); break;
             }
-            else if (roomScript.roomType == 1)
-            {
-                normalRooms.Add(room);
-            }
-            else if (roomScript.roomType == 2)
-            {
-                hardRooms.Add(room);
-            }
-            else if (roomScript.roomType == 3)
-            {
-                reallyHardRoomIcon.Add(room);
-            }
-            else
-            {
-                Debug.Log("No room type assigned");
-            }
-
-
         }
         float sumOfRoomTypeWeights = 0;
         for (int i = 0; i < roomTypeWeights.Length; i++)

@@ -647,7 +647,7 @@ public class Figure : MonoBehaviour
     }
     public IEnumerator GainCondition(Condition condition)
     {
-        Debug.Log("GainedCondition");
+        //Debug.Log("GainedCondition");
         bool isDuplicate = false;
         for (int i = 0; i < conditions.Count; i++)
         {

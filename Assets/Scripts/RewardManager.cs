@@ -156,7 +156,7 @@ public class RewardManager : MonoBehaviour
     //}
 
 
-    public IEnumerator TileReward(GameObject tile, List<Reward> rewards, bool isCard,bool isHealing)
+    public IEnumerator TileReward(GameObject tile, List<Reward> rewards)
     {
         foreach (Reward reward in rewards)
         {
@@ -294,6 +294,16 @@ public class RewardManager : MonoBehaviour
             yield return StartCoroutine(relicManager.GainRelic(reward));
         }
         currentOptions.Remove(reward);
+        foreach (GameObject unselectedReward in currentOptions)
+        {
+            Destroy(unselectedReward);
+        }
+        currentOptions.Clear();
+        GainedReward();
+    }
+    public void RewardSkiped()
+    {
+        //Debug.Log(reward + " selected");
         foreach (GameObject unselectedReward in currentOptions)
         {
             Destroy(unselectedReward);

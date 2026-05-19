@@ -69,10 +69,8 @@ public class LevelManager : MonoBehaviour
     public IEnumerator GoUpLevel()
     {
         yield return StartCoroutine(ClearLevel());
-        player.transform.position = new Vector3(0, 0, player.transform.position.z);
+        yield return StartCoroutine(playerControler.GoUpLevel());
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
-        playerControler.OneToOnePos = Vector2.zero;
-
         if (!isBossLevel)
         {
             isBossLevel = true;

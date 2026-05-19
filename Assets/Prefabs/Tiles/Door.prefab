@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 9168662646424885464, guid: 1c95b0054527cba49b0e7673a0c35d07, type: 3}
-  roomType: 0
+  roomType: -1
 --- !u!224 &6251725637363596429 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 430128777864893821, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}

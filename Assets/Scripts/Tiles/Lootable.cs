@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -81,12 +82,12 @@ public class Lootable : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void Lockpick(int lockpickValue)
+    public IEnumerator Lockpick(int lockpickValue)
     {
         LockpickDifficulty -= lockpickValue;
         if (LockpickDifficulty <= 0)
         {
-            StartCoroutine(rewardManager.TileReward(gameObject, rewards, isCard, isHealing));
+            yield return StartCoroutine(rewardManager.TileReward(gameObject, rewards));
         }
     }
 }

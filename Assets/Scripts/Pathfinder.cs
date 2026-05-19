@@ -298,6 +298,7 @@ public class Pathfinder : MonoBehaviour
             {
                 pathFound = true;
                 Debug.Log("DistanceTo pathfinding timed out");
+                return -1;
             }
 
         }

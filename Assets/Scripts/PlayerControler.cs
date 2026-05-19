@@ -107,11 +107,6 @@ public class PlayerControler : Figure
         //dev mode
         //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) });
 
-
-
-
-
-
         base.Start();
     }
 
@@ -176,7 +171,21 @@ public class PlayerControler : Figure
             mapManager.showMoveCost(false);
         }
     }
-
+    public IEnumerator GoUpLevel()
+    {
+        player.transform.position = new Vector3(0, 0, player.transform.position.z);
+        playerControler.OneToOnePos = Vector2.zero;
+        for (int i = 0; i < conditions.Count; i++)
+        {
+            if (conditions[i].ConditionName == "Vigor")
+            {
+                yield return StartCoroutine(conditions[i].OnLoss(this));
+                conditions.RemoveAt(i);
+                yield return StartCoroutine(deckManager.UpdateCardsDisplay());
+                yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
+            }
+        }
+    }
     public void ResetPlayer(GameManager gameManager)
     {
         kineticBatterySteps = 0;
@@ -500,8 +509,8 @@ public class PlayerControler : Figure
     }
     public override void EndAction()
     {
-
-        if (actionManager.ActionStackNames.Peek() == "Move")
+        string actionName = actionManager.ActionStackNames.Peek();
+        if (actionName == "Move")
         {
             //Debug.Log("Ended Move");
             isMoving = false;
@@ -513,24 +522,15 @@ public class PlayerControler : Figure
                 mapManager.showMoveCost(false);
             }
         }
-        else if (actionManager.ActionStackNames.Peek() == "Ability")
-        {
-            //Debug.Log("Ended Ability");
-
-        }
-        else if(actionManager.ActionStackNames.Peek() == "Block")
-        {
-            //Debug.Log("Ended block");
-        }
         else if (actionManager.ActionStackNames.Peek() == "Attack")
         {
             //Debug.Log("Ended Attack");
             isAttacking = false;
             targetsLeft = 0;
         }
-        else if (actionManager.ActionStackNames.Peek() == "Condition")
+        else if (actionName == "Ability" || actionName == "Block" || actionName == "Condition" || actionName == "Lockpick")
         {
-            //Debug.Log("Ended Condition");
+
         }
         else
         {
@@ -628,19 +628,21 @@ public class PlayerControler : Figure
         }
         else
         {
+            actionManager.ActionStackNames.Push("Lockpick");
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
             if (currentTile.GetComponent<Lootable>())
             {
-                currentTile.GetComponent<Lootable>().Lockpick(finalLockpick);
+                yield return StartCoroutine(currentTile.GetComponent<Lootable>().Lockpick(finalLockpick));
+            }
+            //else
+            //{
+            //    //ActionDone();
+            //    EndAction();
+            //}
+            EndAction();
 
-                StartCoroutine(WaitUntilRewardSelected());
-            }
-            else
-            {
-                //ActionDone();
-            }
         }
-        yield return null;
+        yield break;
     }
     public IEnumerator Draw(int cardCount)
     {
@@ -687,7 +689,7 @@ public class PlayerControler : Figure
             }
             //ActionDone();
         }
-        yield return null;
+        yield break;
     }
     public IEnumerator GainTopEnergy(int amount)
     {
@@ -703,7 +705,7 @@ public class PlayerControler : Figure
             TopEnergy += amount;
             //ActionDone();
         }
-        yield return null;
+        yield break;
     }
     public IEnumerator GainBottomEnergy(int amount)
     {
@@ -718,7 +720,7 @@ public class PlayerControler : Figure
             BottomEnergy += amount;
             //ActionDone();
         }
-        yield return null;
+        yield break;
 
     }
     public IEnumerator GainNewAbility(int cost, List<Func<IEnumerator>> abilities, int duration = -1)
@@ -759,7 +761,7 @@ public class PlayerControler : Figure
             yield return StartCoroutine(abilityManager.GainAbility(ability));
             //ActionDone();
         }
-        yield return null;
+        yield break;
     }
     public IEnumerator LoseAbility(Ability ability)
     {
@@ -778,18 +780,7 @@ public class PlayerControler : Figure
             //ActionDone();
         }
     }
-    public IEnumerator WaitUntilRewardSelected()
-    {
-        yield return new WaitUntil(() => gettingReward == false);
-        //Debug.Log("test");
-        ActionDone();
-    }
-    public IEnumerator WaitUntil()
-    {
-        yield return new WaitUntil(() => waitUntilVariable == false);
-        //Debug.Log("test");
-        ActionDone();
-    }
+
 
     public override void Die()
     {

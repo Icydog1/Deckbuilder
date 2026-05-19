@@ -52,6 +52,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
+      propertyPath: m_Color.b
+      value: 0.7294118
+      objectReference: {fileID: 0}
+    - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
+      propertyPath: m_Color.g
+      value: 0.7294118
+      objectReference: {fileID: 0}
+    - target: {fileID: 5023203077783566167, guid: 808563d39f87e5648baaa3bd3179339d, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7294118
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -92,3 +104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc46dc05e032d345b60f335edfaf878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InteractedWith:
+    m_PersistentCalls:
+      m_Calls: []

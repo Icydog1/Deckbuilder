@@ -1,19 +1,21 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static Lootable;
 
 public class UIManager : MonoBehaviour
 {
     private Image rewardScreenBlocker;
     private Image listDisplayerScreenBlocker;
     private Image pauseScreenBlocker;
-
+    [SerializeField]
+    private GameObject skipRewardButton;
     private bool isPaused, isDisplayingList, isGettingReward;
     public bool IsPaused { set { isPaused = value; UpdateScreen(); } }
     public bool IsDisplayingList { get { return isDisplayingList; } set { isDisplayingList = value; UpdateScreen(); } }
     public bool IsGettingReward { set { isGettingReward = value; UpdateScreen(); } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         rewardScreenBlocker = GameObject.Find("RewardScreenBlocker").GetComponent<Image>();
         listDisplayerScreenBlocker = GameObject.Find("ListDisplayerScreenBlocker").GetComponent<Image>();
@@ -31,6 +33,7 @@ public class UIManager : MonoBehaviour
         rewardScreenBlocker.enabled = false;
         listDisplayerScreenBlocker.enabled = false;
         pauseScreenBlocker.enabled = false;
+        skipRewardButton.SetActive(false);
         if (isPaused)
         {
             pauseScreenBlocker.enabled = true;
@@ -45,7 +48,7 @@ public class UIManager : MonoBehaviour
         {
             rewardScreenBlocker.enabled = true;
             listDisplayerScreenBlocker.GetComponent<RectTransform>().sizeDelta = listDisplayerScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
-
+            skipRewardButton.SetActive(true);
         }
     }
 }

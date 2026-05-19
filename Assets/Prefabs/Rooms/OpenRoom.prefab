@@ -263,12 +263,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomType: 1
-  isLeftEntrance: 0
-  isTopLeftEntrance: 0
-  isTopRightEntrance: 0
-  isRightEntrance: 0
-  isBottomRightEntrance: 0
-  isBottomLeftEntrance: 0
+  isLeftEntrance: 1
+  isTopLeftEntrance: 1
+  isTopRightEntrance: 1
+  isRightEntrance: 1
+  isBottomRightEntrance: 1
+  isBottomLeftEntrance: 1
 --- !u!1001 &3266745312021600
 PrefabInstance:
   m_ObjectHideFlags: 0

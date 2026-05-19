@@ -236,7 +236,7 @@ public class Enemy : Figure
     public void CalculateValues()
     {
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
-        distanceToPlayer = mapManager.GetDistanceBetweenOneToOne(oneToOnePos, playerControler.OneToOnePos);
+        distanceToPlayer = pathfinder.GetDistanceTo(playerControler.OneToOnePos, oneToOnePos);
     }
     public override void ActionDone()
     {
