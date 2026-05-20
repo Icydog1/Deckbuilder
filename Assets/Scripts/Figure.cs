@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -16,7 +17,9 @@ public class Figure : MonoBehaviour
     protected DeckManager deckManager;
     protected LevelManager levelManager;
     protected ActionManager actionManager;
+    protected OverallStatistics overallStatistics;
 
+    
 
     protected bool isMyTurn;
     protected bool isEnemy, isPlayer;
@@ -72,7 +75,8 @@ public class Figure : MonoBehaviour
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
-
+        overallStatistics = GameObject.Find("OverallStatistics").GetComponent<OverallStatistics>();
+        
         //statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
         actionManager.PrepareAction(LoadFigure());
     }
@@ -661,7 +665,7 @@ public class Figure : MonoBehaviour
                 if (condition.AddType == 1 && conditions[i].Duration == condition.Duration)
                 {
                     conditions[i].Value += condition.Value;
-                    conditions[i].Value = Mathf.Clamp(conditions[i].Value, -99999, 99999);
+                    conditions[i].Value = Mathf.Clamp(conditions[i].Value, Variables.gameMinValue, Variables.gameMaxValue);
                     isDuplicate = true;
                     break;
                 }
@@ -674,7 +678,7 @@ public class Figure : MonoBehaviour
                     else
                     {
                         conditions[i].Duration += condition.Duration;
-                        conditions[i].Duration = Mathf.Clamp(conditions[i].Duration, 0, 99999);
+                        conditions[i].Duration = Mathf.Clamp(conditions[i].Duration, 0, Variables.gameMaxValue);
                     }
                     isDuplicate = true;
                     break;

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    private RefrenceStorage refrenceStorage;
 
     private MapManager mapManager;
     private MouseManager mouseManager;
@@ -12,9 +13,10 @@ public class GameManager : MonoBehaviour
     private RoomSpawner roomSpawner;
     private LevelManager levelManager;
     private GameObject pauseScreenBlocker;
+    private OverallStatistics overallStatistics;
 
 
-    
+
     private bool nextAction;
     public static event Action<GameManager> GameStartedFunctions;
     public static event Action<GameManager> ResetGame;
@@ -27,27 +29,33 @@ public class GameManager : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        refrenceStorage = GameObject.Find("RefrenceStorage").GetComponent<RefrenceStorage>();
+        mapManager = refrenceStorage.MapManager;
+        turnManager = refrenceStorage.TurnManager;
+        mouseManager = refrenceStorage.MouseManager;
+        levelManager = refrenceStorage.LevelManager;
+        roomSpawner = refrenceStorage.RoomSpawner;
+
+        pauseScreenBlocker = refrenceStorage.PauseScreenBlocker;
+        overallStatistics = refrenceStorage.OverallStatistics;
+
+        //mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
+        //mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
+        //turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
+        //roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
+        //levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        //pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
+    }
     void Start()
     {
-        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
-        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
-        turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
-        roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
-        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
-        pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
 
-        
 
         StartCoroutine(StartGame());
 
         //GameObject.Find("ListDisplayerScreenBlocker").GetComponent<Image>().enabled = true;
         //GameObject.Find("ListDisplayer").SetActive(false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     private IEnumerator StartGame()

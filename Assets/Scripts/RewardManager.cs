@@ -178,6 +178,26 @@ public class RewardManager : MonoBehaviour
         tileScript = tile.GetComponent<Lootable>();
         tileScript.Looted();
     }
+    public IEnumerator QuestReward(List<Reward> rewards)
+    {
+        foreach (Reward reward in rewards)
+        {
+            AnyReward();
+            if (reward.rewardType == 1)
+            {
+                yield return StartCoroutine(GenerateReward(3, true));
+            }
+            else if (reward.rewardType == 2)
+            {
+                yield return StartCoroutine(GenerateReward(3, false));
+            }
+            else if (reward.rewardType == 3)
+            {
+                GainHealing(reward.rewardAmount);
+            }
+            yield return new WaitUntil(() => isGettingReward == false);
+        }
+    }
     public IEnumerator LevelUpReward()
     {
         AnyReward();

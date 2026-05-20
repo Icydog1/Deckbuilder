@@ -78,6 +78,7 @@ public class PlayerControler : Figure
     public int Level { get { return level; } set { level = value; } }
     public int PotentialLevel { get { return potentialLevel; } set { potentialLevel = value; } }
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
@@ -814,6 +815,10 @@ public class PlayerControler : Figure
             //Debug.Log("Queued kineticBattery");
 
         }
+    }
+    public void KilledEnemy(Enemy enemy)
+    {
+
     }
     public void GainXP(int abount)
     {

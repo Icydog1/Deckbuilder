@@ -22,7 +22,7 @@ public class ConditionEffects : MonoBehaviour
         //Debug.Log("Modifing Attack");
         if (effectedFigure.UnmodifiedAction)
         {
-            initalAttack = Mathf.Clamp(initalAttack, 0, 99999);
+            initalAttack = Mathf.Clamp(initalAttack, 0, Variables.gameMaxValue);
             return initalAttack;
         }
         float modifiedAttack = initalAttack;
@@ -45,7 +45,7 @@ public class ConditionEffects : MonoBehaviour
         }
 
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
-        finalAttack = Mathf.Clamp(finalAttack, 0, 99999);
+        finalAttack = Mathf.Clamp(finalAttack, 0, Variables.gameMaxValue);
         return finalAttack;
     }
 
@@ -53,7 +53,7 @@ public class ConditionEffects : MonoBehaviour
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initalBlock = Mathf.Clamp(initalBlock, 0, 99999);
+            initalBlock = Mathf.Clamp(initalBlock, 0, Variables.gameMaxValue);
             return initalBlock;
         }
         float modifiedBlock = initalBlock;
@@ -66,7 +66,7 @@ public class ConditionEffects : MonoBehaviour
             }
         }
         int finalBlock = Mathf.FloorToInt(modifiedBlock);
-        finalBlock = Mathf.Clamp(finalBlock, 0, 99999);
+        finalBlock = Mathf.Clamp(finalBlock, 0, Variables.gameMaxValue);
 
         return finalBlock;
     }
@@ -75,7 +75,7 @@ public class ConditionEffects : MonoBehaviour
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initalMove = Mathf.Clamp(initalMove, 0, 99999);
+            initalMove = Mathf.Clamp(initalMove, 0, Variables.gameMaxValue);
             return initalMove;
         }
         float modifiedMove = initalMove;
@@ -100,7 +100,7 @@ public class ConditionEffects : MonoBehaviour
         }
 
         int finalMove = Mathf.FloorToInt(modifiedMove);
-        finalMove = Mathf.Clamp(finalMove, 0, 99999);
+        finalMove = Mathf.Clamp(finalMove, 0, Variables.gameMaxValue);
 
         return finalMove;
     }
@@ -109,7 +109,7 @@ public class ConditionEffects : MonoBehaviour
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initalAbility = Mathf.Clamp(initalAbility, 0, 99999);
+            initalAbility = Mathf.Clamp(initalAbility, 0, Variables.gameMaxValue);
             return initalAbility;
         }
         float modifiedAbility = initalAbility;
@@ -122,7 +122,7 @@ public class ConditionEffects : MonoBehaviour
             }
         }
         int finalAbility = Mathf.FloorToInt(modifiedAbility);
-        finalAbility = Mathf.Clamp(finalAbility, 0, 99999);
+        finalAbility = Mathf.Clamp(finalAbility, 0, Variables.gameMaxValue);
 
         return finalAbility;
     }

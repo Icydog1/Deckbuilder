@@ -87,14 +87,13 @@ public class ActionManager : MonoBehaviour
             {
                 yield return StartCoroutine(PreformFirstInQueue());
             }
-            else if (preparedQueue.Count > 0)
-            {
-                yield return StartCoroutine(PreformPreparedActions());
-            }
+            //else if (preparedQueue.Count > 0)
+            //{
+            //    yield return StartCoroutine(PreformPreparedActions());
+            //}
             else
             {
                 preformingActions = false;
-
             }
         }
         //Debug.Log("mabie unnessasery");
@@ -102,17 +101,22 @@ public class ActionManager : MonoBehaviour
     }
     public void QueueAction(IEnumerator action)
     {
-        actionQueue.Enqueue(action);
-
+        if (!preformingActions)
+        {
+            actionQueue.Enqueue(action);
+        }
+        else
+        {
+            StartCoroutine(PreformAction(action));
+        }
     }
     public IEnumerator PreformFirstInQueue()
     {
-        yield return StartCoroutine(actionQueue.Dequeue());
+        yield return PreformAction(actionQueue.Dequeue());
     }
     public void PrepareAction(IEnumerator action)
     {
         //Debug.Log("queued action");
-
         preparedQueue.Enqueue(action);
     }
     public IEnumerator PreformPreparedActions()

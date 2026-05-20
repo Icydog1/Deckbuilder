@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class Enemy : Figure
 {
@@ -257,6 +258,15 @@ public class Enemy : Figure
     {
         Destroy(gameObject);
         playerControler.GainXP(XPValue);
+        if (overallStatistics.KilledEnemies.ContainsKey(enemyName))
+        {
+            overallStatistics.KilledEnemies[enemyName]++;
+        }
+        else
+        {
+            overallStatistics.KilledEnemies.Add(enemyName, 1);
+        }
+        overallStatistics.TotalEnemiesKilled++;
         if (isMyTurn)
         {
             StartStopTurn(false);
