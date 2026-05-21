@@ -73,7 +73,8 @@ public class PlayerControler : Figure
     
     private int kineticBatteryCount, kineticBatterySteps;
     public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
-
+    private int adaptiveShieldCount;
+    public int AdaptiveShieldCount { get { return adaptiveShieldCount; } set { adaptiveShieldCount = value; } }
     private int level, potentialLevel, XP, XPThreshold;
     public int Level { get { return level; } set { level = value; } }
     public int PotentialLevel { get { return potentialLevel; } set { potentialLevel = value; } }
@@ -293,8 +294,9 @@ public class PlayerControler : Figure
         }
         if (currentTile.GetComponent<Stair>())
         {
-            //yield return StartCoroutine(actionManager.PreformPreparedActions());
             yield return StartCoroutine(levelManager.GoUpLevel());
+            currentTile = mapManager.GetTileAtHex(oneToOnePos);
+            yield return StartCoroutine(actionManager.PreformPreparedActions());
         }
         else if (moveLeft == 0)
         {
@@ -645,8 +647,13 @@ public class PlayerControler : Figure
         }
         yield break;
     }
-    public IEnumerator Draw(int cardCount)
+    public IEnumerator Draw(int cardCount, bool isVariable = false)
     {
+        if (isVariable)
+        {
+
+            cardCount *= variableCardModifier;
+        }
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
@@ -781,6 +788,14 @@ public class PlayerControler : Figure
             //ActionDone();
         }
     }
+    public override IEnumerator LoseHealth(int amount)
+    {
+        yield return StartCoroutine(base.LoseHealth(amount));
+        if (adaptiveShieldCount > 0)
+        {
+            yield return StartCoroutine(actionManager.PreformAction(Block(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
+        }
+    }
 
 
     public override void Die()
@@ -806,14 +821,13 @@ public class PlayerControler : Figure
         if (kineticBatteryCount > 0)
         {
             kineticBatterySteps++;
-            if (kineticBatterySteps == 3)
+            if (kineticBatterySteps == Variables.kineticBatterySpaces)
             {
-                yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount), "self", 1, 1, false, false)));
+                yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false)));
                 kineticBatterySteps = 0;
             }
 
             //Debug.Log("Queued kineticBattery");
-
         }
     }
     public void KilledEnemy(Enemy enemy)

@@ -67,6 +67,8 @@ public class RelicManager : MonoBehaviour
         if (relics.ContainsKey(relicSript.RelicName))
         {
             Relic newRelicSript = relics[relicSript.RelicName];
+            newRelicSript.RelicDescriptionList = null;
+
             yield return StartCoroutine(newRelicSript.IncreaseCount());
             Destroy(relic);
         }

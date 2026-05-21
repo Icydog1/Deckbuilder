@@ -212,7 +212,7 @@ public class Figure : MonoBehaviour
         yield return null;
     }
 
-    public IEnumerator Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null, bool isVariable = false)
+    public IEnumerator Attack(int attackValue, int attackRange = 1, int targets = 1, int repeats = 1, Condition[] attackConditions = null, bool isVariable = false, bool isManual = true)
     {
         if (isVariable)
         {
@@ -277,7 +277,7 @@ public class Figure : MonoBehaviour
         else if(!isPreparingMove)
         {
             actionManager.ActionStackNames.Push("Attack");
-            if (isPlayer)
+            if (isPlayer && isManual)
             {
                 yield return StartCoroutine(playerControler.ControledAttack(finalAttack, attackRange, targets, repeats, attackConditions));
             }
@@ -374,12 +374,12 @@ public class Figure : MonoBehaviour
 
     }
 
-    public IEnumerator ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true)
+    public IEnumerator ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true, bool isManual = true)
     {
-        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget, isAction));
+        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget, isAction, isManual));
     }
 
-    public IEnumerator ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true)
+    public IEnumerator ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true, bool isManual = true)
     {
         if (isPlanning)
         {
@@ -579,7 +579,7 @@ public class Figure : MonoBehaviour
             //Debug.Log("Applied Condition");
             actionManager.ActionStackNames.Push("Condition");
 
-            if (isPlayer)
+            if (isPlayer && isManual)
             {
                 if (targetType == "self")
                 {
@@ -716,6 +716,7 @@ public class Figure : MonoBehaviour
             yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
         }
     }
+    //returns targets chosen by game (i think priority is closest then arbitrary)
     public List<Figure> FindTargets(string targetType, int range = 1, int targets = 1)
     {
         return ChooseTargets(FindPosibleTargets(targetType, range), targets);
@@ -779,7 +780,7 @@ public class Figure : MonoBehaviour
     {
         for (int i = 0; i < repeats; i++)
         {
-            TakeDamage(attackValue);
+            yield return StartCoroutine(TakeDamage(attackValue));
             if (!isDead)
             {
                 yield return StartCoroutine(GainConditions(newConditions));
@@ -788,7 +789,7 @@ public class Figure : MonoBehaviour
 
 
     }
-    public void TakeDamage(int damageValue)
+    public IEnumerator TakeDamage(int damageValue)
     {
         if (block > 0)
         {
@@ -796,9 +797,9 @@ public class Figure : MonoBehaviour
             damageValue -= damageBlocked;
             block -= damageBlocked;
         }
-        LoseHealth(damageValue);
+        yield return StartCoroutine(LoseHealth(damageValue));
     }
-    public void LoseHealth(int amount)
+    public virtual IEnumerator LoseHealth(int amount)
     {
         health -= amount;
         statsDisplayer.SetHealthAndBlock(health, block);
@@ -807,6 +808,7 @@ public class Figure : MonoBehaviour
             isDead = true;
             Die();
         }
+        yield break;
     }
     public void Heal(int amount)
     {

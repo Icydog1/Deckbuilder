@@ -165,3 +165,7 @@ public class Flight : Condition
         yield break;
     }
 }
+public class StartOfTurnSlow : Condition
+{
+    public StartOfTurnSlow(int conditionValue, int conditionDuration = -1) : base("StartOfTurnSlow", conditionValue, conditionDuration, 1, true, false) { }
+}

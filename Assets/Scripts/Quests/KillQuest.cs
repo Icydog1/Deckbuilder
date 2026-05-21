@@ -9,6 +9,7 @@ public class KillQuest : Quest
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
+        description = "Kill " + killAmount + " enemies";
         base.Awake();
     }
 
@@ -16,8 +17,14 @@ public class KillQuest : Quest
     public override IEnumerator GainQuest()
     {
         isActive = true;
-        int killAmountRequred = overallStatistics.TotalEnemiesKilled + killAmount;
-        yield return new WaitUntil(() => overallStatistics.TotalEnemiesKilled >= killAmountRequred);
+        //int killAmountRequred = overallStatistics.TotalEnemiesKilled + killAmount;
+        yield return StartCoroutine(base.GainQuest());
+        for (int killsLeft = killAmount; killsLeft > 0; killsLeft--)
+        {
+            SetDescription("Kill " + killsLeft + " enemies");
+            int WaitUntilValue = overallStatistics.TotalEnemiesKilled + 1;
+            yield return new WaitUntil(() => overallStatistics.TotalEnemiesKilled >= WaitUntilValue);
+        }
         Debug.Log("quest sucsesfull");
         CompleteQuest();
 

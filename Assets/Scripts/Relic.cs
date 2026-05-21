@@ -21,6 +21,7 @@ public class Relic : MonoBehaviour
 
     protected string relicDesription;
     protected List<string> relicDescriptionList = new List<string>();
+    public List<string> RelicDescriptionList { get { return relicDescriptionList; } set { relicDescriptionList = value; } }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

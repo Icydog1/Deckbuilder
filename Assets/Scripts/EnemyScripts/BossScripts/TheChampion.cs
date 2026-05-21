@@ -8,24 +8,24 @@ public class TheChampion : Boss
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(15)
-            ,() => Attack(15)
+            () => Move(18)
+            ,() => Attack(16)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
 
-            () => Move(20)
-            ,() => Attack(10,1,1,2)
+            () => Move(22)
+            ,() => Attack(12,1,1,2)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
 
-            () => Block(25)
+            () => Block(23)
             ,() => ApplyCondition(new Strength(8, -1))
             ,() => ApplyCondition(new Speed(6, -1))
         });
         movesSetOrder = new List<int>() { 0, 1, 2 };
 
-        maxHealth = 300;
-        XPValue = 30;
+        maxHealth = 337;
+        XPValue = 32;
 
         base.Awake();
     }

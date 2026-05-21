@@ -6041,10 +6041,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1069799700}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 150, y: 0}
+  m_SizeDelta: {x: 300, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1082498010
 MonoBehaviour:
@@ -7494,6 +7494,8 @@ MonoBehaviour:
   - {fileID: 4864755617491168204, guid: 269d35f56c903154ca4deedf0404b3e0, type: 3}
   - {fileID: 4506035114417295569, guid: 7fc666b1375442c419ee28327a87e009, type: 3}
   - {fileID: 622119069048453466, guid: feaf70bcaf327a74a9bb631d1cd603ec, type: 3}
+  - {fileID: 6733222571807191690, guid: cc1f88a029a4c2548b310be8f718f787, type: 3}
+  - {fileID: 3891585475501859772, guid: ad1238911d81b7b49a8f164444d25106, type: 3}
   commonRelicRewards: []
   testCardRewards: []
 --- !u!4 &1281001567

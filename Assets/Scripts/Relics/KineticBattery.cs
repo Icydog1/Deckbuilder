@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 
 public class KineticBattery : Relic
 {
     public override void Awake()
     {
-        relicDesription = "Every 3 spaces you move gain <color=#009f9f>1<color=white> Vigor";
+        relicDesription = "Every " + Variables.kineticBatterySpaces + " spaces you move gain <color=#009f9f>1<color=white> Vigor for " + Variables.kineticBatteryVigorDuration + " turns";
         base.Awake();
     }
     public override IEnumerator OnGain()
