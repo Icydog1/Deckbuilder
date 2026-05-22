@@ -20,7 +20,7 @@ public class FrenziedAbomination : Enemy
         initialMoves = new List<int>() { 0, 0, 0, 0, 0 };
         movesSetOrder = new List<int>() { 1 };
 
-        maxHealth = 100;
+        maxHealth = 142;
         XPValue = 4;
 
         base.Awake();

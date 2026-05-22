@@ -5409,6 +5409,7 @@ MonoBehaviour:
   - {fileID: 1960072249521237197, guid: d82801326a2bd99469fcb0146038cc93, type: 3}
   - {fileID: 6392441393340672395, guid: b64af232a2304e54f9012d7899b7d75f, type: 3}
   - {fileID: 6392441393340672395, guid: e5f52e0d5bd929a4ab9eed5074ce44c8, type: 3}
+  - {fileID: 6392441393340672395, guid: e8b5bef7259dc544faeaa41f54a0f5ee, type: 3}
 --- !u!4 &887113702
 Transform:
   m_ObjectHideFlags: 0
@@ -11806,6 +11807,7 @@ MonoBehaviour:
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
+  - {fileID: 6586222175950573760, guid: 7f70141bf8c47db40920dfb6de196432, type: 3}
   entireDeck: []
   deckContents: []
   handContents: []

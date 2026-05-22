@@ -8,16 +8,16 @@ public class Shaman : Enemy
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(15)
-            ,() => Attack(5,3,1,1,new Condition[] { new Strength(-3,2),new Finesse(-2, 2) })
+            () => Move(16)
+            ,() => Attack(6,3,1,1,new Condition[] { new Strength(-3,2),new Finesse(-2, 2) })
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(15)
+            () => Move(19)
             ,() => Attack(5,3,1,1,new Condition[] { new Dexterity(-3, 2),new Speed(-2,2) })
         });
 
         //movesSetOrder = new List<int>() { 0, 1 };
-        maxHealth = 50;
+        maxHealth = 62;
         XPValue = 4;
         base.Awake();
     }

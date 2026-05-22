@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
+using static UnityEngine.EventSystems.EventTrigger;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 
 public class Figure : MonoBehaviour
@@ -76,7 +79,8 @@ public class Figure : MonoBehaviour
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
         overallStatistics = GameObject.Find("OverallStatistics").GetComponent<OverallStatistics>();
-        
+        //Debug.Log("figure awake ran");
+
         //statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
         actionManager.PrepareAction(LoadFigure());
     }
@@ -95,6 +99,7 @@ public class Figure : MonoBehaviour
     {
         health = maxHealth;
         statsDisplayer.SetHealthAndBlock(health, block);
+        yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
 
         yield return null;
     }
@@ -624,6 +629,61 @@ public class Figure : MonoBehaviour
         }
 
     }
+    public IEnumerator Summon(GameObject summon)
+    {
+        //if (isVariable)
+        //{
+        //    blockValue *= variableCardModifier;
+        //}
+        //int finalBlock = conditionEffects.ModifyBlock(this, blockValue);
+        if (isPlanning)
+        {
+            //prepareActions.Add(() => Block(finalBlock));
+            //string currentDescriptionString = "Block " + finalBlock;
+            string currentDescriptionString = "Summon " + summon.name;
+            //Debug.Log("planned " + currentDescriptionString);
+            actionManager.PlanToList.Add(currentDescriptionString);
+        }
+        else if (!isPreparingMove)
+        {
+            actionManager.ActionStackNames.Push("Summon");
+            Vector2 checktile = Vector2.zero;
+            Vector2 summonPos = Vector2.zero;
+            bool canSummon = false;
+            for (int i = 0; i < 6; i++)
+            {
+                switch (i)
+                {
+                    case 0: checktile = oneToOnePos + Vector2.up; break;
+                    case 1: checktile = oneToOnePos + Vector2.down; break;
+                    case 2: checktile = oneToOnePos + Vector2.right; break;
+                    case 3: checktile = oneToOnePos + Vector2.left; break;
+                    case 4: checktile = oneToOnePos + Vector2.up + Vector2.right; break;
+                    case 5: checktile = oneToOnePos + Vector2.down + Vector2.left; break;
+                }
+                GameObject tile = mapManager.GetTileAtHex(checktile);
+                GameObject entity = mapManager.GetEntityOnHex(checktile);
+                if (entity == null)
+                {
+                    if (!tile.GetComponent<Wall>() && !tile.GetComponent<Obstacle>())
+                    {
+                        summonPos = mapManager.OneToOneToPos(checktile);
+                        canSummon = true;
+                        break;
+                    }
+                }
+            }
+            if (canSummon)
+            {
+                GameObject newSummon = Instantiate(summon, new Vector3(summonPos.x, summonPos.y, summon.transform.position.z), Quaternion.identity);
+            }
+            //ActionDone();
+            EndAction();
+
+        }
+        yield return null;
+
+    }
     /*
     public void DelayedApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
     {
@@ -649,6 +709,9 @@ public class Figure : MonoBehaviour
 
     public IEnumerator GainConditions(Condition[] newConditions)
     {
+        //Debug.Log("GainedConditions");
+        //Debug.Log("Conditions count " + newConditions.Length);
+
         foreach (Condition condition in newConditions)
         {
             yield return StartCoroutine(GainCondition(condition));
@@ -721,6 +784,9 @@ public class Figure : MonoBehaviour
             yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
         }
     }
+
+
+
     //returns targets chosen by game (i think priority is closest then arbitrary)
     public List<Figure> FindTargets(string targetType, int range = 1, int targets = 1)
     {

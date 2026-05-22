@@ -24,7 +24,7 @@ public class Harpy : Enemy
         });
 
         canFly = true;
-        maxHealth = 45;
+        maxHealth = 44;
         XPValue = 3;
         base.Awake();
     }

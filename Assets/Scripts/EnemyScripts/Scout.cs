@@ -9,17 +9,17 @@ public class Scout : Enemy
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(10)
-            ,() => Attack(15, 5)
+            () => Move(13)
+            ,() => Attack(16, 5)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Attack(25, 6)
+            () => Attack(28, 6)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(20)
-            ,() => Attack(20, 4)
+            () => Move(22)
+            ,() => Attack(18, 4)
         });
-        maxHealth = 50;
+        maxHealth = 48;
         XPValue = 3;
         base.Awake();
     }

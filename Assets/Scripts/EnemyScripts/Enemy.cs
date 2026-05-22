@@ -32,7 +32,6 @@ public class Enemy : Figure
     {
         //figureStorage = GameObject.Find("FigureStorage").GetComponent<FigureStorage>();
         LevelManager.LevelClearedFuntions += Remove;
-        base.Awake();
         enemyName = this.name;
         enemyName = enemyName.Replace("(Clone)", "");
         enemyName = Regex.Replace(enemyName, "(.)([A-Z,0-9])", "$1 $2");
@@ -42,6 +41,8 @@ public class Enemy : Figure
         isEnemy = true;
         statsDisplayer = enemyStatsDisplayer;
         team = 1;
+        base.Awake();
+
     }
     public override void Start()
     {

@@ -87,10 +87,10 @@ public class ActionManager : MonoBehaviour
             {
                 yield return StartCoroutine(PreformFirstInQueue());
             }
-            //else if (preparedQueue.Count > 0)
-            //{
-            //    yield return StartCoroutine(PreformPreparedActions());
-            //}
+            else if (preparedQueue.Count > 0)
+            {
+                yield return StartCoroutine(PreformPreparedActions());
+            }
             else
             {
                 preformingActions = false;
@@ -120,7 +120,16 @@ public class ActionManager : MonoBehaviour
     public void PrepareAction(IEnumerator action)
     {
         //Debug.Log("queued action");
-        preparedQueue.Enqueue(action);
+        if (!preformingActions)
+        {
+            //Debug.Log("added action to queue");
+            preparedQueue.Enqueue(action);
+        }
+        else
+        {
+            //Debug.Log("started queue");
+            StartCoroutine(PreformAction(action));
+        }
     }
     public IEnumerator PreformPreparedActions()
     {

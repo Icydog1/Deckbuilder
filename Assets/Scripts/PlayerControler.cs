@@ -366,8 +366,9 @@ public class PlayerControler : Figure
         {
             if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
             {
-                Debug.Log("applied condition");
-                clickedEnemy.GetComponent<Figure>().GainConditions(appliedConditions);
+                //Debug.Log("applied condition " + appliedConditions);
+
+                yield return StartCoroutine(clickedEnemy.GetComponent<Figure>().GainConditions(appliedConditions));
                 targetsLeft--;
                 posibleTargets.Remove(figure.GetComponent<Figure>());
             }
@@ -525,13 +526,19 @@ public class PlayerControler : Figure
                 mapManager.showMoveCost(false);
             }
         }
-        else if (actionManager.ActionStackNames.Peek() == "Attack")
+        else if (actionName == "Attack")
         {
             //Debug.Log("Ended Attack");
             isAttacking = false;
             targetsLeft = 0;
         }
-        else if (actionName == "Ability" || actionName == "Block" || actionName == "Condition" || actionName == "Lockpick")
+        else if (actionName == "Condition")
+        {
+            //Debug.Log("Ended Attack");
+            isAppliyingConditions = false;
+            targetsLeft = 0;
+        }
+        else if (actionName == "Ability" || actionName == "Block" || actionName == "Lockpick")
         {
 
         }

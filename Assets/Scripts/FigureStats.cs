@@ -37,10 +37,10 @@ public class FigureStats : MonoBehaviour
             figure = transform.parent.GetComponent<Figure>();
 
         }
-
-        SetHealthAndBlock(100, 0);
-        StartCoroutine(DisplayConditions(new List<Condition>()));
-        Plan(new List<string>());
+        //Debug.Log("stats awake ran");
+        //SetHealthAndBlock(100, 0);
+        //StartCoroutine(DisplayConditions(new List<Condition>()));
+        //Plan(new List<string>());
 
     }
 

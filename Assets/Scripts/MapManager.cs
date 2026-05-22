@@ -161,7 +161,12 @@ public class MapManager : MonoBehaviour
         }
         else
         {
+            //is checking beond doors currently dont think it is a problem though
+
             //Debug.Log("no Tile There");
+            //Debug.Log("checked " + OneToOnePos + " one to one");
+            //Debug.Log("checked " + OneToOneToPos(OneToOnePos) + " pos");
+
             return null;
         }
     }

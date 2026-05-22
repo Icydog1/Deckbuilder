@@ -78,20 +78,20 @@ public class Pathfinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        elevationsWatcher.Clear();
-        playerElevationsWatcher.Clear();
-        foreach (List<Vector2> test in elevations)
-        {
-            ElevationsWatcher test2 = new ElevationsWatcher();
-            test2.elevation = test;
-            elevationsWatcher.Add(test2);
-        }
-        foreach (List<Vector2> test in playerElevations)
-        {
-            ElevationsWatcher test2 = new ElevationsWatcher();
-            test2.elevation = test;
-            playerElevationsWatcher.Add(test2);
-        }
+        //elevationsWatcher.Clear();
+        //playerElevationsWatcher.Clear();
+        //foreach (List<Vector2> test in elevations)
+        //{
+        //    ElevationsWatcher test2 = new ElevationsWatcher();
+        //    test2.elevation = test;
+        //    elevationsWatcher.Add(test2);
+        //}
+        //foreach (List<Vector2> test in playerElevations)
+        //{
+        //    ElevationsWatcher test2 = new ElevationsWatcher();
+        //    test2.elevation = test;
+        //    playerElevationsWatcher.Add(test2);
+        //}
         
          
     }
@@ -294,10 +294,11 @@ public class Pathfinder : MonoBehaviour
                 }
 
             }
-            if (i >= 100000)
+            //need to add detection when all tiles have bean serched
+            if (i > Variables.gameMaxValue)
             {
                 pathFound = true;
-                Debug.Log("DistanceTo pathfinding timed out");
+                //Debug.Log("DistanceTo pathfinding timed out");
                 return -1;
             }
 

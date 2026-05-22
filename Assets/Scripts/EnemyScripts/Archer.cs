@@ -9,11 +9,11 @@ public class Archer : Enemy
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(10)
+            () => Move(14)
             ,() => Attack(10, 10)
         });
 
-        maxHealth = 50;
+        maxHealth = 43;
         XPValue = 3;
 
         base.Awake();

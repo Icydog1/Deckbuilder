@@ -1,28 +1,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
-public class UndeadHunter : Enemy
+using UnityEngine;
+public class Necromancer : Enemy
 {
-
+    [SerializeField]
+    GameObject summon;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(14)
-            ,() => Attack(17, 3)
+            () => Move(13)
+            ,() => Attack(12, 5)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(8)
-            ,() => Attack(22, 3)
+            () => Move(17)
+            ,() => Attack(19, 4)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(23)
-            ,() => Attack(12, 3)
+            () => Summon(summon)
         });
-        maxHealth = 64;
-        XPValue = 3;
+        movesSetOrder = new List<int>() { 0, 1, 2 };
+        maxHealth = 113;
+        XPValue = 6;
         base.Awake();
     }
 }
-
