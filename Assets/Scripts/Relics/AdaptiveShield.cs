@@ -6,7 +6,7 @@ public class AdaptiveShield : Relic
 {
     public override void Awake()
     {
-        relicDesription = "Whenever you lose HP gain <color=#009f9f>" + Variables.adaptiveShieldBlock + "<color=white> block";
+        relicDesription = "Whenever you lose HP gain <color=#009f9f>" + Variables.adaptiveShieldBlock + "<color=white> block next turn";
         base.Awake();
     }
     public override IEnumerator OnGain()

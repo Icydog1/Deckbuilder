@@ -286,12 +286,13 @@ public class PlayerControler : Figure
         if (currentTile.GetComponent<Door>())
         {
             roomSpawner.SpawnRoomsNextToDoor(currentTile, currentTile.GetComponent<Door>().RoomNextToCords);
-            //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
-            //loads enemies that spawned
-            yield return StartCoroutine(actionManager.PreformPreparedActions());
             //updates current tile as it is no longer a door
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
         }
+        //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
+        //loads enemies that spawned
+        //also preformes all queued actions from moving
+        yield return StartCoroutine(actionManager.PreformPreparedActions());
         if (currentTile.GetComponent<Stair>())
         {
             yield return StartCoroutine(levelManager.GoUpLevel());
@@ -328,7 +329,6 @@ public class PlayerControler : Figure
                 EndAction();
             }
         }
-
     }
 
 
@@ -793,8 +793,13 @@ public class PlayerControler : Figure
         yield return StartCoroutine(base.LoseHealth(amount));
         if (adaptiveShieldCount > 0)
         {
-            yield return StartCoroutine(actionManager.PreformAction(Block(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
+            //actionManager.QueueAction(playerControler.ApplyCondition(new StartOfTurnBlock(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
+            actionManager.QueueAction(playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.Block(Variables.adaptiveShieldBlock * adaptiveShieldCount) })));
+            Debug.Log("queued block nexty turn");
+            //playerControler.ApplyCondition(new StartOfTurnSlow(Variables.frozenLensSpeedLoss, -1)), relicDescriptionList))
+            //yield return StartCoroutine(actionManager.QueueAction(Block(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
         }
+        
     }
 
 
@@ -814,7 +819,8 @@ public class PlayerControler : Figure
         {
             if (conditions[i].ConditionName == "Untouchable")
             {
-                yield return StartCoroutine(actionManager.PreformAction(Block(conditions[i].Value)));
+                actionManager.PrepareAction(Block(conditions[i].Value));
+                //yield return StartCoroutine(actionManager.PreformAction(Block(conditions[i].Value)));
                 //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
             }
         }
@@ -823,12 +829,14 @@ public class PlayerControler : Figure
             kineticBatterySteps++;
             if (kineticBatterySteps == Variables.kineticBatterySpaces)
             {
-                yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false)));
+                actionManager.PrepareAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false));
+                //yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false)));
                 kineticBatterySteps = 0;
             }
 
             //Debug.Log("Queued kineticBattery");
         }
+        yield break;
     }
     public void KilledEnemy(Enemy enemy)
     {

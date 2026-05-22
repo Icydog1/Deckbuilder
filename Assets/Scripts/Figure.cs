@@ -102,6 +102,8 @@ public class Figure : MonoBehaviour
     public IEnumerator baseStartTurn()
     {
         //Debug.Log(gameObject + " is takeing turn");
+        block = 0;
+        statsDisplayer.SetHealthAndBlock(health, block);
         yield return StartCoroutine(conditionEffects.StartOfTurnConditons(this));
         for (int i = 0; i < conditions.Count; i++)
         {
@@ -119,8 +121,7 @@ public class Figure : MonoBehaviour
             }
         }
         yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
-        block = 0;
-        statsDisplayer.SetHealthAndBlock(health, block);
+
 
     }
     public IEnumerator baseEndTurn()
@@ -374,12 +375,12 @@ public class Figure : MonoBehaviour
 
     }
 
-    public IEnumerator ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true, bool isManual = true)
+    public IEnumerator ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isManual = true)
     {
-        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget, isAction, isManual));
+        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget, isManual));
     }
 
-    public IEnumerator ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isAction = true, bool isManual = true)
+    public IEnumerator ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool isManual = true)
     {
         if (isPlanning)
         {
@@ -554,7 +555,11 @@ public class Figure : MonoBehaviour
                     }
 
                 }
-                if (range != 1)
+                if (range == -1)
+                {
+                    currentDescriptionEnd += " any <sprite name=Range>";
+                }
+                else if (range != 1)
                 {
                     currentDescriptionEnd += " " + range + " <sprite name=Range>";
                 }

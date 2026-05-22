@@ -312,6 +312,10 @@ public class Pathfinder : MonoBehaviour
         unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
+        if (range == -1)
+        {
+            range = Variables.gameMaxValue;
+        }
         for (int i = 0; i <= range; i++)
         {
             currentElevation = i - 1;
@@ -331,11 +335,11 @@ public class Pathfinder : MonoBehaviour
                 }
 
             }
-            //if (i >= 100000)
-            //{
-            //    pathFound = true;
-            //    Debug.Log("range pathfinding timed out");
-            //}
+            if (i > Variables.gameMaxValue)
+            {
+                range = i;
+                Debug.Log("range pathfinding timed out");
+            }
         }
     }
     //builds heightmap with an area as the starting height
@@ -404,7 +408,7 @@ public class Pathfinder : MonoBehaviour
                 }
             }
             //failsafe in case somting fais so it isnt a infinite loop
-            if (i >= 100000)
+            if (i > Variables.gameMaxValue)
             {
                 noMove = true;
                 endElevation = 0;
@@ -465,7 +469,7 @@ public class Pathfinder : MonoBehaviour
                 }
             }
             //Debug.Log("furthestPoint " + furthestPoint);
-            if (i >= 100000)
+            if (i > Variables.gameMaxValue)
             {
                 moveValue = i;
                 Debug.Log("posible path pathfinding timed out");
@@ -487,7 +491,7 @@ public class Pathfinder : MonoBehaviour
             actualPath.Insert(0, currentLocaton);
             currentLocaton = posibleTilesPath[posibleTiles.IndexOf(currentLocaton)];
             killswitch++;
-            if (killswitch > 100000)
+            if (killswitch > Variables.gameMaxValue)
             {
                 Debug.Log(currentLocaton);
                 currentLocaton = selfPos;

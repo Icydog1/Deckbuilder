@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 public class ConditionEffects : MonoBehaviour
@@ -168,7 +169,15 @@ public class ConditionEffects : MonoBehaviour
                 //GetComponent<NextTurns>.Action();
                 //effectedFigure.Action();
             }
-
+            if (condition.ConditionName == "StartOfTurnSlow")
+            {
+                //Debug.Log("applied -1 speed");
+                yield return StartCoroutine(effectedFigure.ApplyCondition(new Speed(-condition.Value, 1), "enemy", -1, 1, false, false));
+            }
+            //if (condition.ConditionName == "Next Turn Block")
+            //{
+            //    yield return StartCoroutine(effectedFigure.Block(condition.Value));
+            //}
         }
     }
 }

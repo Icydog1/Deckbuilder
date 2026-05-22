@@ -103,15 +103,18 @@ public class ActionManager : MonoBehaviour
     {
         if (!preformingActions)
         {
+            //Debug.Log("added action to queue");
             actionQueue.Enqueue(action);
         }
         else
         {
+            //Debug.Log("started queue");
             StartCoroutine(PreformAction(action));
         }
     }
     public IEnumerator PreformFirstInQueue()
     {
+        //Debug.Log("preformed one action in queue");
         yield return PreformAction(actionQueue.Dequeue());
     }
     public void PrepareAction(IEnumerator action)

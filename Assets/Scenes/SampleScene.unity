@@ -5408,6 +5408,7 @@ MonoBehaviour:
   - {fileID: 8029912300213460181, guid: cb90b68f93b6609438888cd74da852ae, type: 3}
   - {fileID: 1960072249521237197, guid: d82801326a2bd99469fcb0146038cc93, type: 3}
   - {fileID: 6392441393340672395, guid: b64af232a2304e54f9012d7899b7d75f, type: 3}
+  - {fileID: 6392441393340672395, guid: e5f52e0d5bd929a4ab9eed5074ce44c8, type: 3}
 --- !u!4 &887113702
 Transform:
   m_ObjectHideFlags: 0
@@ -6041,10 +6042,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1069799700}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 150, y: 0}
-  m_SizeDelta: {x: 300, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1082498010
 MonoBehaviour:
@@ -7496,6 +7497,7 @@ MonoBehaviour:
   - {fileID: 622119069048453466, guid: feaf70bcaf327a74a9bb631d1cd603ec, type: 3}
   - {fileID: 6733222571807191690, guid: cc1f88a029a4c2548b310be8f718f787, type: 3}
   - {fileID: 3891585475501859772, guid: ad1238911d81b7b49a8f164444d25106, type: 3}
+  - {fileID: 3545553964406616662, guid: 3b46411c974be8d4ca27e18643a8f9b9, type: 3}
   commonRelicRewards: []
   testCardRewards: []
 --- !u!4 &1281001567

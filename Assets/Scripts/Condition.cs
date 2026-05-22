@@ -169,3 +169,7 @@ public class StartOfTurnSlow : Condition
 {
     public StartOfTurnSlow(int conditionValue, int conditionDuration = -1) : base("StartOfTurnSlow", conditionValue, conditionDuration, 1, true, false) { }
 }
+//public class StartOfTurnBlock : Condition
+//{
+//    public StartOfTurnBlock(int conditionValue, int conditionDuration = 1) : base("Next Turn Block", conditionValue, conditionDuration, 1, true, false) { }
+//}
