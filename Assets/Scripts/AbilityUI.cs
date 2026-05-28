@@ -38,12 +38,13 @@ public class AbilityUI : UIButton
         abilityManager.ActivateAbility(abilityNumber);
     }
 
-    public void DisplayText(List<string> description)
+    public void DisplayText(List<Action> description)
     {
         string displayedString = "";
-        foreach (string text in description)
+        foreach (Action text in description)
         {
-            displayedString += text;
+            //Debug.Log("Come Back to this");
+            displayedString += text.GetDescription();
             displayedString += "\n";
         }
         abilityText.text = displayedString;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -39,9 +40,9 @@ public class Card : MonoBehaviour
 	//protected List<IEnumerator> bottomActions = new List<IEnumerator>();
 	//protected List<IEnumerator> currentActions = new List<IEnumerator>();
 
-	public List<string> topDescription = new List<string>();
-    protected List<string> bottomDescription = new List<string>();
-    protected List<string> currentDescription = new List<string>();
+	public List<Action> topDescription = new List<Action>();
+    protected List<Action> bottomDescription = new List<Action>();
+    protected List<Action> currentDescription = new List<Action>();
     protected string currentDescriptionString = "";
     protected string additionalTopDescription, additionalBottomDescription;
 
@@ -184,7 +185,7 @@ public class Card : MonoBehaviour
 
     public IEnumerator PlayTop()
     {
-        playerControler.ActionsRemaining = new List<string>(topDescription);
+        playerControler.ActionsRemaining = new List<Action>(topDescription);
         //playerControler.NextAction = false;
         foreach (Func<IEnumerator> action in topActions)
         {
@@ -201,7 +202,7 @@ public class Card : MonoBehaviour
 
     public IEnumerator PlayBottom()
     {
-        playerControler.ActionsRemaining = new List<string>(bottomDescription);
+        playerControler.ActionsRemaining = new List<Action>(bottomDescription);
         //playerControler.NextAction = false;
         foreach (Func<IEnumerator> action in bottomActions)
         {
@@ -254,24 +255,28 @@ public class Card : MonoBehaviour
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
         if (additionalTopDescription != null)
         {
-            List<string> newDescription = new List<string>(topDescription);
-            newDescription.Insert(0,additionalTopDescription);
-            topText.DisplayText(newDescription);
+            List<Action> newDescription = new List<Action>(topDescription);
+            //newDescription.Insert(0, additionalTopDescription);
+            newDescription.Insert(0, new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(additionalBottomDescription) }));
+
+            topText.DisplayDescription(newDescription);
         }
         else
         {
-            topText.DisplayText(topDescription);
+            topText.DisplayDescription(topDescription);
         }
         //Debug.Log("Updated Top Description");
         if (additionalBottomDescription != null)
         {
-            List<string> newDescription = new List<string>(bottomDescription);
-            newDescription.Insert(0, additionalBottomDescription);
-            bottomText.DisplayText(newDescription);
+            List<Action> newDescription = new List<Action>(bottomDescription);
+            //newDescription.Insert(0, additionalBottomDescription);
+            newDescription.Insert(0, new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(additionalBottomDescription) }));
+
+            bottomText.DisplayDescription(newDescription);
         }
         else
         {
-            bottomText.DisplayText(bottomDescription);
+            bottomText.DisplayDescription(bottomDescription);
         }
         //Debug.Log("new number of descriptions " + topDescription.Count);
 

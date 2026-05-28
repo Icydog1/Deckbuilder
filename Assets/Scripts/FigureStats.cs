@@ -97,7 +97,7 @@ public class FigureStats : MonoBehaviour
                 }
                 if (condition.Plan != null)
                 {
-                    List<string> conditionPlanDescription = new List<string>();                    
+                    List<Action> conditionPlanDescription = new List<Action>();                    
                     foreach (Func<IEnumerator> action in condition.Plan)
                     {
                         yield return StartCoroutine(actionManager.PreformAction( action(), conditionPlanDescription));
@@ -153,19 +153,20 @@ public class FigureStats : MonoBehaviour
         }
     }
 
-    public void Plan(List<string> moves)
+    public void Plan(List<Action> moves)
     {
         MovePlan();
-        string movesDisplay = "";
-        foreach (string move in moves)
+        string movesDisplay = null;
+        foreach (Action move in moves)
         {
-            if (movesDisplay == "")
+            if (movesDisplay == null)
             {
-                movesDisplay = move;
+                movesDisplay = move.GetDescription();
             }
             else
             {
-                movesDisplay += ", " + move;
+                //Debug.Log("planed move");
+                movesDisplay += ", " + move.GetDescription();
             }
         }
         //Debug.Log(movesDisplay);

@@ -18,12 +18,24 @@ public class CardEffectText : MonoBehaviour
         
     }
 
-    public void DisplayText(List<string> displayedText)
+    //public void DisplayText(List<string> displayedText)
+    //{
+    //    displayedString = "";
+    //    foreach (string text in displayedText)
+    //    {
+    //        displayedString += text;
+    //        displayedString += "\n";
+    //    }
+    //    textBox.SetText(displayedString);
+    //}
+
+    public void DisplayDescription(List<Action> displayedText)
     {
         displayedString = "";
-        foreach (string text in displayedText)
+        foreach (Action text in displayedText)
         {
-            displayedString += text;
+            //Debug.Log("Come Back to this");
+            displayedString += text.GetDescription();
             displayedString += "\n";
         }
         textBox.SetText(displayedString);

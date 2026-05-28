@@ -19,7 +19,7 @@ public class Enemy : Figure
     protected int currentmove = 0;
     protected List<Func<IEnumerator>> currentPlan = new List<Func<IEnumerator>>();
     protected List<Func<IEnumerator>> plannedMoveSet;
-    protected List<string> displayedPlan = new List<string>();
+    protected List<Action> displayedPlan = new List<Action>();
     private Coroutine currentTurnRoutine;
     protected int actionNum;
     protected EnemyUi enemyStatsDisplayer;

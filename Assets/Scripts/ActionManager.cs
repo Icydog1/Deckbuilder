@@ -19,9 +19,9 @@ public class ActionManager : MonoBehaviour
     private Queue<IEnumerator> actionQueue = new Queue<IEnumerator>();
     private Queue<IEnumerator> preparedQueue = new Queue<IEnumerator>();
 
-    private Stack<List<string>> planToStack = new Stack<List<string>>();
+    private Stack<List<Action>> planToStack = new Stack<List<Action>>();
     //public List<string> planToList = new List<string>();
-    public List<string> PlanToList { get { return planToStack.Peek(); } }//set { planToStack[planToStack.Count - 1] = value; } }
+    public List<Action> PlanToList { get { return planToStack.Peek(); } }//set { planToStack[planToStack.Count - 1] = value; } }
     private bool preformingActions;
 
     //private IEnumerator test;
@@ -51,7 +51,7 @@ public class ActionManager : MonoBehaviour
     {
 
     }
-    public IEnumerator PreformAction(IEnumerator action, List<string> planTo = null)
+    public IEnumerator PreformAction(IEnumerator action, List<Action> planTo = null)
     {
         if (!preformingActions)
         {
@@ -215,5 +215,60 @@ public class ActionManager : MonoBehaviour
     //    yield return null;
 
     //}
+    public void test()
+    {
+        Action test = new Action("Attack",new List<ActionModifier>() { new ActionModifier("start ",1, " end") });
+    }
 
 }
+
+
+public class Action : MonoBehaviour
+{
+    string actionName;
+    List<ActionModifier> actionModifiers;
+    public List<ActionModifier> ActionModifiers { get { return actionModifiers; } set { actionModifiers = value; } }
+
+    public Action(string name, List<ActionModifier> modifiers)
+    {
+        actionName = name;
+        actionModifiers = modifiers;
+    }
+
+    public string GetDescription()
+    {
+        return actionName;
+
+        string description = string.Empty;
+        foreach (ActionModifier modifier in actionModifiers)
+        {
+            description += modifier.InitialDescription;
+            if (modifier.ModifierValue != 1000000)
+            {
+                description += modifier.ModifierValue;
+            }
+            description += modifier.FinalDescription;
+        }
+        return description;
+
+    }
+}
+public class ActionModifier : MonoBehaviour
+{
+    private string initialDescription;
+    public string InitialDescription { get { return initialDescription; } set { initialDescription = value; } }
+    private int modifierValue;
+    public int ModifierValue { get { return modifierValue; } set { modifierValue = value; } }
+
+    private string finalDescription;
+    public string FinalDescription { get { return finalDescription; } set { finalDescription = value; } }
+
+    public ActionModifier(string startDescription = null, int value = 1000000, string endDescription = null)
+    {
+        initialDescription = startDescription;
+        finalDescription = endDescription;
+        modifierValue = value;
+    }
+}
+
+

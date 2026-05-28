@@ -20,8 +20,8 @@ public class Relic : MonoBehaviour
     public int Rarity { get { return rarity; } }
 
     protected string relicDesription;
-    protected List<string> relicDescriptionList = new List<string>();
-    public List<string> RelicDescriptionList { get { return relicDescriptionList; } set { relicDescriptionList = value; } }
+    protected List<Action> relicDescriptionList = new List<Action>();
+    public List<Action> RelicDescriptionList { get { return relicDescriptionList; } set { relicDescriptionList = value; } }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -55,13 +55,14 @@ public class Relic : MonoBehaviour
             //Debug.Log("GetRelicDescription");
             //actionManager.PlanToList = descriptionList;
             //playerControler.IsPlanning = true;
-            relicDescriptionList = new List<string>();
+            relicDescriptionList = new List<Action>();
             yield return StartCoroutine(OnGain());
             //Debug.Log("descriptionList: " + descriptionList);
 
             string displayedString = "";
-            foreach (string text in relicDescriptionList)
+            foreach (Action text in relicDescriptionList)
             {
+                Debug.Log("relic description");
                 displayedString += text;
                 displayedString += "\n";
             }

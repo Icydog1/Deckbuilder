@@ -1,6 +1,5 @@
 using System.Collections;
-using System.Text.RegularExpressions;
-using Unity.VisualScripting;
+using UnityEngine;
 
 public class AdaptiveShield : Relic
 {
@@ -15,7 +14,8 @@ public class AdaptiveShield : Relic
         yield return StartCoroutine(base.OnGain());
         if (relicDescriptionList != null && relicDescriptionList.Count > 0)
         {
-            relicDescriptionList[0] = Regex.Replace(relicDescriptionList[0], "(. )([0-9]+)( .)", "$1<color=#009f9f>$2<color=white>$3");
+            Debug.Log("Come Back to this");
+            //relicDescriptionList[0] = Regex.Replace(relicDescriptionList[0], "(. )([0-9]+)( .)", "$1<color=#009f9f>$2<color=white>$3");
         }
     }
     public override IEnumerator IncreaseCount()

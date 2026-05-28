@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -60,8 +61,8 @@ public class PlayerControler : Figure
     //public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
 
     private List<Figure> posibleTargets;
-    private List<string> actionsRemaining = new List<string>();
-    public List<string> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
+    private List<Action> actionsRemaining = new List<Action>();
+    public List<Action> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
     private int topEnergy, bottomEnergy;
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
@@ -272,7 +273,9 @@ public class PlayerControler : Figure
         //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(.)([A-Z,0-9])", "$1 $2");
         if (actionsRemaining.Count > 0)
         {
-            actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
+            Debug.Log("Come Back to this");
+
+            //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
         }
         statsDisplayer.Plan(actionsRemaining);
         if (currentTile.GetComponent<Interactable>())
@@ -609,8 +612,11 @@ public class PlayerControler : Figure
         if (isPlanning)
         {
             //string currentDescriptionString = "Ability " + finalAbility;
-            string currentDescriptionString = finalAbility + "<sprite name=Ability>";
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //string currentDescriptionString = finalAbility + "<sprite name=Ability>";
+            //actionManager.PlanToList.Add(currentDescriptionString);
+
+            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(null, finalAbility, " <sprite name=Ability>") });
+            actionManager.PlanToList.Add(currentAction);
         }
         else
         {
@@ -633,8 +639,10 @@ public class PlayerControler : Figure
         //Debug.Log(finalLockpick);
         if (isPlanning)
         {
-            string currentDescriptionString = finalLockpick + " <sprite name=Lockpick>";
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //string currentDescriptionString = finalLockpick + " <sprite name=Lockpick>";
+            //actionManager.PlanToList.Add(currentDescriptionString);
+            Action currentAction = new Action("Lockpick", new List<ActionModifier>() { new ActionModifier(null, lockpickValue, " <sprite name=Lockpick>") });
+            actionManager.PlanToList.Add(currentAction);
         }
         else
         {
@@ -665,8 +673,11 @@ public class PlayerControler : Figure
 
         if (isPlanning)
         {
-            string currentDescriptionString = "Draw " + cardCount + " card";
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //string currentDescriptionString = "Draw " + cardCount + " card";
+            //actionManager.PlanToList.Add(currentDescriptionString);
+
+            Action currentAction = new Action("Draw", new List<ActionModifier>() { new ActionModifier("Draw ", cardCount, " card") });
+            actionManager.PlanToList.Add(currentAction);
         }
         else
         {
@@ -674,46 +685,49 @@ public class PlayerControler : Figure
             //ActionDone();
         }
     }
-    public IEnumerator GainEnergy(int amount,bool isTop)
-    {
-        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
+    //public IEnumerator GainEnergy(int amount,bool isTop)
+    //{
+    //    //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
-        if (isPlanning)
-        {
-            string currentDescriptionString = "Gain " + amount;
-            if (isTop)
-            {
-                currentDescriptionString += " top";
-            }
-            else
-            {
-                currentDescriptionString += " bottom";
-            }
-            currentDescriptionString += " energy";
-            actionManager.PlanToList.Add(currentDescriptionString);
-        }
-        else
-        {
-            if (isTop)
-            {
-                TopEnergy += amount;
-            }
-            else
-            {
-                BottomEnergy += amount;
-            }
-            //ActionDone();
-        }
-        yield break;
-    }
+    //    if (isPlanning)
+    //    {
+    //        string currentDescriptionString = "Gain " + amount;
+    //        if (isTop)
+    //        {
+    //            currentDescriptionString += " top";
+    //        }
+    //        else
+    //        {
+    //            currentDescriptionString += " bottom";
+    //        }
+    //        currentDescriptionString += " energy";
+    //        actionManager.PlanToList.Add(currentDescriptionString);
+    //    }
+    //    else
+    //    {
+    //        if (isTop)
+    //        {
+    //            TopEnergy += amount;
+    //        }
+    //        else
+    //        {
+    //            BottomEnergy += amount;
+    //        }
+    //        //ActionDone();
+    //    }
+    //    yield break;
+    //}
     public IEnumerator GainTopEnergy(int amount)
     {
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
         {
-            string currentDescriptionString = "Gain " + amount + " top energy";
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //string currentDescriptionString = "Gain " + amount + " top energy";
+            //actionManager.PlanToList.Add(currentDescriptionString);
+
+            Action currentAction = new Action("TopEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " top energy") });
+            actionManager.PlanToList.Add(currentAction);
         }
         else
         {
@@ -727,8 +741,11 @@ public class PlayerControler : Figure
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
         if (isPlanning)
         {
-            string currentDescriptionString = "Gain " + amount + " bottom energy";
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //string currentDescriptionString = "Gain " + amount + " bottom energy";
+            //actionManager.PlanToList.Add(currentDescriptionString);
+
+            Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " bottom energy") });
+            actionManager.PlanToList.Add(currentAction);
         }
         else
         {
@@ -769,7 +786,11 @@ public class PlayerControler : Figure
 
             //currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
             unmodifiedAction = false;
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //actionManager.PlanToList.Add(currentDescriptionString);
+
+
+            Action currentAction = new Action("GainAbility", new List<ActionModifier>() { new ActionModifier(startDescription: currentDescriptionString) });
+            actionManager.PlanToList.Add(currentAction);
         }
         else
         {
@@ -787,7 +808,9 @@ public class PlayerControler : Figure
             string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + planString;
 
             //string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //actionManager.PlanToList.Add(currentDescriptionString);
+            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(currentDescriptionString) });
+            actionManager.PlanToList.Add(currentAction);
         }
         else
         {

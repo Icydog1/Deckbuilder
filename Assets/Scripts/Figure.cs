@@ -170,14 +170,16 @@ public class Figure : MonoBehaviour
     
     public IEnumerator GetPlanString(List<Func<IEnumerator>> actions, System.Action<string> callback)
     {
-        List<string> planDescription = new List<string>();
+        List<Action> planDescription = new List<Action>();
         foreach (Func<IEnumerator> action in actions)
         {
             yield return StartCoroutine(actionManager.PreformAction(action(), planDescription));
         }
         string displayedString = "";
-        foreach (string text in planDescription)
+        foreach (Action text in planDescription)
         {
+            Debug.Log("Come Back to this");
+
             displayedString += text;
             displayedString += " ";
         }
@@ -200,11 +202,10 @@ public class Figure : MonoBehaviour
         int finalBlock = conditionEffects.ModifyBlock(this, blockValue);
         if (isPlanning)
         {
-            //prepareActions.Add(() => Block(finalBlock));
-            //string currentDescriptionString = "Block " + finalBlock;
-            string currentDescriptionString = finalBlock + " <sprite name=Block>";
-            //Debug.Log("planned " + currentDescriptionString);
-            actionManager.PlanToList.Add(currentDescriptionString);
+
+            //string currentDescriptionString = finalBlock + " <sprite name=Block>";
+            Action currentAction = new Action("Block", new List<ActionModifier>() { new ActionModifier(null,finalBlock, " <sprite name=Block>") });
+            actionManager.PlanToList.Add(currentAction);
         }
         else if (!isPreparingMove)
         {
@@ -278,7 +279,10 @@ public class Figure : MonoBehaviour
             }
             string separator = ", ";
             string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
-            actionManager.PlanToList.Add(attackText);
+            //actionManager.PlanToList.Add(attackText);
+
+            Action currentAction = new Action("Attack", new List<ActionModifier>() { new ActionModifier(attackText) });
+            actionManager.PlanToList.Add(currentAction);
         }
         else if(!isPreparingMove)
         {
@@ -328,7 +332,9 @@ public class Figure : MonoBehaviour
             {
                 planString += " Jump";
             }
-            actionManager.PlanToList.Add(planString);
+            //actionManager.PlanToList.Add(planString);
+            Action currentAction = new Action("Move", new List<ActionModifier>() { new ActionModifier(planString) });
+            actionManager.PlanToList.Add(currentAction);
         }
         else if (isPreparingMove)
         {
@@ -389,7 +395,7 @@ public class Figure : MonoBehaviour
     {
         if (isPlanning)
         {
-            List<string> individualConditionText = new List<string>();
+            List<Action> individualConditionText = new List<Action>();
             string currentDescriptionStart = "";
             string currentDescriptionEnd = "";
             bool abnormal = false;
@@ -424,7 +430,7 @@ public class Figure : MonoBehaviour
                 //Debug.Log(actionAbnormalities);
                 if (condition.Plan != null)
                 {
-                    List<string> conditionPlan = new List<string>();
+                    List<Action> conditionPlan = new List<Action>();
 
                     foreach (Func<IEnumerator> action in condition.Plan)
                     {
@@ -435,22 +441,28 @@ public class Figure : MonoBehaviour
                         //    conditionPlan.RemoveAt(conditionPlan.Count - 1);
                         //}
                     }
-                    currentDescriptionString = string.Join(" and ", conditionPlan);
-                    individualConditionText.Add(currentDescriptionString);
+                    //currentDescriptionString = string.Join(" and ", conditionPlan);
+                    //individualConditionText.Add(currentDescriptionString);
                     //condition.Plan();
                     if (actionAbnormalities.Contains("Delayed Gain"))
-                {
-                    if (condition.Duration == 1)
                     {
-                        //actionManager.PlanToList.Add("Next turn");
+                        if (condition.Duration == 1)
+                        {
+                            //actionManager.PlanToList.Add("Next turn");
 
-                        individualConditionText[individualConditionText.Count - 1] = "Next turn " + individualConditionText[individualConditionText.Count - 1];
+                            //individualConditionText[individualConditionText.Count - 1] = "Next turn " + individualConditionText[individualConditionText.Count - 1];
+                            individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier("Next turn "));
+
+                        }
+                        else if (condition.Duration != -1)
+                        {
+                            //actionManager.PlanToList[individualConditionText.Count - 1] = "At the start of the next " + condition.Duration + " turns" + individualConditionText[individualConditionText.Count - 1];
+                            individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier("At the start of the next ", condition.Duration, " turns"));
+
+                            //Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " bottom energy") });
+                            //actionManager.PlanToList.Add(currentAction);
+                        }
                     }
-                    else if (condition.Duration != -1)
-                    {
-                        actionManager.PlanToList[individualConditionText.Count - 1] = "At the start of the next " + condition.Duration + " turns" + individualConditionText[individualConditionText.Count - 1];
-                    }
-                }
                 }
 
                 if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
@@ -472,7 +484,10 @@ public class Figure : MonoBehaviour
                     {
                         currentDescriptionString += " for " + condition.Duration + " turns";
                     }
-                    individualConditionText.Add(currentDescriptionString);
+                    //individualConditionText.Add(currentDescriptionString);
+
+                    Action currentAction2 = new Action("Ability", new List<ActionModifier>() { new ActionModifier(currentDescriptionString) });
+                    individualConditionText.Add(currentAction2);
                 }
             }
             if (targetType == "self")
@@ -577,8 +592,12 @@ public class Figure : MonoBehaviour
                 }
             }
             string separator = ", ";
+            Debug.Log("string.joind doesnt work");
             string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
-            actionManager.PlanToList.Add(conditionText);
+            //actionManager.PlanToList.Add(conditionText);
+
+            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(conditionText) });
+            actionManager.PlanToList.Add(currentAction);
             if (abnormal)
             {
                 actionAbnormalities.Clear();
@@ -642,7 +661,10 @@ public class Figure : MonoBehaviour
             //string currentDescriptionString = "Block " + finalBlock;
             string currentDescriptionString = "Summon " + summon.name;
             //Debug.Log("planned " + currentDescriptionString);
-            actionManager.PlanToList.Add(currentDescriptionString);
+            //actionManager.PlanToList.Add(currentDescriptionString);
+
+            Action currentAction = new Action("Lockpick", new List<ActionModifier>() { new ActionModifier("Summon " + summon.name) });
+            actionManager.PlanToList.Add(currentAction);
         }
         else if (!isPreparingMove)
         {

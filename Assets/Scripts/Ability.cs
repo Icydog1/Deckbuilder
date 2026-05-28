@@ -15,7 +15,7 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
     private List<Func<IEnumerator>> abilities = new List<Func<IEnumerator>>();
     public List<Func<IEnumerator>> Abilities { get { return abilities; } }
 
-    protected List<string> description = new List<string>();
+    protected List<Action> description = new List<Action>();
 
     private AbilityUI abilityUI;
     public AbilityUI AbilityUI { get { return abilityUI; } set { abilityUI = value; } }
@@ -104,7 +104,7 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
                 isUsed = true;
                 abilityUI.DisplayUsed(true);
                 mouseManager.MouseOffObject(abilityUI.gameObject);
-                playerControler.ActionsRemaining = new List<string>(description);
+                playerControler.ActionsRemaining = new List<Action>(description);
                 abilityManager.AbilityPower -= timesPreformed * cost;
                 //abilityManager.SelectedPower = abilityManager.SelectedPower;
                 yield return abilityManager.StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower));
