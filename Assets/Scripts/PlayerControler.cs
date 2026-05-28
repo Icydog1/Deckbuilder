@@ -534,7 +534,7 @@ public class PlayerControler : Figure
         }
         else if (actionName == "Condition")
         {
-            //Debug.Log("Ended Attack");
+            //Debug.Log("Ended condition");
             isAppliyingConditions = false;
             targetsLeft = 0;
         }
@@ -547,12 +547,12 @@ public class PlayerControler : Figure
             Debug.Log("Unspecified action ended");
         }
         actionManager.ActionStackNames.Pop();
-        if (preformingAction && actionsRemaining.Count > 0)
-        {
-            actionsRemaining.Remove(actionsRemaining[0]);
-            statsDisplayer.Plan(actionsRemaining);
-        }
+        //if (preformingAction && actionsRemaining.Count > 0)
+        //{
 
+        //}
+        actionsRemaining.Remove(actionsRemaining[0]);
+        statsDisplayer.Plan(actionsRemaining);
         //isTargetATile = false; //?
         //isTargetAEnemy = false; //?
         //nextAction = true; //?

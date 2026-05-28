@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomType: 0
-  isLeftEntrance: 0
+  isLeftEntrance: 1
   isTopLeftEntrance: 0
   isTopRightEntrance: 0
   isRightEntrance: 0
