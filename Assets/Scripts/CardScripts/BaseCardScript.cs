@@ -219,45 +219,28 @@ public class Card : MonoBehaviour
 
     public IEnumerator PrepareCardDiscription()
     {
-		//if (topDescription.Count > 0)
-		//{
-		//    Debug.Log("old card description " + topDescription[0]);
-		//    Debug.Log("new number of actions " + topActions.Count);
-		//}
-		//currentActions = topActions;
-		//PrepareTop();
-		//currentActions = bottomActions;
-		//PrepareBottom();
+
 		topDescription.Clear();
         bottomDescription.Clear();
-        //playerControler.IsPlanning = true;
-        //playerControler.PlanDescription = topDescription;
-        //Debug.Log("started planing");
+
         playerControler.UnmodifiedAction = false;
         foreach (Func<IEnumerator> action in topActions)
         {
             yield return StartCoroutine(actionManager.PreformAction(action(), topDescription));
         }
-		//Debug.Log("finished planing");
 
-		//playerControler.PlanDescription = bottomDescription;
 		foreach (Func<IEnumerator> action in bottomActions)
         {
-            //playerControler.PlanDescription = bottomDescription;
 
             yield return StartCoroutine(actionManager.PreformAction(action(), bottomDescription));
         }
-        //actionManager.PlanToList = null;
 
-        //playerControler.PlanDescription = null;
-        //Debug.Log(topCostText);
         topCostText.DisplayString("<color=red>" + topCost);
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
         if (additionalTopDescription != null)
         {
             List<Action> newDescription = new List<Action>(topDescription);
-            //newDescription.Insert(0, additionalTopDescription);
-            newDescription.Insert(0, new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(additionalBottomDescription) }));
+            newDescription.Insert(0, new Action("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalBottomDescription) }));
 
             topText.DisplayDescription(newDescription);
         }
@@ -265,12 +248,10 @@ public class Card : MonoBehaviour
         {
             topText.DisplayDescription(topDescription);
         }
-        //Debug.Log("Updated Top Description");
         if (additionalBottomDescription != null)
         {
             List<Action> newDescription = new List<Action>(bottomDescription);
-            //newDescription.Insert(0, additionalBottomDescription);
-            newDescription.Insert(0, new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(additionalBottomDescription) }));
+            newDescription.Insert(0, new Action("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalBottomDescription) }));
 
             bottomText.DisplayDescription(newDescription);
         }
@@ -278,15 +259,21 @@ public class Card : MonoBehaviour
         {
             bottomText.DisplayDescription(bottomDescription);
         }
-        //Debug.Log("new number of descriptions " + topDescription.Count);
 
-        //if (topDescription.Count > 0)
-        //{
-        //    Debug.Log("new card description " + topDescription[0]);
-        //}
-
-        //playerControler.IsPlanning = false;
     }
+    public IEnumerator UpdateCardDiscription(string actionName, int modifierNum = 0)
+    {
+        foreach (Action action in topDescription)
+        {
+            if (action.ActionName == actionName)
+            {
+                action.ActionModifiers[modifierNum].UpdateValue();
+            }
+        }
+
+        yield break;
+    }
+
     public virtual void PrepareTop()
     {
 

@@ -215,18 +215,20 @@ public class ActionManager : MonoBehaviour
     //    yield return null;
 
     //}
-    public void test()
-    {
-        Action test = new Action("Attack",new List<ActionModifier>() { new ActionModifier("start ",1, " end") });
-    }
+    //public void test()
+    //{
+    //    Action test = new Action("Attack",new List<ActionModifier>() { new ActionModifier("start ",1, " end") });
+    //}
 
 }
 
 
 public class Action : MonoBehaviour
 {
-    string actionName;
-    List<ActionModifier> actionModifiers;
+    private string actionName;
+    public string ActionName { get { return actionName; } set { actionName = value; } }
+
+    private List<ActionModifier> actionModifiers;
     public List<ActionModifier> ActionModifiers { get { return actionModifiers; } set { actionModifiers = value; } }
 
     public Action(string name, List<ActionModifier> modifiers)
@@ -237,15 +239,15 @@ public class Action : MonoBehaviour
 
     public string GetDescription()
     {
-        return actionName;
+        //return actionName;
 
         string description = string.Empty;
         foreach (ActionModifier modifier in actionModifiers)
         {
             description += modifier.InitialDescription;
-            if (modifier.ModifierValue != 1000000)
+            if (modifier.BaseValue != 1000000)
             {
-                description += modifier.ModifierValue;
+                description += modifier.ModifiedValue;
             }
             description += modifier.FinalDescription;
         }
@@ -257,17 +259,62 @@ public class ActionModifier : MonoBehaviour
 {
     private string initialDescription;
     public string InitialDescription { get { return initialDescription; } set { initialDescription = value; } }
-    private int modifierValue;
-    public int ModifierValue { get { return modifierValue; } set { modifierValue = value; } }
-
+    private int modifiedValue;
+    public int ModifiedValue { get { return modifiedValue; } set { modifiedValue = value; } }
+    private int baseValue;
+    public int BaseValue { get { return baseValue; } set { baseValue = value; } }
     private string finalDescription;
     public string FinalDescription { get { return finalDescription; } set { finalDescription = value; } }
-
-    public ActionModifier(string startDescription = null, int value = 1000000, string endDescription = null)
+    private string type;
+    public string Type { get { return type; } set { type = value; } }
+    private Figure figure;
+    public ActionModifier(Figure actingFigure, string startDescription = null, int value = 1000000, string endDescription = null, string valueType = null)
     {
         initialDescription = startDescription;
         finalDescription = endDescription;
-        modifierValue = value;
+        baseValue = value;
+        type = valueType;
+        figure = actingFigure;
+        UpdateValue();
+    }
+    public void UpdateValue()
+    {
+        if (baseValue != 1000000)
+        {
+            switch (Type)
+            {
+                case "Block":
+                    //Debug.Log("block");
+                    //Debug.Log("base value " + baseValue);
+                    modifiedValue = RefrenceStorage.conditionEffects.ModifyBlock(figure, baseValue);
+                    //Debug.Log("modified value " + modifiedValue);
+
+                    break;
+                case "Attack":
+                    //Debug.Log("Attack");
+                    //Debug.Log("base value " + baseValue);
+                    modifiedValue = RefrenceStorage.conditionEffects.ModifyAttack(figure, baseValue);
+                    //Debug.Log("modified value " + modifiedValue);
+
+                    break;
+                case "Move":
+                    //Debug.Log("Attack");
+                    //Debug.Log("base value " + baseValue);
+                    modifiedValue = RefrenceStorage.conditionEffects.ModifyMove(figure, baseValue);
+                    //Debug.Log("modified value " + modifiedValue);
+                    break;
+                case "Ability":
+                    //Debug.Log("Attack");
+                    modifiedValue = RefrenceStorage.conditionEffects.ModifyAbility(figure, baseValue);
+                    break;
+                default:
+                    //Debug.Log("Default");
+                    modifiedValue = baseValue;
+                    break;
+            }
+        }
+
+
     }
 }
 

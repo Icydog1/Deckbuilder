@@ -17,7 +17,7 @@ public class WindscarSandals : Relic
 		yield return StartCoroutine(base.OnGain());
 		if (relicDescriptionList != null && relicDescriptionList.Count > 0)
 		{
-            Debug.Log("Come Back to this");
+            //Debug.Log("Come Back to this");
             //relicDescriptionList[0] = Regex.Replace(relicDescriptionList[0], "(. )([0-9]+)( .)", "$1<color=#009f9f>$2<color=white>$3");
         }
     }

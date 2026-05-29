@@ -58,16 +58,16 @@ public class Relic : MonoBehaviour
             relicDescriptionList = new List<Action>();
             yield return StartCoroutine(OnGain());
             //Debug.Log("descriptionList: " + descriptionList);
-
             string displayedString = "";
             foreach (Action text in relicDescriptionList)
             {
-                Debug.Log("relic description");
-                displayedString += text;
+                //Debug.Log("relic description");
+                displayedString += text.GetDescription();
                 displayedString += "\n";
             }
             //playerControler.IsPlanning = false;
             //Debug.Log("displayedString: " + displayedString);
+            displayedString = Regex.Replace(displayedString, "(. )([0-9]+)( .)", "$1<color=#009f9f>$2<color=white>$3");
 
             callback?.Invoke(relicName + "\n" + displayedString);
         }

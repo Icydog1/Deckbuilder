@@ -550,12 +550,12 @@ public class PlayerControler : Figure
             Debug.Log("Unspecified action ended");
         }
         actionManager.ActionStackNames.Pop();
-        //if (preformingAction && actionsRemaining.Count > 0)
-        //{
+        if (preformingAction && actionsRemaining.Count > 0)
+        {
+            actionsRemaining.Remove(actionsRemaining[0]);
+            statsDisplayer.Plan(actionsRemaining);
+        }
 
-        //}
-        actionsRemaining.Remove(actionsRemaining[0]);
-        statsDisplayer.Plan(actionsRemaining);
         //isTargetATile = false; //?
         //isTargetAEnemy = false; //?
         //nextAction = true; //?
@@ -615,7 +615,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = finalAbility + "<sprite name=Ability>";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(null, finalAbility, " <sprite name=Ability>") });
+            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(this, null, finalAbility, " <sprite name=Ability>", "Ability") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -641,7 +641,7 @@ public class PlayerControler : Figure
         {
             //string currentDescriptionString = finalLockpick + " <sprite name=Lockpick>";
             //actionManager.PlanToList.Add(currentDescriptionString);
-            Action currentAction = new Action("Lockpick", new List<ActionModifier>() { new ActionModifier(null, lockpickValue, " <sprite name=Lockpick>") });
+            Action currentAction = new Action("Lockpick", new List<ActionModifier>() { new ActionModifier(this, null, lockpickValue, " <sprite name=Lockpick>", "Lockpick") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -676,7 +676,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = "Draw " + cardCount + " card";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("Draw", new List<ActionModifier>() { new ActionModifier("Draw ", cardCount, " card") });
+            Action currentAction = new Action("Draw", new List<ActionModifier>() { new ActionModifier(this, "Draw ", cardCount, " card", "Draw") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -726,7 +726,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = "Gain " + amount + " top energy";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("TopEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " top energy") });
+            Action currentAction = new Action("TopEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, "TopEnergy", " top energy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -744,7 +744,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = "Gain " + amount + " bottom energy";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " bottom energy") });
+            Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, "BottemEnergy", " bottom energy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -789,7 +789,7 @@ public class PlayerControler : Figure
             //actionManager.PlanToList.Add(currentDescriptionString);
 
 
-            Action currentAction = new Action("GainAbility", new List<ActionModifier>() { new ActionModifier(startDescription: currentDescriptionString) });
+            Action currentAction = new Action("GainAbility", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -809,7 +809,7 @@ public class PlayerControler : Figure
 
             //string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
             //actionManager.PlanToList.Add(currentDescriptionString);
-            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(currentDescriptionString) });
+            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
             actionManager.PlanToList.Add(currentAction);
         }
         else

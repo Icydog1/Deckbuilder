@@ -4091,68 +4091,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 230803395089224613, guid: 7fc666b1375442c419ee28327a87e009, type: 3}
   m_PrefabInstance: {fileID: 595339741}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &656782611
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 656782614}
-  - component: {fileID: 656782613}
-  - component: {fileID: 656782612}
-  m_Layer: 0
-  m_Name: test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &656782612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 656782611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edc46dc05e032d345b60f335edfaf878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InteractedWith:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &656782613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 656782611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea4776a5c6dab1d41b684faadcd99ed2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rewards: []
-  killAmount: 1
---- !u!4 &656782614
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 656782611}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -27.513739, y: 42.891754, z: -10.000597}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &687363830
 GameObject:
   m_ObjectHideFlags: 0
@@ -11807,7 +11745,7 @@ MonoBehaviour:
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
   - {fileID: 7634877229746838645, guid: b1f78035877282848b2473da02012984, type: 3}
-  - {fileID: 6586222175950573760, guid: 7f70141bf8c47db40920dfb6de196432, type: 3}
+  - {fileID: 2761692547563443597, guid: c0372bddbd94f664dad33a34fc27d13f, type: 3}
   entireDeck: []
   deckContents: []
   handContents: []
@@ -11840,4 +11778,3 @@ SceneRoots:
   - {fileID: 1426309263}
   - {fileID: 695467237}
   - {fileID: 8915854858156047289}
-  - {fileID: 656782614}

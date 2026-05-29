@@ -259,15 +259,15 @@ public class Enemy : Figure
     {
         Destroy(gameObject);
         playerControler.GainXP(XPValue);
-        if (overallStatistics.KilledEnemies.ContainsKey(enemyName))
+        if (OverallStatistics.killedEnemies.ContainsKey(enemyName))
         {
-            overallStatistics.KilledEnemies[enemyName]++;
+            OverallStatistics.killedEnemies[enemyName]++;
         }
         else
         {
-            overallStatistics.KilledEnemies.Add(enemyName, 1);
+            OverallStatistics.killedEnemies.Add(enemyName, 1);
         }
-        overallStatistics.TotalEnemiesKilled++;
+        OverallStatistics.totalEnemiesKilled++;
         if (isMyTurn)
         {
             StartStopTurn(false);

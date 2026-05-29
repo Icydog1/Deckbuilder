@@ -6,7 +6,7 @@ using static Lootable;
 
 public class Quest : MonoBehaviour
 {
-    protected RefrenceStorage refrenceStorage;
+    //protected RefrenceStorage refrenceStorage;
     protected OverallStatistics overallStatistics;
     protected RewardManager rewardManager;
     protected ActionManager actionManager;
@@ -25,11 +25,11 @@ public class Quest : MonoBehaviour
 
     public virtual void Awake()
     {
-        refrenceStorage = GameObject.Find("RefrenceStorage").GetComponent<RefrenceStorage>();
-        overallStatistics = refrenceStorage.OverallStatistics;
-        rewardManager = refrenceStorage.RewardManager;
-        actionManager = refrenceStorage.ActionManager;
-        playerControler = refrenceStorage.PlayerControler;
+        //refrenceStorage = GameObject.Find("RefrenceStorage").GetComponent<RefrenceStorage>();
+        overallStatistics = RefrenceStorage.overallStatistics;
+        rewardManager = RefrenceStorage.rewardManager;
+        actionManager = RefrenceStorage.actionManager;
+        playerControler = RefrenceStorage.playerControler;
         tileImage = transform.Find("BaseTileImage").GetComponent<SpriteRenderer>();
         //playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         //rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();

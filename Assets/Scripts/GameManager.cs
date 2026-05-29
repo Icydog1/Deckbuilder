@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    private RefrenceStorage refrenceStorage;
+    //private RefrenceStorage refrenceStorage;
 
     private MapManager mapManager;
     private MouseManager mouseManager;
@@ -31,15 +31,14 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        refrenceStorage = GameObject.Find("RefrenceStorage").GetComponent<RefrenceStorage>();
-        mapManager = refrenceStorage.MapManager;
-        turnManager = refrenceStorage.TurnManager;
-        mouseManager = refrenceStorage.MouseManager;
-        levelManager = refrenceStorage.LevelManager;
-        roomSpawner = refrenceStorage.RoomSpawner;
-
-        pauseScreenBlocker = refrenceStorage.PauseScreenBlocker;
-        overallStatistics = refrenceStorage.OverallStatistics;
+        //refrenceStorage = GameObject.Find("RefrenceStorage").GetComponent<RefrenceStorage>();
+        mapManager = RefrenceStorage.mapManager;
+        turnManager = RefrenceStorage.turnManager;
+        mouseManager = RefrenceStorage.mouseManager;
+        levelManager = RefrenceStorage.levelManager;
+        roomSpawner = RefrenceStorage.roomSpawner;
+        pauseScreenBlocker = RefrenceStorage.pauseScreenBlocker;
+        overallStatistics = RefrenceStorage.overallStatistics;
 
         //mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         //mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();

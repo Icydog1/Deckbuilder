@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+
 
 
 public class Figure : MonoBehaviour
@@ -178,9 +176,9 @@ public class Figure : MonoBehaviour
         string displayedString = "";
         foreach (Action text in planDescription)
         {
-            Debug.Log("Come Back to this");
+            //Debug.Log("Come Back to this");
 
-            displayedString += text;
+            displayedString += text.GetDescription();
             displayedString += " ";
         }
         //yeild return displayedString;
@@ -195,20 +193,21 @@ public class Figure : MonoBehaviour
 
     public IEnumerator Block(int blockValue, bool isVariable = false)
     {
-        if (isVariable)
-        {
-            blockValue *= variableCardModifier;
-        }
-        int finalBlock = conditionEffects.ModifyBlock(this, blockValue);
+
         if (isPlanning)
         {
 
             //string currentDescriptionString = finalBlock + " <sprite name=Block>";
-            Action currentAction = new Action("Block", new List<ActionModifier>() { new ActionModifier(null,finalBlock, " <sprite name=Block>") });
+            Action currentAction = new Action("Block", new List<ActionModifier>() { new ActionModifier(this, null, blockValue, " <sprite name=Block>", "Block") });
             actionManager.PlanToList.Add(currentAction);
         }
         else if (!isPreparingMove)
         {
+            if (isVariable)
+            {
+                blockValue *= variableCardModifier;
+            }
+            int finalBlock = conditionEffects.ModifyBlock(this, blockValue);
             actionManager.ActionStackNames.Push("Block");
             block += finalBlock;
             statsDisplayer.SetHealthAndBlock(health, block);
@@ -281,7 +280,7 @@ public class Figure : MonoBehaviour
             string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             //actionManager.PlanToList.Add(attackText);
 
-            Action currentAction = new Action("Attack", new List<ActionModifier>() { new ActionModifier(attackText) });
+            Action currentAction = new Action("Attack", new List<ActionModifier>() { new ActionModifier(this, attackText, valueType: "Attack") });
             actionManager.PlanToList.Add(currentAction);
         }
         else if(!isPreparingMove)
@@ -320,24 +319,30 @@ public class Figure : MonoBehaviour
         {
             moveValue *= variableCardModifier;
         }
-        int finalMove = conditionEffects.ModifyMove(this, moveValue);
         bool finalJump = conditionEffects.ModifyJump(this, isJump);
         //Mathf(finalMove,0,)
         if (isPlanning)
         {
+            List<ActionModifier> actionModifiers = new List<ActionModifier>();
+            ActionModifier moveValueDescription = new ActionModifier(this, null, moveValue, " <sprite name=Move>", "Move");
+            actionModifiers.Add(moveValueDescription);
             //string planString = "Move " + finalMove;
-            string planString = finalMove + " <sprite name=Move>";
+            //string planString = finalMove + " <sprite name=Move>";
 
             if (finalJump && !canFly)
             {
-                planString += " Jump";
+                ActionModifier jumpDescription = new ActionModifier(this, " Jump");
+                actionModifiers.Add(jumpDescription);
+
+                //planString += " Jump";
             }
             //actionManager.PlanToList.Add(planString);
-            Action currentAction = new Action("Move", new List<ActionModifier>() { new ActionModifier(planString) });
+            Action currentAction = new Action("Move", actionModifiers);
             actionManager.PlanToList.Add(currentAction);
         }
         else if (isPreparingMove)
         {
+            int finalMove = conditionEffects.ModifyMove(this, moveValue);
             List<Vector2>[] posibleTiles = pathfinder.PlanposiblePaths(oneToOnePos, gameObject, finalMove, finalJump, canFly);
             foreach (Vector2 safeTile in posibleTiles[0])
             {
@@ -358,6 +363,7 @@ public class Figure : MonoBehaviour
         }
         else
         {
+            int finalMove = conditionEffects.ModifyMove(this, moveValue);
             actionManager.ActionStackNames.Push("Move");
             if (isPlayer)
             {
@@ -446,22 +452,30 @@ public class Figure : MonoBehaviour
                     //condition.Plan();
                     if (actionAbnormalities.Contains("Delayed Gain"))
                     {
-                        if (condition.Duration == 1)
+                        if (individualConditionText.Count > 0)
                         {
-                            //actionManager.PlanToList.Add("Next turn");
+                            if (condition.Duration == 1)
+                            {
+                                //actionManager.PlanToList.Add("Next turn");
 
-                            //individualConditionText[individualConditionText.Count - 1] = "Next turn " + individualConditionText[individualConditionText.Count - 1];
-                            individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier("Next turn "));
+                                //individualConditionText[individualConditionText.Count - 1] = "Next turn " + individualConditionText[individualConditionText.Count - 1];
+                                individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier(this, "Next turn "));
 
+                            }
+                            else if (condition.Duration != -1)
+                            {
+                                //actionManager.PlanToList[individualConditionText.Count - 1] = "At the start of the next " + condition.Duration + " turns" + individualConditionText[individualConditionText.Count - 1];
+                                individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier(this, "At the start of the next ", condition.Duration, " turns"));
+
+                                //Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " bottom energy") });
+                                //actionManager.PlanToList.Add(currentAction);
+                            }
                         }
-                        else if (condition.Duration != -1)
+                        else
                         {
-                            //actionManager.PlanToList[individualConditionText.Count - 1] = "At the start of the next " + condition.Duration + " turns" + individualConditionText[individualConditionText.Count - 1];
-                            individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier("At the start of the next ", condition.Duration, " turns"));
-
-                            //Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " bottom energy") });
-                            //actionManager.PlanToList.Add(currentAction);
+                            Debug.Log("no condition text");
                         }
+
                     }
                 }
 
@@ -486,7 +500,7 @@ public class Figure : MonoBehaviour
                     }
                     //individualConditionText.Add(currentDescriptionString);
 
-                    Action currentAction2 = new Action("Ability", new List<ActionModifier>() { new ActionModifier(currentDescriptionString) });
+                    Action currentAction2 = new Action("Ability", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
                     individualConditionText.Add(currentAction2);
                 }
             }
@@ -592,11 +606,22 @@ public class Figure : MonoBehaviour
                 }
             }
             string separator = ", ";
-            Debug.Log("string.joind doesnt work");
-            string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
+            //Debug.Log("string.joind doesnt work");
+            string conditionText = currentDescriptionStart;
+            for (int i = 0; i < individualConditionText.Count; i++)
+            {
+                if (i != 0)
+                {
+                    conditionText += separator;
+                }
+                conditionText += individualConditionText[i].GetDescription();
+
+            }
+            conditionText += currentDescriptionEnd;
+            //string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             //actionManager.PlanToList.Add(conditionText);
 
-            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(conditionText) });
+            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(this, conditionText) });
             actionManager.PlanToList.Add(currentAction);
             if (abnormal)
             {
@@ -663,7 +688,7 @@ public class Figure : MonoBehaviour
             //Debug.Log("planned " + currentDescriptionString);
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("Lockpick", new List<ActionModifier>() { new ActionModifier("Summon " + summon.name) });
+            Action currentAction = new Action("Lockpick", new List<ActionModifier>() { new ActionModifier(this, "Summon " + summon.name) });
             actionManager.PlanToList.Add(currentAction);
         }
         else if (!isPreparingMove)

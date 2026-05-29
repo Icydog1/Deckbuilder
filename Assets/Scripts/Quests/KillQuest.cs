@@ -22,8 +22,8 @@ public class KillQuest : Quest
         for (int killsLeft = killAmount; killsLeft > 0; killsLeft--)
         {
             SetDescription("Kill " + killsLeft + " enemies");
-            int WaitUntilValue = overallStatistics.TotalEnemiesKilled + 1;
-            yield return new WaitUntil(() => overallStatistics.TotalEnemiesKilled >= WaitUntilValue);
+            int WaitUntilValue = OverallStatistics.totalEnemiesKilled + 1;
+            yield return new WaitUntil(() => OverallStatistics.totalEnemiesKilled >= WaitUntilValue);
         }
         Debug.Log("quest sucsesfull");
         CompleteQuest();
