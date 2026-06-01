@@ -231,10 +231,13 @@ public class Figure : MonoBehaviour
         int finalAttack = conditionEffects.ModifyAttack(this, attackValue);
         if (isPlanning)
         {
+            List<ActionModifier> actionModifiers = new List<ActionModifier>();
+            //ActionModifier attackValueDescription = new ActionModifier(this, null, attackValue, " <sprite name=Attack>", "Attack");
+            actionModifiers.Add(new ActionModifier(this, null, attackValue, " <sprite name=Attack>", "Attack"));
             //Debug.Log("Planned Attack");
 
-            string currentDescriptionStart = "";
-            string currentDescriptionEnd = "";
+            //string currentDescriptionStart = "";
+            //string currentDescriptionEnd = "";
             if (!isPlayer)
             {
                 if (preferedRange > attackRange)
@@ -242,29 +245,17 @@ public class Figure : MonoBehaviour
                     preferedRange = attackRange;
                 }
             }
-            //prepareActions.Add(() => Attack(finalAttack, attackRange, targets));
-            //currentDescriptionStart = "Attack " + finalAttack;
-            currentDescriptionStart = finalAttack + " <sprite name=Attack>";
+            
+            //currentDescriptionStart = finalAttack + " <sprite name=Attack>";
 
-            if (repeats > 1)
-            {
-                currentDescriptionEnd += " " + repeats + " times ";
-            }
-            if (attackRange > 1)
-            {
-                currentDescriptionEnd += " " + attackRange + " <sprite name=Range>";
-            }
-            if (targets > 1)
-            {
-                currentDescriptionEnd += " target " + targets;
-            }
-            List<string> individualConditionText = new List<string>();
+            //List<string> individualConditionText = new List<string>();
             if (attackConditions.Length != 0)
             {
-                currentDescriptionStart += " and apply ";
+                //currentDescriptionStart += " and apply ";
+                string conditionString = " and apply ";
                 foreach (Condition condition in attackConditions)
                 {
-                    string currentDescriptionString = currentDescriptionString = condition.Value + " " + condition.ConditionName;
+                    string currentDescriptionString = condition.Value + " " + condition.ConditionName;
                     if (condition.Duration == 1)
                     {
                         currentDescriptionString += " this turn";
@@ -273,14 +264,36 @@ public class Figure : MonoBehaviour
                     {
                         currentDescriptionString += " for " + condition.Duration + " turns";
                     }
-                    individualConditionText.Add(currentDescriptionString);
+                    //individualConditionText.Add(currentDescriptionString);
+                    conditionString += currentDescriptionString;
                 }
+                actionModifiers.Add(new ActionModifier(this, " and apply " + conditionString, valueType: "Conditions"));
+
             }
-            string separator = ", ";
-            string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
+            if (repeats > 1)
+            {
+                //currentDescriptionEnd += " " + repeats + " times ";
+                actionModifiers.Add(new ActionModifier(this, null, repeats, " times", "Repeats"));
+
+            }
+            if (attackRange > 1)
+            {
+                //currentDescriptionEnd += " " + attackRange + " <sprite name=Range>";
+                actionModifiers.Add(new ActionModifier(this, null, attackRange, " <sprite name=Range>", "Range"));
+
+            }
+            if (targets > 1)
+            {
+                //currentDescriptionEnd += " target " + targets;
+                actionModifiers.Add(new ActionModifier(this, null, targets, " targets", "Targets"));
+
+            }
+
+            //tring separator = ", ";
+            //string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             //actionManager.PlanToList.Add(attackText);
 
-            Action currentAction = new Action("Attack", new List<ActionModifier>() { new ActionModifier(this, attackText, valueType: "Attack") });
+            Action currentAction = new Action("Attack", actionModifiers);
             actionManager.PlanToList.Add(currentAction);
         }
         else if(!isPreparingMove)
@@ -816,19 +829,18 @@ public class Figure : MonoBehaviour
             //Debug.Log("first condition: " + conditions[0].Name);
 
         }
-        if (isPlayer)
-        {
-            //Debug.Log("updated display");
-            yield return StartCoroutine(deckManager.UpdateCardsDisplay());
-        }
-        //Debug.Log("first condition: " + conditions[0].Name);
-
         yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
-        //Debug.Log("first condition: " + conditions[0].Name);
-
-        if (!isPlayer)
+        if (condition.EffectedAction != "None")
         {
-            yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
+            if (isPlayer)
+            {
+                yield return StartCoroutine(deckManager.UpdateCardsDisplay(condition.EffectedAction));
+            }
+            else
+            {
+                yield return StartCoroutine(GetComponent<Enemy>().UpdatePlan());
+
+            }
         }
     }
 
@@ -927,6 +939,7 @@ public class Figure : MonoBehaviour
             Die();
         }
         yield break;
+
     }
     public void Heal(int amount)
     {

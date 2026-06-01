@@ -36,11 +36,11 @@ public class Card : MonoBehaviour
 	protected List<Func<IEnumerator>> topActions = new List<Func<IEnumerator>>();
 	protected List<Func<IEnumerator>> bottomActions = new List<Func<IEnumerator>>();
 	protected List<Func<IEnumerator>> currentActions = new List<Func<IEnumerator>>();
-	//protected List<IEnumerator> topActions = new List<IEnumerator>();
-	//protected List<IEnumerator> bottomActions = new List<IEnumerator>();
-	//protected List<IEnumerator> currentActions = new List<IEnumerator>();
+    //protected List<IEnumerator> topActions = new List<IEnumerator>();
+    //protected List<IEnumerator> bottomActions = new List<IEnumerator>();
+    //protected List<IEnumerator> currentActions = new List<IEnumerator>();
 
-	public List<Action> topDescription = new List<Action>();
+    protected List<Action> topDescription = new List<Action>();
     protected List<Action> bottomDescription = new List<Action>();
     protected List<Action> currentDescription = new List<Action>();
     protected string currentDescriptionString = "";
@@ -219,7 +219,7 @@ public class Card : MonoBehaviour
 
     public IEnumerator PrepareCardDiscription()
     {
-
+        //Debug.Log("updated entire card");
 		topDescription.Clear();
         bottomDescription.Clear();
 
@@ -261,8 +261,38 @@ public class Card : MonoBehaviour
         }
 
     }
-    public IEnumerator UpdateCardDiscription(string actionName, int modifierNum = 0)
+    public IEnumerator UpdateCardDiscription(string modifiedAction)
     {
+        //Debug.Log("changed card description " + modifiedAction);
+        playerControler.UnmodifiedAction = false;
+        string actionName = null;
+        int modifierNum = 0;
+        switch (modifiedAction)
+        {
+            case "BlockValue":
+                actionName = "Block";
+                modifierNum = 0;
+                break;
+            case "AttackValue":
+                //Debug.Log("changed attack");
+                actionName = "Attack";
+                modifierNum = 0;
+                break;
+            case "MoveValue":
+                //Debug.Log("changed Move");
+
+                actionName = "Move";
+                modifierNum = 0;
+                break;
+            case "AbilityValue":
+                actionName = "Ability";
+                modifierNum = 0;
+                break;
+            default:
+                Debug.Log("Default");
+                modifierNum = 0;
+                break;
+        }
         foreach (Action action in topDescription)
         {
             if (action.ActionName == actionName)
@@ -270,6 +300,15 @@ public class Card : MonoBehaviour
                 action.ActionModifiers[modifierNum].UpdateValue();
             }
         }
+        topText.DisplayDescription(topDescription);
+        foreach (Action action in bottomDescription)
+        {
+            if (action.ActionName == actionName)
+            {
+                action.ActionModifiers[modifierNum].UpdateValue();
+            }
+        }
+        bottomText.DisplayDescription(bottomDescription);
 
         yield break;
     }

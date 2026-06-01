@@ -446,21 +446,52 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public IEnumerator UpdateCardsDisplay()
+    //public IEnumerator UpdateCardsDisplay()
+    //{
+    //    foreach (GameObject card in displayedList)
+    //    {
+    //        yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
+    //    }
+    //    foreach (GameObject card in handContents)
+    //    {
+    //        yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
+    //    }
+    //    //Debug.Log("Prepeared Hand");
+    //    foreach (GameObject card in playContents)
+    //    {
+    //        yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
+    //    }
+    //}
+    public IEnumerator UpdateCardsDisplay(string modifiedAction = "All")
     {
+        List<Card> cards = new List<Card>();
         foreach (GameObject card in displayedList)
         {
-            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
+            cards.Add(card.GetComponent<Card>());
         }
         foreach (GameObject card in handContents)
         {
-            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
+            cards.Add(card.GetComponent<Card>());
         }
-        //Debug.Log("Prepeared Hand");
         foreach (GameObject card in playContents)
         {
-            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription());
+            cards.Add(card.GetComponent<Card>());
         }
+        if (modifiedAction == "All")
+        {
+            foreach (Card card in cards)
+            {
+                yield return StartCoroutine(card.PrepareCardDiscription());
+            }
+        }
+        else
+        {
+            foreach (Card card in cards)
+            {
+                yield return StartCoroutine(card.UpdateCardDiscription(modifiedAction));
+            }
+        }
+
     }
     public void StopDisplayingCardsInList()
     {

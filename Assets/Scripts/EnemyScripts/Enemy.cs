@@ -257,7 +257,6 @@ public class Enemy : Figure
 
     public override void Die()
     {
-        Destroy(gameObject);
         playerControler.GainXP(XPValue);
         if (OverallStatistics.killedEnemies.ContainsKey(enemyName))
         {
@@ -276,6 +275,7 @@ public class Enemy : Figure
         TurnManager.RoundStarted -= GetNewPlan;
         LevelManager.LevelClearedFuntions -= Remove;
         turnManager.RemoveFromTurnOrder(gameObject);
+        Destroy(gameObject);
     }
 
     public override void Remove(LevelManager levelManager = null)

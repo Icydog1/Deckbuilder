@@ -313,7 +313,10 @@ public class ActionModifier : MonoBehaviour
                     break;
             }
         }
-
+        else
+        {
+            modifiedValue = baseValue;
+        }
 
     }
 }

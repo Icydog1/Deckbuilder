@@ -273,7 +273,7 @@ public class PlayerControler : Figure
         //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(.)([A-Z,0-9])", "$1 $2");
         if (actionsRemaining.Count > 0)
         {
-            Debug.Log("Come Back to this");
+            Debug.Log("Come Back updateing move left while moving");
 
             //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
         }
@@ -362,6 +362,7 @@ public class PlayerControler : Figure
                         }
                     }
                 }
+                Debug.Log("ended attack");
                 EndAction();
             }
         }
@@ -517,6 +518,7 @@ public class PlayerControler : Figure
     public override void EndAction()
     {
         string actionName = actionManager.ActionStackNames.Peek();
+        Debug.Log("Ended " + actionName);
         if (actionName == "Move")
         {
             //Debug.Log("Ended Move");
@@ -550,12 +552,13 @@ public class PlayerControler : Figure
             Debug.Log("Unspecified action ended");
         }
         actionManager.ActionStackNames.Pop();
-        if (preformingAction && actionsRemaining.Count > 0)
+        if (actionsRemaining.Count > 0)
         {
             actionsRemaining.Remove(actionsRemaining[0]);
             statsDisplayer.Plan(actionsRemaining);
         }
-
+        //actionsRemaining.Remove(actionsRemaining[0]);
+        //statsDisplayer.Plan(actionsRemaining);
         //isTargetATile = false; //?
         //isTargetAEnemy = false; //?
         //nextAction = true; //?
@@ -861,6 +864,7 @@ public class PlayerControler : Figure
             {
                 actionManager.PrepareAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false));
                 //yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false)));
+
                 kineticBatterySteps = 0;
             }
 
