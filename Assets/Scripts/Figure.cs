@@ -19,8 +19,9 @@ public class Figure : MonoBehaviour
     protected LevelManager levelManager;
     protected ActionManager actionManager;
     protected OverallStatistics overallStatistics;
+    protected GameManager gameManager;
 
-    
+
 
     protected bool isMyTurn;
     protected bool isEnemy, isPlayer;
@@ -77,6 +78,7 @@ public class Figure : MonoBehaviour
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
         overallStatistics = GameObject.Find("OverallStatistics").GetComponent<OverallStatistics>();
+        gameManager = RefrenceStorage.gameManager;
         //Debug.Log("figure awake ran");
 
         //statsDisplayer = transform.Find("EnemyUI").GetComponent<EnemyUi>();
@@ -273,19 +275,19 @@ public class Figure : MonoBehaviour
             if (repeats > 1)
             {
                 //currentDescriptionEnd += " " + repeats + " times ";
-                actionModifiers.Add(new ActionModifier(this, null, repeats, " times", "Repeats"));
+                actionModifiers.Add(new ActionModifier(this, " ", repeats, " times", "Repeats"));
 
             }
             if (attackRange > 1)
             {
                 //currentDescriptionEnd += " " + attackRange + " <sprite name=Range>";
-                actionModifiers.Add(new ActionModifier(this, null, attackRange, " <sprite name=Range>", "Range"));
+                actionModifiers.Add(new ActionModifier(this, " ", attackRange, " <sprite name=Range>", "Range"));
 
             }
             if (targets > 1)
             {
                 //currentDescriptionEnd += " target " + targets;
-                actionModifiers.Add(new ActionModifier(this, null, targets, " targets", "Targets"));
+                actionModifiers.Add(new ActionModifier(this, " ", targets, " targets", "Targets"));
 
             }
 
@@ -307,7 +309,7 @@ public class Figure : MonoBehaviour
             {
                 foreach (Figure target in FindTargets("enemy", attackRange, targets))
                 {
-                    yield return StartCoroutine(target.AttackedFor(finalAttack, repeats, attackConditions));
+                    yield return gameManager.StartCoroutine(target.AttackedFor(finalAttack, repeats, attackConditions));
                 }
                 //ActionDone();
                 for (int i = 0; i < conditions.Count; i++)
@@ -465,29 +467,41 @@ public class Figure : MonoBehaviour
                     //condition.Plan();
                     if (actionAbnormalities.Contains("Delayed Gain"))
                     {
-                        if (individualConditionText.Count > 0)
+                        if (conditionPlan.Count > 0)
                         {
                             if (condition.Duration == 1)
                             {
                                 //actionManager.PlanToList.Add("Next turn");
 
                                 //individualConditionText[individualConditionText.Count - 1] = "Next turn " + individualConditionText[individualConditionText.Count - 1];
-                                individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier(this, "Next turn "));
+                                conditionPlan[0].ActionModifiers.Insert(0, new ActionModifier(this, "Next turn "));
 
                             }
                             else if (condition.Duration != -1)
                             {
                                 //actionManager.PlanToList[individualConditionText.Count - 1] = "At the start of the next " + condition.Duration + " turns" + individualConditionText[individualConditionText.Count - 1];
-                                individualConditionText[individualConditionText.Count - 1].ActionModifiers.Insert(0, new ActionModifier(this, "At the start of the next ", condition.Duration, " turns"));
+                                conditionPlan[0].ActionModifiers.Insert(0, new ActionModifier(this, "At the start of the next ", condition.Duration, " turns"));
 
                                 //Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier("Gain ", amount, " bottom energy") });
                                 //actionManager.PlanToList.Add(currentAction);
                             }
+                            if (conditionPlan.Count > 1)
+                            {
+                                conditionPlan[conditionPlan.Count - 1].ActionModifiers.Insert(0, new ActionModifier(this, "and "));
+
+                            }
+
+
                         }
                         else
                         {
                             Debug.Log("no condition text");
                         }
+
+                    }
+                    foreach (Action action in conditionPlan)
+                    {
+                        individualConditionText.Add(action);
 
                     }
                 }
@@ -628,6 +642,7 @@ public class Figure : MonoBehaviour
                     conditionText += separator;
                 }
                 conditionText += individualConditionText[i].GetDescription();
+                //Debug.Log(conditionText);
 
             }
             conditionText += currentDescriptionEnd;
@@ -910,7 +925,7 @@ public class Figure : MonoBehaviour
     {
         for (int i = 0; i < repeats; i++)
         {
-            yield return StartCoroutine(TakeDamage(attackValue));
+            yield return gameManager.StartCoroutine(TakeDamage(attackValue));
             if (!isDead)
             {
                 yield return StartCoroutine(GainConditions(newConditions));
@@ -927,10 +942,12 @@ public class Figure : MonoBehaviour
             damageValue -= damageBlocked;
             block -= damageBlocked;
         }
-        yield return StartCoroutine(LoseHealth(damageValue));
+        //Debug.Log(gameObject.name + " took damage");
+        yield return gameManager.StartCoroutine(LoseHealth(damageValue));
     }
     public virtual IEnumerator LoseHealth(int amount)
     {
+        //Debug.Log(gameObject.name + " Lost Health");
         health -= amount;
         statsDisplayer.SetHealthAndBlock(health, block);
         if (health <= 0)

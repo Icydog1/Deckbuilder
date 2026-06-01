@@ -18,7 +18,7 @@ public class PlayerControler : Figure
     public GameObject PlayedCard { get { return playedCard; } set { playedCard = value; } }
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
     private RewardManager rewardManager;
-    private GameManager gameManager;
+    //private GameManager gameManager;
     private AbilityManager abilityManager;
 
     private string moveCostDisplaySetting;
@@ -90,7 +90,7 @@ public class PlayerControler : Figure
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
         topEnergyDisplay = GameObject.Find("TopEnergyDisplay").GetComponent<VariableDisplayer>();
         bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        //gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
         interactButton = GameObject.Find("InteractButton");
         //interactButton.SetActive(false);
@@ -345,7 +345,7 @@ public class PlayerControler : Figure
             {
                 targetsLeft--;
                 posibleTargets.Remove(figure.GetComponent<Figure>());
-                yield return StartCoroutine(clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, repeats, appliedConditions));
+                yield return gameManager.StartCoroutine(clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, repeats, appliedConditions));
             }
             if (targetsLeft == 0)
             {
@@ -362,7 +362,7 @@ public class PlayerControler : Figure
                         }
                     }
                 }
-                Debug.Log("ended attack");
+                //Debug.Log("ended attack");
                 EndAction();
             }
         }
@@ -518,7 +518,7 @@ public class PlayerControler : Figure
     public override void EndAction()
     {
         string actionName = actionManager.ActionStackNames.Peek();
-        Debug.Log("Ended " + actionName);
+        //Debug.Log("Ended " + actionName);
         if (actionName == "Move")
         {
             //Debug.Log("Ended Move");
@@ -729,7 +729,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = "Gain " + amount + " top energy";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("TopEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, "TopEnergy", " top energy") });
+            Action currentAction = new Action("TopEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " top energy", "TopEnergy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -747,7 +747,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = "Gain " + amount + " bottom energy";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, "BottemEnergy", " bottom energy") });
+            Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " bottom energy", "BottemEnergy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else

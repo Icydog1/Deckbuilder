@@ -155,7 +155,7 @@ public class ConditionEffects : MonoBehaviour
         {
             if (condition.ConditionName == "Poison")
             {
-                yield return StartCoroutine(effectedFigure.LoseHealth(condition.Value));
+                yield return RefrenceStorage.gameManager.StartCoroutine(effectedFigure.LoseHealth(condition.Value));
             }
             if (condition.ConditionName == "NextTurns")
             {

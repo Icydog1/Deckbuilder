@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Unity.Collections.AllocatorManager;
 
@@ -107,13 +108,25 @@ public class FigureStats : MonoBehaviour
                         //    conditionPlanDescription.RemoveAt(conditionPlanDescription.Count - 1);
                         //}
                     }
-                    currentConditionText += string.Join(" and ", conditionPlanDescription);
+                    //currentConditionText += string.Join(" and ", conditionPlanDescription);
 
+                    for (int i = 0; i < conditionPlanDescription.Count; i++)
+                    {
+                        if (i == conditionPlanDescription.Count-1 && i > 0)
+                        {
+                            currentConditionText += " and ";
+                        }
+                        else if (i != 0)
+                        {
+                            currentConditionText += ",";
+                        }
+                        currentConditionText += conditionPlanDescription[i].GetDescription();
 
+                    }
                     //condition.Plan();
-                    //foreach (string actionString in conditionPlanDescription)
+                    //foreach (Action action in conditionPlanDescription)
                     //{
-                    //    currentConditionText += actionString;
+                    //    currentConditionText += action.GetDescription();
                     //}
                     //Debug.Log(conditionPlanDescription + " conditionPlanDescription first");
                     //Debug.Log(conditionPlanDescription + " conditionPlanDescription");
