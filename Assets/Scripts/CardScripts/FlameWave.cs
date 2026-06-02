@@ -1,8 +1,8 @@
-using System.Collections;
-using UnityEngine;
+public class FlameWave : Card
+{
+    protected override int rarity => 2;
 
- public class LongShot : Card
-{    public override void Start()
+    public override void Start()
     {
         topCost = 1;
         bottomCost = 1;
@@ -16,12 +16,13 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Attack(15, 6));
-
+        currentActions.Add(() => playerControler.Attack(12,4,-1,1,null,false,false));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Ability(20));
+        currentActions.Add(() => playerControler.Ability(23));
     }
 }
+
+

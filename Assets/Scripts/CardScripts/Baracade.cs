@@ -1,5 +1,7 @@
  public class Baracade : Card
 {
+    protected override int rarity => 2;
+
     public override void Start()
     {
         topCost = 2;
@@ -14,12 +16,14 @@
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Block(50));
+        currentActions.Add(() => playerControler.Block(57));
         currentActions.Add(() => playerControler.ApplyCondition(new Speed(-5, 2)));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Block(10));
+        currentActions.Add(() => playerControler.Block(12));
     }
 }
+
+

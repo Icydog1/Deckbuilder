@@ -278,19 +278,21 @@ public class Figure : MonoBehaviour
                 actionModifiers.Add(new ActionModifier(this, " ", repeats, " times", "Repeats"));
 
             }
-            if (attackRange > 1)
-            {
-                //currentDescriptionEnd += " " + attackRange + " <sprite name=Range>";
-                actionModifiers.Add(new ActionModifier(this, " ", attackRange, " <sprite name=Range>", "Range"));
-
-            }
             if (targets > 1)
             {
                 //currentDescriptionEnd += " target " + targets;
                 actionModifiers.Add(new ActionModifier(this, " ", targets, " targets", "Targets"));
+            }
+            else if (targets == -1)
+            {
+                actionModifiers.Add(new ActionModifier(this, " all targets", valueType: "Targets"));
 
             }
-
+            if (attackRange > 1)
+            {
+                //currentDescriptionEnd += " " + attackRange + " <sprite name=Range>";
+                actionModifiers.Add(new ActionModifier(this, " ", attackRange, " <sprite name=Range>", "Range"));
+            }
             //tring separator = ", ";
             //string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             //actionManager.PlanToList.Add(attackText);
@@ -309,6 +311,7 @@ public class Figure : MonoBehaviour
             {
                 foreach (Figure target in FindTargets("enemy", attackRange, targets))
                 {
+                    Debug.Log(target);
                     yield return gameManager.StartCoroutine(target.AttackedFor(finalAttack, repeats, attackConditions));
                 }
                 //ActionDone();
@@ -910,6 +913,10 @@ public class Figure : MonoBehaviour
 
     public List<Figure> ChooseTargets(List<Figure> posibleTargets, int targets = 1)
     {
+        if (targets == -1)
+        {
+            return posibleTargets;
+        }
         List<Figure> targetedFigures = new List<Figure>();
         foreach (Figure posibletarget in posibleTargets)
         {

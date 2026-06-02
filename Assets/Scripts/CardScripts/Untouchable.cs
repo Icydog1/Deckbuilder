@@ -1,5 +1,7 @@
 public class Untouchable : Card
 {
+    protected override int rarity => 2;
+
     public override void Start()
     {
         topCost = 1;

@@ -4,6 +4,8 @@ using UnityEngine;
 
  public class Strike : Card
 {
+    protected override int rarity => 0;
+
     public override void Start()
     {
         topCost = 1;

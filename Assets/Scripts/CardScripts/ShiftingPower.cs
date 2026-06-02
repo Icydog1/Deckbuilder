@@ -1,5 +1,7 @@
 public class ShiftingPower : Card
 {
+    protected override int rarity => 3;
+
     public override void Start()
     {
         topCost = 1;

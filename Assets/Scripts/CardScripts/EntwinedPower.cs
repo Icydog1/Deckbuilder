@@ -1,5 +1,7 @@
 public class EntwinedPower : Card
 {
+    protected override int rarity => 2;
+
     private int additionalCost = 1;
     public override void Start()
     {

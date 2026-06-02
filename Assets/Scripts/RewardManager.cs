@@ -42,9 +42,9 @@ public class RewardManager : MonoBehaviour
 
     private Lootable tileScript;
     private int rewardRarity;
-    private float commonProbability = 1f;// 0.8f;
-    private float uncommonProbability = 0f; //0.15f;
-    private float rareProbability = 0f; //0.05f;
+    private float commonProbability = 0.66f;
+    private float uncommonProbability = 0.33f;
+    private float rareProbability = 0.01f;
 
     private float relativeSpaceBetweenRewardCards = 0.5f;
 
@@ -80,10 +80,10 @@ public class RewardManager : MonoBehaviour
         uncommonRelicRewards.Clear();
         rareRelicRewards.Clear();
 
-        if (commonProbability + uncommonProbability + rareProbability != 1f)
-        {
-            Debug.Log("reward probabilitys dont add to 1");
-        }
+        //if (commonProbability + uncommonProbability + rareProbability != 1f)
+        //{
+        //    Debug.Log("reward probabilitys dont add to 1");
+        //}
         foreach (GameObject card in allCardRewards)
         {
             int cardRarity = card.GetComponent<Card>().Rarity;
@@ -101,10 +101,10 @@ public class RewardManager : MonoBehaviour
             //    rareCardRewards.Add(card);
             //}
         }
-        if (testCardRewards.Count > 0)
-        {
-            commonCardRewards = testCardRewards;
-        }
+        //if (testCardRewards.Count > 0)
+        //{
+        //    commonCardRewards = testCardRewards;
+        //}
         foreach (GameObject relic in allRelicRewards)
         {
             int relicRarity = relic.GetComponent<Relic>().Rarity;
@@ -226,7 +226,8 @@ public class RewardManager : MonoBehaviour
         List<GameObject> potentialRewards = new List<GameObject>();
         for (int i = 0; i < numberOfRewards; i++)
         {
-            float randomProbability = UnityEngine.Random.Range(0, 1);
+            float randomProbability = UnityEngine.Random.Range(0, 1f);
+            Debug.Log(randomProbability);
             List<GameObject> currentRewardPool = new List<GameObject>();
             if (randomProbability <= commonProbability)
             {

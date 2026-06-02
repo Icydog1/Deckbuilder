@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class ShieldedStrike : Card
 {
+    protected override int rarity => 2;
     public override void Start()
     {
         topCost = 1;

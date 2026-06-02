@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
@@ -46,11 +47,12 @@ public class Card : MonoBehaviour
     protected string currentDescriptionString = "";
     protected string additionalTopDescription, additionalBottomDescription;
 
-    [SerializeField]
-    protected int rarity = 1;
+    //[SerializeField]
+    protected virtual int rarity => 1;
     protected string cardName;
 
     public int Rarity { get { return rarity; } }
+    protected Image rarityGlow;
 
     //private float baseAbsoluteSize = 1;
     //private float relativeSize;
@@ -77,6 +79,37 @@ public class Card : MonoBehaviour
         transform.Find("CardName").gameObject.GetComponent<TextMeshProUGUI>().SetText(cardName);
 
         deckManager.SetRelativeCardSize(gameObject, 1);
+
+        rarityGlow = transform.Find("RarityGlow").gameObject.GetComponent<Image>();
+
+        switch (rarity)
+        {
+            case 0:
+                {
+                    rarityGlow.color = new Color(0, 0, 0, 0f);
+                    break;
+                }
+            case 1:
+                {
+                    rarityGlow.color = new Color(0, 0, 0, 0f);
+                    break;
+                }
+            case 2:
+                {
+                    rarityGlow.color = new Color(0, 0, 1, 0.5f);
+                    break;
+                }
+            case 3:
+                {
+                    rarityGlow.color = new Color(1, 0.8f, 0, 1);
+                    break;
+                }
+            default:
+                {
+                    rarityGlow.color = new Color(0, 0, 0, 0f);
+                    break;
+                }
+        }
 
 
         currentActions = topActions;

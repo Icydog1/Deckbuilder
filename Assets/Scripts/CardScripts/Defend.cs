@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Defend : Card
 {
+    protected override int rarity => 0;
+
     public override void Start()
     {
         topCost = 1;
