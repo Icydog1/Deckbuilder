@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1219928215087187144, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b076179c2f604604a8d5d59783e6b182, type: 3}
     - target: {fileID: 2781974311769089904, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -48,6 +52,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4924326248737957208, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1d1f50f2cf01d5a45811e685dc9f01de, type: 3}
     - target: {fileID: 6079233605370273798, guid: 77e566fc7ba4cf246b91ee48f71bba74, type: 3}
       propertyPath: m_Name
       value: TheEnchantress

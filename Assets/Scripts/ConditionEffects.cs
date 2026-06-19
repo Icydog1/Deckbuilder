@@ -214,10 +214,13 @@ public class ConditionEffects : MonoBehaviour
             }
             if (condition.ConditionName == "NextTurns")
             {
+                effectedPlayerControler.SpecialPreformingAction = true;
+                effectedPlayerControler.ActionsRemaining = new List<ActionDescription>(condition.PlanDescription);
                 foreach (Func<IEnumerator> action in condition.Plan)
                 {
                     yield return StartCoroutine(actionManager.PreformAction(action()));
                 }
+                effectedPlayerControler.SpecialPreformingAction = false;
             }
             if (condition.ConditionName == "NextTurnBlock")
             {

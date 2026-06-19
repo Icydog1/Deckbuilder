@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Condition
 {
-    protected ConditionEffects conditionEffects;
+    //protected ConditionEffects conditionEffects;
     protected string conditionName;
     public string ConditionName { get { return conditionName; } }
     protected string actionName;
@@ -34,6 +34,8 @@ public class Condition
 
     protected Func<IEnumerator>[] plan;
     public Func<IEnumerator>[] Plan { get { return plan; } }
+    protected List<ActionDescription> planDescription;
+    public List<ActionDescription> PlanDescription { get { return planDescription; } }
 
     protected string[] abnormality;
     public string[] Abnormality { get { return abnormality; } }
@@ -42,9 +44,9 @@ public class Condition
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -129,37 +131,47 @@ public class Poison : Condition
 public class NextTurns : Condition
 {
     public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionValue = Variables.gameNullValue, int conditionDuration = 1) : base("NextTurns", conditionValue, conditionDuration, 0, true, "All", true, null, new string[] { "Delayed Gain", "No Self Target Description" }, nextTurnsAction) { }
+    public override IEnumerator OnGain(Figure figure)
+    {
+        planDescription = new List<ActionDescription>();
+        //Debug.Log("gained condtion");
+        foreach (Func<IEnumerator> action in plan)
+        {
+            yield return RefrenceStorage.conditionEffects.StartCoroutine(RefrenceStorage.actionManager.PreformAction(action(), planDescription));
+        }
+    }
 }
+
 public class NextTurnBlock : Condition
 {
-    public NextTurnBlock(int conditionValue, int conditionDuration = 1) : base("NextTurnBlock", conditionValue, conditionDuration, 1, true, "None", true, "Next turn gain " + conditionValue + " block", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+    public NextTurnBlock(int conditionValue, int conditionDuration = 1) : base("NextTurnBlock", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn block", new string[] { "Delayed Gain", "No Self Target Description" }) { }
 }
+
 public class NextTurnTopEnergy : Condition
 {
-    public NextTurnTopEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnTopEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Next turn gain " + conditionValue + " top energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+    public NextTurnTopEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnTopEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn top energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
 }
 public class NextTurnBottomEnergy : Condition
 {
-    public NextTurnBottomEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnBottomEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Next turn gain " + conditionValue + " bottom energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+    public NextTurnBottomEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnBottomEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn bottom energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
 }
 public class GainAbility : Condition
 {
     protected Ability gainedAbility;
     public Ability GainedAbility { get { return gainedAbility; } }
-    public GainAbility(Ability conditionAbility, int conditionDuration = 1) : base("Ability", Variables.gameNullValue, conditionDuration, 2, false, "All", true, null, new string[] { "Ability", "No Self Target Description" })
+    public GainAbility(Ability conditionAbility, int conditionDuration = 1) : base("Ability", Variables.gameNullValue, conditionDuration, 0, false, "All", true, null, new string[] { "Ability", "No Self Target Description" })
     {
-        conditionEffects = GameObject.Find("ConditionEffects").GetComponent<ConditionEffects>();
-
+        //conditionEffects = RefrenceStorage.conditionEffects;
         gainedAbility = conditionAbility;
     }
     public override IEnumerator OnGain(Figure figure)
     {
         //Debug.Log("gained condtion");
-        yield return conditionEffects.StartCoroutine(GameObject.Find("Player").GetComponent<PlayerControler>().GainAbility(gainedAbility));
+        yield return RefrenceStorage.conditionEffects.StartCoroutine(GameObject.Find("Player").GetComponent<PlayerControler>().GainAbility(gainedAbility));
     }
     public override IEnumerator OnLoss(Figure figure)
     {
-        yield return conditionEffects.StartCoroutine(GameObject.Find("Player").GetComponent<PlayerControler>().LoseAbility(gainedAbility));
+        yield return RefrenceStorage.conditionEffects.StartCoroutine(GameObject.Find("Player").GetComponent<PlayerControler>().LoseAbility(gainedAbility));
     }
 }
 public class Vigor : Condition

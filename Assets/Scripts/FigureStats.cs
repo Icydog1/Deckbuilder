@@ -92,47 +92,57 @@ public class FigureStats : MonoBehaviour
             {
                 string currentConditionText = "";
                 //Debug.Log("displaying condition: " + condition.ConditionName);
-                currentConditionText = condition.ConditionName;
-                if (condition.ConditionName == "NextTurns")
+                if (condition.Description != null)
                 {
-                    currentConditionText = "Start of turn ";
+                    currentConditionText = condition.Description;
                 }
-                if (condition.Plan != null)
+                else
                 {
-                    List<ActionDescription> conditionPlanDescription = new List<ActionDescription>();                    
-                    foreach (Func<IEnumerator> action in condition.Plan)
+                    currentConditionText = condition.ConditionName;
+                    if (condition.ConditionName == "NextTurns")
                     {
-                        yield return StartCoroutine(actionManager.PreformAction( action(), conditionPlanDescription));
-                        //if (condition.Plan[0] != action)
+                        currentConditionText = "Start of turn ";
+                    }
+                    if (condition.Plan != null)
+                    {
+
+                        //List<ActionDescription> conditionPlanDescription = new List<ActionDescription>();
+                        List<ActionDescription> conditionPlanDescription = condition.PlanDescription;
+                        //foreach (Func<IEnumerator> action in condition.Plan)
                         //{
-                        //    conditionPlanDescription[conditionPlanDescription.Count - 2] = conditionPlanDescription[conditionPlanDescription.Count - 2] + " and " + conditionPlanDescription[conditionPlanDescription.Count - 1];
-                        //    conditionPlanDescription.RemoveAt(conditionPlanDescription.Count - 1);
+                        //    yield return StartCoroutine(actionManager.PreformAction(action(), conditionPlanDescription));
+                        //    //if (condition.Plan[0] != action)
+                        //    //{
+                        //    //    conditionPlanDescription[conditionPlanDescription.Count - 2] = conditionPlanDescription[conditionPlanDescription.Count - 2] + " and " + conditionPlanDescription[conditionPlanDescription.Count - 1];
+                        //    //    conditionPlanDescription.RemoveAt(conditionPlanDescription.Count - 1);
+                        //    //}
                         //}
-                    }
-                    //currentConditionText += string.Join(" and ", conditionPlanDescription);
+                        //currentConditionText += string.Join(" and ", conditionPlanDescription);
 
-                    for (int i = 0; i < conditionPlanDescription.Count; i++)
-                    {
-                        if (i == conditionPlanDescription.Count-1 && i > 0)
+                        for (int i = 0; i < conditionPlanDescription.Count; i++)
                         {
-                            currentConditionText += " and ";
-                        }
-                        else if (i != 0)
-                        {
-                            currentConditionText += ",";
-                        }
-                        currentConditionText += conditionPlanDescription[i].GetDescription();
+                            if (i == conditionPlanDescription.Count - 1 && i > 0)
+                            {
+                                currentConditionText += " and ";
+                            }
+                            else if (i != 0)
+                            {
+                                currentConditionText += ",";
+                            }
+                            currentConditionText += conditionPlanDescription[i].GetDescription();
 
+                        }
+                        //condition.Plan();
+                        //foreach (Action action in conditionPlanDescription)
+                        //{
+                        //    currentConditionText += action.GetDescription();
+                        //}
+                        //Debug.Log(conditionPlanDescription + " conditionPlanDescription first");
+                        //Debug.Log(conditionPlanDescription + " conditionPlanDescription");
+                        //Debug.Log(currentConditionText + " currentConditionText");
+                        //currentConditionText += conditionPlanDescription;
                     }
-                    //condition.Plan();
-                    //foreach (Action action in conditionPlanDescription)
-                    //{
-                    //    currentConditionText += action.GetDescription();
-                    //}
-                    //Debug.Log(conditionPlanDescription + " conditionPlanDescription first");
-                    //Debug.Log(conditionPlanDescription + " conditionPlanDescription");
-                    //Debug.Log(currentConditionText + " currentConditionText");
-                    //currentConditionText += conditionPlanDescription;
+
                 }
                 if (condition.Value != Variables.gameNullValue)
                 {
@@ -142,6 +152,7 @@ public class FigureStats : MonoBehaviour
                 {
                     currentConditionText += " " + condition.Duration + "<sprite name=ConditionDuration>";
                 }
+
                 individualConditionText.Add(currentConditionText);
             }
             string separator = ", ";
@@ -154,6 +165,7 @@ public class FigureStats : MonoBehaviour
         }
         //Debug.Log(conditions.Count);
         MovePlan();
+        yield break;
     }
     public virtual void MovePlan()
     {

@@ -867,6 +867,10 @@ public class Figure : MonoBehaviour
                     conditions[i].Value += condition.Value;
                     conditions[i].Value = Mathf.Clamp(conditions[i].Value, Variables.gameMinValue, Variables.gameMaxValue);
                     isDuplicate = true;
+                    if (conditions[i].Value == 0)
+                    {
+                        conditions.RemoveAt(i);
+                    }
                     break;
                 }
                 if (condition.AddType == 2 && conditions[i].Value == condition.Value)

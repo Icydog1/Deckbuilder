@@ -59,7 +59,6 @@ public class ActionManager : MonoBehaviour
         }
         if (planTo != null)
         {
-            //Debug.Log("About to plan ablility");
             planStack.Push(action);
             planToStack.Push(planTo);
             playerControler.IsPlanning = true;

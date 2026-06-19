@@ -11,7 +11,7 @@ public class PlayerControler : Figure
 {
     private bool actionDone, manualEnd;
     private bool isMoving, isAttacking, isAppliyingConditions;
-    private bool isPlayerTurn;
+    private bool isPlayerTurn, isPlayPhase;
     private GameObject player;
     private RoomSpawner roomSpawner;
     private GameObject clickedTile, clickedEnemy;
@@ -37,12 +37,13 @@ public class PlayerControler : Figure
     //public List<Func<IEnumerator>> CurrentActionQueue { get { return currentActionQueue; } set { currentActionQueue = value; } }
 
 
-    private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, preformingAction, canPreformAbilities;
+    private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, specialPreformingAction, preformingAction, canPreformAbilities;
     private bool waitUntilVariable;
     public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
     public bool CanPreformAbilities { get { UpdatePlayer(); return canPreformAbilities; } }
-
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; UpdatePlayer(); } }
+
+    public bool SpecialPreformingAction { get { return specialPreformingAction; } set { specialPreformingAction = value; UpdatePlayer(); } }
     public bool PreformingAbility { get { return preformingAbility; } set { preformingAbility = value; UpdatePlayer(); } }
 
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
@@ -299,12 +300,14 @@ public class PlayerControler : Figure
             //actionsRemaining[0].GetDescription(); = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
         }
         //statsDisplayer.Plan(actionsRemaining);
+        currentTile = mapManager.GetTileAtHex(oneToOnePos);
         if (currentTile.GetComponent<Interactable>())
         {
             interactButton.SetActive(true);
         }
         else
         {
+            mouseManager.MouseOffObject(interactButton);
             interactButton.SetActive(false);
         }
         if (currentTile.GetComponent<Door>())
@@ -451,7 +454,7 @@ public class PlayerControler : Figure
     }
     public void UpdatePlayer()
     {
-        if (!cardPlayed && !gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards && !isPreformingAnimation && !preformingAbility)
+        if (!cardPlayed && !gettingReward && isPlayPhase && !deckManager.IsDisplayingCards && !isPreformingAnimation && !preformingAbility)
         {
             canPlayCards = true;
             canEndTurn = true;
@@ -480,7 +483,7 @@ public class PlayerControler : Figure
             canPreformActions = false;
             canMove = false;
         }
-        if (cardPlayed || preformingAbility)
+        if (cardPlayed || preformingAbility || specialPreformingAction)
         {
             preformingAction = true;
         }
@@ -493,6 +496,7 @@ public class PlayerControler : Figure
     public IEnumerator StartTurn()
     {
         //Debug.Log("started turn");
+        isPlayerTurn = true;
         if (PlayerTurnStartedFuntions != null)
         {
             PlayerTurnStartedFuntions(this);
@@ -502,10 +506,10 @@ public class PlayerControler : Figure
             yield return StartCoroutine(PlayerTurnStarted(this));
         }
         yield return StartCoroutine(deckManager.DrawNewHand());
-        isPlayerTurn = true;
         TopEnergy = 2;
         BottomEnergy = 2;
         yield return StartCoroutine(baseStartTurn());
+        isPlayPhase = true;
     }
 
     public IEnumerator ForceEndTurn()
@@ -531,15 +535,16 @@ public class PlayerControler : Figure
     }
     public IEnumerator EndTurn()
     {
+        isPlayPhase = false;
         UpdatePlayer();
         yield return StartCoroutine(deckManager.DiscardHand());
-        isPlayerTurn = false;
         yield return StartCoroutine(pathfinder.BuildPlayerElevationMap());
         yield return StartCoroutine(base.baseEndTurn());
+        isPlayerTurn = false;
     }
     public void ManualEnd()
     {
-        if ((cardPlayed || preformingAbility) && isPlayerTurn)
+        if (preformingAction && isPlayerTurn)
         {
             EndAction();
             //ActionDone();

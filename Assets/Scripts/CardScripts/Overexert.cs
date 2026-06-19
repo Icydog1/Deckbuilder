@@ -19,13 +19,12 @@ public class Overexert : Card
     public override void PrepareTop()
     {
         currentActions.Add( new Action(() => playerControler.Attack(47)));
-        currentActions.Add( new Action(() => playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainTopEnergy(-2) }))));
-
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new NextTurnTopEnergy(-2)), "Next turn lose 2 top energy"));
     }
 
     public override void PrepareBottom()
     {
         currentActions.Add( new Action(() => playerControler.Move(32)));
-        currentActions.Add( new Action(() => playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainBottomEnergy(-1) }))));
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new NextTurnBottomEnergy(-1)), "Next turn lose 1 bottom energy"));
     }
 }
