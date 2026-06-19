@@ -31,7 +31,8 @@ public class TooltipManager : MonoBehaviour
 
     public void StopHoveringOver()
     {
-        transform.GetChild(0).gameObject.SetActive(false);
+        SetText("");
+        //transform.GetChild(0).gameObject.SetActive(false);
     }
 
     public void SetText(string text)

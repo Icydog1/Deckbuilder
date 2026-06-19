@@ -4,6 +4,7 @@ using System.Collections;
 
 public class DevouringFlame : Relic
 {
+    protected override int rarity => 1;
     public override void Awake()
     {
         relicDesription = "Destroy a card";

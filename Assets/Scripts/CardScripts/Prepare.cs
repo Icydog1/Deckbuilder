@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 public class Prepare : Card
 {
+    public Prepare() : base(2, 1, 1) { }
     public override void Start()
     {
-        topCost = 1;
-        bottomCost = 1;
+        
         base.Start();
     }
     public override void Update()
@@ -15,14 +15,15 @@ public class Prepare : Card
         base.Update();
     }
 
-
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainTopEnergy(2), () => playerControler.Draw(1) })));
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new NextTurnTopEnergy(2)), "Next turn gain 2 top energy"));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.GainBottomEnergy(2), () => playerControler.Draw(1) })));
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new NextTurnBottomEnergy(2)), "Next turn gain 2 bottom energy"));
     }
 }
+
+

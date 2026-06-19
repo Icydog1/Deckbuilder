@@ -2,40 +2,6 @@ using UnityEngine;
 
 public class RefrenceStorage : MonoBehaviour
 {
-    //private GameManager gameManager;
-    //public GameManager GameManager { get { return gameManager; } }
-    //private TurnManager turnManager;
-    //public TurnManager TurnManager { get { return turnManager; }}
-    //private MapManager mapManager;
-    //public MapManager MapManager { get { return mapManager; } }
-    //private MouseManager mouseManager;
-    //public MouseManager MouseManager { get { return mouseManager; } }
-
-
-    //private PlayerControler playerControler;
-    //public PlayerControler PlayerControler { get { return playerControler; } }
-
-    //private Pathfinder pathfinder;
-    //public Pathfinder Pathfinder { get { return pathfinder; } }
-    //private DeckManager deckManager;
-    //public DeckManager DeckManager { get { return deckManager; } }
-    //private LevelManager levelManager;
-    //public LevelManager LevelManager { get { return levelManager; } }
-    //private ActionManager actionManager;
-    //public ActionManager ActionManager { get { return actionManager; } }
-    //private OverallStatistics overallStatistics;
-    //public OverallStatistics OverallStatistics { get { return overallStatistics; } }
-    //private RoomSpawner roomSpawner;
-    //public RoomSpawner RoomSpawner { get { return roomSpawner; } }
-    //private RewardManager rewardManager;
-    //public RewardManager RewardManager { get { return rewardManager; } }
-    //private ConditionEffects conditionEffects;
-    //public ConditionEffects ConditionEffects { get { return conditionEffects; } }
-
-
-    //private GameObject pauseScreenBlocker;
-    //public GameObject PauseScreenBlocker { get { return pauseScreenBlocker; } }
-
     public static GameManager gameManager;
     public static TurnManager turnManager;
     public static MapManager mapManager;
@@ -45,13 +11,17 @@ public class RefrenceStorage : MonoBehaviour
     public static DeckManager deckManager;
     public static LevelManager levelManager;
     public static ActionManager actionManager;
-    public static OverallStatistics overallStatistics;
+    //public static OverallStatistics overallStatistics;
     public static RoomSpawner roomSpawner;
     public static RewardManager rewardManager;
     public static ConditionEffects conditionEffects;
+    public static PlayerStats playerStats;
+    public static CompendiumManager compendiumManager;
+    public static CameraScript cameraScript;
 
-
+    public static GameObject interactButton;
     public static GameObject pauseScreenBlocker;
+    public static GameObject deathScreenBlocker;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -65,14 +35,18 @@ public class RefrenceStorage : MonoBehaviour
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
         levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
-        overallStatistics = GameObject.Find("OverallStatistics").GetComponent<OverallStatistics>();
+        //overallStatistics = GameObject.Find("OverallStatistics").GetComponent<OverallStatistics>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
         conditionEffects = GameObject.Find("ConditionEffects").GetComponent<ConditionEffects>();
+        playerStats = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
+        compendiumManager = GameObject.Find("CompendiumScreenBlocker").GetComponent<CompendiumManager>();
+        cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
 
-
+        interactButton = GameObject.Find("InteractButton");
 
         pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
+        deathScreenBlocker = GameObject.Find("DeathScreenBlocker");
 
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ObsidianShard : Relic
 {
+    protected override int rarity => 1;
     public override void Awake()
     {
         relicName = "Obsidian Shard";

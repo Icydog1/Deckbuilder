@@ -19,9 +19,9 @@ public class ActionManager : MonoBehaviour
     private Queue<IEnumerator> actionQueue = new Queue<IEnumerator>();
     private Queue<IEnumerator> preparedQueue = new Queue<IEnumerator>();
 
-    private Stack<List<Action>> planToStack = new Stack<List<Action>>();
+    private Stack<List<ActionDescription>> planToStack = new Stack<List<ActionDescription>>();
     //public List<string> planToList = new List<string>();
-    public List<Action> PlanToList { get { return planToStack.Peek(); } }//set { planToStack[planToStack.Count - 1] = value; } }
+    public List<ActionDescription> PlanToList { get { return planToStack.Peek(); } }//set { planToStack[planToStack.Count - 1] = value; } }
     private bool preformingActions;
 
     //private IEnumerator test;
@@ -51,7 +51,7 @@ public class ActionManager : MonoBehaviour
     {
 
     }
-    public IEnumerator PreformAction(IEnumerator action, List<Action> planTo = null)
+    public IEnumerator PreformAction(IEnumerator action, List<ActionDescription> planTo = null)
     {
         if (!preformingActions)
         {
@@ -101,7 +101,7 @@ public class ActionManager : MonoBehaviour
     }
     public void QueueAction(IEnumerator action)
     {
-        if (!preformingActions)
+        if (preformingActions)
         {
             //Debug.Log("added action to queue");
             actionQueue.Enqueue(action);
@@ -120,7 +120,7 @@ public class ActionManager : MonoBehaviour
     public void PrepareAction(IEnumerator action)
     {
         //Debug.Log("queued action");
-        if (!preformingActions)
+        if (preformingActions)
         {
             //Debug.Log("added action to queue");
             preparedQueue.Enqueue(action);
@@ -223,7 +223,7 @@ public class ActionManager : MonoBehaviour
 }
 
 
-public class Action : MonoBehaviour
+public class ActionDescription
 {
     private string actionName;
     public string ActionName { get { return actionName; } set { actionName = value; } }
@@ -231,7 +231,7 @@ public class Action : MonoBehaviour
     private List<ActionModifier> actionModifiers;
     public List<ActionModifier> ActionModifiers { get { return actionModifiers; } set { actionModifiers = value; } }
 
-    public Action(string name, List<ActionModifier> modifiers)
+    public ActionDescription(string name, List<ActionModifier> modifiers)
     {
         actionName = name;
         actionModifiers = modifiers;
@@ -255,7 +255,7 @@ public class Action : MonoBehaviour
 
     }
 }
-public class ActionModifier : MonoBehaviour
+public class ActionModifier
 {
     private string initialDescription;
     public string InitialDescription { get { return initialDescription; } set { initialDescription = value; } }
@@ -306,6 +306,10 @@ public class ActionModifier : MonoBehaviour
                 case "Ability":
                     //Debug.Log("Attack");
                     modifiedValue = RefrenceStorage.conditionEffects.ModifyAbility(figure, baseValue);
+                    break;
+                case "Range":
+                    //Debug.Log("Attack");
+                    modifiedValue = RefrenceStorage.conditionEffects.ModifyRange(figure, baseValue);
                     break;
                 default:
                     //Debug.Log("Default");

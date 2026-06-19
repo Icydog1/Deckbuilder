@@ -127,7 +127,8 @@ public class TurnManager : MonoBehaviour
     }
     public IEnumerator StartOfRound()
     {
-
+        OverallStatistics.round++;
+        RefrenceStorage.playerStats.SetTurnCount(OverallStatistics.round);
         levelManager.IncreaseRoundNumber();
         if (RoundStartedFunctions != null)
         {

@@ -45,11 +45,11 @@ public class RelicManager : MonoBehaviour
     }
     public IEnumerator TestGainRelic(GameManager gameManager)
     {
-        GameObject tester = GameObject.Find("StartRelics");
+        GameObject StartRelics = GameObject.Find("StartRelics");
         List<GameObject> testObjects = new List<GameObject>();
-        for (int i = 0; i < tester.transform.childCount; i++)
+        for (int i = 0; i < StartRelics.transform.childCount; i++)
         {
-            testObjects.Add(tester.transform.GetChild(i).gameObject);
+            testObjects.Add(StartRelics.transform.GetChild(i).gameObject);
         }
         foreach (GameObject relic in testObjects)
         {

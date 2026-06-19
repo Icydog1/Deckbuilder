@@ -4,12 +4,11 @@ using UnityEngine;
 
  public class Strike : Card
 {
-    protected override int rarity => 0;
+    public Strike() : base(0, 1, 1) { }
 
     public override void Start()
     {
-        topCost = 1;
-        bottomCost = 1;
+        
         base.Start();
     }
     public override void Update()
@@ -20,11 +19,11 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Attack(10));
+        currentActions.Add( new Action(() => playerControler.Attack(10)));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Move(10));
+        currentActions.Add( new Action(() => playerControler.Move(10)));
     }
 }

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using static UnityEngine.EventSystems.EventTrigger;
 
 [System.Serializable]
 public class ElevationsWatcher
@@ -145,6 +147,7 @@ public class Pathfinder : MonoBehaviour
         inRange = false;
         noMove = false;
         currentPos = selfPos;
+        GameObject currentTile = mapManager.GetTileAtHex(currentPos);
         targetPos = newTargetPos;
         //finds the path from the figure with current movement that gets them as close to player a posible
         findPosiblePaths(selfPos, playerElevations, playerSafeTiles);
@@ -154,6 +157,15 @@ public class Pathfinder : MonoBehaviour
         yield return StartCoroutine(MoveAlongPath(currentFigure, selfPos));
         //yield return new WaitUntil(() => doneMoving == true);
         //doneMoving = false;
+        Vector2 newPos = mapManager.PosToOneToOne(currentFigure.transform.position);
+        playerUnsafeTiles.Remove(newPos);
+        playerSafeTiles.Remove(newPos);
+        playerUnsafeTiles.Add(newPos);
+        if (!currentTile.GetComponent<Obstacle>())
+        {
+            playerUnsafeTiles.Remove(selfPos);
+            playerSafeTiles.Add(selfPos);
+        }
         self.GetComponent<Figure>().ActionDone();
     }
     public IEnumerator PathfindTowards(Vector2 selfPos, Vector2 newTargetPos, GameObject self, int newMoveValue, int range = 1, bool jump = false, bool fly = false)
@@ -313,7 +325,7 @@ public class Pathfinder : MonoBehaviour
         unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
-        if (range == -1)
+        if (range == Variables.gameInfinityValue)
         {
             range = Variables.gameMaxValue;
         }
@@ -362,11 +374,11 @@ public class Pathfinder : MonoBehaviour
         {
             endElevation = 0;
             noMove = true;
-            Debug.Log("No valid hex to move to");
+            //Debug.Log("No valid hex to move to");
         }
         else
         {
-            endElevation = int.MaxValue - 1;
+            endElevation = Variables.gameMaxValue + 1;
         }
         for (int i = 0; i <= endElevation + 1; i++)
         {

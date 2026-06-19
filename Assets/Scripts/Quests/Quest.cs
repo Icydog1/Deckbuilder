@@ -7,7 +7,7 @@ using static Lootable;
 public class Quest : MonoBehaviour
 {
     //protected RefrenceStorage refrenceStorage;
-    protected OverallStatistics overallStatistics;
+    //protected OverallStatistics overallStatistics;
     protected RewardManager rewardManager;
     protected ActionManager actionManager;
     protected PlayerControler playerControler;
@@ -26,7 +26,7 @@ public class Quest : MonoBehaviour
     public virtual void Awake()
     {
         //refrenceStorage = GameObject.Find("RefrenceStorage").GetComponent<RefrenceStorage>();
-        overallStatistics = RefrenceStorage.overallStatistics;
+        //overallStatistics = RefrenceStorage.overallStatistics;
         rewardManager = RefrenceStorage.rewardManager;
         actionManager = RefrenceStorage.actionManager;
         playerControler = RefrenceStorage.playerControler;

@@ -1,10 +1,9 @@
  public class FullPower : Card
 {
+    public FullPower() : base(1, 2, 2) { }
 
     public override void Start()
     {
-        topCost = 2;
-        bottomCost = 2;
         base.Start();
     }
 
@@ -17,14 +16,14 @@
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Attack(20));
-        currentActions.Add(() => playerControler.Attack(20));
+        currentActions.Add( new Action(() => playerControler.Attack(20)));
+        currentActions.Add( new Action(() => playerControler.Attack(20)));
 
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Move(35));
+        currentActions.Add( new Action(() => playerControler.Move(35)));
 
     }
 }

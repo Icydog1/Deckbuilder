@@ -34,23 +34,44 @@ public class Card : MonoBehaviour
 
     protected bool isPreparingTop;
 
-	protected List<Func<IEnumerator>> topActions = new List<Func<IEnumerator>>();
-	protected List<Func<IEnumerator>> bottomActions = new List<Func<IEnumerator>>();
-	protected List<Func<IEnumerator>> currentActions = new List<Func<IEnumerator>>();
+    public class Action
+    {
+        public Func<IEnumerator> preformedAbility;
+        public string description = null;
+
+        public Action(Func<IEnumerator> ability, string descriptionOverride = null)
+        {
+            preformedAbility = ability;
+            description = descriptionOverride;
+        }
+    }
+
+	//protected List<Func<IEnumerator>> topActions = new List<Func<IEnumerator>>();
+	//protected List<Func<IEnumerator>> bottomActions = new List<Func<IEnumerator>>();
+    //protected List<Func<IEnumerator>> currentActions = new List<Func<IEnumerator>>());
+    protected List<Action> topActions = new List<Action>();
+    protected List<Action> bottomActions = new List<Action>();
+    protected List<Action> currentActions = new List<Action>();
+
     //protected List<IEnumerator> topActions = new List<IEnumerator>();
     //protected List<IEnumerator> bottomActions = new List<IEnumerator>();
-    //protected List<IEnumerator> currentActions = new List<IEnumerator>();
+    //protected List<IEnumerator> currentActions = new List<IEnumerator>());
 
-    protected List<Action> topDescription = new List<Action>();
-    protected List<Action> bottomDescription = new List<Action>();
-    protected List<Action> currentDescription = new List<Action>();
+    protected List<ActionDescription> topDescription = new List<ActionDescription>();
+    protected List<ActionDescription> bottomDescription = new List<ActionDescription>();
+    protected List<ActionDescription> currentDescription = new List<ActionDescription>();
     protected string currentDescriptionString = "";
     protected string additionalTopDescription, additionalBottomDescription;
 
     //[SerializeField]
-    protected virtual int rarity => 1;
+    protected int rarity = 1;
     protected string cardName;
-
+    public Card(int baseRarity, int initialTopCost, int initialBottomCost)
+    {
+        rarity = baseRarity;
+        topCost = initialTopCost;
+        bottomCost = initialBottomCost;
+    }
     public int Rarity { get { return rarity; } }
     protected Image rarityGlow;
 
@@ -218,13 +239,13 @@ public class Card : MonoBehaviour
 
     public IEnumerator PlayTop()
     {
-        playerControler.ActionsRemaining = new List<Action>(topDescription);
+        playerControler.ActionsRemaining = new List<ActionDescription>(topDescription);
         //playerControler.NextAction = false;
-        foreach (Func<IEnumerator> action in topActions)
+        foreach (Action action in topActions)
         {
             if (stopPlaying == false)
             {
-                yield return StartCoroutine(actionManager.PreformAction(action()));
+                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility()));
 
                 //yield return new WaitUntil(() => playerControler.NextAction == true);
                 //playerControler.NextAction = false;
@@ -235,13 +256,13 @@ public class Card : MonoBehaviour
 
     public IEnumerator PlayBottom()
     {
-        playerControler.ActionsRemaining = new List<Action>(bottomDescription);
+        playerControler.ActionsRemaining = new List<ActionDescription>(bottomDescription);
         //playerControler.NextAction = false;
-        foreach (Func<IEnumerator> action in bottomActions)
+        foreach (Action action in bottomActions)
         {
             if (stopPlaying == false)
             {
-                yield return StartCoroutine(actionManager.PreformAction(action()));
+                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility()));
 
                 //yield return new WaitUntil(() => playerControler.NextAction == true);
                 //playerControler.NextAction = false;
@@ -250,30 +271,43 @@ public class Card : MonoBehaviour
         DonePlaying();
     }
 
-    public IEnumerator PrepareCardDiscription()
+    public IEnumerator PrepareCardDiscription(bool unmodified = false)
     {
         //Debug.Log("updated entire card");
 		topDescription.Clear();
         bottomDescription.Clear();
 
-        playerControler.UnmodifiedAction = false;
-        foreach (Func<IEnumerator> action in topActions)
+        playerControler.UnmodifiedAction = unmodified;
+        foreach (Action action in topActions)
         {
-            yield return StartCoroutine(actionManager.PreformAction(action(), topDescription));
+            if (action.description == null)
+            {
+                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), topDescription));
+            }
+            else
+            {
+                topDescription.Add(new ActionDescription("???", new List<ActionModifier>() { new ActionModifier(playerControler, action.description) }));
+            }
         }
 
-		foreach (Func<IEnumerator> action in bottomActions)
+		foreach (Action action in bottomActions)
         {
-
-            yield return StartCoroutine(actionManager.PreformAction(action(), bottomDescription));
+            if (action.description == null)
+            {
+                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), bottomDescription));
+            }
+            else
+            {
+                bottomDescription.Add(new ActionDescription("???", new List<ActionModifier>() { new ActionModifier(playerControler, action.description) }));
+            }
         }
 
         topCostText.DisplayString("<color=red>" + topCost);
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
         if (additionalTopDescription != null)
         {
-            List<Action> newDescription = new List<Action>(topDescription);
-            newDescription.Insert(0, new Action("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalBottomDescription) }));
+            List<ActionDescription> newDescription = new List<ActionDescription>(topDescription);
+            newDescription.Insert(0, new ActionDescription("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalBottomDescription) }));
 
             topText.DisplayDescription(newDescription);
         }
@@ -283,8 +317,8 @@ public class Card : MonoBehaviour
         }
         if (additionalBottomDescription != null)
         {
-            List<Action> newDescription = new List<Action>(bottomDescription);
-            newDescription.Insert(0, new Action("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalBottomDescription) }));
+            List<ActionDescription> newDescription = new List<ActionDescription>(bottomDescription);
+            newDescription.Insert(0, new ActionDescription("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalBottomDescription) }));
 
             bottomText.DisplayDescription(newDescription);
         }
@@ -326,7 +360,7 @@ public class Card : MonoBehaviour
                 modifierNum = 0;
                 break;
         }
-        foreach (Action action in topDescription)
+        foreach (ActionDescription action in topDescription)
         {
             if (action.ActionName == actionName)
             {
@@ -334,7 +368,7 @@ public class Card : MonoBehaviour
             }
         }
         topText.DisplayDescription(topDescription);
-        foreach (Action action in bottomDescription)
+        foreach (ActionDescription action in bottomDescription)
         {
             if (action.ActionName == actionName)
             {

@@ -6,11 +6,8 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField]
     private List<GameObject> enemy = new List<GameObject>();
-    private int activationDelay = 10;
     private int tunsTillActive;
     private TurnManager turnManager;
-    private float spawnChance = 0.02f;
-    private float spawnHeight = 12;
     private MapManager mapManager;
     private Vector2 OneToOnePos;
 
@@ -31,7 +28,7 @@ public class EnemySpawner : MonoBehaviour
 
         TurnManager.RoundEndedFunctions += AttemptToSpawnEnemy;
         LevelManager.LevelClearedFuntions += Remove;
-        tunsTillActive = activationDelay;
+        tunsTillActive = Variables.spawnerActivationDelay;
     }
 
     // Update is called once per frame
@@ -43,12 +40,12 @@ public class EnemySpawner : MonoBehaviour
     public void AttemptToSpawnEnemy(TurnManager turnManager)
     {
         tunsTillActive--;
-        if (tunsTillActive <= 0 && Random.Range(0, 1f) <= spawnChance)
+        if (tunsTillActive <= 0 && Random.Range(0, 1f) <= Variables.spawnerSpawnChance)
         {
             if (mapManager.GetEntityOnHex(OneToOnePos) == null)
             {
                 SpawnEnemy();
-                tunsTillActive = activationDelay;
+                tunsTillActive = Variables.spawnerActivationDelay;
             }
             else
             {
@@ -61,7 +58,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void SpawnEnemy()
     {
-        Instantiate(enemy[Random.Range(0,enemy.Count)], new Vector3(transform.position.x, transform.position.y, spawnHeight), Quaternion.identity);
+        Instantiate(enemy[Random.Range(0,enemy.Count)], new Vector3(transform.position.x, transform.position.y, Variables.enemySpawnYElevation), Quaternion.identity);
         //yield return null;
     }
     public void OnDestroy()

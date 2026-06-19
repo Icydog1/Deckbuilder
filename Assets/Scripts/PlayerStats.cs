@@ -12,6 +12,7 @@ public class PlayerStats : FigureStats
     protected GameObject levelAndXPTextObject;
     protected TextMeshProUGUI levelAndXPText;
     private Camera camera;
+    string levelAndXPString, turnCountString;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
@@ -49,8 +50,21 @@ public class PlayerStats : FigureStats
             //planTextObject.transform.position = gameObject.transform.position + new Vector3(0, -0.7f * camera.orthographicSize / 5, 0);
         }
     }
-    public override void SetLeveAndXP(int Level, int potenialLevel, int XP, int XPThreshold)
+    public override void SetLevelAndXP(int level, int potenialLevel, int XP, int XPThreshold)
     {
-        levelAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
+        levelAndXPString = "Level: " + level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold;
+        SetLevelXPAndTurnCount();
     }
+    public override void SetTurnCount(int turnCount)
+    {
+        turnCountString = ", Round: " + turnCount;
+        SetLevelXPAndTurnCount();
+        //levelAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
+    }
+    public void SetLevelXPAndTurnCount()
+    {
+        levelAndXPText.SetText(levelAndXPString + turnCountString);
+
+    }
+
 }

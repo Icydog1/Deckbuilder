@@ -45,7 +45,7 @@ public class DeckManager : MonoBehaviour
     private PlayerControler playerControler;
 
     private bool isDisplayingCards, isChoosingCard;
-    public bool IsDisplayingCards { get { return isDisplayingCards; } }
+    public bool IsDisplayingCards { get { return isDisplayingCards; } set { isDisplayingCards = value; } }
     private GameObject selectedCard;
     public GameObject SelectedCard { get { return selectedCard; } set { selectedCard = value; } }
 
@@ -396,16 +396,16 @@ public class DeckManager : MonoBehaviour
                 StopDisplayingCardsInList();
 
             }
-            StartCoroutine(DisplayCardsInList(list, pos, relativeSpaceBetweenCardsInHand, rowLimit, randomOrder));
+            StartCoroutine(DisplayCardsInList(list, listDisplayer, pos, relativeSpaceBetweenCardsInHand, rowLimit, randomOrder));
         }
 
     }
-    public IEnumerator DisplayCardsInList(List<GameObject> cards, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit = 5, bool randomOrder = true)
+    public IEnumerator DisplayCardsInList(List<GameObject> cards, GameObject display, Vector2 pos, float relativeSpaceBetweenCards, int rowLimit = 5, bool randomOrder = true)
     {
         isDisplayingCards = true;
-        listDisplayer.SetActive(true);
-        listDisplayer.GetComponent<RectTransform>().sizeDelta = new Vector2(listDisplayer.GetComponent<RectTransform>().sizeDelta.x, listDisplayer.transform.parent.GetComponent<RectTransform>().sizeDelta.y-100);
-        Transform storeTo = listDisplayer.transform.Find("Viewport").transform.Find("Content");
+        display.SetActive(true);
+        display.GetComponent<RectTransform>().sizeDelta = new Vector2(display.GetComponent<RectTransform>().sizeDelta.x, display.transform.parent.GetComponent<RectTransform>().sizeDelta.y-100);
+        Transform storeTo = display.transform.Find("Viewport").transform.Find("Content");
         uIManager.IsDisplayingList = true;
         displayedList.Clear();
         displayedListName = cards;
@@ -512,7 +512,7 @@ public class DeckManager : MonoBehaviour
         {
             StopDisplayingCardsInList();
         }
-        yield return StartCoroutine(DisplayCardsInList(cardOptions, listDisplayer.transform.position, relativeSpaceBetweenCardsInHand, 5, false));
+        yield return StartCoroutine(DisplayCardsInList(cardOptions, listDisplayer, listDisplayer.transform.position, relativeSpaceBetweenCardsInHand, 5, false));
         isChoosingCard = true;
         selectedCard = null;
         yield return new WaitUntil(() => selectedCard != null);

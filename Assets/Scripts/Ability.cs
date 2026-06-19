@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ability : MonoBehaviour//, IEquatable<Ability>
+public class Ability//, IEquatable<Ability>
 {
 
     protected int cost;
@@ -11,11 +11,13 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
 
     protected int abilityValue, timesPreformed;
     private int maxTimes;
+    public int MaxTimes { get { return maxTimes; } set { maxTimes = value; } }
+
     private bool isUsed;
     private List<Func<IEnumerator>> abilities = new List<Func<IEnumerator>>();
     public List<Func<IEnumerator>> Abilities { get { return abilities; } }
 
-    protected List<Action> description = new List<Action>();
+    protected List<ActionDescription> description = new List<ActionDescription>();
 
     private AbilityUI abilityUI;
     public AbilityUI AbilityUI { get { return abilityUI; } set { abilityUI = value; } }
@@ -56,10 +58,11 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         }
     }
 
-    public Ability(int abilityCost, List<Func<IEnumerator>> preformedAbilities)
+    public Ability(int abilityCost, List<Func<IEnumerator>> preformedAbilities, int maxUses = Variables.gameMaxValue)
     {
         abilities = preformedAbilities;
         cost = abilityCost;
+        maxTimes = maxUses;
     }
     
     public IEnumerator UpdateDiscription(int abilitiesPointsSpent)
@@ -69,6 +72,7 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         //playerControler.IsPlanning = true;
         //actionManager.PlanToList = description;
         int potentialTimesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
+        potentialTimesPreformed = Mathf.Min(potentialTimesPreformed, maxTimes);
         playerControler.VariableCardModifier = potentialTimesPreformed;
         playerControler.UnmodifiedAction = true;
         foreach (Func<IEnumerator> action in abilities)
@@ -98,13 +102,13 @@ public class Ability : MonoBehaviour//, IEquatable<Ability>
         if (playerControler.CanPreformAbilities && !isUsed)
         {
             timesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
-
+            timesPreformed = Mathf.Min(timesPreformed, maxTimes);
             if (timesPreformed >= 1)
             {
                 isUsed = true;
                 abilityUI.DisplayUsed(true);
                 mouseManager.MouseOffObject(abilityUI.gameObject);
-                playerControler.ActionsRemaining = new List<Action>(description);
+                playerControler.ActionsRemaining = new List<ActionDescription>(description);
                 abilityManager.AbilityPower -= timesPreformed * cost;
                 //abilityManager.SelectedPower = abilityManager.SelectedPower;
                 yield return abilityManager.StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower));

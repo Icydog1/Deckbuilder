@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using NUnit.Framework;
 using Unity.VisualScripting;
@@ -18,33 +19,36 @@ public class RewardManager : MonoBehaviour
     private UIManager uIManager;
     private RelicManager relicManager;
 
+    private GameObject[] allCards = new GameObject[] { };
 
     [SerializeField]
     private List<GameObject> allCardRewards = new List<GameObject>();
+    public List<GameObject> AllCards { get { return allCardRewards; } }
+
     private List<List<GameObject>> cardRewardsLists = new List<List<GameObject>>();
+    private List<GameObject> customCardRewards = new List<GameObject>();
     private List<GameObject> commonCardRewards = new List<GameObject>();
     private List<GameObject> uncommonCardRewards = new List<GameObject>();
     private List<GameObject> rareCardRewards = new List<GameObject>();
 
+    private GameObject[] allRelics = new GameObject[] { };
 
     [SerializeField]
     private List<GameObject> allRelicRewards = new List<GameObject>();
+    public List<GameObject> AllRelics{ get { return allRelicRewards; } }
+
     private List<List<GameObject>> relicRewardsLists = new List<List<GameObject>>();
-    public List<GameObject> commonRelicRewards = new List<GameObject>();
+    private List<GameObject> customRelicRewards = new List<GameObject>();
+    private List<GameObject> commonRelicRewards = new List<GameObject>();
     private List<GameObject> uncommonRelicRewards = new List<GameObject>();
     private List<GameObject> rareRelicRewards = new List<GameObject>();
-
-    [SerializeField]
-    private List<GameObject> testCardRewards = new List<GameObject>();
 
     private List<GameObject> currentOptions = new List<GameObject>();
     private List<GameObject> currentOptionsPrefabs = new List<GameObject>();
 
     private Lootable tileScript;
     private int rewardRarity;
-    private float commonProbability = 0.66f;
-    private float uncommonProbability = 0.33f;
-    private float rareProbability = 0.01f;
+
 
     private float relativeSpaceBetweenRewardCards = 0.5f;
 
@@ -60,9 +64,23 @@ public class RewardManager : MonoBehaviour
         uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         relicManager = GameObject.Find("RelicManager").GetComponent<RelicManager>();
         rewardsLocation = GameObject.Find("Rewards");
+
+        allCards = Resources.LoadAll<GameObject>("Prefabs/Cards");
+        allCardRewards = allCards.ToList();
+        allCardRewards.RemoveAll(card => card.name == "BaseCard");
+        allCardRewards.Sort((card1, card2) => card1.GetComponent<Card>().Rarity.CompareTo(card2.GetComponent<Card>().Rarity));
+
+        cardRewardsLists.Add(customCardRewards);
         cardRewardsLists.Add(commonCardRewards);
         cardRewardsLists.Add(uncommonCardRewards);
         cardRewardsLists.Add(rareCardRewards);
+
+        allRelics = Resources.LoadAll<GameObject>("Prefabs/Relics");
+        allRelicRewards = allRelics.ToList();
+        allRelicRewards.RemoveAll(relic => relic.name == "BaseRelic");
+        allRelicRewards.Sort((relic1, relic2) => relic1.GetComponent<Relic>().Rarity.CompareTo(relic2.GetComponent<Relic>().Rarity));
+
+        relicRewardsLists.Add(customRelicRewards);
         relicRewardsLists.Add(commonRelicRewards);
         relicRewardsLists.Add(uncommonRelicRewards);
         relicRewardsLists.Add(rareRelicRewards);
@@ -87,19 +105,14 @@ public class RewardManager : MonoBehaviour
         foreach (GameObject card in allCardRewards)
         {
             int cardRarity = card.GetComponent<Card>().Rarity;
-            cardRewardsLists[cardRarity-1].Add(card);
-            //if (cardRarity == 1)
-            //{
-            //    commonCardRewards.Add(card);
-            //}
-            //else if (cardRarity == 2)
-            //{
-            //    uncommonCardRewards.Add(card);
-            //}
-            //else
-            //{
-            //    rareCardRewards.Add(card);
-            //}
+            if (cardRarity > 0)
+            {
+                cardRewardsLists[cardRarity].Add(card);
+            }
+            else
+            {
+                customCardRewards.Add(card);
+            }
         }
         //if (testCardRewards.Count > 0)
         //{
@@ -108,19 +121,15 @@ public class RewardManager : MonoBehaviour
         foreach (GameObject relic in allRelicRewards)
         {
             int relicRarity = relic.GetComponent<Relic>().Rarity;
-            relicRewardsLists[relicRarity - 1].Add(relic);
-            //if (relicRarity == 1)
-            //{
-            //    commonRelicRewards.Add(relic);
-            //}
-            //else if (relicRarity == 2)
-            //{
-            //    uncommonRelicRewards.Add(relic);
-            //}
-            //else
-            //{
-            //    rareRelicRewards.Add(relic);
-            //}
+            if (relicRarity > 0)
+            {
+                relicRewardsLists[relicRarity].Add(relic);
+            }
+            else
+            {
+                customRelicRewards.Add(relic);
+            }
+
         }
     }
     void Start()
@@ -227,45 +236,50 @@ public class RewardManager : MonoBehaviour
         for (int i = 0; i < numberOfRewards; i++)
         {
             float randomProbability = UnityEngine.Random.Range(0, 1f);
-            Debug.Log(randomProbability);
+            //Debug.Log(randomProbability);
             List<GameObject> currentRewardPool = new List<GameObject>();
-            if (randomProbability <= commonProbability)
+            if (isCard)
             {
-                rewardRarity = 1;
-                if (isCard)
+                if (randomProbability <= Variables.commonCardProbability)
                 {
+                    rewardRarity = 1;
                     currentRewardPool = new List<GameObject>(commonCardRewards);
                 }
-                else
+                else if (randomProbability <= Variables.commonCardProbability + Variables.uncommonCardProbability)
                 {
-                    currentRewardPool = new List<GameObject>(commonRelicRewards);
-                }
-            }
-            else if (randomProbability <= commonProbability + uncommonProbability)
-            {
-                rewardRarity = 2;
-                if (isCard)
-                {
+                    rewardRarity = 2;
                     currentRewardPool = new List<GameObject>(uncommonCardRewards);
+
                 }
                 else
                 {
-                    currentRewardPool = new List<GameObject>(uncommonRelicRewards);
+                    rewardRarity = 3;
+                    currentRewardPool = new List<GameObject>(rareCardRewards);
                 }
             }
             else
             {
-                rewardRarity = 3;
-                if (isCard)
+                if (randomProbability <= Variables.commonRelicProbability)
                 {
-                    currentRewardPool = new List<GameObject>(rareCardRewards);
+                    rewardRarity = 1;
+                    currentRewardPool = new List<GameObject>(commonRelicRewards);
+
+                }
+                else if (randomProbability <= Variables.commonRelicProbability + Variables.uncommonRelicProbability)
+                {
+                    rewardRarity = 2;
+                    currentRewardPool = new List<GameObject>(uncommonRelicRewards);
+
                 }
                 else
                 {
+                    rewardRarity = 3;
                     currentRewardPool = new List<GameObject>(rareRelicRewards);
-                }
 
+                }
             }
+
+
             foreach (GameObject reward in potentialRewards)
             {
                 if (currentRewardPool.Contains(reward))
@@ -306,7 +320,7 @@ public class RewardManager : MonoBehaviour
             {
                 Relic rewardScript = reward.GetComponent<Relic>();
                 //GameObject originalRelic = relicRewardsLists[rewardScript.Rarity - 1].Find(obj => obj.GetComponent<Relic>().RelicName == rewardScript.RelicName);
-                relicRewardsLists[rewardScript.Rarity - 1].Remove(currentOptionsPrefabs[currentOptions.IndexOf(reward)]);
+                relicRewardsLists[rewardScript.Rarity].Remove(currentOptionsPrefabs[currentOptions.IndexOf(reward)]);
 
                 //if (originalRelic != null)
                 //{

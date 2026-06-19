@@ -29,10 +29,10 @@ public class CardEffectText : MonoBehaviour
     //    textBox.SetText(displayedString);
     //}
 
-    public void DisplayDescription(List<Action> displayedText)
+    public void DisplayDescription(List<ActionDescription> displayedText)
     {
         displayedString = "";
-        foreach (Action text in displayedText)
+        foreach (ActionDescription text in displayedText)
         {
             //Debug.Log("Come Back to this");
             displayedString += text.GetDescription();

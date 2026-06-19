@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class WindscarSandals : Relic
 {
+    protected override int rarity => 1;
     public override void Awake()
     {
         relicName = "SpeedRelic";

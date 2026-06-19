@@ -1,9 +1,8 @@
  public class ShatteringBlow : Card
 {
+    public ShatteringBlow() : base(1, 2, 1) { }
     public override void Start()
     {
-        topCost = 2;
-        bottomCost = 1;
         base.Start();
     }
     public override void Update()
@@ -14,14 +13,14 @@
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Attack(20, 1, 1, 1, new Condition[] { new Strength(-10, 1) } ));
+        currentActions.Add( new Action(() => playerControler.Attack(20, 1, 1, 1, new Condition[] { new Strength(-10, 1) } )));
 
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Move(15));
-        currentActions.Add(() => playerControler.ApplyCondition(new Strength(10, 1)));
+        currentActions.Add( new Action(() => playerControler.Move(15)));
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new Strength(10, 1))));
 
     }
 }

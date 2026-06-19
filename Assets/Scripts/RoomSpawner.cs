@@ -6,7 +6,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class RoomSpawner : MonoBehaviour
 {
-    private float tileWidth = 2, tileHeight, zLayer = 1000, roomSize = 17;
+    private float tileWidth = 2, tileHeight, zLayer = 1000;
     private MapManager mapManager;
     private PlayerControler playerControler;
 

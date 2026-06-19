@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BastionCarapace : Relic
 {
+    protected override int rarity => 1;
     public override void Awake()
     {
         base.Awake();

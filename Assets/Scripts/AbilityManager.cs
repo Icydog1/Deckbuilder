@@ -16,6 +16,8 @@ public class AbilityManager : MonoBehaviour
     [SerializeField]
     private GameObject abilityUIObject;
     private GameObject abilitiesDescriptions;
+    private GameObject abilityListDisplayer;
+    private Transform abilityListStorage;
 
     private VariableDisplayer avaliblePowerDisplay, selectedPowerDisplay;
 
@@ -25,7 +27,8 @@ public class AbilityManager : MonoBehaviour
         abilitiesDescriptions = GameObject.Find("AbilitiesDescriptions");
         avaliblePowerDisplay = abilitiesDescriptions.transform.Find("AvaliblePowerDisplay").GetComponent<VariableDisplayer>();
         selectedPowerDisplay = abilitiesDescriptions.transform.Find("SelectedPowerDisplay").GetComponent<VariableDisplayer>();
-
+        abilityListDisplayer = abilitiesDescriptions.transform.Find("AbilityListDisplayer").gameObject;
+        abilityListStorage = abilityListDisplayer.transform.Find("Viewport").transform.Find("Content");
         AbilityPower = 0;
         PlayerControler.PlayerTurnStarted += ResetAbilityPower;
         GameManager.ResetGame += ClearAllAbility;
@@ -64,7 +67,8 @@ public class AbilityManager : MonoBehaviour
         newAbility.AbilityUI = newAbilityUI;
         abilities.Add(newAbility);
         newAbilityUI.AbilityNumber = abilities.Count - 1;
-        newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - abilities.Count * 50);
+        newAbilityUIObject.transform.parent = abilityListStorage;
+        //newAbilityUIObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - abilities.Count * 50);
         //Debug.Log("Gained ability");
         yield return StartCoroutine(UpdateAbilitiesDescription());
     }
@@ -77,7 +81,7 @@ public class AbilityManager : MonoBehaviour
         for(int i = abilityIndex; i < abilities.Count; i++)
         {
             AbilityUI abilityUI = abilities[i].AbilityUI;
-            abilityUI.gameObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - (abilityUI.AbilityNumber) * 50);
+            //abilityUI.gameObject.GetComponent<RectTransform>().anchoredPosition = abilitiesDescriptions.GetComponent<RectTransform>().anchoredPosition + new Vector2(-100, 450 - (abilityUI.AbilityNumber) * 50);
             abilityUI.AbilityNumber--;
 
         }

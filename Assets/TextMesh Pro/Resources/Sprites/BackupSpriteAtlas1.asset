@@ -399,7 +399,7 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 63
     m_Scale: 1
-    m_Name: PlacehoderConditonDuration
+    m_Name: ConditionDuration
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 64

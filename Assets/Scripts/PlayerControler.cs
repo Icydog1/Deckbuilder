@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 
 public class PlayerControler : Figure
@@ -61,8 +62,8 @@ public class PlayerControler : Figure
     //public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
 
     private List<Figure> posibleTargets;
-    private List<Action> actionsRemaining = new List<Action>();
-    public List<Action> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
+    private List<ActionDescription> actionsRemaining = new List<ActionDescription>();
+    public List<ActionDescription> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
     private int topEnergy, bottomEnergy;
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
@@ -71,11 +72,26 @@ public class PlayerControler : Figure
     public bool NextAction { get { return nextAction; } set { nextAction = value; } }
     public static event Action<PlayerControler> PlayerTurnStartedFuntions;
     public static event Func<PlayerControler, IEnumerator> PlayerTurnStarted;
-    
-    private int kineticBatteryCount, kineticBatterySteps;
-    public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
-    private int adaptiveShieldCount;
-    public int AdaptiveShieldCount { get { return adaptiveShieldCount; } set { adaptiveShieldCount = value; } }
+
+    public event Action<PlayerControler> OpenedDoorFunc;
+
+    public event Action<PlayerControler> MovedSpaceFunc;
+    //public event Func<PlayerControler, IEnumerator> MovedSpaceIEnumerator;
+
+    public event Action<PlayerControler> KilledEnemyFunc;
+    //public event Func<PlayerControler, IEnumerator> KilledEnemyIEnumerator;
+    public event Action<PlayerControler> LostHealth;
+
+    public event Action<PlayerControler> StartedAttackingEnemyFunc, DoneAttackingEnemyFunc;
+
+    //private int kineticBatteryCount, kineticBatterySteps;
+    //public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
+    private int waxHandCount;
+    public int WaxHandCount { get { return waxHandCount; } set { waxHandCount = value; } }
+    //private int adaptiveShieldCount;
+    //public int AdaptiveShieldCount { get { return adaptiveShieldCount; } set { adaptiveShieldCount = value; } }
+    //private int crackedOpalCount;
+    //public int CrackedOpalCount { get { return crackedOpalCount; } set { crackedOpalCount = value; } }
     private int level, potentialLevel, XP, XPThreshold;
     public int Level { get { return level; } set { level = value; } }
     public int PotentialLevel { get { return potentialLevel; } set { potentialLevel = value; } }
@@ -92,9 +108,8 @@ public class PlayerControler : Figure
         bottomEnergyDisplay = GameObject.Find("BottomEnergyDisplay").GetComponent<VariableDisplayer>();
         //gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
-        interactButton = GameObject.Find("InteractButton");
         //interactButton.SetActive(false);
-
+        interactButton = RefrenceStorage.interactButton;
         base.Awake(); 
     }
 
@@ -161,8 +176,11 @@ public class PlayerControler : Figure
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) })));
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) })));
     }
-    
 
+    public override void resetBlock()
+    {
+        block = Mathf.Min(block, Variables.waxHandRetainedBlock * waxHandCount);
+    }
     public void ShowMoveCostDisplay()
     {
         if (moveCostDisplaySetting == "Always" || (moveCostDisplaySetting == "On Move" && isMoving))
@@ -178,21 +196,15 @@ public class PlayerControler : Figure
     {
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
         playerControler.OneToOnePos = Vector2.zero;
-        for (int i = 0; i < conditions.Count; i++)
-        {
-            if (conditions[i].ConditionName == "Vigor")
-            {
-                yield return StartCoroutine(conditions[i].OnLoss(this));
-                conditions.RemoveAt(i);
-                yield return StartCoroutine(deckManager.UpdateCardsDisplay());
-                yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
-            }
-        }
+        //yield return StartCoroutine(("Vigor"));
+        yield break;
     }
     public void ResetPlayer(GameManager gameManager)
     {
-        kineticBatterySteps = 0;
-        kineticBatteryCount = 0;
+        //kineticBatterySteps = 0;
+        //kineticBatteryCount = 0;
+        waxHandCount = 0;
+        //crackedOpalCount = 0;
         conditions.Clear();
     }
     public IEnumerator PreparePlayer(GameManager gameManager)
@@ -204,7 +216,7 @@ public class PlayerControler : Figure
         XP = 0;
         XPThreshold = 10;
         maxHealth = 100;
-        statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
+        statsDisplayer.SetLevelAndXP(level, potentialLevel, XP, XPThreshold);
         health = maxHealth;
         transform.position = new Vector3 (0,0,transform.position.z);
         oneToOnePos = Vector2.zero;
@@ -273,11 +285,20 @@ public class PlayerControler : Figure
         //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(.)([A-Z,0-9])", "$1 $2");
         if (actionsRemaining.Count > 0)
         {
-            Debug.Log("Come Back updateing move left while moving");
-
-            //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
+            //Debug.Log("Come Back updateing move left while moving");
+            //foreach (ActionModifier actionModifier in actionsRemaining[0].ActionModifiers)
+            //{
+            //    if (actionModifier.Type == "Move")
+            //    {
+            //        actionModifier.ModifiedValue == moveLeft;
+            //        statsDisplayer.Plan(actionsRemaining);
+            //        break;
+            //    }
+            //}
+            statsDisplayer.ChangePlan("<sprite name=Move>", moveLeft);
+            //actionsRemaining[0].GetDescription(); = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
         }
-        statsDisplayer.Plan(actionsRemaining);
+        //statsDisplayer.Plan(actionsRemaining);
         if (currentTile.GetComponent<Interactable>())
         {
             interactButton.SetActive(true);
@@ -291,6 +312,10 @@ public class PlayerControler : Figure
             roomSpawner.SpawnRoomsNextToDoor(currentTile, currentTile.GetComponent<Door>().RoomNextToCords);
             //updates current tile as it is no longer a door
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
+            if (OpenedDoorFunc != null)
+            {
+                OpenedDoorFunc(this);
+            }
         }
         //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
         //loads enemies that spawned
@@ -345,23 +370,18 @@ public class PlayerControler : Figure
             {
                 targetsLeft--;
                 posibleTargets.Remove(figure.GetComponent<Figure>());
+                if (StartedAttackingEnemyFunc != null)
+                {
+                    StartedAttackingEnemyFunc(this);
+                }
                 yield return gameManager.StartCoroutine(clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, repeats, appliedConditions));
+                if (DoneAttackingEnemyFunc != null)
+                {
+                    DoneAttackingEnemyFunc(this);
+                }
             }
             if (targetsLeft == 0)
             {
-                if (isAttacking)
-                {
-                    for (int i = 0; i < conditions.Count; i++)
-                    {
-                        if (conditions[i].ConditionName == "Vigor")
-                        {
-                            yield return StartCoroutine(conditions[i].OnLoss(this));
-                            conditions.RemoveAt(i);
-                            yield return StartCoroutine(deckManager.UpdateCardsDisplay());
-                            yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
-                        }
-                    }
-                }
                 //Debug.Log("ended attack");
                 EndAction();
             }
@@ -386,6 +406,48 @@ public class PlayerControler : Figure
             StartCoroutine(figure.GetComponent<Enemy>().DisplayMovePosibilities());
         }
 
+    }
+    
+    public IEnumerator ControledMove(int moveValue, bool isJump = false)
+    {
+        actionDone = false;
+        isMoving = true;
+        isTargetATile = true;
+        moveLeft = moveValue;
+        CanJump = isJump;
+        if (moveCostDisplaySetting == "On Move")
+        {
+            ShowMoveCostDisplay();
+        }
+        yield return new WaitUntil(() => isMoving == false);
+
+    }
+
+    public IEnumerator ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
+    {
+        actionDone = false;
+        isAttacking = true;
+        targetsLeft = targets;
+        attackDamageValue = attackValue;
+        range = attackRange;
+        repeats = times;
+        isTargetAEnemy = true;
+        appliedConditions = attackConditions;
+        posibleTargets = FindPosibleTargets("enemy", attackRange);
+        yield return new WaitUntil(() => isAttacking == false);
+
+    }
+
+    public IEnumerator ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
+    {
+        actionDone = false;
+        isAppliyingConditions = true;
+        targetsLeft = targets;
+        range = conditionsRange;
+        appliedConditions = newConditions;
+        posibleTargets = FindPosibleTargets(targetType, conditionsRange);
+        yield return null;
+        //yield return StartCoroutine(); // select targets
     }
     public void UpdatePlayer()
     {
@@ -440,7 +502,6 @@ public class PlayerControler : Figure
             yield return StartCoroutine(PlayerTurnStarted(this));
         }
         yield return StartCoroutine(deckManager.DrawNewHand());
-
         isPlayerTurn = true;
         TopEnergy = 2;
         BottomEnergy = 2;
@@ -567,62 +628,25 @@ public class PlayerControler : Figure
 
 
 
-    public IEnumerator ControledMove(int moveValue, bool isJump = false)
+
+    public IEnumerator Ability(int abilityValue, bool isVariable = false)
     {
-        actionDone = false;
-        isMoving = true;
-        isTargetATile = true;
-        moveLeft = moveValue;
-        CanJump = isJump;
-        if (moveCostDisplaySetting == "On Move")
+        if (isVariable)
         {
-            ShowMoveCostDisplay();
+            abilityValue *= variableCardModifier;
         }
-        yield return new WaitUntil(() => isMoving == false);
-
-    }
-
-    public IEnumerator ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
-    {
-        actionDone = false;
-        isAttacking = true;
-        targetsLeft = targets;
-        attackDamageValue = attackValue;
-        range = attackRange;
-        repeats = times;
-        isTargetAEnemy = true;
-        appliedConditions = attackConditions;
-        posibleTargets = FindPosibleTargets("enemy", attackRange);
-        yield return new WaitUntil(() => isAttacking == false);
-
-    }
-
-    public IEnumerator ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
-    {
-        actionDone = false;
-        isAppliyingConditions = true;
-        targetsLeft = targets;
-        range = conditionsRange;
-        appliedConditions = newConditions;
-        posibleTargets = FindPosibleTargets(targetType, conditionsRange);
-        yield return null;
-        //yield return StartCoroutine(); // select targets
-    }
-    public IEnumerator Ability(int abilityValue)
-    {
-        int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
-
         if (isPlanning)
         {
             //string currentDescriptionString = "Ability " + finalAbility;
             //string currentDescriptionString = finalAbility + "<sprite name=Ability>";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(this, null, finalAbility, " <sprite name=Ability>", "Ability") });
+            ActionDescription currentAction = new ActionDescription("Ability", new List<ActionModifier>() { new ActionModifier(this, null, abilityValue, " <sprite name=Ability>", "Ability") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
         {
+            int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
             actionManager.ActionStackNames.Push("Ability");
             abilityManager.AbilityPower += finalAbility;
             //abilityManager.SelectedPower += finalAbility;
@@ -635,20 +659,19 @@ public class PlayerControler : Figure
     {
         if (isVariable)
         {
-
             lockpickValue *= variableCardModifier;
         }
-        int finalLockpick = conditionEffects.ModifyAbility(this, lockpickValue);
         //Debug.Log(finalLockpick);
         if (isPlanning)
         {
             //string currentDescriptionString = finalLockpick + " <sprite name=Lockpick>";
             //actionManager.PlanToList.Add(currentDescriptionString);
-            Action currentAction = new Action("Lockpick", new List<ActionModifier>() { new ActionModifier(this, null, lockpickValue, " <sprite name=Lockpick>", "Lockpick") });
+            ActionDescription currentAction = new ActionDescription("Lockpick", new List<ActionModifier>() { new ActionModifier(this, null, lockpickValue, " <sprite name=Lockpick>", "Lockpick") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
         {
+            int finalLockpick = conditionEffects.ModifyAbility(this, lockpickValue);
             actionManager.ActionStackNames.Push("Lockpick");
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
             if (currentTile.GetComponent<Lootable>())
@@ -679,7 +702,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = "Draw " + cardCount + " card";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("Draw", new List<ActionModifier>() { new ActionModifier(this, "Draw ", cardCount, " card", "Draw") });
+            ActionDescription currentAction = new ActionDescription("Draw", new List<ActionModifier>() { new ActionModifier(this, "Draw ", cardCount, " card", "Draw") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -720,8 +743,12 @@ public class PlayerControler : Figure
     //    }
     //    yield break;
     //}
-    public IEnumerator GainTopEnergy(int amount)
+    public IEnumerator GainTopEnergy(int amount, bool isVariable = false)
     {
+        if (isVariable)
+        {
+            amount *= variableCardModifier;
+        }
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
 
         if (isPlanning)
@@ -729,7 +756,7 @@ public class PlayerControler : Figure
             //string currentDescriptionString = "Gain " + amount + " top energy";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("TopEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " top energy", "TopEnergy") });
+            ActionDescription currentAction = new ActionDescription("TopEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " top energy", "TopEnergy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -739,15 +766,19 @@ public class PlayerControler : Figure
         }
         yield break;
     }
-    public IEnumerator GainBottomEnergy(int amount)
+    public IEnumerator GainBottomEnergy(int amount, bool isVariable = false)
     {
+        if (isVariable)
+        {
+            amount *= variableCardModifier;
+        }
         //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
         if (isPlanning)
         {
             //string currentDescriptionString = "Gain " + amount + " bottom energy";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            Action currentAction = new Action("BottemEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " bottom energy", "BottemEnergy") });
+            ActionDescription currentAction = new ActionDescription("BottemEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " bottom energy", "BottemEnergy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -783,7 +814,7 @@ public class PlayerControler : Figure
             unmodifiedAction = true;
             string planString = string.Empty;
             yield return StartCoroutine(GetPlanString(ability.Abilities ,(result) => { planString = result; }));
-            currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + planString;
+            currentDescriptionString += ": " + ability.Cost + " <sprite name=Ability> for " + planString;
             //Debug.Log(currentDescriptionString);
             //Debug.Log(planString);
 
@@ -792,7 +823,7 @@ public class PlayerControler : Figure
             //actionManager.PlanToList.Add(currentDescriptionString);
 
 
-            Action currentAction = new Action("GainAbility", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
+            ActionDescription currentAction = new ActionDescription("GainAbility", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -812,7 +843,7 @@ public class PlayerControler : Figure
 
             //string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
             //actionManager.PlanToList.Add(currentDescriptionString);
-            Action currentAction = new Action("Ability", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
+            ActionDescription currentAction = new ActionDescription("Ability", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -823,23 +854,29 @@ public class PlayerControler : Figure
     }
     public override IEnumerator LoseHealth(int amount)
     {
-        yield return StartCoroutine(base.LoseHealth(amount));
-        if (adaptiveShieldCount > 0)
-        {
-            //actionManager.QueueAction(playerControler.ApplyCondition(new StartOfTurnBlock(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
-            actionManager.QueueAction(playerControler.ApplyCondition(new NextTurns(new Func<IEnumerator>[] { () => playerControler.Block(Variables.adaptiveShieldBlock * adaptiveShieldCount) })));
-            Debug.Log("queued block nexty turn");
-            //playerControler.ApplyCondition(new StartOfTurnSlow(Variables.frozenLensSpeedLoss, -1)), relicDescriptionList))
-            //yield return StartCoroutine(actionManager.QueueAction(Block(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
-        }
+
         
+        yield return StartCoroutine(base.LoseHealth(amount));
+        if (LostHealth != null)
+        {
+            LostHealth(this);
+        }
+        //if (adaptiveShieldCount > 0)
+        //{
+        //    //actionManager.QueueAction(playerControler.ApplyCondition(new StartOfTurnBlock(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
+        //    //Debug.Log("queued block nexty turn");
+        //    //playerControler.ApplyCondition(new StartOfTurnSlow(Variables.frozenLensSpeedLoss, -1)), relicDescriptionList))
+        //    //yield return StartCoroutine(actionManager.QueueAction(Block(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
+        //}
+
     }
 
 
-    public override void Die()
+    public override IEnumerator Die()
     {
         gameManager.EndGame();
-        Debug.Log("You Died");
+        //Debug.Log("You Died");
+        yield break;
     }
 
     public void UpdateMoveType()
@@ -848,6 +885,14 @@ public class PlayerControler : Figure
     }
     public override IEnumerator MoveOneSpace()
     {
+        if (MovedSpaceFunc != null)
+        {
+            MovedSpaceFunc(this);
+        }
+        //if (MovedSpace != null)
+        //{
+        //    yield return StartCoroutine(MovedSpace(this));
+        //}
         for (int i = 0; i < conditions.Count; i++)
         {
             if (conditions[i].ConditionName == "Untouchable")
@@ -857,33 +902,42 @@ public class PlayerControler : Figure
                 //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
             }
         }
-        if (kineticBatteryCount > 0)
-        {
-            kineticBatterySteps++;
-            if (kineticBatterySteps == Variables.kineticBatterySpaces)
-            {
-                actionManager.PrepareAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false));
-                //yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false)));
+        //if (kineticBatteryCount > 0)
+        //{
+        //    kineticBatterySteps++;
+        //    if (kineticBatterySteps == Variables.kineticBatterySpaces)
+        //    {
+        //        actionManager.PrepareAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false));
+        //        //yield return StartCoroutine(actionManager.PreformAction(ApplyCondition(new Vigor(kineticBatteryCount, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false)));
 
-                kineticBatterySteps = 0;
-            }
+        //        kineticBatterySteps = 0;
+        //    }
 
-            //Debug.Log("Queued kineticBattery");
-        }
+        //    //Debug.Log("Queued kineticBattery");
+        //}
         yield break;
     }
-    public void KilledEnemy(Enemy enemy)
+    public IEnumerator KilledEnemy(int XPValue)
     {
-
+        //if (crackedOpalCount > 0)
+        //{
+        //    yield return StartCoroutine(GainBottomEnergy(crackedOpalCount));
+        //}
+        if (KilledEnemyFunc != null)
+        {
+            KilledEnemyFunc(this);
+        }
+        GainXP(XPValue);
+        yield break;
     }
-    public void GainXP(int abount)
+    public void GainXP(int amount)
     {
-        XP += abount;
+        XP += amount;
         while (XP >= XPThreshold)
         {
             PotentialLevelUp();
         }
-        statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
+        statsDisplayer.SetLevelAndXP(level, potentialLevel, XP, XPThreshold);
     }
     public void PotentialLevelUp()
     {
@@ -897,7 +951,7 @@ public class PlayerControler : Figure
     public IEnumerator LevelUp()
     {
         level++;
-        statsDisplayer.SetLeveAndXP(level, potentialLevel, XP, XPThreshold);
+        statsDisplayer.SetLevelAndXP(level, potentialLevel, XP, XPThreshold);
         yield return StartCoroutine(rewardManager.LevelUpReward());
     }
 

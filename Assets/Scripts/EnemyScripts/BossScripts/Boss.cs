@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Boss : Enemy
@@ -15,9 +16,9 @@ public class Boss : Enemy
     {
         base.Start();
     }
-    public override void Die()
+    public override IEnumerator Die()
     {
-        base.Die();
+        yield return gameManager.StartCoroutine(base.Die());
         levelManager.BossKilled(oneToOnePos);
     }
 }

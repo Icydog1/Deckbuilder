@@ -13,19 +13,16 @@ public class GameManager : MonoBehaviour
     private RoomSpawner roomSpawner;
     private LevelManager levelManager;
     private GameObject pauseScreenBlocker;
-    private OverallStatistics overallStatistics;
+    private GameObject deathScreenBlocker;
+    
 
-
+    private GameObject settings, restartGameButton, settingsRestartGameButton;
 
     private bool nextAction;
     public static event Action<GameManager> GameStartedFunctions;
     public static event Action<GameManager> ResetGame;
     public static event Func<GameManager, IEnumerator> GameStarted;
     public static event Func<GameManager, IEnumerator> LateGameStarted;
-
-
-
-
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -38,7 +35,7 @@ public class GameManager : MonoBehaviour
         levelManager = RefrenceStorage.levelManager;
         roomSpawner = RefrenceStorage.roomSpawner;
         pauseScreenBlocker = RefrenceStorage.pauseScreenBlocker;
-        overallStatistics = RefrenceStorage.overallStatistics;
+        deathScreenBlocker = RefrenceStorage.deathScreenBlocker;
 
         //mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         //mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
@@ -46,7 +43,13 @@ public class GameManager : MonoBehaviour
         //roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         //levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
         //pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
+        restartGameButton = deathScreenBlocker.transform.Find("RestartGameButton").gameObject;
+        settings = pauseScreenBlocker.transform.Find("Settings").gameObject;
+        settingsRestartGameButton = settings.transform.Find("SettingsRestartGameButton").gameObject;
+
+
     }
+
     void Start()
     {
 
@@ -97,25 +100,23 @@ public class GameManager : MonoBehaviour
         //roomSpawner.SpawnStartingRoom();
         yield return StartCoroutine(turnManager.StartTakingTurns());
     }
-
-    public void StepDone()
-    {
-        nextAction = true;
-    }
-    //    public IEnumerator ReStartGame()
     public void EndGame()
     {
-        pauseScreenBlocker.GetComponent<Image>().enabled = true;
-        pauseScreenBlocker.GetComponent<RectTransform>().sizeDelta = pauseScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
+        deathScreenBlocker.GetComponent<Image>().enabled = true;
+        deathScreenBlocker.GetComponent<RectTransform>().sizeDelta = deathScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
 
-        pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(true);
+        restartGameButton.SetActive(true);
 
     }
     public IEnumerator ReStartGame()
     {
+        OverallStatistics.ResetStatistics();
         pauseScreenBlocker.GetComponent<Image>().enabled = false;
-        mouseManager.MouseOffObject(pauseScreenBlocker.transform.Find("RestartGameButton").gameObject);
-        pauseScreenBlocker.transform.Find("RestartGameButton").gameObject.SetActive(false);
+        deathScreenBlocker.GetComponent<Image>().enabled = false;
+        mouseManager.MouseOffObject(restartGameButton);
+        restartGameButton.gameObject.SetActive(false);
+        mouseManager.MouseOffObject(settingsRestartGameButton);
+        settings.SetActive(false);
         //Debug.Log("ReStarted Game 1");
         yield return StartCoroutine(levelManager.ResetGame());
 

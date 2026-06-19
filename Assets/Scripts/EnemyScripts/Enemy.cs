@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
+using static UnityEngine.Rendering.GPUSort;
 
 public class Enemy : Figure
 {
@@ -19,7 +21,7 @@ public class Enemy : Figure
     protected int currentmove = 0;
     protected List<Func<IEnumerator>> currentPlan = new List<Func<IEnumerator>>();
     protected List<Func<IEnumerator>> plannedMoveSet;
-    protected List<Action> displayedPlan = new List<Action>();
+    protected List<ActionDescription> displayedPlan = new List<ActionDescription>();
     private Coroutine currentTurnRoutine;
     protected int actionNum;
     protected EnemyUi enemyStatsDisplayer;
@@ -55,9 +57,13 @@ public class Enemy : Figure
         {
             Debug.Log("Warning no planed movesets on " + gameObject);
         }
+        //yield return StartCoroutine(actionManager.PreformAction(GainCondition(new Flight())));
+        yield return StartCoroutine(actionManager.PreformAction(GainCondition(new NaturalScaling(OverallStatistics.round))));
+        maxHealth = conditionEffects.ModifyMaxHealth(this, maxHealth);
+
         yield return StartCoroutine(base.LoadFigure());
         turnManager.TurnOrder.Add(gameObject);
-        health = maxHealth;
+        //health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
         yield return StartCoroutine(GetNewPlan(null));
         //Debug.Log("Finished loading");
@@ -130,10 +136,10 @@ public class Enemy : Figure
                 plannedMoveSet = moveSets[movesSetOrder[currentmove]];
             }
         }
-
         currentPlan = new List<Func<IEnumerator>>(plannedMoveSet);
         //Debug.Log("gotInitialPlan");
-        levelManager.GetDifficultyModifier(this);
+        yield return StartCoroutine(actionManager.PreformAction(GainCondition(new NaturalScaling(OverallStatistics.round))));
+        //yield return StartCoroutine(levelManager.GetDifficultyModifier(this));
         yield return StartCoroutine(UpdatePlan());
 
         //UpdatePlan();
@@ -145,6 +151,10 @@ public class Enemy : Figure
     {
         //Debug.Log("first condition: " + conditions[0].Name);
         //actionManager.PlanToList = displayedPlan;
+        if (FindValueOfCondition("Stunned") != Variables.gameDoesNotExistIndcator)
+        {
+            currentPlan = new List<Func<IEnumerator>>();
+        }
         displayedPlan.Clear();
         preferedRange = int.MaxValue;
         isPlanning = true;
@@ -155,6 +165,60 @@ public class Enemy : Figure
         enemyStatsDisplayer.Plan(displayedPlan);
         isPlanning = false;
         //Debug.Log("first condition: " + conditions[0].Name);
+
+    }
+    public IEnumerator UpdatePlanDiscription(string modifiedAction)
+    {
+        if (modifiedAction == "All")
+        {
+            yield return StartCoroutine(UpdatePlan());
+        }
+        else
+        {
+            //Debug.Log("changed card description " + modifiedAction);
+            playerControler.UnmodifiedAction = false;
+            string actionName = null;
+            int modifierNum = 0;
+            switch (modifiedAction)
+            {
+                case "BlockValue":
+                    actionName = "Block";
+                    modifierNum = 0;
+                    break;
+                case "AttackValue":
+                    //Debug.Log("changed attack");
+                    actionName = "Attack";
+                    modifierNum = 0;
+                    break;
+                case "MoveValue":
+                    //Debug.Log("changed Move");
+
+                    actionName = "Move";
+                    modifierNum = 0;
+                    break;
+                case "AbilityValue":
+                    actionName = "Ability";
+                    modifierNum = 0;
+                    break;
+                case "Range":
+                    actionName = "Range";
+                    modifierNum = 1;
+                    break;
+                default:
+                    Debug.Log("Default");
+                    modifierNum = 0;
+                    break;
+            }
+            foreach (ActionDescription action in displayedPlan)
+            {
+                if (action.ActionName == actionName)
+                {
+                    action.ActionModifiers[modifierNum].UpdateValue();
+                }
+            }
+            enemyStatsDisplayer.Plan(displayedPlan);
+            yield break;
+        }
 
     }
     public IEnumerator StartOfTurn()
@@ -214,8 +278,10 @@ public class Enemy : Figure
             //nextAction = false;
         }
         //Debug.Log(gameObject + " ended main action sequence");
-
-        currentmove++;
+        if (FindValueOfCondition("Stunned") == Variables.gameDoesNotExistIndcator)
+        {
+            currentmove++;
+        }
         yield return StartCoroutine(EndTurn());
         //Debug.Log(gameObject + " ended turn");
 
@@ -255,9 +321,9 @@ public class Enemy : Figure
 
     }
 
-    public override void Die()
+    public override IEnumerator Die()
     {
-        playerControler.GainXP(XPValue);
+        yield return StartCoroutine(playerControler.KilledEnemy(XPValue));
         if (OverallStatistics.killedEnemies.ContainsKey(enemyName))
         {
             OverallStatistics.killedEnemies[enemyName]++;

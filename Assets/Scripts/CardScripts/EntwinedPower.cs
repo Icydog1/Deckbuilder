@@ -1,12 +1,11 @@
 public class EntwinedPower : Card
 {
-    protected override int rarity => 2;
+    public EntwinedPower() : base(2, 1, 1) { }
 
     private int additionalCost = 1;
     public override void Start()
     {
-        topCost = 1;
-        bottomCost = 1;
+        
         additionalTopDescription = "Cost: " + additionalCost + " bottom energy";
         additionalBottomDescription = "Cost: " + additionalCost + " top energy";
 
@@ -22,16 +21,16 @@ public class EntwinedPower : Card
 
     public override void PrepareTop()
     {
-        currentActions.Add(() => playerControler.Draw(3));
-        currentActions.Add(() => playerControler.Attack(15));
-        currentActions.Add(() => playerControler.Ability(15));
+        currentActions.Add( new Action(() => playerControler.Draw(3)));
+        currentActions.Add( new Action(() => playerControler.Attack(15)));
+        currentActions.Add( new Action(() => playerControler.Ability(15)));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add(() => playerControler.Draw(3));
-        currentActions.Add(() => playerControler.Move(15));
-        currentActions.Add(() => playerControler.Block(15));
+        currentActions.Add( new Action(() => playerControler.Draw(3)));
+        currentActions.Add( new Action(() => playerControler.Move(15)));
+        currentActions.Add( new Action(() => playerControler.Block(15)));
     }
 
 

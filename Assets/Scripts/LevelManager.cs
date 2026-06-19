@@ -16,7 +16,7 @@ public class LevelManager : MonoBehaviour
 
     private bool isBossLevel;
     private int level;
-    private int roundNumber;
+    private int difficulty;
     private int levelRoundNumber;
 
     [SerializeField]
@@ -82,22 +82,23 @@ public class LevelManager : MonoBehaviour
             level++;
             isBossLevel = false;
             roomSpawner.SpawnStartingRoom();
+            RefrenceStorage.interactButton.SetActive(true);
         }
         StartCoroutine(turnManager.StartTakingTurns());
     }
 
     public void IncreaseRoundNumber()
     {
-        roundNumber++;
+        difficulty++;
         levelRoundNumber++;
     }
-    public void GetDifficultyModifier(Enemy enemy)
-    {
-        enemy.ApplyCondition(new NaturalScaling(roundNumber));
-    }
+    //public IEnumerator GetDifficultyModifier(Enemy enemy)
+    //{
+    //    //yield return StartCoroutine(RefrenceStorage.actionManager.PreformAction(enemy.ApplyCondition(new NaturalScaling(difficulty))));
+    //}
     public IEnumerator ResetGame()
     {
-        roundNumber = 0;
+        difficulty = 0;
         yield return StartCoroutine(ClearLevel());
         //Debug.Log("ResetGame");
     }

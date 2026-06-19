@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MemoryCoil : Relic
 {
+    protected override int rarity => 1;
     public override void Awake()
     {
         base.Awake();

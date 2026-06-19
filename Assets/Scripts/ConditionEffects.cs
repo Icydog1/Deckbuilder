@@ -2,14 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework.Constraints;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ConditionEffects : MonoBehaviour
 {
+    ActionManager actionManager;
+
+    PlayerControler effectedPlayerControler;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
-        
+        actionManager = RefrenceStorage.actionManager;
     }
 
     // Update is called once per frame
@@ -32,7 +36,7 @@ public class ConditionEffects : MonoBehaviour
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedAttack *= (1 + 0.0025f * (float)condition.Value);
+                modifiedAttack *= (1 + Variables.naturalScalingIncrease * (float)condition.Value);
             }
         }
         foreach (Condition condition in conditions)
@@ -85,7 +89,7 @@ public class ConditionEffects : MonoBehaviour
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedMove *= (1 + 0.0025f * (float)condition.Value);
+                modifiedMove *= (1 + Variables.naturalScalingIncrease * (float)condition.Value);
             }
             if (condition.ConditionName == "DistanceSpeedBoost")
             {
@@ -94,7 +98,7 @@ public class ConditionEffects : MonoBehaviour
         }
         foreach (Condition condition in conditions)
         {
-            if (condition.ConditionName == "Speed")
+            if (condition.ConditionName == "Speed" || condition.ConditionName == "Burst")
             {
                 modifiedMove += condition.Value;
             }
@@ -127,7 +131,33 @@ public class ConditionEffects : MonoBehaviour
 
         return finalAbility;
     }
-
+    public int ModifyRange(Figure effectedFigure, int initalRange)
+    {
+        if (initalRange == Variables.gameInfinityValue)
+        {
+            return initalRange;
+        }
+        if (effectedFigure.UnmodifiedAction)
+        {
+            initalRange = Mathf.Clamp(initalRange, 1, Variables.gameMaxValue);
+            return initalRange;
+        }
+        float modifiedRange = initalRange;
+        List<Condition> conditions = effectedFigure.Conditions;
+        foreach (Condition condition in conditions)
+        {
+            if (condition.ConditionName == "Accuracy")
+            {
+                if (modifiedRange > 1)
+                {
+                    modifiedRange += condition.Value;
+                }
+            }
+        }
+        int finalRange = Mathf.FloorToInt(modifiedRange);
+        finalRange = Mathf.Clamp(finalRange, 1, Variables.gameMaxValue);
+        return finalRange;
+    }
     public bool ModifyJump(Figure effectedFigure, bool initalJump)
     {
         if (effectedFigure.UnmodifiedAction)
@@ -147,9 +177,34 @@ public class ConditionEffects : MonoBehaviour
         bool finalJump = modifiedJump;
         return finalJump;
     }
-
-    public IEnumerator StartOfTurnConditons(Figure effectedFigure)
+    public int ModifyMaxHealth(Figure effectedFigure, int initialMaxHealth)
     {
+        if (effectedFigure.UnmodifiedAction)
+        {
+            initialMaxHealth = Mathf.Clamp(initialMaxHealth, 0, Variables.gameMaxValue);
+            return initialMaxHealth;
+        }
+        float modifiedMaxHealth = initialMaxHealth;
+        List<Condition> conditions = effectedFigure.Conditions;
+        foreach (Condition condition in conditions)
+        {
+            if (condition.ConditionName == "NaturalScaling")
+            {
+                modifiedMaxHealth *= (1 + Variables.naturalScalingIncrease * (float)condition.Value);
+            }
+        }
+        int finalMaxHealth = Mathf.FloorToInt(modifiedMaxHealth);
+        finalMaxHealth = Mathf.Clamp(finalMaxHealth, 0, Variables.gameMaxValue);
+
+        return finalMaxHealth;
+    }
+    public IEnumerator StartOfTurnConditions(Figure effectedFigure)
+    {
+        if (effectedFigure is PlayerControler effectedPlayer)
+        {
+            // Access SubClassA specific methods or fields here
+            effectedPlayerControler = effectedPlayer;
+        }
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
@@ -161,18 +216,20 @@ public class ConditionEffects : MonoBehaviour
             {
                 foreach (Func<IEnumerator> action in condition.Plan)
                 {
-                    yield return StartCoroutine(action());
+                    yield return StartCoroutine(actionManager.PreformAction(action()));
                 }
-                //condition.Plan();
-
-
-                //GetComponent<NextTurns>.Action();
-                //effectedFigure.Action();
             }
-            if (condition.ConditionName == "StartOfTurnSlow")
+            if (condition.ConditionName == "NextTurnBlock")
             {
-                //Debug.Log("applied -1 speed");
-                yield return StartCoroutine(effectedFigure.ApplyCondition(new Speed(-condition.Value, 1), "enemy", -1, 1, false, false));
+                yield return StartCoroutine(actionManager.PreformAction(effectedFigure.Block(condition.Value)));
+            }
+            if (condition.ConditionName == "NextTurnTopEnergy")
+            {
+                yield return StartCoroutine(actionManager.PreformAction(effectedPlayerControler.GainTopEnergy(condition.Value)));
+            }
+            if (condition.ConditionName == "NextTurnBottomEnergy")
+            {
+                yield return StartCoroutine(actionManager.PreformAction(effectedPlayerControler.GainBottomEnergy(condition.Value)));
             }
             //if (condition.ConditionName == "Next Turn Block")
             //{

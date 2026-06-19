@@ -3,21 +3,16 @@ using UnityEngine;
 
 public class OverallStatistics : MonoBehaviour
 {
-    public static int totalEnemiesKilled;
-    //public int TotalEnemiesKilled { get { return totalEnemiesKilled; } set { totalEnemiesKilled = value; } }
-
+    public static int totalEnemiesKilled = 0;
     public static Dictionary<string, int> killedEnemies = new Dictionary<string, int>();
-    //public Dictionary<string, int> KilledEnemies { get { return killedEnemies; } set { killedEnemies = value; } }
+    public static int round = 0;
+    public static int damageDealt = 0;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public static void ResetStatistics()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        totalEnemiesKilled = 0;
+        killedEnemies.Clear();
+        round = 0;
+        damageDealt = 0;
     }
 }

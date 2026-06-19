@@ -1,0 +1,598 @@
+fileFormatVersion: 2
+guid: b5bc59cc4674ca34e8dc76f589f60a07
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8491883263623275705
+    second: petrified_scroll_512_0
+  - first:
+      213: 8645342450063790577
+    second: petrified_scroll_512_1
+  - first:
+      213: -2796131372032842154
+    second: petrified_scroll_512_2
+  - first:
+      213: 5130629782082973843
+    second: petrified_scroll_512_3
+  - first:
+      213: -4594657408809596840
+    second: petrified_scroll_512_4
+  - first:
+      213: 302292826565542768
+    second: petrified_scroll_512_5
+  - first:
+      213: 3010136567639082232
+    second: petrified_scroll_512_6
+  - first:
+      213: -6311720527816447264
+    second: petrified_scroll_512_7
+  - first:
+      213: 9145419387451274861
+    second: petrified_scroll_512_8
+  - first:
+      213: -766343760682681260
+    second: petrified_scroll_512_9
+  - first:
+      213: -9149762494522801771
+    second: petrified_scroll_512_10
+  - first:
+      213: 5400063065866818884
+    second: petrified_scroll_512_11
+  - first:
+      213: 5619565891836481359
+    second: petrified_scroll_512_12
+  - first:
+      213: 4677880108498775342
+    second: petrified_scroll_512_13
+  - first:
+      213: 1105036399391962760
+    second: petrified_scroll_512_14
+  - first:
+      213: -8359741723400832670
+    second: petrified_scroll_512_15
+  - first:
+      213: -7547993893716562066
+    second: petrified_scroll_512_16
+  - first:
+      213: -3484505606270063617
+    second: petrified_scroll_512_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 512
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: petrified_scroll_512_0
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 430
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b4a95a16da39d570800000000000000
+      internalID: 8491883263623275705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_1
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 422
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f158a1472d6af770800000000000000
+      internalID: 8645342450063790577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_2
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 440
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65628a8e4552239d0800000000000000
+      internalID: -2796131372032842154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_3
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 433
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39078138a98a33740800000000000000
+      internalID: 5130629782082973843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_4
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 434
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85889432e6f7c30c0800000000000000
+      internalID: -4594657408809596840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 438
+        width: 36
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 073869169b5f13400800000000000000
+      internalID: 302292826565542768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_6
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 438
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f48a87824726c920800000000000000
+      internalID: 3010136567639082232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_7
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 394
+        width: 28
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0eaa5f1fe934868a0800000000000000
+      internalID: -6311720527816447264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_8
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 50
+        width: 494
+        height: 386
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d66f0077a7e0bee70800000000000000
+      internalID: 9145419387451274861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_9
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 424
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45cfba0f8666d55f0800000000000000
+      internalID: -766343760682681260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_10
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 429
+        width: 15
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 591c6ce1d73850180800000000000000
+      internalID: -9149762494522801771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_11
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 420
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 445d2b56fb0e0fa40800000000000000
+      internalID: 5400063065866818884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_12
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 415
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4f80d6a765bcfd40800000000000000
+      internalID: 5619565891836481359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_13
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 315
+        width: 21
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2d6fe89c2b2be040800000000000000
+      internalID: 4677880108498775342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_14
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 229
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88672a120c0e55f00800000000000000
+      internalID: 1105036399391962760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_15
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 218
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2697ea2c13b3cfb80800000000000000
+      internalID: -8359741723400832670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_16
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 202
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6fe43e6b83204790800000000000000
+      internalID: -7547993893716562066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: petrified_scroll_512_17
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 183
+        width: 11
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffb6a60ec9c84afc0800000000000000
+      internalID: -3484505606270063617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      petrified_scroll_512_0: 8491883263623275705
+      petrified_scroll_512_1: 8645342450063790577
+      petrified_scroll_512_10: -9149762494522801771
+      petrified_scroll_512_11: 5400063065866818884
+      petrified_scroll_512_12: 5619565891836481359
+      petrified_scroll_512_13: 4677880108498775342
+      petrified_scroll_512_14: 1105036399391962760
+      petrified_scroll_512_15: -8359741723400832670
+      petrified_scroll_512_16: -7547993893716562066
+      petrified_scroll_512_17: -3484505606270063617
+      petrified_scroll_512_2: -2796131372032842154
+      petrified_scroll_512_3: 5130629782082973843
+      petrified_scroll_512_4: -4594657408809596840
+      petrified_scroll_512_5: 302292826565542768
+      petrified_scroll_512_6: 3010136567639082232
+      petrified_scroll_512_7: -6311720527816447264
+      petrified_scroll_512_8: 9145419387451274861
+      petrified_scroll_512_9: -766343760682681260
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -8,19 +8,19 @@ public class Goblin : Enemy
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(28)
-            ,() => Attack(11)
+            () => Move(22)
+            ,() => Attack(8)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Attack(27)
+            () => Attack(17)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(17)
-            ,() => Attack(14)
+            () => Move(12)
+            ,() => Attack(13)
         });
         //movesSetOrder = new List<int>() { 0, 1 };
-        maxHealth = 49;
-        XPValue = 2;
+        maxHealth = 29;
+        XPValue = 1;
         base.Awake();
     }
 }

@@ -2,9 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using UnityEngine;
 
-public class Condition : MonoBehaviour
+public class Condition
 {
     protected ConditionEffects conditionEffects;
     protected string conditionName;
@@ -36,6 +37,8 @@ public class Condition : MonoBehaviour
 
     protected string[] abnormality;
     public string[] Abnormality { get { return abnormality; } }
+    protected string description;
+    public string Description { get { return description; } }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -50,7 +53,7 @@ public class Condition : MonoBehaviour
         
     }
 
-    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, string effectedActionType, bool isShown = true, string[] conditionAbnormality = null, Func<IEnumerator>[] actionPlan = null)
+    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, string effectedActionType, bool isShown = true, string conditionDescription = null, string[] conditionAbnormality = null, Func<IEnumerator>[] actionPlan = null)
     {
         //Debug.Log("base Condition generated");
         conditionName = name;
@@ -63,6 +66,7 @@ public class Condition : MonoBehaviour
         abnormality = conditionAbnormality;
         plan = actionPlan;
         actionName = name;
+        description = conditionDescription;
     }
     public virtual IEnumerator OnGain(Figure figure)
     {
@@ -73,6 +77,10 @@ public class Condition : MonoBehaviour
     public virtual IEnumerator OnLoss(Figure figure)
     {
         yield return null;
+    }
+    public Condition Clone()
+    {
+        return (Condition)this.MemberwiseClone();
     }
 }
 
@@ -95,7 +103,10 @@ public class Finesse: Condition
 {
     public Finesse(int conditionValue, int conditionDuration = -1) : base("Finesse", conditionValue, conditionDuration, 1, false, "AbilityValue") { }
 }
-
+public class Accuracy : Condition
+{
+    public Accuracy(int conditionValue, int conditionDuration = -1) : base("Accuracy", conditionValue, conditionDuration, 1, false, "RangeValue") { }
+}
 public class NaturalScaling: Condition
 {
     public NaturalScaling(int conditionValue, int conditionDuration = -1) : base("NaturalScaling", conditionValue, conditionDuration, 3, false, "All", false) { }
@@ -117,14 +128,25 @@ public class Poison : Condition
 
 public class NextTurns : Condition
 {
-    public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionValue = 0, int conditionDuration = 1) : base("NextTurns", conditionValue, conditionDuration, 0, true, "All", true, new string[] { "Delayed Gain", "No Self Target Description" }, nextTurnsAction) { }
+    public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionValue = Variables.gameNullValue, int conditionDuration = 1) : base("NextTurns", conditionValue, conditionDuration, 0, true, "All", true, null, new string[] { "Delayed Gain", "No Self Target Description" }, nextTurnsAction) { }
 }
-
+public class NextTurnBlock : Condition
+{
+    public NextTurnBlock(int conditionValue, int conditionDuration = 1) : base("NextTurnBlock", conditionValue, conditionDuration, 1, true, "None", true, "Next turn gain " + conditionValue + " block", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+}
+public class NextTurnTopEnergy : Condition
+{
+    public NextTurnTopEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnTopEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Next turn gain " + conditionValue + " top energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+}
+public class NextTurnBottomEnergy : Condition
+{
+    public NextTurnBottomEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnBottomEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Next turn gain " + conditionValue + " bottom energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+}
 public class GainAbility : Condition
 {
     protected Ability gainedAbility;
     public Ability GainedAbility { get { return gainedAbility; } }
-    public GainAbility(Ability conditionAbility, int conditionValue = 0, int conditionDuration = 1) : base("Ability", conditionValue, conditionDuration, 2, false, "All", true, new string[] { "Ability", "No Self Target Description" })
+    public GainAbility(Ability conditionAbility, int conditionDuration = 1) : base("Ability", Variables.gameNullValue, conditionDuration, 2, false, "All", true, null, new string[] { "Ability", "No Self Target Description" })
     {
         conditionEffects = GameObject.Find("ConditionEffects").GetComponent<ConditionEffects>();
 
@@ -144,10 +166,13 @@ public class Vigor : Condition
 {
     public Vigor(int conditionValue, int conditionDuration = -1) : base("Vigor", conditionValue, conditionDuration, 1, false, "AttackValue") { }
 }
-
+public class Burst : Condition
+{
+    public Burst(int conditionValue, int conditionDuration = -1) : base("Burst", conditionValue, conditionDuration, 1, false, "MoveValue") { }
+}
 public class BlockPerMove : Condition
 {
-    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1) : base("Untouchable", conditionValue, conditionDuration, 1, true, "None", true, new string[] { "No Value Description", "No Self Target Description" } )
+    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1) : base("Untouchable", conditionValue, conditionDuration, 1, true, "None", true, null, new string[] { "No Value Description", "No Self Target Description" } )
     {
         actionName = "Whenever you move a space gain " + conditionValue + " block";
     }
@@ -155,7 +180,7 @@ public class BlockPerMove : Condition
 
 public class Flight : Condition
 {
-    public Flight(int conditionDuration = -1) : base("Flight", 0, conditionDuration, 2, false, "None", true) { }
+    public Flight(int conditionDuration = -1) : base("Flight", Variables.gameNullValue, conditionDuration, 2, false, "None", true) { }
     public override IEnumerator OnGain(Figure figure)
     {
         //Debug.Log("gained condtion");
@@ -168,9 +193,18 @@ public class Flight : Condition
         yield break;
     }
 }
-public class StartOfTurnSlow : Condition
+//public class StartOfTurnSlow : Condition
+//{
+//    public StartOfTurnSlow(int conditionValue, int conditionDuration = -1) : base("StartOfTurnSlow", conditionValue, conditionDuration, 1, true, "None", false) { }
+//}
+
+public class Stunned : Condition
 {
-    public StartOfTurnSlow(int conditionValue, int conditionDuration = -1) : base("StartOfTurnSlow", conditionValue, conditionDuration, 1, true, "None", false) { }
+    public Stunned(int conditionDuration = 1, bool isShown = true) : base("Stunned", Variables.gameNullValue, conditionDuration, 2, false, "All", isShown) { }
+}
+public class Summon : Condition
+{
+    public Summon() : base("Summon", Variables.gameNullValue, -1, 3, false, "None") { }
 }
 //public class StartOfTurnBlock : Condition
 //{

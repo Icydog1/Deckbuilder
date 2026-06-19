@@ -18,7 +18,7 @@ public class Skeleton : Enemy
         moveSets.Add(new List<Func<IEnumerator>> {
             //does nothing the turn it is summoned
         });
-        initialMoves = new List<int>() { 2 };
+        initialMoves = new List<int>() { };
 
         movesSetOrder = new List<int>() { 0, 1 };
         maxHealth = 22;

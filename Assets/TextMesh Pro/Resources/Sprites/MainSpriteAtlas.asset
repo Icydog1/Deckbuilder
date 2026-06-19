@@ -232,7 +232,7 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 38
     m_Scale: 0.85
-    m_Name: PlacehoderConditonPower
+    m_Name: ConditionPower
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 39
@@ -1642,8 +1642,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 14
       m_Height: 14
-      m_HorizontalBearingX: 3
-      m_HorizontalBearingY: 13
+      m_HorizontalBearingX: -3
+      m_HorizontalBearingY: 14
       m_HorizontalAdvance: 14
     m_GlyphRect:
       m_X: 145

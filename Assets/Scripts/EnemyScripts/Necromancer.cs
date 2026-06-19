@@ -18,7 +18,7 @@ public class Necromancer : Enemy
             ,() => Attack(19, 4)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Summon(summon)
+            () => Summon(summon,5)
         });
         movesSetOrder = new List<int>() { 0, 1, 2 };
         maxHealth = 113;
