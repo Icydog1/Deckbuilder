@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class Harpy : Enemy
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
@@ -23,7 +22,7 @@ public class Harpy : Enemy
 
         });
 
-        canFly = true;
+        //canFly = true;
         maxHealth = 44;
         XPValue = 3;
         base.Awake();

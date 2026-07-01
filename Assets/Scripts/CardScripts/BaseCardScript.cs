@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using NUnit.Framework;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class Card : MonoBehaviour
 {
@@ -34,15 +37,31 @@ public class Card : MonoBehaviour
 
     protected bool isPreparingTop;
 
+    protected List<Figure> actingFigures = new List<Figure>();
+    public List<Figure> ActingFigures { get { return actingFigures; } set { actingFigures = value; } }
+
     public class Action
     {
-        public Func<IEnumerator> preformedAbility;
+        public Func<IEnumerator> preformedAction;
+        public Func<Figure, IEnumerator> preformedAction2;
         public string description = null;
+        public bool multitarget;
 
-        public Action(Func<IEnumerator> ability, string descriptionOverride = null)
+        public Action(Func<Figure, IEnumerator> action, string descriptionOverride = null)
         {
-            preformedAbility = ability;
+            preformedAction2 = action;
             description = descriptionOverride;
+            multitarget = true;
+            //Debug.Log(targets.Count);
+            //RefrenceStorage.playerControler.EffectedFigures.Add(RefrenceStorage.playerControler);
+            //Debug.Log(targets.Count);
+            //Debug.Log(targets[0]);
+        }
+        public Action(Func<IEnumerator> action, string descriptionOverride = null)
+        {
+            preformedAction = action;
+            description = descriptionOverride;
+            multitarget = false;
         }
     }
 
@@ -53,6 +72,10 @@ public class Card : MonoBehaviour
     protected List<Action> bottomActions = new List<Action>();
     protected List<Action> currentActions = new List<Action>();
 
+    protected List<Action> topEndActions = new List<Action>();
+    protected List<Action> bottomEndActions = new List<Action>();
+    protected List<Action> currentEndActions = new List<Action>();
+
     //protected List<IEnumerator> topActions = new List<IEnumerator>();
     //protected List<IEnumerator> bottomActions = new List<IEnumerator>();
     //protected List<IEnumerator> currentActions = new List<IEnumerator>());
@@ -62,6 +85,12 @@ public class Card : MonoBehaviour
     protected List<ActionDescription> currentDescription = new List<ActionDescription>();
     protected string currentDescriptionString = "";
     protected string additionalTopDescription, additionalBottomDescription;
+    //protected List<string> topKeywords = new List<string>();
+    //protected List<string> bottomKeywords = new List<string>();
+    protected Dictionary<string, int> topKeywords = new Dictionary<string, int>();
+    protected Dictionary<string, int> bottomKeywords = new Dictionary<string, int>();
+    protected Dictionary<string, int> currentKeywords = new Dictionary<string, int>();
+    public Dictionary<string,int> CurrentKeywords { get { return currentKeywords; }}
 
     //[SerializeField]
     protected int rarity = 1;
@@ -75,13 +104,16 @@ public class Card : MonoBehaviour
     public int Rarity { get { return rarity; } }
     protected Image rarityGlow;
 
+    protected Func<bool> returnFromExhaustConditiion;
+    protected GameObject returnToList;
+    protected Figure currentTarget;
     //private float baseAbsoluteSize = 1;
     //private float relativeSize;
     //public float RelativeSize { get { return relativeSize; } set { relativeSize = value; SetRelativeSize(); } }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void Awake()
+    public virtual void Awake()
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
@@ -145,21 +177,6 @@ public class Card : MonoBehaviour
         yield return StartCoroutine(PrepareCardDiscription());
     }
 
-    public virtual void Start()
-    {
-        // base class code runs
-
-
-    }
-
-    // Update is called once per frame
-    public virtual void Update()
-    {
-
-    }
-
-
-
 
     public virtual void AttemptToPlayTop()
     {
@@ -205,7 +222,7 @@ public class Card : MonoBehaviour
         isCurrentCard = true;
         playerControler.CardPlayed = true;
         playerControler.PlayedCard = gameObject;
-        playerControler.PlayedCardScript = gameObject.GetComponent<Card>();
+        playerControler.PlayedCardScript = this;
         playerControler.UpdatePlayer();
         //currentStep = 0;
         mouseManager.ClickedObject = null;
@@ -230,7 +247,15 @@ public class Card : MonoBehaviour
         playerControler.UpdatePlayer();
         topGlow.SetActive(false);
         bottomGlow.SetActive(false);
-		StartCoroutine(deckManager.DiscardCard(gameObject));
+        if (returnToList == null)
+        {
+            StartCoroutine(deckManager.DiscardCard(gameObject));
+
+        }
+        else
+        {
+            deckManager.StartCoroutine(ExhaustAfterPlayed());
+        }
         mouseManager.MouseOffObject(gameObject);
         stopPlaying = false;
         //Debug.Log("done playing");
@@ -243,13 +268,15 @@ public class Card : MonoBehaviour
         //playerControler.NextAction = false;
         foreach (Action action in topActions)
         {
-            if (stopPlaying == false)
-            {
-                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility()));
+            yield return StartCoroutine(PreformAction(action));
 
-                //yield return new WaitUntil(() => playerControler.NextAction == true);
-                //playerControler.NextAction = false;
-            }
+            //if (stopPlaying == false)
+            //{
+            //    yield return StartCoroutine(actionManager.PreformAction(action.preformedAction()));
+
+            //    //yield return new WaitUntil(() => playerControler.NextAction == true);
+            //    //playerControler.NextAction = false;
+            //}
         }
         DonePlaying();
     }
@@ -260,41 +287,120 @@ public class Card : MonoBehaviour
         //playerControler.NextAction = false;
         foreach (Action action in bottomActions)
         {
-            if (stopPlaying == false)
-            {
-                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility()));
+            //Debug.Log("doing 1 action");
+            yield return StartCoroutine(PreformAction(action));
+            //if (action.targets == null)
+            //{
+            //    yield return StartCoroutine(actionManager.PreformAction(action.preformedAction()));
+            //}
+            //else
+            //{
+            //    foreach (Figure target in action.targets)
+            //    {
+            //        currentTarget
+            //    }
+            //}
+            //if (stopPlaying == false)
+            //{
+            //    yield return StartCoroutine(actionManager.PreformAction(action.preformedAction()));
 
-                //yield return new WaitUntil(() => playerControler.NextAction == true);
-                //playerControler.NextAction = false;
-            }
+            //    //yield return new WaitUntil(() => playerControler.NextAction == true);
+            //    //playerControler.NextAction = false;
+            //}
         }
         DonePlaying();
     }
+    public IEnumerator PreformAction(Action action, List<ActionDescription> planTo = null)
+    {
 
+        if (action.multitarget == false)
+        {
+            //Debug.Log("standerd action");
+            if (stopPlaying == false)
+            {
+                yield return StartCoroutine(actionManager.PreformAction(action.preformedAction(), planTo));
+            }
+        }
+        else
+        {
+            if (planTo != null)
+            {
+                yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(playerControler), planTo));
+            }
+            else
+            {
+                //ActionDescription copyDescription = playerControler.ActionsRemaining[0];
+                if (actingFigures.Count == 0)
+                {
+                    playerControler.ActionsRemaining.RemoveAt(0);
+                }
+                else if(actingFigures.Count > 1)
+                {
+                    for (int i = 1; i < actingFigures.Count; i++)
+                    {
+                        Debug.Log("not tested");
+                        playerControler.ActionsRemaining.Insert(i, playerControler.ActionsRemaining[0]); //copyDescription.Clone()
+                    }
+                }
+                playerControler.UpdatePlan();
+                //Debug.Log(actingFigures.Count);
+                foreach (Figure target in actingFigures)
+                {
+                    //Debug.Log(target);
+                    if (stopPlaying == false)
+                    {
+                        //currentTarget = target;
+                        yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(target), planTo));
+                        playerControler.EndAction();
+                    }
+                }
+            }
+        }
+    }
+
+    public void PrepareExhaustAfterPlayed(Func<bool> conditiion, GameObject list = null)
+    {
+        returnFromExhaustConditiion = conditiion;
+        if (list == null)
+        {
+            list = deckManager.Deck;
+        }
+        returnToList = list;
+    }
+    public IEnumerator ExhaustAfterPlayed()
+    {
+        yield return deckManager.StartCoroutine(deckManager.ExhaustUntil(gameObject, returnFromExhaustConditiion, returnToList));
+        returnToList = null;
+    }
     public IEnumerator PrepareCardDiscription(bool unmodified = false)
     {
         //Debug.Log("updated entire card");
-		topDescription.Clear();
+        playerControler.PlayedCardScript = this;
+        topDescription.Clear();
         bottomDescription.Clear();
-
+        currentKeywords = topKeywords;
         playerControler.UnmodifiedAction = unmodified;
         foreach (Action action in topActions)
         {
             if (action.description == null)
             {
-                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), topDescription));
+                yield return StartCoroutine(PreformAction(action, topDescription));
+                //yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), topDescription));
             }
             else
             {
-                topDescription.Add(new ActionDescription("???", new List<ActionModifier>() { new ActionModifier(playerControler, action.description) }));
+                topDescription.Add(new ActionDescription("OverrideDescription", new List<ActionModifier>() { new ActionModifier(playerControler, action.description) }));
             }
         }
+        currentKeywords = bottomKeywords;
 
-		foreach (Action action in bottomActions)
+        foreach (Action action in bottomActions)
         {
             if (action.description == null)
             {
-                yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), bottomDescription));
+                yield return StartCoroutine(PreformAction(action, bottomDescription));
+
+                //yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), bottomDescription));
             }
             else
             {
@@ -302,12 +408,15 @@ public class Card : MonoBehaviour
             }
         }
 
+        PrepareCardKeywords(true);
+        PrepareCardKeywords(false);
         topCostText.DisplayString("<color=red>" + topCost);
         bottomCostText.DisplayString("<color=#008000>" + bottomCost);
+
         if (additionalTopDescription != null)
         {
             List<ActionDescription> newDescription = new List<ActionDescription>(topDescription);
-            newDescription.Insert(0, new ActionDescription("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalBottomDescription) }));
+            newDescription.Insert(0, new ActionDescription("???", new List<ActionModifier>() { new ActionModifier(playerControler, additionalTopDescription) }));
 
             topText.DisplayDescription(newDescription);
         }
@@ -328,8 +437,54 @@ public class Card : MonoBehaviour
         }
 
     }
+
+
+
+    public void PrepareCardKeywords(bool isTop)
+    {
+        if (isTop)
+        {
+            currentKeywords = topKeywords;
+            currentDescription = topDescription;
+        }
+        else
+        {
+            currentKeywords = bottomKeywords;
+            currentDescription = bottomDescription;
+        }
+        var sortedByKey = currentKeywords.OrderBy(pair => pair.Key);
+        foreach (var pair in sortedByKey)
+        {
+            if (pair.Value != 0)
+            {
+                //if (pair.Key == "Command")
+                //{
+                //    currentDescription.Insert(0, new ActionDescription("Command", new List<ActionModifier>() { new ActionModifier(playerControler, "Command") }));
+                //}
+                if (pair.Key == "Augment")
+                {
+                    currentDescription.Insert(0, new ActionDescription("Augment", new List<ActionModifier>() { new ActionModifier(playerControler, "Augment") }));
+                }
+                if (pair.Key == "Exhausting")
+                {
+                    currentDescription.Add(new ActionDescription("Exhausting", new List<ActionModifier>() { new ActionModifier(playerControler, "Exausting ", pair.Value) }));
+                }
+            }
+
+        }
+        //if (currentKeywords.TryGetValue("Augment", out int keywordValue) && keywordValue != 0)
+        //{
+        //    currentDescription.Insert(0, new ActionDescription("Augment", new List<ActionModifier>() { new ActionModifier(playerControler, "Augment") }));
+        //}
+        //if (currentKeywords.TryGetValue("Exhausting", out int keywordValue2) && keywordValue2 != 0)
+        //{
+        //    currentDescription.Add(new ActionDescription("Exhausting", new List<ActionModifier>() { new ActionModifier(playerControler, "Exausting ", keywordValue2) }));
+        //}
+    }
+
     public IEnumerator UpdateCardDiscription(string modifiedAction)
     {
+        playerControler.PlayedCardScript = this;
         //Debug.Log("changed card description " + modifiedAction);
         playerControler.UnmodifiedAction = false;
         string actionName = null;
@@ -351,8 +506,8 @@ public class Card : MonoBehaviour
                 actionName = "Move";
                 modifierNum = 0;
                 break;
-            case "AbilityValue":
-                actionName = "Ability";
+            case "SkillValue":
+                actionName = "Skill";
                 modifierNum = 0;
                 break;
             default:

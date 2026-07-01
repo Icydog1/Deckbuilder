@@ -13,6 +13,7 @@ public class Settings : UIButton
 
         base.Awake();
         pauseScreenBlocker = RefrenceStorage.pauseScreenBlocker;
+        GameManager.ResetGame += ResetState;
     }
 
     // Update is called once per frame
@@ -20,6 +21,12 @@ public class Settings : UIButton
     {
 
     }
+
+    public void ResetState(GameManager gameManager)
+    {
+        isShown = false;
+    }
+
 
     public override void Activate()
     {

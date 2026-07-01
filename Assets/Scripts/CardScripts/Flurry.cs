@@ -6,11 +6,7 @@ public class Flurry : Card
 {
     public Flurry() : base(3, 1, 1) { }
 
-    public override void Start()
-    {
-        
-        base.Start();
-    }
+
     public override void PrepareTop()
     {
         currentActions.Add( new Action(() => playerControler.Attack(3,1,1,4)));
@@ -21,7 +17,7 @@ public class Flurry : Card
     {
         for (int i = 0; i < 4; i++)
         {
-            currentActions.Add( new Action(() => playerControler.Ability(3)));
+            currentActions.Add( new Action(() => playerControler.Skill(3)));
         }
     }
 }

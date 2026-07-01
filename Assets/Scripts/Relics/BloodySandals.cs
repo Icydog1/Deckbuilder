@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BloodySandals : Relic
 {
-    protected override int rarity => 3;
+    protected override int rarity => 2;
     private int damageDealt, damageDealtTotal;
     public override void Awake()
     {

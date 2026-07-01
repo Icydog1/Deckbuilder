@@ -92,6 +92,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6485527508329140408, guid: aeaa07afe15aaef4e95e7c64504fea36, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 00e23f3de5801a34b81bc00eb6100631, type: 3}
+    - target: {fileID: 6485527508329140408, guid: aeaa07afe15aaef4e95e7c64504fea36, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6485527508329140408, guid: aeaa07afe15aaef4e95e7c64504fea36, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6485527508329140408, guid: aeaa07afe15aaef4e95e7c64504fea36, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8504288123469819162, guid: aeaa07afe15aaef4e95e7c64504fea36, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ac98f776b8f3ac449b36960b60d9a155, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -117,4 +137,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a8dc1a67b7daea499b239a7f77a71cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rarity: 2

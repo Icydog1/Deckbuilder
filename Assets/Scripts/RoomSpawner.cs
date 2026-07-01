@@ -206,7 +206,7 @@ public class RoomSpawner : MonoBehaviour
         transform.localEulerAngles = new Vector3(0, 0, realativeRotation + rotation);
         existingRooms.Add(Instantiate(room, new Vector3(pos.x, pos.y, zLayer), transform.rotation));
 
-        playerControler.ShowMoveCostDisplay();
+        playerControler.UpdateMoveCostDisplay();
 
     }
 }

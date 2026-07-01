@@ -387,7 +387,7 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 69
     m_Scale: 0.85
-    m_Name: Ability
+    m_Name: Skill
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 70

@@ -79,6 +79,7 @@ public class Lootable : MonoBehaviour
     {
         GameObject newTile = Instantiate(lootedTile,transform.position,transform.rotation);
         newTile.GetComponent<Tile>().MoveCost = GetComponent<Tile>().MoveCost;
+        RefrenceStorage.mapManager.showMoveCostOfTile(newTile.GetComponent<Tile>());
         Destroy(gameObject);
     }
 

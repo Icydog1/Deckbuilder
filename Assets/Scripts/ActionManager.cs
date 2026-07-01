@@ -253,6 +253,10 @@ public class ActionDescription
         return description;
 
     }
+    public ActionDescription Clone()
+    {
+        return (ActionDescription)this.MemberwiseClone();
+    }
 }
 public class ActionModifier
 {
@@ -275,7 +279,9 @@ public class ActionModifier
         type = valueType;
         figure = actingFigure;
         UpdateValue();
+
     }
+
     public void UpdateValue()
     {
         if (baseValue != 1000000)
@@ -302,9 +308,9 @@ public class ActionModifier
                     modifiedValue = RefrenceStorage.conditionEffects.ModifyMove(figure, baseValue);
                     //Debug.Log("modified value " + modifiedValue);
                     break;
-                case "Ability":
+                case "Skill":
                     //Debug.Log("Attack");
-                    modifiedValue = RefrenceStorage.conditionEffects.ModifyAbility(figure, baseValue);
+                    modifiedValue = RefrenceStorage.conditionEffects.ModifySkill(figure, baseValue);
                     break;
                 case "Range":
                     //Debug.Log("Attack");

@@ -5,11 +5,6 @@ public class Defend : Card
 {
     public Defend() : base(0, 1, 1) { }
 
-    public override void Start()
-    {
-        
-        base.Start();
-    }
 
     public override void PrepareTop()
     {
@@ -19,8 +14,8 @@ public class Defend : Card
 
     public override void PrepareBottom()
     {
-        //QueueAction(playerControler.Ability(10));
+        //QueueAction(playerControler.Skill(10));
 
-        currentActions.Add( new Action(() => playerControler.Ability(10)));
+        currentActions.Add( new Action(() => playerControler.Skill(10)));
     }
 }

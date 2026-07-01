@@ -30,16 +30,16 @@ public class MapManager : MonoBehaviour
         //        tileYDistance = Mathf.Sqrt(3);
         //Debug.Log(GetDisanceInHexCordsTo(Vector2.one * 5,Vector2.zero));
     }
-    void Start()
-    {
-        showMoveCost(false);
-    }
+    //void Start()
+    //{
+    //    showMoveCost(false);
+    //}
 
     // Update is called once per frame
-    void Update()
-    {
+    //void Update()
+    //{
         
-    }
+    //}
 
     //public void Move(GameObject movedObject,)
 
@@ -78,8 +78,33 @@ public class MapManager : MonoBehaviour
                 tileScript.MoveCostDisplay.Disable();
             }
         }
+    }
+    public void showMoveCostOfTile(Tile tileScript)
+    {
+        PlayerControler player = RefrenceStorage.playerControler;
+        //Tile[] tiles = FindObjectsByType<Tile>(FindObjectsSortMode.None);
+        if (player.MoveCostDisplaySetting == "Always" || (player.MoveCostDisplaySetting == "On Move" && player.IsMoving))
+        {
+            if (player.CanFly || player.CanJump)
+            {
+                if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())))
+                {
+                    tileScript.MoveCostDisplay.DisplayText(Mathf.Min(tileScript.MoveCost, baseMoveCost));
+                }
+            }
+            else
+            {
+                if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())) && !tileScript.gameObject.GetComponent<Obstacle>())
+                {
+                    tileScript.MoveCostDisplay.DisplayText(tileScript.MoveCost);
+                }
+            }
+        }
+        else
+        {
+            tileScript.MoveCostDisplay.Disable();
 
-
+        }
     }
     public Vector2 OneToOneToPos(Vector2 oneToOnePos)
     {

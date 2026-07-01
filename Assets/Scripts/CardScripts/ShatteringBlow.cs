@@ -1,14 +1,7 @@
  public class ShatteringBlow : Card
 {
     public ShatteringBlow() : base(1, 2, 1) { }
-    public override void Start()
-    {
-        base.Start();
-    }
-    public override void Update()
-    {
-        base.Update();
-    }
+
 
 
     public override void PrepareTop()

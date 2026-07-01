@@ -8,19 +8,18 @@ public class FrenziedAbomination : Enemy
     public override void Awake()
     {
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(5)
+            () => Move(13)
             ,() => Attack(5)
             ,() => ApplyCondition(new Strength(4))
-            ,() => ApplyCondition(new Speed(4))
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => Move(5)
+            () => Move(13)
             ,() => Attack(5)
         });
         initialMoves = new List<int>() { 0, 0, 0, 0, 0 };
         movesSetOrder = new List<int>() { 1 };
 
-        maxHealth = 142;
+        maxHealth = 104;
         XPValue = 4;
 
         base.Awake();

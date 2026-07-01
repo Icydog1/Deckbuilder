@@ -5,15 +5,6 @@ using System.Collections.Generic;
 public class ShieldedStrike : Card
 {
     public ShieldedStrike() : base(2, 1, 1) { }
-    public override void Start()
-    {
-        
-        base.Start();
-    }
-    public override void Update()
-    {
-        base.Update();
-    }
 
 
     public override void PrepareTop()
@@ -24,7 +15,7 @@ public class ShieldedStrike : Card
 
     public override void PrepareBottom()
     {
-        currentActions.Add( new Action(() => playerControler.Ability(10)));
+        currentActions.Add( new Action(() => playerControler.Skill(10)));
         currentActions.Add( new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Block(1, true) })))));
         
     }

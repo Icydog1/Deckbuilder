@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GlassEye : Relic
 {
-    protected override int rarity => 3;
+    protected override int rarity => 2;
     public override void Awake()
     {
         base.Awake();

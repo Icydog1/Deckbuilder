@@ -31,7 +31,7 @@ public class AdaptiveShield : Relic
     }
     public void GainBlockOnLosingHP(PlayerControler playerControler)
     {
-        actionManager.QueueAction(playerControler.ApplyCondition(new NextTurnBlock(Variables.adaptiveShieldBlock * count)));
+        actionManager.QueueAction(playerControler.ApplyCondition(new StartOfTurnBlock(Variables.adaptiveShieldBlock * count)));
     }
 
     public void OnDestroy()

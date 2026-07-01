@@ -6,15 +6,10 @@ public class Chrysalis : Card
 {
     public Chrysalis() : base(1, 1, 1) { }
 
-    public override void Start()
-    {
-        
-        base.Start();
-    }
     public override void PrepareTop()
     {
         currentActions.Add( new Action(() => playerControler.Block(9)));
-        currentActions.Add( new Action(() => playerControler.Ability(7)));
+        currentActions.Add( new Action(() => playerControler.Skill(7)));
     }
 
     public override void PrepareBottom()

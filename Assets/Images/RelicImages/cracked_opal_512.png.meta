@@ -1,0 +1,806 @@
+fileFormatVersion: 2
+guid: 9101789547d043245b09ef0274d8a7cf
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1760148186387477242
+    second: cracked_opal_512_0
+  - first:
+      213: 775757853702705898
+    second: cracked_opal_512_1
+  - first:
+      213: 91219272351495117
+    second: cracked_opal_512_2
+  - first:
+      213: 6865789147763459531
+    second: cracked_opal_512_3
+  - first:
+      213: 5301263044048518611
+    second: cracked_opal_512_4
+  - first:
+      213: 4547523161337566744
+    second: cracked_opal_512_5
+  - first:
+      213: -2401328822277030265
+    second: cracked_opal_512_6
+  - first:
+      213: 1428858278585197476
+    second: cracked_opal_512_7
+  - first:
+      213: -4650200992691644975
+    second: cracked_opal_512_8
+  - first:
+      213: 2486366060900014219
+    second: cracked_opal_512_9
+  - first:
+      213: 4546959726831885117
+    second: cracked_opal_512_10
+  - first:
+      213: 9165650577014476765
+    second: cracked_opal_512_11
+  - first:
+      213: -3272506617418881563
+    second: cracked_opal_512_12
+  - first:
+      213: 7003031042787366415
+    second: cracked_opal_512_13
+  - first:
+      213: -6810375054110833769
+    second: cracked_opal_512_14
+  - first:
+      213: 101285510633394141
+    second: cracked_opal_512_15
+  - first:
+      213: 8983824639256290929
+    second: cracked_opal_512_16
+  - first:
+      213: 2511580810676523610
+    second: cracked_opal_512_17
+  - first:
+      213: 7141370860372623493
+    second: cracked_opal_512_18
+  - first:
+      213: 2118184429053004276
+    second: cracked_opal_512_19
+  - first:
+      213: -2932896784081035655
+    second: cracked_opal_512_20
+  - first:
+      213: 8389591386569362343
+    second: cracked_opal_512_21
+  - first:
+      213: -7936605894063349619
+    second: cracked_opal_512_22
+  - first:
+      213: 2949679238883693347
+    second: cracked_opal_512_23
+  - first:
+      213: 5782793586687077474
+    second: cracked_opal_512_24
+  - first:
+      213: 8850280110403353751
+    second: cracked_opal_512_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 512
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: cracked_opal_512_0
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 465
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60d8356dc82b297e0800000000000000
+      internalID: -1760148186387477242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_1
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 425
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae25ba568ab04ca00800000000000000
+      internalID: 775757853702705898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_2
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 429
+        width: 10
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc33e25e173144100800000000000000
+      internalID: 91219272351495117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 419
+        width: 44
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc54c277ade284f50800000000000000
+      internalID: 6865789147763459531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_4
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 427
+        width: 12
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ddfa69b6aed19940800000000000000
+      internalID: 5301263044048518611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_5
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 426
+        width: 19
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 816136fa83c0c1f30800000000000000
+      internalID: 4547523161337566744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_6
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 440
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78e354fa824ccaed0800000000000000
+      internalID: -2401328822277030265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_7
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 82
+        width: 457
+        height: 353
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a36271b80354d310800000000000000
+      internalID: 1428858278585197476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_8
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 421
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d51270c5da277fb0800000000000000
+      internalID: -4650200992691644975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_9
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 416
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b88588152c8518220800000000000000
+      internalID: 2486366060900014219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_10
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 423
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3b52ddd7cb0a1f30800000000000000
+      internalID: 4546959726831885117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_11
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 370
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddf4d4a53aee23f70800000000000000
+      internalID: 9165650577014476765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_12
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e5e1a7e198b592d0800000000000000
+      internalID: -3272506617418881563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_13
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 297
+        width: 38
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f06df5831a3cf2160800000000000000
+      internalID: 7003031042787366415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_14
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 268
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 793ca80a8ffac71a0800000000000000
+      internalID: -6810375054110833769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_15
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 273
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddf8232a2a6d76100800000000000000
+      internalID: 101285510633394141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_16
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 249
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 176e54b39e4fcac70800000000000000
+      internalID: 8983824639256290929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_17
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 219
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a52df0db07dead220800000000000000
+      internalID: 2511580810676523610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_18
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 225
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58006ddf5fe3b1360800000000000000
+      internalID: 7141370860372623493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_19
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 194
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f9c77ef38d456d10800000000000000
+      internalID: 2118184429053004276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_20
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 181
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97ed6fdf9e14c47d0800000000000000
+      internalID: -2932896784081035655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_21
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 177
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7abc4278ae0dd6470800000000000000
+      internalID: 8389591386569362343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_22
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 106
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8025124df28bd190800000000000000
+      internalID: -7936605894063349619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_23
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 105
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 323d103c3ad5fe820800000000000000
+      internalID: 2949679238883693347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_24
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 109
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26ce3e7e02c904050800000000000000
+      internalID: 5782793586687077474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cracked_opal_512_25
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 109
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79cfb4f9ed282da70800000000000000
+      internalID: 8850280110403353751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      cracked_opal_512_0: -1760148186387477242
+      cracked_opal_512_1: 775757853702705898
+      cracked_opal_512_10: 4546959726831885117
+      cracked_opal_512_11: 9165650577014476765
+      cracked_opal_512_12: -3272506617418881563
+      cracked_opal_512_13: 7003031042787366415
+      cracked_opal_512_14: -6810375054110833769
+      cracked_opal_512_15: 101285510633394141
+      cracked_opal_512_16: 8983824639256290929
+      cracked_opal_512_17: 2511580810676523610
+      cracked_opal_512_18: 7141370860372623493
+      cracked_opal_512_19: 2118184429053004276
+      cracked_opal_512_2: 91219272351495117
+      cracked_opal_512_20: -2932896784081035655
+      cracked_opal_512_21: 8389591386569362343
+      cracked_opal_512_22: -7936605894063349619
+      cracked_opal_512_23: 2949679238883693347
+      cracked_opal_512_24: 5782793586687077474
+      cracked_opal_512_25: 8850280110403353751
+      cracked_opal_512_3: 6865789147763459531
+      cracked_opal_512_4: 5301263044048518611
+      cracked_opal_512_5: 4547523161337566744
+      cracked_opal_512_6: -2401328822277030265
+      cracked_opal_512_7: 1428858278585197476
+      cracked_opal_512_8: -4650200992691644975
+      cracked_opal_512_9: 2486366060900014219
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -5,11 +5,6 @@ public class Echo : Card
 {
     public Echo() : base(2, 1, 1) { }
 
-    public override void Start()
-    {
-        
-        base.Start();
-    }
     public override void PrepareTop()
     {
         currentActions.Add( new Action(() => playerControler.Attack(7)));

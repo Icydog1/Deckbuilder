@@ -8,7 +8,7 @@ public class PetrifiedScroll : Relic
     private Ability ability;
     public override void Awake()
     {
-        relicDesription = "Gain ability: " + Variables.petrifiedScrollCost  + " <sprite name=Ability> to draw 1 card(Max " + Variables.relicIncreaseableNumberColor + Variables.petrifiedScrollMaxTimes + "x</color>)";
+        relicDesription = "Gain ability: " + Variables.petrifiedScrollCost  + " <sprite name=Skill> to draw 1 card(Max " + Variables.relicIncreaseableNumberColor + Variables.petrifiedScrollMaxTimes + "x</color>)";
         ability = new Ability(Variables.petrifiedScrollCost, new List<Func<IEnumerator>>() { () => playerControler.Draw(1, true) }, Variables.petrifiedScrollMaxTimes);
         base.Awake();
     }

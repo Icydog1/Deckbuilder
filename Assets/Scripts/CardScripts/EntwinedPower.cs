@@ -3,27 +3,22 @@ public class EntwinedPower : Card
     public EntwinedPower() : base(2, 1, 1) { }
 
     private int additionalCost = 1;
-    public override void Start()
+    public override void Awake()
     {
         
         additionalTopDescription = "Cost: " + additionalCost + " bottom energy";
         additionalBottomDescription = "Cost: " + additionalCost + " top energy";
 
-        base.Start();
+        base.Awake();
     }
 
     // Update is called once per frame
-    public override void Update()
-    {
-        base.Update();
-    }
-
 
     public override void PrepareTop()
     {
         currentActions.Add( new Action(() => playerControler.Draw(3)));
         currentActions.Add( new Action(() => playerControler.Attack(15)));
-        currentActions.Add( new Action(() => playerControler.Ability(15)));
+        currentActions.Add( new Action(() => playerControler.Skill(15)));
     }
 
     public override void PrepareBottom()

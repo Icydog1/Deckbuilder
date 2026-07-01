@@ -13,7 +13,7 @@ public class TurnManager : MonoBehaviour
     private GameObject player;
     private GameObject newRoundMarker;
     private GameObject currentTurn;
-    private Enemy currentEnemyTurnScript;
+    private AIFigure currentAIFigureTurnScript;
     private List<GameObject> turnOrder = new List<GameObject>();
     public List<GameObject> TurnOrder { get { return turnOrder; } }
     //private bool endOfRound, playerTurn, enemyTurn;
@@ -56,6 +56,10 @@ public class TurnManager : MonoBehaviour
     {
 
     }
+    //public void AddToTurnOrder(GameObject addedObject)
+    //{
+    //    turnOrder.Add(addedObject);
+    //}
 
     public void RemoveFromTurnOrder(GameObject removedObject)
     {
@@ -84,16 +88,16 @@ public class TurnManager : MonoBehaviour
             else
             {
                 currentTurn = turnOrder[turnOrder.IndexOf(currentTurn) + 1];
-                if (currentTurn.GetComponent<Enemy>())
+                if (currentTurn.GetComponent<AIFigure>())
                 {
-                    currentEnemyTurnScript = currentTurn.GetComponent<Enemy>();
-                    currentEnemyTurnScript.StartStopTurn(true);
+                    currentAIFigureTurnScript = currentTurn.GetComponent<AIFigure>();
+                    currentAIFigureTurnScript.StartStopTurn(true);
                     //currentEnemyTurnScript.isMyTurn = true;
                     //enemyTurn = true;
                 }
                 else
                 {
-                    currentEnemyTurnScript = null;
+                    currentAIFigureTurnScript = null;
                     //enemyTurn = false;
                 }
                 if (currentTurn == player)
@@ -119,15 +123,26 @@ public class TurnManager : MonoBehaviour
         {
             RoundEndedFunctions(this);
         }
+
         if (RoundEnded != null)
         {
+            Delegate[] listeners = RoundEnded.GetInvocationList();
+            foreach (Delegate action in listeners)
+            {
+                //tells computer that action takes a TurnManager and outputs a IEnumerator
+                var callback = (Func<TurnManager, IEnumerator>)action;
+                //runs action now that it is the correct type
+                yield return StartCoroutine(callback(this));
+            }
             //Debug.Log("Round ended");
-            yield return StartCoroutine(RoundEnded(this));
+            //yield return StartCoroutine(RoundEnded(this));
         }
     }
     public IEnumerator StartOfRound()
     {
         OverallStatistics.round++;
+        OverallStatistics.enemyScaling++;
+        
         RefrenceStorage.playerStats.SetTurnCount(OverallStatistics.round);
         levelManager.IncreaseRoundNumber();
         if (RoundStartedFunctions != null)
@@ -158,7 +173,7 @@ public class TurnManager : MonoBehaviour
         {
             yield return StartCoroutine(playerControler.ForceEndTurn());
         }
-        yield return StartCoroutine(EndRound());
+        yield return StartCoroutine(EndOfRound());
 
         turnOrder.Clear();
         turnOrder.Add(newRoundMarker);

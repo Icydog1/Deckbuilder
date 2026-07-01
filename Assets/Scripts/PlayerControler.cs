@@ -1,20 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Unity.Burst.Intrinsics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using static UnityEngine.GraphicsBuffer;
 
 
 public class PlayerControler : Figure
 {
     private bool actionDone, manualEnd;
-    private bool isMoving, isAttacking, isAppliyingConditions;
+    private bool isAttacking, isAppliyingConditions;
     private bool isPlayerTurn, isPlayPhase;
     private GameObject player;
     private RoomSpawner roomSpawner;
-    private GameObject clickedTile, clickedEnemy;
+    private GameObject clickedTile, clickedFigure;
     private GameObject playedCard;
     public GameObject PlayedCard { get { return playedCard; } set { playedCard = value; } }
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
@@ -23,7 +27,7 @@ public class PlayerControler : Figure
     private AbilityManager abilityManager;
 
     private string moveCostDisplaySetting;
-    public string MoveCostDisplaySetting { set { moveCostDisplaySetting = value; ShowMoveCostDisplay(); } }
+    public string MoveCostDisplaySetting { set { moveCostDisplaySetting = value; UpdateMoveCostDisplay(); } get { return moveCostDisplaySetting; } }
 
     //private PlayerStats playerStats;
     private Card playedCardScript;
@@ -39,6 +43,7 @@ public class PlayerControler : Figure
 
     private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, specialPreformingAction, preformingAction, canPreformAbilities;
     private bool waitUntilVariable;
+    private bool choosingTargets, choosingTile;
     public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
     public bool CanPreformAbilities { get { UpdatePlayer(); return canPreformAbilities; } }
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; UpdatePlayer(); } }
@@ -47,10 +52,10 @@ public class PlayerControler : Figure
     public bool PreformingAbility { get { return preformingAbility; } set { preformingAbility = value; UpdatePlayer(); } }
 
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
-    private int moveLeft, targetsLeft, attackDamageValue, repeats;
+    private int attackDamageValue, repeats;
     private Condition[] appliedConditions;
     private bool canJump, canMove;
-    private bool CanJump { set { canJump = value; UpdateMoveType(); } }
+    public bool CanJump { get { UpdatePlayer(); return canMove; } set { canJump = value; UpdateMoveType(); } }
     public bool CanMove { get { UpdatePlayer(); return canMove; } set { canMove = value; } }
 
     private int range;
@@ -62,7 +67,9 @@ public class PlayerControler : Figure
 
     //public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
 
-    private List<Figure> posibleTargets;
+    private List<Figure> allowedTargets;
+    private Figure choosenTarget;
+
     private List<ActionDescription> actionsRemaining = new List<ActionDescription>();
     public List<ActionDescription> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
@@ -89,6 +96,8 @@ public class PlayerControler : Figure
     //public int KineticBatteryCount { get { return kineticBatteryCount; } set { kineticBatteryCount = value;} }
     private int waxHandCount;
     public int WaxHandCount { get { return waxHandCount; } set { waxHandCount = value; } }
+    private int mortarCount;
+    public int MortarCount { get { return mortarCount; } set { mortarCount = value; } }
     //private int adaptiveShieldCount;
     //public int AdaptiveShieldCount { get { return adaptiveShieldCount; } set { adaptiveShieldCount = value; } }
     //private int crackedOpalCount;
@@ -111,7 +120,7 @@ public class PlayerControler : Figure
         abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
         //interactButton.SetActive(false);
         interactButton = RefrenceStorage.interactButton;
-        base.Awake(); 
+        base.Awake();
     }
 
     public override void Start()
@@ -122,10 +131,6 @@ public class PlayerControler : Figure
         //Debug.Log(playerStats);
         GameManager.LateGameStarted += PreparePlayer;
         GameManager.ResetGame += ResetPlayer;
-
-        //dev mode
-        //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Move(1000, false, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) }); GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) });
-
         base.Start();
     }
 
@@ -133,41 +138,35 @@ public class PlayerControler : Figure
     void Update()
     {
 
-        if (isMoving && !isPreformingAnimation)
-        {
-            if (mouseManager.SelectedObject)
-            {
-                if (Input.GetMouseButton(0))
-                {
-                    if (selectedTile != mouseManager.SelectedObject)
-                    {
-                        selectedTile = mouseManager.SelectedObject;
-                        if (selectedTile.GetComponent<Tile>())
-                        {
-                            PlanMove(selectedTile);
-                        }
-                    }
-                }
-                if (Input.GetMouseButtonUp(0))
-                {
-                    if (mouseManager.SelectedObject.GetComponent<Tile>())
-                    {
-                        StartCoroutine(MoveAlongPath());
-                    }
-                }
-            }
+        //if (isMoving && !isPreformingAnimation)
+        //{
+        //    if (mouseManager.SelectedObject)
+        //    {
+        //        if (Input.GetMouseButton(0))
+        //        {
+        //            if (selectedTile != mouseManager.SelectedObject)
+        //            {
+        //                selectedTile = mouseManager.SelectedObject;
+        //                if (selectedTile.GetComponent<Tile>())
+        //                {
+        //                    PlanMove(selectedTile);
+        //                }
+        //            }
+        //        }
+        //        //if (Input.GetMouseButtonUp(0))
+        //        //{
+        //        //    if (mouseManager.SelectedObject.GetComponent<Tile>())
+        //        //    {
+        //        //        StartCoroutine(MoveAlongPath());
+        //        //    }
+        //        //}
+        //    }
 
-        }
+        //}
         if (Input.GetKeyDown(KeyCode.K))
         {
             //dev mode
             StartCoroutine(CheatMode());
-
-            //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) });
-            //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) });
-            //GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) });
-            //ApplyCondition(new GainAbility(new Ability(2, new List<Func<IEnumerator>>() { () => Move(1, true, true) })));
-
         }
     }
     public IEnumerator CheatMode()
@@ -182,17 +181,7 @@ public class PlayerControler : Figure
     {
         block = Mathf.Min(block, Variables.waxHandRetainedBlock * waxHandCount);
     }
-    public void ShowMoveCostDisplay()
-    {
-        if (moveCostDisplaySetting == "Always" || (moveCostDisplaySetting == "On Move" && isMoving))
-        {
-            mapManager.showMoveCost(true, canJump, canFly);
-        }
-        else
-        {
-            mapManager.showMoveCost(false);
-        }
-    }
+
     public IEnumerator GoUpLevel()
     {
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
@@ -202,27 +191,28 @@ public class PlayerControler : Figure
     }
     public void ResetPlayer(GameManager gameManager)
     {
-        //kineticBatterySteps = 0;
-        //kineticBatteryCount = 0;
+        //cardPlayed = false;
+        preformingAbility = false;
+
         waxHandCount = 0;
-        //crackedOpalCount = 0;
+        interactButton.SetActive(true);
         conditions.Clear();
     }
     public IEnumerator PreparePlayer(GameManager gameManager)
     {
-        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(2, new List<Func<IEnumerator>>() {() => Move(1, false, true) })));
-        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() {() => Lockpick(1, true) })));
-        level = 1;
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(2, new List<Func<IEnumerator>>() { () => Move(1, false, true) })));
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1, true) })));
+        level = 0;
         potentialLevel = 1;
         XP = 0;
         XPThreshold = 10;
         maxHealth = 100;
         statsDisplayer.SetLevelAndXP(level, potentialLevel, XP, XPThreshold);
         health = maxHealth;
-        transform.position = new Vector3 (0,0,transform.position.z);
+        transform.position = new Vector3(0, 0, transform.position.z);
         oneToOnePos = Vector2.zero;
         currentTile = mapManager.GetTileAtHex(oneToOnePos);
-        statsDisplayer.SetHealthAndBlock(health, 0);
+        statsDisplayer.SetHealthAndBlock(health, maxHealth, 0);
         yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
         statsDisplayer.Plan(actionsRemaining);
         //statsDisplayer.SetConditions(new string[0]);
@@ -230,16 +220,21 @@ public class PlayerControler : Figure
 
     public void TileClicked(GameObject tile)
     {
-        if (isTargetATile && canPreformActions)
+        if (choosingTile)
         {
             clickedTile = tile;
-
-            Vector2 clickedTileCords = clickedTile.transform.position;
-            if (isMoving)
-            {
-                //AttemptToMove(tile, clickedTileCords);
-            }
+            choosingTile = false;
         }
+        //else if (isTargetATile && canPreformActions)
+        //{
+        //    clickedTile = tile;
+
+        //    //Vector2 clickedTileCords = clickedTile.transform.position;
+        //    //if (isMoving)
+        //    //{
+        //    //    //AttemptToMove(tile, clickedTileCords);
+        //    //}
+        //}
     }
     public void PlanMove(GameObject tile)
     {
@@ -330,9 +325,9 @@ public class PlayerControler : Figure
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
             yield return StartCoroutine(actionManager.PreformPreparedActions());
         }
-        else if (moveLeft == 0)
+        else if (moveLeft <= 0)
         {
-            EndAction();
+            isMoving = false;
         }
         else
         {
@@ -357,7 +352,7 @@ public class PlayerControler : Figure
             }
             if (!couldMoveMore)
             {
-                EndAction();
+                isMoving = false;
             }
         }
     }
@@ -366,18 +361,25 @@ public class PlayerControler : Figure
     public IEnumerator FigureClicked(GameObject figure)
     {
         //Debug.Log("clicked" + figure);
-        clickedEnemy = figure;
-        if (canPreformActions && isAttacking)
+        clickedFigure = figure;
+        Figure clickedFigureScript = figure.GetComponent<Figure>();
+        if (choosingTargets && allowedTargets.Contains(clickedFigureScript))
         {
-            if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
+            choosenTarget = clickedFigureScript;
+            choosingTargets = false;
+        }
+        else if (canPreformActions && isAttacking)
+        {
+            if (allowedTargets.Contains(clickedFigureScript) && targetsLeft > 0)
             {
                 targetsLeft--;
-                posibleTargets.Remove(figure.GetComponent<Figure>());
+                allowedTargets.Remove(clickedFigureScript);
+                effectedFigures.Add(clickedFigureScript);
                 if (StartedAttackingEnemyFunc != null)
                 {
                     StartedAttackingEnemyFunc(this);
                 }
-                yield return gameManager.StartCoroutine(clickedEnemy.GetComponent<Figure>().AttackedFor(attackDamageValue, repeats, appliedConditions));
+                yield return gameManager.StartCoroutine(clickedFigureScript.AttackedFor(this, attackDamageValue, repeats, appliedConditions));
                 if (DoneAttackingEnemyFunc != null)
                 {
                     DoneAttackingEnemyFunc(this);
@@ -391,67 +393,94 @@ public class PlayerControler : Figure
         }
         else if (canPreformActions && isAppliyingConditions)
         {
-            if (posibleTargets.Contains(figure.GetComponent<Figure>()) && targetsLeft > 0)
+            if (allowedTargets.Contains(clickedFigureScript) && targetsLeft > 0)
             {
-                //Debug.Log("applied condition " + appliedConditions);
+                effectedFigures.Add(clickedFigureScript);
 
-                yield return StartCoroutine(clickedEnemy.GetComponent<Figure>().GainConditions(appliedConditions));
+                yield return StartCoroutine(clickedFigureScript.GainConditions(appliedConditions));
                 targetsLeft--;
-                posibleTargets.Remove(figure.GetComponent<Figure>());
+                allowedTargets.Remove(clickedFigureScript);
             }
             if (targetsLeft == 0)
             {
                 EndAction();
             }
         }
-        else if (figure.GetComponent<Enemy>())
+        else if (figure.GetComponent<AIFigure>())
         {
-            StartCoroutine(figure.GetComponent<Enemy>().DisplayMovePosibilities());
+            StartCoroutine(figure.GetComponent<AIFigure>().DisplayMovePosibilities());
         }
 
     }
-    
-    public IEnumerator ControledMove(int moveValue, bool isJump = false)
+
+    //public IEnumerator ControledMove(int moveValue, bool isJump = false)
+    //{
+    //    actionDone = false;
+    //    isMoving = true;
+    //    isTargetATile = true;
+    //    moveLeft = moveValue;
+    //    CanJump = isJump;
+    //    UpdateMoveCostDisplay();
+    //    yield return new WaitUntil(() => isMoving == false);
+
+    //}
+    public void UpdateMoveCostDisplay()
     {
-        actionDone = false;
-        isMoving = true;
-        isTargetATile = true;
-        moveLeft = moveValue;
-        CanJump = isJump;
-        if (moveCostDisplaySetting == "On Move")
+        if (moveCostDisplaySetting == "Always" || (moveCostDisplaySetting == "On Move" && isMoving))
         {
-            ShowMoveCostDisplay();
+            mapManager.showMoveCost(true, canJump, canFly);
         }
-        yield return new WaitUntil(() => isMoving == false);
-
+        else
+        {
+            mapManager.showMoveCost(false);
+        }
     }
+    //public IEnumerator ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
+    //{
+    //    actionDone = false;
+    //    isAttacking = true;
+    //    targetsLeft = targets;
+    //    attackDamageValue = attackValue;
+    //    range = attackRange;
+    //    repeats = times;
+    //    isTargetAEnemy = true;
+    //    appliedConditions = attackConditions;
+    //    allowedTargets = FindPosibleTargets("enemy", attackRange);
+    //    yield return new WaitUntil(() => isAttacking == false);
 
-    public IEnumerator ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
+    //}
+
+    //public IEnumerator ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
+    //{
+    //    actionDone = false;
+    //    isAppliyingConditions = true;
+    //    targetsLeft = targets;
+    //    range = conditionsRange;
+    //    appliedConditions = newConditions;
+    //    allowedTargets = FindPosibleTargets(targetType, conditionsRange);
+    //    //yield return null;
+    //    yield return new WaitUntil(() => isAppliyingConditions == false);
+
+    //    //yield return StartCoroutine(); // select targets
+    //}
+    public IEnumerator ControledChooseFigures(List<Figure> posibleTargets, System.Action<Figure> callback)
     {
-        actionDone = false;
-        isAttacking = true;
-        targetsLeft = targets;
-        attackDamageValue = attackValue;
-        range = attackRange;
-        repeats = times;
-        isTargetAEnemy = true;
-        appliedConditions = attackConditions;
-        posibleTargets = FindPosibleTargets("enemy", attackRange);
-        yield return new WaitUntil(() => isAttacking == false);
-
+        //actionDone = false;
+        //isAppliyingConditions = true;
+        allowedTargets = posibleTargets;
+        choosingTargets = true;
+        yield return new WaitUntil(() => choosingTargets == false);
+        callback?.Invoke(choosenTarget);
     }
-
-    public IEnumerator ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
+    public IEnumerator ControledChooseTile(System.Action<GameObject> callback)
     {
-        actionDone = false;
-        isAppliyingConditions = true;
-        targetsLeft = targets;
-        range = conditionsRange;
-        appliedConditions = newConditions;
-        posibleTargets = FindPosibleTargets(targetType, conditionsRange);
-        yield return null;
-        //yield return StartCoroutine(); // select targets
+        //actionDone = false;
+        //isAppliyingConditions = true;
+        choosingTile = true;
+        yield return new WaitUntil(() => choosingTile == false);
+        callback?.Invoke(clickedTile);
     }
+
     public void UpdatePlayer()
     {
         if (!cardPlayed && !gettingReward && isPlayPhase && !deckManager.IsDisplayingCards && !isPreformingAnimation && !preformingAbility)
@@ -503,7 +532,15 @@ public class PlayerControler : Figure
         }
         if (PlayerTurnStarted != null)
         {
-            yield return StartCoroutine(PlayerTurnStarted(this));
+            Delegate[] listeners = PlayerTurnStarted.GetInvocationList();
+            foreach (Delegate action in listeners)
+            {
+                //tells computer that action takes a TurnManager and outputs a IEnumerator
+                var callback = (Func<PlayerControler, IEnumerator>)action;
+                //runs action now that it is the correct type
+                yield return StartCoroutine(callback(this));
+            }
+            //yield return StartCoroutine(GameStarted(this));
         }
         yield return StartCoroutine(deckManager.DrawNewHand());
         TopEnergy = 2;
@@ -514,6 +551,7 @@ public class PlayerControler : Figure
 
     public IEnumerator ForceEndTurn()
     {
+        UpdatePlayer();
         if (cardPlayed)
         {
             playedCardScript.StopPlaying = true;
@@ -544,8 +582,10 @@ public class PlayerControler : Figure
     }
     public void ManualEnd()
     {
+        UpdatePlayer();
         if (preformingAction && isPlayerTurn)
         {
+            //targetsLeft = 0;
             EndAction();
             //ActionDone();
         }
@@ -554,23 +594,20 @@ public class PlayerControler : Figure
     public override void ActionDone()
     {
         //Somthing breaks game but want to convert most actions to EndAction as plans dont go away
-        if (isMoving && moveCostDisplaySetting == "On Move")
-        {
-            mapManager.showMoveCost(false);
-        }
-
-        isMoving = false;
-        CanJump = false;
-        isAttacking = false;
-        actionDone = true;
-        isTargetATile = false;
-        isTargetAEnemy = false;
-        if (preformingAction && actionsRemaining.Count > 0)
-        {
-            actionsRemaining.Remove(actionsRemaining[0]);
-            statsDisplayer.Plan(actionsRemaining);
-        }
-        nextAction = true;
+        //isMoving = false;
+        //CanJump = false;
+        //ShowMoveCostDisplay();
+        //isAttacking = false;
+        //actionDone = true;
+        //isTargetATile = false;
+        //isTargetAEnemy = false;
+        //if (preformingAction && actionsRemaining.Count > 0)
+        //{
+        //    actionsRemaining.Remove(actionsRemaining[0]);
+        //    statsDisplayer.Plan(actionsRemaining);
+        //}
+        //nextAction = true;
+        Debug.Log("oldsytem");
     }
 
     public void ForceEndAction()
@@ -583,40 +620,58 @@ public class PlayerControler : Figure
     }
     public override void EndAction()
     {
+        actionEnded = true;
         string actionName = actionManager.ActionStackNames.Peek();
         //Debug.Log("Ended " + actionName);
         if (actionName == "Move")
         {
             //Debug.Log("Ended Move");
             isMoving = false;
-            CanJump = false;
-
+            choosingTile = false;
+            canJump = false;
             moveLeft = 0;
-            if (isMoving && moveCostDisplaySetting == "On Move")
-            {
-                mapManager.showMoveCost(false);
-            }
+            //if (isMoving && moveCostDisplaySetting == "On Move")
+            //{
+            //    mapManager.showMoveCost(false);
+            //}
+            UpdateMoveCostDisplay();
+
         }
         else if (actionName == "Attack")
         {
             //Debug.Log("Ended Attack");
             isAttacking = false;
+            choosingTargets = false;
             targetsLeft = 0;
+
         }
         else if (actionName == "Condition")
         {
             //Debug.Log("Ended condition");
             isAppliyingConditions = false;
+            choosingTargets = false;
             targetsLeft = 0;
         }
-        else if (actionName == "Ability" || actionName == "Block" || actionName == "Lockpick")
+        else if (actionName == "Augment")
         {
+            //Debug.Log("Ended condition");
+            choosingTargets = false;
+            targetsLeft = 0;
+        }
+        else if (actionName == "Command")
+        {
+            //Debug.Log("Ended condition");
+            choosingTargets = false;
+            targetsLeft = 0;
+        }
+        //else if (actionName == "Skill" || actionName == "Block" || actionName == "Lockpick" || actionName == "LoseHealth")
+        //{
 
-        }
-        else
-        {
-            Debug.Log("Unspecified action ended");
-        }
+        //}
+        //else
+        //{
+        //    Debug.Log("Unspecified action ended");
+        //}
         actionManager.ActionStackNames.Pop();
         if (actionsRemaining.Count > 0)
         {
@@ -631,31 +686,34 @@ public class PlayerControler : Figure
         //actionDone = true; //?
     }
 
+    public void UpdatePlan()
+    {
+        statsDisplayer.Plan(actionsRemaining);
+    }
 
 
 
-    public IEnumerator Ability(int abilityValue, bool isVariable = false)
+    public IEnumerator Skill(int skillValue, bool isVariable = false)
     {
         if (isVariable)
         {
-            abilityValue *= variableCardModifier;
+            skillValue *= variableCardModifier;
         }
         if (isPlanning)
         {
-            //string currentDescriptionString = "Ability " + finalAbility;
-            //string currentDescriptionString = finalAbility + "<sprite name=Ability>";
+            //string currentDescriptionString = "Skill " + finalSkill;
+            //string currentDescriptionString = finalSkill + "<sprite name=Skill>";
             //actionManager.PlanToList.Add(currentDescriptionString);
 
-            ActionDescription currentAction = new ActionDescription("Ability", new List<ActionModifier>() { new ActionModifier(this, null, abilityValue, " <sprite name=Ability>", "Ability") });
+            ActionDescription currentAction = new ActionDescription("Skill", new List<ActionModifier>() { new ActionModifier(this, null, skillValue, " <sprite name=Skill>", "Skill") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
         {
-            int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
-            actionManager.ActionStackNames.Push("Ability");
-            abilityManager.AbilityPower += finalAbility;
-            //abilityManager.SelectedPower += finalAbility;
-            yield return StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower + finalAbility));
+            int finalSkill = conditionEffects.ModifySkill(this, skillValue);
+            actionManager.ActionStackNames.Push("Skill");
+            abilityManager.AbilityPower += finalSkill;
+            yield return StartCoroutine(abilityManager.SetSelectedPower(abilityManager.SelectedPower + finalSkill));
             EndAction();
         }
     }
@@ -676,7 +734,7 @@ public class PlayerControler : Figure
         }
         else
         {
-            int finalLockpick = conditionEffects.ModifyAbility(this, lockpickValue);
+            int finalLockpick = conditionEffects.ModifySkill(this, lockpickValue);
             actionManager.ActionStackNames.Push("Lockpick");
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
             if (currentTile.GetComponent<Lootable>())
@@ -700,8 +758,6 @@ public class PlayerControler : Figure
 
             cardCount *= variableCardModifier;
         }
-        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
-
         if (isPlanning)
         {
             //string currentDescriptionString = "Draw " + cardCount + " card";
@@ -712,61 +768,28 @@ public class PlayerControler : Figure
         }
         else
         {
+            actionManager.ActionStackNames.Push("Draw");
             yield return StartCoroutine(deckManager.DrawCards(cardCount));
-            //ActionDone();
+            EndAction();
         }
     }
-    //public IEnumerator GainEnergy(int amount,bool isTop)
-    //{
-    //    //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
-
-    //    if (isPlanning)
-    //    {
-    //        string currentDescriptionString = "Gain " + amount;
-    //        if (isTop)
-    //        {
-    //            currentDescriptionString += " top";
-    //        }
-    //        else
-    //        {
-    //            currentDescriptionString += " bottom";
-    //        }
-    //        currentDescriptionString += " energy";
-    //        actionManager.PlanToList.Add(currentDescriptionString);
-    //    }
-    //    else
-    //    {
-    //        if (isTop)
-    //        {
-    //            TopEnergy += amount;
-    //        }
-    //        else
-    //        {
-    //            BottomEnergy += amount;
-    //        }
-    //        //ActionDone();
-    //    }
-    //    yield break;
-    //}
     public IEnumerator GainTopEnergy(int amount, bool isVariable = false)
     {
         if (isVariable)
         {
             amount *= variableCardModifier;
         }
-        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
-
         if (isPlanning)
         {
-            //string currentDescriptionString = "Gain " + amount + " top energy";
-            //actionManager.PlanToList.Add(currentDescriptionString);
-
             ActionDescription currentAction = new ActionDescription("TopEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " top energy", "TopEnergy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
         {
+            actionManager.ActionStackNames.Push("TopEnergy");
             TopEnergy += amount;
+            EndAction();
+
             //ActionDone();
         }
         yield break;
@@ -777,19 +800,16 @@ public class PlayerControler : Figure
         {
             amount *= variableCardModifier;
         }
-        //int finalAbility = conditionEffects.ModifyAbility(this, abilityValue);
         if (isPlanning)
         {
-            //string currentDescriptionString = "Gain " + amount + " bottom energy";
-            //actionManager.PlanToList.Add(currentDescriptionString);
-
-            ActionDescription currentAction = new ActionDescription("BottemEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " bottom energy", "BottemEnergy") });
+            ActionDescription currentAction = new ActionDescription("BottomEnergy", new List<ActionModifier>() { new ActionModifier(this,"Gain ", amount, " bottom energy", "BottomEnergy") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
         {
+            actionManager.ActionStackNames.Push("BottomEnergy");
             BottomEnergy += amount;
-            //ActionDone();
+            EndAction();
         }
         yield break;
 
@@ -819,21 +839,17 @@ public class PlayerControler : Figure
             unmodifiedAction = true;
             string planString = string.Empty;
             yield return StartCoroutine(GetPlanString(ability.Abilities ,(result) => { planString = result; }));
-            currentDescriptionString += ": " + ability.Cost + " <sprite name=Ability> for " + planString;
-            //Debug.Log(currentDescriptionString);
-            //Debug.Log(planString);
-
-            //currentDescriptionString += ": " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
+            currentDescriptionString += ": " + ability.Cost + " <sprite name=Skill> for " + planString;
             unmodifiedAction = false;
-            //actionManager.PlanToList.Add(currentDescriptionString);
-
 
             ActionDescription currentAction = new ActionDescription("GainAbility", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
             actionManager.PlanToList.Add(currentAction);
         }
         else
         {
+            actionManager.ActionStackNames.Push("TopEnergy");
             yield return StartCoroutine(abilityManager.GainAbility(ability));
+            EndAction();
             //ActionDone();
         }
         yield break;
@@ -844,10 +860,7 @@ public class PlayerControler : Figure
         {
             string planString = string.Empty;
             yield return StartCoroutine(GetPlanString(ability.Abilities, (result) => { planString = result; }));
-            string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + planString;
-
-            //string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Ability> for " + GetPlanString(ability.Abilities);
-            //actionManager.PlanToList.Add(currentDescriptionString);
+            string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Skill> for " + planString;
             ActionDescription currentAction = new ActionDescription("Ability", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
             actionManager.PlanToList.Add(currentAction);
         }
@@ -857,15 +870,231 @@ public class PlayerControler : Figure
             //ActionDone();
         }
     }
+    public IEnumerator AddKeyword(string keyWord, int keyWordValue = 1)
+    {
+        if (isPlanning)
+        {
+            playedCardScript.CurrentKeywords[keyWord] = keyWordValue;
+            //if (keyWord == "Augment")
+            //{
+            //    effectedFigure = this;
+            //}
+
+        }
+        else
+        {
+            actionEnded = false;
+            actionManager.ActionStackNames.Push(keyWord);
+            if (keyWord == "Augment")
+            {
+                effectedFigures = new List<Figure>();
+                List<Figure> posibleTargets = new List<Figure>(currentSummons);
+                targetsLeft = keyWordValue;
+                while (targetsLeft > 0)
+                {
+                    Figure targetedFigure = null;
+                    yield return playerControler.ControledChooseFigures(posibleTargets, (result) => { targetedFigure = result; });
+                    posibleTargets.Remove(targetedFigure);
+                    if (targetsLeft > 0)
+                    {
+                        effectedFigures.Add(targetedFigure);
+                        targetsLeft--;
+                    }
+                }
+                playedCardScript.ActingFigures = new List<Figure>(effectedFigures);
+                List<Func<bool>> boolList = new List<Func<bool>>();
+                foreach (Figure effectedFigure in effectedFigures)
+                {
+                    boolList.Add(() => effectedFigure.Exists == false);
+                }
+                PlayedCardScript.PrepareExhaustAfterPlayed(() => boolList.All(condition => condition()), deckManager.Discard);
+            }
+            //if (keyWord == "Command")
+            //{
+            //    effectedFigures = new List<Figure>();
+            //    List<Figure> posibleTargets = new List<Figure>(currentSummons);
+            //    targetsLeft = keyWordValue;
+            //    while (targetsLeft > 0)
+            //    {
+            //        Figure targetedFigure = null;
+            //        yield return playerControler.ControledChooseFigures(posibleTargets, (result) => { targetedFigure = result; });
+            //        posibleTargets.Remove(targetedFigure);
+            //        if (targetsLeft > 0)
+            //        {
+            //            effectedFigures.Add(targetedFigure);
+            //            targetsLeft--;
+            //        }
+            //    }
+            //    playedCardScript.ActingFigures = new List<Figure>(effectedFigures);
+            //    //List<Func<bool>> boolList = new List<Func<bool>>();
+            //    //foreach (Figure effectedFigure in effectedFigures)
+            //    //{
+            //    //    boolList.Add(() => effectedFigure.Exists == false);
+            //    //}
+            //    //PlayedCardScript.PrepareExhaustAfterPlayed(() => boolList.All(condition => condition()), deckManager.Discard);
+            //}
+            if (keyWord == "Exausting")
+            {
+                int currentShuffles = OverallStatistics.shuffles;
+                PlayedCardScript.PrepareExhaustAfterPlayed(() => OverallStatistics.shuffles > currentShuffles + keyWordValue, deckManager.Discard);
+            }
+            if (!actionEnded)
+            {
+                EndAction();
+
+            }
+        }
+        //Debug.Log("done with action");
+    }
+
+    //all folowing actiions will have the commanded figures as targets
+    public IEnumerator Command(int targets = 1, string targetType = "summon", int range = Variables.gameInfinityValue)
+    {
+        if (isPlanning)
+        {
+            List<ActionModifier> actionModifiers = new List<ActionModifier>();
+            if (targetType == "summon")
+            {
+                if (targets == 1)
+                {
+                    actionModifiers.Add(new ActionModifier(this, "Command", valueType: "Targets"));
+                }
+                else
+                {
+                    actionModifiers.Add(new ActionModifier(this, "Command ", targets, valueType: "Targets"));
+                }
+            }
+            else if (targetType == "enemy")
+            {
+                if (targets == 1)
+                {
+                    actionModifiers.Add(new ActionModifier(this, "Control ", targets, " enemy", valueType: "Targets"));
+                }
+                else
+                {
+                    actionModifiers.Add(new ActionModifier(this, "Control ", targets, " enemies", valueType: "Targets"));
+                }
+            }
+            if (range != Variables.gameInfinityValue)
+            {
+                actionModifiers.Add(new ActionModifier(this, " ", range, " <sprite name=Range>", "Range"));
+            }
+            ActionDescription currentAction = new ActionDescription("Command", actionModifiers);
+            actionManager.PlanToList.Add(currentAction);
+            //currentDescription.Insert(0, new ActionDescription("Command", new List<ActionModifier>() { new ActionModifier(playerControler, "Command") }));
+
+        }
+        else
+        {
+            effectedFigures = new List<Figure>();
+            List<Figure> posibleTargets = FindPosibleTargets(targetType, range);
+            targetsLeft = targets;
+            while (targetsLeft > 0)
+            {
+                Figure targetedFigure = null;
+                yield return playerControler.ControledChooseFigures(posibleTargets, (result) => { targetedFigure = result; });
+                posibleTargets.Remove(targetedFigure);
+                if (targetsLeft > 0)
+                {
+                    effectedFigures.Add(targetedFigure);
+                    targetsLeft--;
+                }
+            }
+            playedCardScript.ActingFigures = new List<Figure>(effectedFigures);
+        }
+
+
+    }
+
+    public IEnumerator Augment(Condition conditions, bool isManual = true)
+    {
+        if (isPlanning)
+        {
+            actionAbnormalities.Add("Augment");
+            yield return StartCoroutine(ApplyCondition(conditions, "summon", Variables.gameInfinityValue, 1, false, true));
+            actionAbnormalities.Remove("Augment");
+            playedCardScript.CurrentKeywords["Augment"] = 1;
+            //ActionDescription currentAction = new ActionDescription("Summon", new List<ActionModifier>() { new ActionModifier(this, "Summon " + summon.name) });
+        }
+        else if (!isPreparingMove)
+        {
+            //ActionDone();
+            yield return StartCoroutine(ApplyCondition(conditions,"summon",Variables.gameInfinityValue, 1 ,false,true));
+            List<Func<bool>> conditionList = new List<Func<bool>>();
+            foreach (Figure effectedFigure in effectedFigures)
+            {
+                conditionList.Add(() => effectedFigure.Exists == false);
+            }
+            PlayedCardScript.PrepareExhaustAfterPlayed(() => conditionList.All(condition => condition()), deckManager.Discard);
+
+            //            foreach (Figure effectedFigure in effectedFigures)
+            //            {
+
+            //                conditionList.Add(() => effectedFigure.exists == false);
+
+            //            }
+
+            //            // Example conditions
+            //            conditionList.Add(() => PlayerHasEnoughGold());
+            //            // Check if every function returns true
+            //            if (conditions.All(() => effectedFigure.exists == false))
+            //            {
+            //                Debug.Log("All conditions met! Proceeding...");
+            //            }
+            //        // Invokes each function and returns true only if ALL return true
+            //        conditionList.All(func => func != null && func());
+        }
+        
+
+
+        //if (isVariable)
+        //{
+        //    blockValue *= variableCardModifier;
+        //}
+        //int finalBlock = conditionEffects.ModifyBlock(this, blockValue);
+
+
+    }
+    //int x = 0;
+    public IEnumerator Exhausting(int duration)
+    {
+        if (isPlanning)
+        {
+            playedCardScript.CurrentKeywords["Exhausting"] = duration;
+            //ActionDescription currentAction = new ActionDescription("Summon", new List<ActionModifier>() { new ActionModifier(this, "Summon " + summon.name) });
+        }
+        else if (!isPreparingMove)
+        {
+            int currentShuffles = OverallStatistics.shuffles;
+            PlayedCardScript.PrepareExhaustAfterPlayed(() => OverallStatistics.shuffles > currentShuffles + duration, deckManager.Discard);
+        }
+        yield break;
+    }
+
+
+
+
     public override IEnumerator LoseHealth(int amount)
     {
-
-        
-        yield return StartCoroutine(base.LoseHealth(amount));
-        if (LostHealth != null)
+        if (isPlanning)
         {
-            LostHealth(this);
+            ActionDescription currentAction = new ActionDescription("LoseHealth", new List<ActionModifier>() { new ActionModifier(this, "Lose ", amount, " health", "LoseHealth") });
+            actionManager.PlanToList.Add(currentAction);
         }
+        else
+        {
+            actionManager.ActionStackNames.Push("LoseHealth");
+            yield return StartCoroutine(base.LoseHealth(amount));
+            if (LostHealth != null)
+            {
+                LostHealth(this);
+            }
+            EndAction();
+
+        }
+        yield break;
+
+
         //if (adaptiveShieldCount > 0)
         //{
         //    //actionManager.QueueAction(playerControler.ApplyCondition(new StartOfTurnBlock(Variables.adaptiveShieldBlock * adaptiveShieldCount)));
@@ -886,7 +1115,7 @@ public class PlayerControler : Figure
 
     public void UpdateMoveType()
     {
-        ShowMoveCostDisplay();
+        UpdateMoveCostDisplay();
     }
     public override IEnumerator MoveOneSpace()
     {
@@ -902,7 +1131,9 @@ public class PlayerControler : Figure
         {
             if (conditions[i].ConditionName == "Untouchable")
             {
+                unmodifiedAction = true;
                 actionManager.PrepareAction(Block(conditions[i].Value));
+                unmodifiedAction = false;
                 //yield return StartCoroutine(actionManager.PreformAction(Block(conditions[i].Value)));
                 //Debug.Log("counted down " + conditions[i].Name + " to " + conditions[i].Duration);
             }
@@ -949,8 +1180,6 @@ public class PlayerControler : Figure
         potentialLevel++;
         XP -= XPThreshold;
         XPThreshold += 2;
-        //temp
-        LevelUp();
     }
 
     public IEnumerator LevelUp()

@@ -56,15 +56,15 @@ public class FigureStats : MonoBehaviour
         
     }
     
-    public void SetHealthAndBlock(int health, int block)
+    public void SetHealthAndBlock(int health, int maxHealth, int block)
     {
         if (block > 0)
         {
-            healthText.SetText("Health: " + health + " Block: " + block);
+            healthText.SetText("Health: " + health + "/" + maxHealth + " Block: " + block);
         }
         else
         {
-            healthText.SetText("Health: " + health);
+            healthText.SetText("Health: " + health + "/" + maxHealth);
         }
     }
 
@@ -92,9 +92,9 @@ public class FigureStats : MonoBehaviour
             {
                 string currentConditionText = "";
                 //Debug.Log("displaying condition: " + condition.ConditionName);
-                if (condition.Description != null)
+                if (condition.ActiveDescription != null)
                 {
-                    currentConditionText = condition.Description;
+                    currentConditionText = condition.ActiveDescription;
                 }
                 else
                 {

@@ -5,15 +5,6 @@ public class NimbleDodge : Card
 {
     public NimbleDodge() : base(1, 1, 1) { }
 
-    public override void Start()
-    {
-        base.Start();
-    }
-    public override void Update()
-    {
-        base.Update();
-    }
-
 
     public override void PrepareTop()
     {

@@ -22,6 +22,7 @@ public class RefrenceStorage : MonoBehaviour
     public static GameObject interactButton;
     public static GameObject pauseScreenBlocker;
     public static GameObject deathScreenBlocker;
+    public static GameObject tooltip;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -44,10 +45,9 @@ public class RefrenceStorage : MonoBehaviour
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
 
         interactButton = GameObject.Find("InteractButton");
-
         pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
         deathScreenBlocker = GameObject.Find("DeathScreenBlocker");
-
+        tooltip = GameObject.Find("Tooltip");
     }
 
 }

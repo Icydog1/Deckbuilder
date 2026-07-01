@@ -6,13 +6,17 @@ public class OverallStatistics : MonoBehaviour
     public static int totalEnemiesKilled = 0;
     public static Dictionary<string, int> killedEnemies = new Dictionary<string, int>();
     public static int round = 0;
+    public static int enemyScaling = 0;
     public static int damageDealt = 0;
+    public static int shuffles = 0;
 
     public static void ResetStatistics()
     {
         totalEnemiesKilled = 0;
         killedEnemies.Clear();
         round = 0;
+        enemyScaling = 0;
         damageDealt = 0;
+        shuffles = 0;
     }
 }

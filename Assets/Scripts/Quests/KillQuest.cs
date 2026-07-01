@@ -25,7 +25,7 @@ public class KillQuest : Quest
             int WaitUntilValue = OverallStatistics.totalEnemiesKilled + 1;
             yield return new WaitUntil(() => OverallStatistics.totalEnemiesKilled >= WaitUntilValue);
         }
-        Debug.Log("quest sucsesfull");
+        //Debug.Log("quest sucsesfull");
         CompleteQuest();
 
     }

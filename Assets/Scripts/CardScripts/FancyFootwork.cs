@@ -2,11 +2,6 @@ public class FancyFootwork : Card
 {
     public FancyFootwork() : base(1, 0, 1) { }
 
-    public override void Start()
-    {
-        
-        base.Start();
-    }
     public override void PrepareTop()
     {
         currentActions.Add( new Action(() => playerControler.Block(8)));

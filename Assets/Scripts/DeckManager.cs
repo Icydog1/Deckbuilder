@@ -1,31 +1,33 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
-using static Lootable;
 
 public class DeckManager : MonoBehaviour
 {
     private GameManager gameManager;
     [SerializeField]
-    private GameObject hand, deck, discard, play;
+    private GameObject hand, deck, discard, play, exhaust;
     public GameObject Hand { get { return hand; } }
+    public GameObject Deck { get { return deck; } }
+    public GameObject Discard { get { return discard; } }
+
     [SerializeField]
     private List<GameObject> startingDeck = new List<GameObject>();
 
     public List<GameObject> entireDeck = new List<GameObject>();
-    public List<GameObject> deckContents = new List<GameObject>(), handContents = new List<GameObject>(), discardContents = new List<GameObject>(), playContents = new List<GameObject>();
+    public List<GameObject> deckContents = new List<GameObject>(), handContents = new List<GameObject>(), discardContents = new List<GameObject>(), playContents = new List<GameObject>(), exhaustContents = new List<GameObject>();
     public List<GameObject> DeckContents {  get { return deckContents; } }
     public List<GameObject> DiscardContents { get { return discardContents; } }
+    public List<GameObject> ExhaustContents { get { return exhaustContents; } }
+
     public List<GameObject> EntireDeck { get { return entireDeck; } }
 
     private List<GameObject> displayedList = new List<GameObject>();
     private List<GameObject> displayedListName;
     private Dictionary<string,List<GameObject>> posibleCardLocations = new Dictionary<string,List<GameObject>>();
-    private VariableDisplayer cardsInDeckDisplay, cardsInDiscardDisplay, cardsInEntireDeckDisplay;
+    private VariableDisplayer cardsInDeckDisplay, cardsInDiscardDisplay, cardsInEntireDeckDisplay, cardsInExhaustDisplay;
     private float relativeSpaceBetweenCardsInHand = 0.35f;
     //if change set hand positon
     private float baseCardSize = 0.9f;
@@ -63,6 +65,7 @@ public class DeckManager : MonoBehaviour
         cardsInDeckDisplay = GameObject.Find("CardsInDeckDisplay").GetComponent<VariableDisplayer>();
         cardsInDiscardDisplay = GameObject.Find("CardsInDiscardDisplay").GetComponent<VariableDisplayer>();
         cardsInEntireDeckDisplay = GameObject.Find("CardsInEntireDeckDisplay").GetComponent<VariableDisplayer>();
+        cardsInExhaustDisplay = GameObject.Find("CardsInExhaustDisplay").GetComponent<VariableDisplayer>();
         //listDisplayer = GameObject.Find("ListDisplayer");
         uIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
@@ -83,6 +86,7 @@ public class DeckManager : MonoBehaviour
         posibleCardLocations.Add("hand", handContents);
         posibleCardLocations.Add("discard", discardContents);
         posibleCardLocations.Add("play", playContents);
+        posibleCardLocations.Add("exhaust", exhaustContents);
 
         GameManager.ResetGame += ResetDeck;
         GameManager.GameStartedFunctions += SpawnStartingDeck;
@@ -110,6 +114,7 @@ public class DeckManager : MonoBehaviour
         handContents.Clear();
         discardContents.Clear();
         playContents.Clear();
+        exhaustContents.Clear();
         entireDeck.Clear();
     }
     public void SpawnStartingDeck(GameManager gameManager)
@@ -182,6 +187,12 @@ public class DeckManager : MonoBehaviour
             playerControler.PlayedCardScript.StopPlaying = true;
             playerControler.ForceEndAction();
         }
+        if (playContents.Contains(card))
+        {
+            exhaustContents.Remove(card);
+            cardsInExhaustDisplay.DisplayText(exhaustContents.Count);
+            //add more exaust stuff
+        }
         entireDeck.Remove(card);
         Destroy(card);
     }
@@ -213,6 +224,7 @@ public class DeckManager : MonoBehaviour
             MoveTo(currentCard, deck);
         }
         */
+        OverallStatistics.shuffles++;
         while (discardContents.Count > 0)
         {
             yield return StartCoroutine(MoveTo(discardContents[0], deck));
@@ -234,7 +246,7 @@ public class DeckManager : MonoBehaviour
     }
 
 
-    public IEnumerator MoveTo(GameObject card, GameObject location, int newIndex = -1)
+    public IEnumerator MoveTo(GameObject card, GameObject location, int newIndex = Variables.gameNullValue)
     {
         GameObject cardLocation = card.transform.parent.gameObject;
         string locationName = cardLocation.name.ToLower();
@@ -250,7 +262,7 @@ public class DeckManager : MonoBehaviour
         //    }
         //}
         DeSelectCard(card);
-        if (newIndex != -1)
+        if (newIndex != Variables.gameNullValue)
         {
             //GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
             posibleCardLocations[location.name.ToLower()].Insert(newIndex, card);
@@ -282,11 +294,40 @@ public class DeckManager : MonoBehaviour
         mouseManager.MouseOffObject(card);
         cardsInDeckDisplay.DisplayText(deckContents.Count);
         cardsInDiscardDisplay.DisplayText(discardContents.Count);
+        cardsInExhaustDisplay.DisplayText(exhaustContents.Count);
 
         yield return StartCoroutine(UpdateHand());
         
     }
+    public IEnumerator ExhaustUntil(GameObject card, Func<bool> conditiion, GameObject returnToList)
+    {
+        //Debug.Log("exhausing");
+        yield return StartCoroutine(MoveTo(card, exhaust));
+        //Debug.Log("done exhausing");
+        StartCoroutine(ExhaustWaitUntil(card, conditiion, returnToList));
+    }
+    public IEnumerator ExhaustWaitUntil(GameObject card, Func<bool> conditiion, GameObject returnToList)
+    {
+        //Debug.Log("waiting");
+        yield return new WaitUntil(conditiion);
+        //Debug.Log("done");
+        int index = Variables.gameNullValue;
+        if (returnToList == deck)
+        {
+            index = UnityEngine.Random.Range(0, deckContents.Count-1);
+        }
+        yield return StartCoroutine(MoveTo(card, returnToList, index));
+    }
+    public IEnumerator returnFromExhaust(GameObject card, string returnToList)
+    {
+        int index = Variables.gameNullValue;
+        if (returnToList == "deck")
+        {
+            index = UnityEngine.Random.Range(0, deckContents.Count);
+        }
+        yield return StartCoroutine(MoveTo(card, (GameObject)GetType().GetField(returnToList).GetValue(this), index));
 
+    }
     public List<GameObject> GetListByName(string listName)
     {
         //Debug.Log(listName);
@@ -308,7 +349,7 @@ public class DeckManager : MonoBehaviour
         {
             Canvas canvas = card.AddComponent<Canvas>();
             canvas.overrideSorting = true;
-            canvas.sortingLayerName = "Card";
+            canvas.sortingLayerName = "SelectedCard";
             card.AddComponent<GraphicRaycaster>();
             //card.transform.SetAsLastSibling();
             SetRelativeCardSize(card, 2);

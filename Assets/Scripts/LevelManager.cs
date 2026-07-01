@@ -138,7 +138,7 @@ public class LevelManager : MonoBehaviour
     public void BossKilled(Vector2 bossCords)
     {
         rewardManager.BossReward();
-        playerControler.Heal(playerControler.MaxHealth);
+        playerControler.HealDamage(playerControler.MaxHealth);
         Destroy(mapManager.GetTileAtHex(bossCords));
         levelSpecific.Add(Instantiate(stair, mapManager.OneToOneToPos(bossCords), Quaternion.identity));
 

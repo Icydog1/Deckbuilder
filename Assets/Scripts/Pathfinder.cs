@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -121,6 +122,14 @@ public class Pathfinder : MonoBehaviour
         playerSafeTiles = new List<Vector2>(safeTiles);
         playerUnsafeTiles = new List<Vector2>(unsafeTiles);
         playerImpassableTiles = new List<Vector2>(impassableTiles);
+        //for (int i = 0; i < playerElevations.Count; i++)
+        //{
+        //    foreach (Vector2 tileCords in playerElevations[i])
+        //    {
+        //        GameObject tile = mapManager.GetTileAtHex(tileCords);
+        //        tile.GetComponent<Tile>().distance = i;
+        //    }
+        //}
         //Debug.Log("area done");
         yield return null;
 

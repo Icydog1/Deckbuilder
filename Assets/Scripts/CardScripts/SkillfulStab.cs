@@ -2,14 +2,7 @@ public class SkillfulStab : Card
 {
     public SkillfulStab() : base(1, 1, 0) { }
 
-    public override void Start()
-    {
-        base.Start();
-    }
-    public override void Update()
-    {
-        base.Update();
-    }
+
 
 
     public override void PrepareTop()
@@ -21,6 +14,6 @@ public class SkillfulStab : Card
 
     public override void PrepareBottom()
     {
-        currentActions.Add( new Action(() => playerControler.Ability(10)));
+        currentActions.Add( new Action(() => playerControler.Skill(10)));
     }
 }

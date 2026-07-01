@@ -5,15 +5,6 @@ using System.Collections.Generic;
 public class Prepare : Card
 {
     public Prepare() : base(2, 1, 1) { }
-    public override void Start()
-    {
-        
-        base.Start();
-    }
-    public override void Update()
-    {
-        base.Update();
-    }
 
     public override void PrepareTop()
     {

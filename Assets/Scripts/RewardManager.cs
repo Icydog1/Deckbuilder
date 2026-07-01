@@ -84,10 +84,19 @@ public class RewardManager : MonoBehaviour
         relicRewardsLists.Add(commonRelicRewards);
         relicRewardsLists.Add(uncommonRelicRewards);
         relicRewardsLists.Add(rareRelicRewards);
+        GameManager.ResetGame += ResetState;
         GameManager.GameStartedFunctions += GenerateRewardPools;
+
         //GenerateRewardPools();
 
 
+    }
+    public void ResetState(GameManager gameManager)
+    {
+        if (isGettingReward)
+        {
+            RewardSkiped();
+        }
     }
     public void GenerateRewardPools(GameManager gameManager)
     {
@@ -98,10 +107,6 @@ public class RewardManager : MonoBehaviour
         uncommonRelicRewards.Clear();
         rareRelicRewards.Clear();
 
-        //if (commonProbability + uncommonProbability + rareProbability != 1f)
-        //{
-        //    Debug.Log("reward probabilitys dont add to 1");
-        //}
         foreach (GameObject card in allCardRewards)
         {
             int cardRarity = card.GetComponent<Card>().Rarity;
@@ -132,19 +137,7 @@ public class RewardManager : MonoBehaviour
 
         }
     }
-    void Start()
-    {
-        //GameManager.GameStartedFunctions += InitialReward;
 
-        isRewardCard = true;
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void AnyReward()
     {
         isGettingReward = true;
@@ -157,13 +150,6 @@ public class RewardManager : MonoBehaviour
         playerControler.GettingReward = false;
         uIManager.IsGettingReward = false;
     }
-    //public void InitialReward(GameManager gameManager)
-    //{
-    //    AnyReward();
-    //    GenerateReward(3);
-
-    //}
-
 
     public IEnumerator TileReward(GameObject tile, List<Reward> rewards)
     {
@@ -180,7 +166,7 @@ public class RewardManager : MonoBehaviour
             }
             else if (reward.rewardType == 3)
             {
-                GainHealing(reward.rewardAmount);
+                GainHealingReward(reward.rewardAmount);
             }
             yield return new WaitUntil(() => isGettingReward == false);
         }
@@ -202,7 +188,7 @@ public class RewardManager : MonoBehaviour
             }
             else if (reward.rewardType == 3)
             {
-                GainHealing(reward.rewardAmount);
+                GainHealingReward(reward.rewardAmount);
             }
             yield return new WaitUntil(() => isGettingReward == false);
         }
@@ -219,9 +205,9 @@ public class RewardManager : MonoBehaviour
         //rewardRarity = tileScript.Raity;
         StartCoroutine(GenerateReward(3, false));
     }
-    public void GainHealing(int amount)
+    public void GainHealingReward(int amount)
     {
-        playerControler.Heal(amount);
+        playerControler.HealDamage(amount);
         GainedReward();
     }
     public IEnumerator RemoveCardInDeck()

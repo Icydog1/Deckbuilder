@@ -1,0 +1,494 @@
+fileFormatVersion: 2
+guid: bec18f59ab4f97d419b967438e6c079a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8122094006645031798
+    second: eternal_peach_512_0
+  - first:
+      213: 3309554819328100437
+    second: eternal_peach_512_1
+  - first:
+      213: 6737178250919690178
+    second: eternal_peach_512_2
+  - first:
+      213: -4428140543586453145
+    second: eternal_peach_512_3
+  - first:
+      213: -2323511770588918005
+    second: eternal_peach_512_4
+  - first:
+      213: -3126269881888552585
+    second: eternal_peach_512_5
+  - first:
+      213: 5178153850965072581
+    second: eternal_peach_512_6
+  - first:
+      213: -2580940917582407227
+    second: eternal_peach_512_7
+  - first:
+      213: 3736717561165956175
+    second: eternal_peach_512_8
+  - first:
+      213: -6033636246353846002
+    second: eternal_peach_512_9
+  - first:
+      213: -4918742832233735387
+    second: eternal_peach_512_10
+  - first:
+      213: -4495001588673920431
+    second: eternal_peach_512_11
+  - first:
+      213: 6806845359426922421
+    second: eternal_peach_512_12
+  - first:
+      213: -8824547852735913838
+    second: eternal_peach_512_13
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 512
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: eternal_peach_512_0
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 458
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8cf79d9886884f80800000000000000
+      internalID: -8122094006645031798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 3
+        width: 455
+        height: 446
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 558cbbac296eded20800000000000000
+      internalID: 3309554819328100437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_2
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 410
+        width: 40
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cf3e829ce34f7d50800000000000000
+      internalID: 6737178250919690178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_3
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 443
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 769360c03a51c82c0800000000000000
+      internalID: -4428140543586453145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_4
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 435
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0fcb9aea5a31cfd0800000000000000
+      internalID: -2323511770588918005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_5
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 314
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 779c70a2b124d94d0800000000000000
+      internalID: -3126269881888552585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_6
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 275
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ca181f0e7f7cd740800000000000000
+      internalID: 5178153850965072581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_7
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 267
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c9da3de8e7ae2cd0800000000000000
+      internalID: -2580940917582407227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_8
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 284
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f44c24be2dc7bd330800000000000000
+      internalID: 3736717561165956175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_9
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 250
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0168203dc7344ca0800000000000000
+      internalID: -6033636246353846002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_10
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 190
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52b9537647d1dbbb0800000000000000
+      internalID: -4918742832233735387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_11
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 94
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1524642eedb8e91c0800000000000000
+      internalID: -4495001588673920431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_12
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 90
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b768a94ac5c67e50800000000000000
+      internalID: 6806845359426922421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: eternal_peach_512_13
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 92
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2906d3e7b78e88580800000000000000
+      internalID: -8824547852735913838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      eternal_peach_512_0: -8122094006645031798
+      eternal_peach_512_1: 3309554819328100437
+      eternal_peach_512_10: -4918742832233735387
+      eternal_peach_512_11: -4495001588673920431
+      eternal_peach_512_12: 6806845359426922421
+      eternal_peach_512_13: -8824547852735913838
+      eternal_peach_512_2: 6737178250919690178
+      eternal_peach_512_3: -4428140543586453145
+      eternal_peach_512_4: -2323511770588918005
+      eternal_peach_512_5: -3126269881888552585
+      eternal_peach_512_6: 5178153850965072581
+      eternal_peach_512_7: -2580940917582407227
+      eternal_peach_512_8: 3736717561165956175
+      eternal_peach_512_9: -6033636246353846002
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

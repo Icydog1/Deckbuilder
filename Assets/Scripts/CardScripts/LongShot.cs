@@ -5,15 +5,6 @@ using UnityEngine;
 {
     public LongShot() : base(1, 1, 1) { }
 
-    public override void Start()
-    {
-
-        base.Start();
-    }
-    public override void Update()
-    {
-        base.Update();
-    }
 
 
     public override void PrepareTop()
@@ -24,6 +15,6 @@ using UnityEngine;
 
     public override void PrepareBottom()
     {
-        currentActions.Add( new Action(() => playerControler.Ability(20)));
+        currentActions.Add( new Action(() => playerControler.Skill(20)));
     }
 }

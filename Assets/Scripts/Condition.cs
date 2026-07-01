@@ -7,11 +7,18 @@ using UnityEngine;
 
 public class Condition
 {
-    //protected ConditionEffects conditionEffects;
+    //internal name
     protected string conditionName;
     public string ConditionName { get { return conditionName; } }
+    //name shown to player
     protected string actionName;
     public string ActionName { get { return actionName; } }
+    //override of what player sees for while being planned
+    protected string plannedDescription;
+    public string PlannedDescription { get { return plannedDescription; } }
+    //override of what player sees for while active
+    protected string activeDescription;
+    public string ActiveDescription { get { return activeDescription; } }
     protected int amount;
     public int Value { get { return amount; } set { amount = value; } }
 
@@ -39,26 +46,19 @@ public class Condition
 
     protected string[] abnormality;
     public string[] Abnormality { get { return abnormality; } }
-    protected string description;
-    public string Description { get { return description; } }
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, string effectedActionType, bool isShown = true, string conditionDescription = null, string[] conditionAbnormality = null, Func<IEnumerator>[] actionPlan = null)
+    public Condition(string name, int conditionValue, int conditionDuration, int conditionAddType, bool isStartOfTurnCondition, string effectedActionType, bool isShown = true, string shownName = null, string[] conditionAbnormality = null, Func<IEnumerator>[] actionPlan = null)
     {
         //Debug.Log("base Condition generated");
         conditionName = name;
+        if (shownName == null)
+        {
+            actionName = name;
+        }
+        else
+        {
+            actionName = shownName;
+        }
         amount = conditionValue;
         duration = conditionDuration;
         addType = conditionAddType;
@@ -67,8 +67,7 @@ public class Condition
         isStartOfTurn = isStartOfTurnCondition;
         abnormality = conditionAbnormality;
         plan = actionPlan;
-        actionName = name;
-        description = conditionDescription;
+        //planDescription = conditionDescription;
     }
     public virtual IEnumerator OnGain(Figure figure)
     {
@@ -84,6 +83,9 @@ public class Condition
     {
         return (Condition)this.MemberwiseClone();
     }
+
+
+
 }
 
 public class Strength : Condition
@@ -103,7 +105,7 @@ public class Speed : Condition
 
 public class Finesse: Condition
 {
-    public Finesse(int conditionValue, int conditionDuration = -1) : base("Finesse", conditionValue, conditionDuration, 1, false, "AbilityValue") { }
+    public Finesse(int conditionValue, int conditionDuration = -1) : base("Finesse", conditionValue, conditionDuration, 1, false, "SkillValue") { }
 }
 public class Accuracy : Condition
 {
@@ -142,18 +144,22 @@ public class NextTurns : Condition
     }
 }
 
-public class NextTurnBlock : Condition
+public class StartOfTurnBlock : Condition
 {
-    public NextTurnBlock(int conditionValue, int conditionDuration = 1) : base("NextTurnBlock", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn block", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+    public StartOfTurnBlock(int conditionValue, int conditionDuration = 1) : base("StartOfTurnBlock", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn block", new string[] { "No Self Target Description" }) 
+    {
+        //actionName = "Start of turn gain " + conditionValue + " block";
+        //actionName = "Start of turn gain " + conditionValue + " block";
+    }
 }
 
 public class NextTurnTopEnergy : Condition
 {
-    public NextTurnTopEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnTopEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn top energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+    public NextTurnTopEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnTopEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn top energy", new string[] { "No Self Target Description" }) { }
 }
 public class NextTurnBottomEnergy : Condition
 {
-    public NextTurnBottomEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnBottomEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn bottom energy", new string[] { "Delayed Gain", "No Self Target Description" }) { }
+    public NextTurnBottomEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnBottomEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn bottom energy", new string[] {"No Self Target Description" }) { }
 }
 public class GainAbility : Condition
 {

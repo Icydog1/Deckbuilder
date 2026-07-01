@@ -110,26 +110,26 @@ public class ConditionEffects : MonoBehaviour
         return finalMove;
     }
 
-    public int ModifyAbility(Figure effectedFigure, int initalAbility)
+    public int ModifySkill(Figure effectedFigure, int initalSkill)
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initalAbility = Mathf.Clamp(initalAbility, 0, Variables.gameMaxValue);
-            return initalAbility;
+            initalSkill = Mathf.Clamp(initalSkill, 0, Variables.gameMaxValue);
+            return initalSkill;
         }
-        float modifiedAbility = initalAbility;
+        float modifiedSkill = initalSkill;
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
             if (condition.ConditionName == "Finesse")
             {
-                modifiedAbility += condition.Value;
+                modifiedSkill += condition.Value;
             }
         }
-        int finalAbility = Mathf.FloorToInt(modifiedAbility);
-        finalAbility = Mathf.Clamp(finalAbility, 0, Variables.gameMaxValue);
+        int finalSkill = Mathf.FloorToInt(modifiedSkill);
+        finalSkill = Mathf.Clamp(finalSkill, 0, Variables.gameMaxValue);
 
-        return finalAbility;
+        return finalSkill;
     }
     public int ModifyRange(Figure effectedFigure, int initalRange)
     {
@@ -222,9 +222,11 @@ public class ConditionEffects : MonoBehaviour
                 }
                 effectedPlayerControler.SpecialPreformingAction = false;
             }
-            if (condition.ConditionName == "NextTurnBlock")
+            if (condition.ConditionName == "StartOfTurnBlock")
             {
+                effectedFigure.UnmodifiedAction = true;
                 yield return StartCoroutine(actionManager.PreformAction(effectedFigure.Block(condition.Value)));
+                effectedFigure.UnmodifiedAction = false;
             }
             if (condition.ConditionName == "NextTurnTopEnergy")
             {

@@ -91,10 +91,10 @@ public class MouseManager : MonoBehaviour
     }
     public void MouseOnObject(GameObject newObject)
     {
+        //Debug.Log("new object " + newObject);
         if (newObject == selectedObject)
         {
             Debug.Log("same object");
-
         }
         float newheight = transform.position.z;
 
@@ -130,20 +130,22 @@ public class MouseManager : MonoBehaviour
             }
 
         }
-        if (selectedObject.GetComponent<Hoverable>())
+        if (hoveredObject != selectedObject && selectedObject.GetComponent<Hoverable>())
         {
             hoveredObject = selectedObject;
             StartCoroutine(tooltipManager.StartHoveringOver(hoveredObject));
         }
-        if (playerControler.CanMove && selectedObject.GetComponent<Tile>() && mouseDown)
+        if (playerControler.IsMoving && selectedObject.GetComponent<Tile>() && mouseDown)
         {
             playerControler.PlanMove(selectedObject);
         }
 
     }
-    public void MouseOffObject(GameObject newObject)
+    public void MouseOffObject(GameObject removedObject)
     {
-        if (mouseOver.Contains(newObject))
+        //Debug.Log("old object " + removedObject);
+
+        if (mouseOver.Contains(removedObject))
         {
             if (selectedObject.GetComponent<Selectable>())
             {
@@ -158,16 +160,15 @@ public class MouseManager : MonoBehaviour
                     border.GetComponent<SpriteRenderer>().color = Color.black;
                 }
             }
-            if (newObject.GetComponent<Hoverable>())
+            if (removedObject.GetComponent<Hoverable>() || removedObject == RefrenceStorage.tooltip)
             {
-                hoveredObject = null;
-                tooltipManager.StopHoveringOver();
+                StartCoroutine(UpdateTooltip());
             }
-            if (newObject.GetComponent<Card>())
+            if (removedObject.GetComponent<Card>())
             {
-                deckManager.DeSelectCard(newObject);
+                deckManager.DeSelectCard(removedObject);
             }
-            mouseOver.Remove(newObject);
+            mouseOver.Remove(removedObject);
             float newheight = transform.position.z;
             mouseOverHeights.Remove(newheight);
             if (mouseOver.Count == 0)
@@ -187,35 +188,55 @@ public class MouseManager : MonoBehaviour
                     }
                 }
             }
+            if (playerControler.IsMoving && selectedObject == null && mouseDown)
+            {
+                playerControler.PlanMove(mapManager.GetTileAtHex(playerControler.OneToOnePos));
+            }
 
         }
+    }
+    public IEnumerator UpdateTooltip()
+    {
+        yield return new WaitForEndOfFrame();
+        if (!(selectedObject && (selectedObject.GetComponent<Hoverable>() || selectedObject == RefrenceStorage.tooltip)))
+        {
+            //Debug.Log(selectedObject);
+            hoveredObject = null;
+            tooltipManager.StopHoveringOver();
+        }
+
     }
 
 
     public void MouseClicked()
     {
-
         clickedObject = selectedObject;
-        if (clickedObject && clickedObject.GetComponent<UIButton>())
+        if (clickedObject)
         {
-            GameObject image = clickedObject.transform.Find("Image").gameObject;
-            image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().ClickedColor;
-            if (clickedObject.GetComponent<ChangeAbilityPower>())
+            if (playerControler.IsMoving && selectedObject.GetComponent<Tile>())
             {
-                StartCoroutine(heldButtonRoutine = clickedObject.GetComponent<ChangeAbilityPower>().HoldClick());
+                playerControler.PlanMove(selectedObject);
+            }
+            if (clickedObject.GetComponent<UIButton>())
+            {
+                GameObject image = clickedObject.transform.Find("Image").gameObject;
+                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().ClickedColor;
+                if (clickedObject.GetComponent<ChangeAbilityPower>())
+                {
+                    StartCoroutine(heldButtonRoutine = clickedObject.GetComponent<ChangeAbilityPower>().HoldClick());
+                }
+            }
+            if (clickedObject.GetComponent<Dragable>() && !dragableClicked && playerControler.CanPlayCards == true)
+            {
+                dragableClicked = true;
+                //Canvas canvas = clickedObject.AddComponent<Canvas>();
+                //canvas.overrideSorting = true;
+                //canvas.sortingLayerName = "Card";
+                //deckManager.Hand.transform.SetAsLastSibling();
+                //clickedObject.transform.SetAsLastSibling();
+                StartCoroutine(ShortFirstClick());
             }
         }
-        if (clickedObject != null && clickedObject.GetComponent<Dragable>() != null && !dragableClicked && playerControler.CanPlayCards == true)
-        {
-            dragableClicked = true;
-            //Canvas canvas = clickedObject.AddComponent<Canvas>();
-            //canvas.overrideSorting = true;
-            //canvas.sortingLayerName = "Card";
-            //deckManager.Hand.transform.SetAsLastSibling();
-            //clickedObject.transform.SetAsLastSibling();
-            StartCoroutine(ShortFirstClick());
-        }
-
     }
     private IEnumerator ShortFirstClick()
     {
@@ -230,64 +251,67 @@ public class MouseManager : MonoBehaviour
         {
             StopCoroutine(heldButtonRoutine);
         }
-        if (clickedObject && clickedObject.GetComponent<UIButton>())
+        if (clickedObject)
         {
-            GameObject image = clickedObject.transform.Find("Image").gameObject;
-            image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
-        }
-        if (dragableClicked && !shortClick)
-        {
-            //Debug.Log("stoped draging");
-            if (clickedObject.GetComponent<Card>() != null)
+            if (clickedObject.GetComponent<UIButton>())
             {
-                if (mousePos.y > topPlayLine * Screen.height)
+                GameObject image = clickedObject.transform.Find("Image").gameObject;
+                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
+            }
+            if (dragableClicked && !shortClick)
+            {
+                //Debug.Log("stoped draging");
+                if (clickedObject.GetComponent<Card>() != null)
                 {
-                    //Debug.Log(clickedObject + "top was played");
-                    clickedObject.GetComponent<Card>().AttemptToPlayTop();
+                    if (mousePos.y > topPlayLine * Screen.height)
+                    {
+                        //Debug.Log(clickedObject + "top was played");
+                        clickedObject.GetComponent<Card>().AttemptToPlayTop();
+                    }
+                    else if (mousePos.y > bottomPlayLine * Screen.height)
+                    {
+                        //Debug.Log(clickedObject + "bottom was played");
+                        clickedObject.GetComponent<Card>().AttemptToPlayBottom();
+                    }
+                    else
+                    {
+                        MouseOffObject(clickedObject);
+                        StartCoroutine(deckManager.UpdateHand());
+                    }
+                    //deckManager.DeSelectCard(clickedObject);
+                    //deckManager.Hand.transform.SetAsFirstSibling();
                 }
-                else if (mousePos.y > bottomPlayLine * Screen.height)
+                dragableClicked = false;
+            }
+            if (clickedObject == selectedObject)
+            {
+                if (clickedObject.GetComponent<Card>() && deckManager.IsChoosingCard)
                 {
-                    //Debug.Log(clickedObject + "bottom was played");
-                    clickedObject.GetComponent<Card>().AttemptToPlayBottom();
+                    deckManager.SelectedCard = clickedObject;
                 }
-                else
+                if (clickedObject.GetComponent<UIButton>() && !clickedObject.GetComponent<ChangeAbilityPower>())
                 {
-                    MouseOffObject(clickedObject);
-                    StartCoroutine(deckManager.UpdateHand());
+                    clickedObject.GetComponent<UIButton>().Activate();
                 }
-                //deckManager.DeSelectCard(clickedObject);
-                //deckManager.Hand.transform.SetAsFirstSibling();
+                if (clickedObject.GetComponent<Figure>())
+                {
+                    StartCoroutine(playerControler.FigureClicked(clickedObject));
+                }
+                if (clickedObject.GetComponent<IsReward>())
+                {
+                    StartCoroutine(rewardManager.RewardSelected(clickedObject));
+                }
             }
-            dragableClicked = false;
         }
-        if (clickedObject != null && clickedObject == selectedObject)
+        if (selectedObject && selectedObject.GetComponent<Tile>())
         {
-            if (clickedObject.GetComponent<Card>() && deckManager.IsChoosingCard)
-            {
-                deckManager.SelectedCard = clickedObject;
-            }
-            if (clickedObject.GetComponent<Tile>())
-            {
-                playerControler.TileClicked(clickedObject);
-            }
-            if (clickedObject.GetComponent<UIButton>() && !clickedObject.GetComponent<ChangeAbilityPower>())
-            {
-                clickedObject.GetComponent<UIButton>().Activate();
-            }
-            if (clickedObject.GetComponent<Figure>())
-            {
-                StartCoroutine(playerControler.FigureClicked(clickedObject));
-            }
-            if (clickedObject.GetComponent<IsReward>())
-            {
-                StartCoroutine(rewardManager.RewardSelected(clickedObject));
-            }
+            playerControler.TileClicked(selectedObject);
         }
-        if (selectedObject && selectedObject.GetComponent<Tile>() && playerControler.CanMove)
-        {
-            playerControler.PlanMove(selectedObject);
-            StartCoroutine(playerControler.MoveAlongPath());
-        }
+        //if (selectedObject && selectedObject.GetComponent<Tile>() && playerControler.CanMove)
+        //{
+        //    playerControler.PlanMove(selectedObject);
+        //    StartCoroutine(playerControler.MoveAlongPath());
+        //}
         if (!dragableClicked)
         {
             clickedObject = null;
