@@ -90,30 +90,30 @@ public class Condition
 
 public class Strength : Condition
 {
-    public Strength(int conditionValue, int conditionDuration = -1) : base("Strength", conditionValue, conditionDuration, 1, false, "AttackValue") {}
+    public Strength(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Strength", conditionValue, conditionDuration, 1, false, "AttackValue") {}
 }
 
 public class Dexterity : Condition
 {
-    public Dexterity(int conditionValue, int conditionDuration = -1) : base("Dexterity", conditionValue, conditionDuration, 1, false, "BlockValue") {}
+    public Dexterity(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Dexterity", conditionValue, conditionDuration, 1, false, "BlockValue") {}
 }
 
 public class Speed : Condition
 {
-    public Speed(int conditionValue, int conditionDuration = -1) : base("Speed", conditionValue, conditionDuration, 1, false, "MoveValue") { }
+    public Speed(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Speed", conditionValue, conditionDuration, 1, false, "MoveValue") { }
 }
 
 public class Finesse: Condition
 {
-    public Finesse(int conditionValue, int conditionDuration = -1) : base("Finesse", conditionValue, conditionDuration, 1, false, "SkillValue") { }
+    public Finesse(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Finesse", conditionValue, conditionDuration, 1, false, "SkillValue") { }
 }
 public class Accuracy : Condition
 {
-    public Accuracy(int conditionValue, int conditionDuration = -1) : base("Accuracy", conditionValue, conditionDuration, 1, false, "RangeValue") { }
+    public Accuracy(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Accuracy", conditionValue, conditionDuration, 1, false, "RangeValue") { }
 }
 public class NaturalScaling: Condition
 {
-    public NaturalScaling(int conditionValue, int conditionDuration = -1) : base("NaturalScaling", conditionValue, conditionDuration, 3, false, "All", false) { }
+    public NaturalScaling(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("NaturalScaling", conditionValue, conditionDuration, 3, false, "All", false) { }
 }
 
 public class DistanceSpeedBoost : Condition
@@ -122,12 +122,12 @@ public class DistanceSpeedBoost : Condition
 }
 public class DistanceJump : Condition
 {
-    public DistanceJump(int conditionValue = -1, int conditionDuration = 1) : base("DistanceJump", conditionValue, conditionDuration, 3, false, "All", false) { }
+    public DistanceJump(int conditionDuration = 1) : base("DistanceJump", Variables.gameNullValue, conditionDuration, 3, false, "All", false) { }
 }
 
 public class Poison : Condition
 {
-    public Poison(int conditionValue, int conditionDuration = -1) : base("Poison", conditionValue, conditionDuration, 1, true, "None", true) { }
+    public Poison(int conditionValue) : base("Poison", conditionValue, Variables.gameInfinityValue, 1, true, "None", true) { }
 }
 
 public class NextTurns : Condition
@@ -161,6 +161,10 @@ public class NextTurnBottomEnergy : Condition
 {
     public NextTurnBottomEnergy(int conditionValue, int conditionDuration = 1) : base("NextTurnBottomEnergy", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn bottom energy", new string[] {"No Self Target Description" }) { }
 }
+public class NextTurnCards : Condition
+{
+    public NextTurnCards(int conditionValue, int conditionDuration = 1) : base("NextTurnCards", conditionValue, conditionDuration, 1, true, "None", true, "Start of turn cards", new string[] { "No Self Target Description" }) { }
+}
 public class GainAbility : Condition
 {
     protected Ability gainedAbility;
@@ -182,15 +186,15 @@ public class GainAbility : Condition
 }
 public class Vigor : Condition
 {
-    public Vigor(int conditionValue, int conditionDuration = -1) : base("Vigor", conditionValue, conditionDuration, 1, false, "AttackValue") { }
+    public Vigor(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Vigor", conditionValue, conditionDuration, 1, false, "AttackValue") { }
 }
 public class Burst : Condition
 {
-    public Burst(int conditionValue, int conditionDuration = -1) : base("Burst", conditionValue, conditionDuration, 1, false, "MoveValue") { }
+    public Burst(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Burst", conditionValue, conditionDuration, 1, false, "MoveValue") { }
 }
 public class BlockPerMove : Condition
 {
-    public BlockPerMove(int conditionValue = 1, int conditionDuration = 1) : base("Untouchable", conditionValue, conditionDuration, 1, true, "None", true, null, new string[] { "No Value Description", "No Self Target Description" } )
+    public BlockPerMove(int conditionValue, int conditionDuration = 1) : base("Untouchable", conditionValue, conditionDuration, 1, true, "None", true, null, new string[] { "No Value Description", "No Self Target Description" } )
     {
         actionName = "Whenever you move a space gain " + conditionValue + " block";
     }
@@ -198,7 +202,7 @@ public class BlockPerMove : Condition
 
 public class Flight : Condition
 {
-    public Flight(int conditionDuration = -1) : base("Flight", Variables.gameNullValue, conditionDuration, 2, false, "None", true) { }
+    public Flight(int conditionDuration = Variables.gameInfinityValue) : base("Flight", Variables.gameNullValue, conditionDuration, 2, false, "None", true) { }
     public override IEnumerator OnGain(Figure figure)
     {
         //Debug.Log("gained condtion");
@@ -222,7 +226,7 @@ public class Stunned : Condition
 }
 public class Summon : Condition
 {
-    public Summon() : base("Summon", Variables.gameNullValue, -1, 3, false, "None") { }
+    public Summon() : base("Summon", Variables.gameNullValue, Variables.gameInfinityValue, 3, false, "None") { }
 }
 //public class StartOfTurnBlock : Condition
 //{

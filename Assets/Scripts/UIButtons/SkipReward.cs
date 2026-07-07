@@ -22,7 +22,8 @@ public class SkipReward : UIButton
 
     public override void Activate()
     {
-        rewardManager.RewardSkiped();
+        //Debug.Log("skiping reward");
+        StartCoroutine(rewardManager.RewardScrapped());
         mouseManager.MouseOffObject(gameObject);
     }
 

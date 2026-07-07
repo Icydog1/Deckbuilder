@@ -19,7 +19,7 @@ public class TurnManager : MonoBehaviour
     //private bool endOfRound, playerTurn, enemyTurn;
     private bool takingTurns;
 
-    private LevelManager levelManager;
+    private FloorManager floorManager;
 
 
     public static event Action<TurnManager> RoundEndedFunctions;
@@ -34,11 +34,11 @@ public class TurnManager : MonoBehaviour
         player = GameObject.Find("Player");
         playerControler = player.GetComponent<PlayerControler>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        floorManager = GameObject.Find("FloorManager").GetComponent<FloorManager>();
         newRoundMarker = GameObject.Find("NewRoundMarker");
         turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
-        LevelManager.LevelCleared += ResetTurnOrder;
+        FloorManager.FloorCleared += ResetTurnOrder;
     }
     private void Start()
     {
@@ -144,7 +144,7 @@ public class TurnManager : MonoBehaviour
         OverallStatistics.enemyScaling++;
         
         RefrenceStorage.playerStats.SetTurnCount(OverallStatistics.round);
-        levelManager.IncreaseRoundNumber();
+        floorManager.IncreaseRoundNumber();
         if (RoundStartedFunctions != null)
         {
             //Debug.Log("Round Started");
@@ -166,7 +166,7 @@ public class TurnManager : MonoBehaviour
         NextTurn();
     }
 
-    public IEnumerator ResetTurnOrder(LevelManager levelManager = null)
+    public IEnumerator ResetTurnOrder(FloorManager floorManager = null)
     {
         takingTurns = false;
         if (currentTurn == player)
@@ -180,14 +180,14 @@ public class TurnManager : MonoBehaviour
         turnOrder.Add(player);
         currentTurn = turnOrder[0];
     }
-    public IEnumerator EndRound()
-    {
-        takingTurns = false;
-        if (currentTurn == player)
-        {
-            yield return StartCoroutine(playerControler.ForceEndTurn());
-        }
-        yield return StartCoroutine(EndOfRound());
-        takingTurns = true;
-    }
+    //public IEnumerator EndRound()
+    //{
+    //    takingTurns = false;
+    //    if (currentTurn == player)
+    //    {
+    //        yield return StartCoroutine(playerControler.ForceEndTurn());
+    //    }
+    //    yield return StartCoroutine(EndOfRound());
+    //    takingTurns = true;
+    //}
 }

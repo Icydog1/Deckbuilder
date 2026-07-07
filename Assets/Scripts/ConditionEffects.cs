@@ -206,11 +206,19 @@ public class ConditionEffects : MonoBehaviour
             effectedPlayerControler = effectedPlayer;
         }
         List<Condition> conditions = effectedFigure.Conditions;
-        foreach (Condition condition in conditions)
+        for(int i = 0; i < conditions.Count; i++)
+        //foreach (Condition condition in conditions)
         {
+            Condition condition = conditions[i];
             if (condition.ConditionName == "Poison")
             {
                 yield return RefrenceStorage.gameManager.StartCoroutine(effectedFigure.LoseHealth(condition.Value));
+                condition.Value--;
+                if (condition.Value == 0)
+                {
+                    i--;
+                    yield return StartCoroutine(effectedFigure.RemoveCondition("Poison"));
+                }
             }
             if (condition.ConditionName == "NextTurns")
             {
@@ -230,11 +238,19 @@ public class ConditionEffects : MonoBehaviour
             }
             if (condition.ConditionName == "NextTurnTopEnergy")
             {
-                yield return StartCoroutine(actionManager.PreformAction(effectedPlayerControler.GainTopEnergy(condition.Value)));
+                effectedPlayerControler.StartingTopEnergy += condition.Value;
+
+                //yield return StartCoroutine(actionManager.PreformAction(effectedPlayerControler.GainTopEnergy(condition.Value)));
             }
             if (condition.ConditionName == "NextTurnBottomEnergy")
             {
-                yield return StartCoroutine(actionManager.PreformAction(effectedPlayerControler.GainBottomEnergy(condition.Value)));
+                effectedPlayerControler.StartingBottomEnergy += condition.Value;
+                //yield return StartCoroutine(actionManager.PreformAction(effectedPlayerControler.GainBottomEnergy(condition.Value)));
+            }
+            if (condition.ConditionName == "NextTurnCards")
+            {
+                effectedPlayerControler.StartingCards += condition.Value;
+                //yield return StartCoroutine(actionManager.PreformAction(effectedPlayerControler.GainBottomEnergy(condition.Value)));
             }
             //if (condition.ConditionName == "Next Turn Block")
             //{

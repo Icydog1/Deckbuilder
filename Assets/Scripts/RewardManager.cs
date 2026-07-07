@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using NUnit.Framework;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
@@ -45,14 +47,16 @@ public class RewardManager : MonoBehaviour
 
     private List<GameObject> currentOptions = new List<GameObject>();
     private List<GameObject> currentOptionsPrefabs = new List<GameObject>();
-
+    [SerializeField]
+    private GameObject skipRewardButton;
+    private TextMeshProUGUI skipRewardText;
     private Lootable tileScript;
     private int rewardRarity;
 
 
     private float relativeSpaceBetweenRewardCards = 0.5f;
 
-    private bool isRewardCard;
+    private bool isCardReward, isRelicReward;
 
     private bool isGettingReward;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -78,6 +82,7 @@ public class RewardManager : MonoBehaviour
         allRelics = Resources.LoadAll<GameObject>("Prefabs/Relics");
         allRelicRewards = allRelics.ToList();
         allRelicRewards.RemoveAll(relic => relic.name == "BaseRelic");
+        allRelicRewards.RemoveAll(relic => relic.GetComponent<Relic>().Rarity == -1);
         allRelicRewards.Sort((relic1, relic2) => relic1.GetComponent<Relic>().Rarity.CompareTo(relic2.GetComponent<Relic>().Rarity));
 
         relicRewardsLists.Add(customRelicRewards);
@@ -88,14 +93,14 @@ public class RewardManager : MonoBehaviour
         GameManager.GameStartedFunctions += GenerateRewardPools;
 
         //GenerateRewardPools();
-
+        skipRewardText = skipRewardButton.transform.Find("SkipRewardText").GetComponent<TextMeshProUGUI>();
 
     }
     public void ResetState(GameManager gameManager)
     {
         if (isGettingReward)
         {
-            RewardSkiped();
+            ClearUnusedRewards();
         }
     }
     public void GenerateRewardPools(GameManager gameManager)
@@ -144,11 +149,24 @@ public class RewardManager : MonoBehaviour
         playerControler.GettingReward = true;
         uIManager.IsGettingReward = true;
     }
+    public void SkippableReward()
+    {
+        skipRewardButton.SetActive(true);
+        if (isCardReward)
+        {
+            skipRewardText.text = "Scrap (1XP)";
+        }
+        else
+        {
+            skipRewardText.text = "Scrap (Destroy a card)";
+        }
+    }
     public void GainedReward()
     {
         isGettingReward = false;
         playerControler.GettingReward = false;
         uIManager.IsGettingReward = false;
+        skipRewardButton.SetActive(false);
     }
 
     public IEnumerator TileReward(GameObject tile, List<Reward> rewards)
@@ -217,7 +235,9 @@ public class RewardManager : MonoBehaviour
 
     private IEnumerator GenerateReward(int numberOfRewards, bool isCard = true)
     {
-        isRewardCard = isCard;
+        isCardReward = isCard;
+        isRelicReward = !isCard;
+        SkippableReward();
         List<GameObject> potentialRewards = new List<GameObject>();
         for (int i = 0; i < numberOfRewards; i++)
         {
@@ -296,7 +316,7 @@ public class RewardManager : MonoBehaviour
     {
         //Debug.Log(reward + " selected");
         Destroy(reward.GetComponent<IsReward>());
-        if (isRewardCard)
+        if (isCardReward)
         {
             yield return StartCoroutine(deckManager.GainCard(reward));
         }
@@ -315,16 +335,25 @@ public class RewardManager : MonoBehaviour
             yield return StartCoroutine(relicManager.GainRelic(reward));
         }
         currentOptions.Remove(reward);
-        foreach (GameObject unselectedReward in currentOptions)
-        {
-            Destroy(unselectedReward);
-        }
-        currentOptions.Clear();
-        GainedReward();
+        ClearUnusedRewards();
     }
-    public void RewardSkiped()
+    public IEnumerator RewardScrapped()
     {
-        //Debug.Log(reward + " selected");
+        //Debug.Log("Scrapped");
+        if (isCardReward)
+        {
+            playerControler.GainXP(Variables.ScrappedCardXP);
+        }
+        else
+        {
+            yield return StartCoroutine(RemoveCardInDeck());
+
+        }
+        ClearUnusedRewards();
+    }
+
+    public void ClearUnusedRewards()
+    {
         foreach (GameObject unselectedReward in currentOptions)
         {
             Destroy(unselectedReward);
@@ -332,4 +361,5 @@ public class RewardManager : MonoBehaviour
         currentOptions.Clear();
         GainedReward();
     }
+
 }

@@ -15,9 +15,6 @@ public class Skeleton : Enemy
             () => Move(13)
             ,() => Attack(18)
         });
-        moveSets.Add(new List<Func<IEnumerator>> {
-            //does nothing the turn it is summoned
-        });
         initialMoves = new List<int>() { };
 
         movesSetOrder = new List<int>() { 0, 1 };

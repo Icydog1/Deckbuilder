@@ -13,9 +13,10 @@ public class CompendiumManager : MonoBehaviour
     private TextMeshProUGUI compendiumText;
     private GameObject compendiumDisplay;
     private DeckManager deckManager;
+    private UIManager UIManager;
 
     private bool isShown;
-    private bool isDisplayingCards;
+    private bool isDisplayingCards, isDisplayingRelics;
     private List<GameObject> displayedList = new List<GameObject>();
     private string currentTab;
     //private GameObject openedTab;
@@ -27,17 +28,14 @@ public class CompendiumManager : MonoBehaviour
         compendiumText = compendium.transform.Find("CompendiumText").GetComponent<TextMeshProUGUI>();
         compendiumDisplay = compendium.transform.Find("CompendiumListDisplayer").gameObject;
         deckManager = RefrenceStorage.deckManager;
+        UIManager = RefrenceStorage.UIManager;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     public void ShowCompendium()
     {
         isShown = true;
-        compendiumScreenBlocker.enabled = true;
+        UIManager.IsInCompendium = true;
+        //compendiumScreenBlocker.enabled = true;
         compendium.SetActive(true);
         currentTab = "card";
         OpenCardTab();
@@ -49,9 +47,15 @@ public class CompendiumManager : MonoBehaviour
         {
             StopDisplayingCardsInList();
         }
+        else if (isDisplayingRelics)
+        {
+            StopDisplayingRelicsInList();
+        }
         DisplayText("");
         compendium.SetActive(false);
-        compendiumScreenBlocker.enabled = false;
+        UIManager.IsInCompendium = false;
+        //compendiumScreenBlocker.enabled = false;
+
     }
 
     public void OpenTab(string tabName, GameObject tab)
@@ -62,6 +66,10 @@ public class CompendiumManager : MonoBehaviour
             if (isDisplayingCards)
             {
                 StopDisplayingCardsInList();
+            }
+            else if (isDisplayingRelics)
+            {
+                StopDisplayingRelicsInList();
             }
             DisplayText("");
             if (tabName == "card")
@@ -85,16 +93,81 @@ public class CompendiumManager : MonoBehaviour
 
     public void OpenCardTab()
     {
-        StartCoroutine(DisplayInList(RefrenceStorage.rewardManager.AllCards, "card", 5));
+        StartCoroutine(DisplayCards(RefrenceStorage.rewardManager.AllCards));
     }
     public void OpenRelicTab()
     {
-        StartCoroutine(DisplayInList(RefrenceStorage.rewardManager.AllRelics, "relic", 7));
+        StartCoroutine(DisplayRelics(RefrenceStorage.rewardManager.AllRelics));
     }
-    public IEnumerator DisplayInList(List<GameObject> displayedObjects, string type, int rowLimit = 5)
+    //public IEnumerator DisplayInList(List<GameObject> displayedObjects, string type, int rowLimit = 5)
+    //{
+    //    if (type == "card")
+    //    {
+    //        isDisplayingCards = true;
+
+    //    }
+    //    else if (type == "relic")
+    //    {
+    //        isDisplayingRelics = true;
+
+    //    }
+    //    deckManager.IsDisplayingList = true;
+
+    //    compendiumDisplay.SetActive(true);
+    //    compendiumDisplay.GetComponent<RectTransform>().sizeDelta = new Vector2(compendiumDisplay.GetComponent<RectTransform>().sizeDelta.x, compendiumDisplay.transform.parent.parent.GetComponent<RectTransform>().sizeDelta.y - 100);
+    //    Transform storeTo = compendiumDisplay.transform.Find("Viewport").transform.Find("Content");
+    //    GridLayoutGroup layout = storeTo.GetComponent<GridLayoutGroup>();
+
+    //    //uIManager.IsDisplayingList = true;
+    //    displayedList.Clear();
+    //    //displayedListName = cards;
+    //    foreach (GameObject thing in displayedObjects)
+    //    {
+    //        GameObject newthing;
+    //        displayedList.Add(newthing = Instantiate(thing));
+    //        //newCard.GetComponent<Card>().OriginalCard = card;
+    //    }
+    //    //float horizontalSpaceBetweenCards = relativeSpaceBetweenCards * RefrenceStorage.cameraScript.widthHeightRatio;
+    //    //float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.1f) * RefrenceStorage.cameraScript.widthHeightRatio;
+    //    int numberOfCards = displayedList.Count;
+    //    //Debug.Log(spaceBetweenCards + " spaceBetweenCards");
+    //    //Debug.Log(cameraScript.widthHeightRatio + " widthHeightRatio");
+    //    //int rowsCount = Mathf.CeilToInt(displayedList.Count / rowLimit);
+    //    layout.constraintCount = rowLimit;
+    //    if (type == "card")
+    //    {
+    //        layout.cellSize = new Vector2(150, 210);
+    //        layout.spacing = new Vector2(0, 0);
+
+    //        for (int i = 0; i < displayedList.Count; i++)
+    //        {
+    //            GameObject card = displayedList[i];
+    //            card.SetActive(true);
+    //            card.transform.localScale = Vector3.zero;
+    //            card.transform.SetParent(storeTo);
+    //            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription(true));
+    //            deckManager.SetRelativeCardSize(card, 1);
+    //        }
+    //        RefrenceStorage.playerControler.UnmodifiedAction = false;
+    //    }
+    //    else if (type == "relic")
+    //    {
+    //        layout.cellSize = new Vector2(100, 100);
+    //        layout.spacing = new Vector2(5, 5);
+    //        foreach (GameObject relic in displayedList)
+    //        {
+    //            relic.SetActive(true);
+    //            relic.transform.SetParent(storeTo);
+    //            relic.transform.localScale = Vector3.one * 2;
+    //        }
+    //    }
+
+    //}
+    public IEnumerator DisplayCards(List<GameObject> displayedObjects, int rowLimit = 5)
     {
         isDisplayingCards = true;
-        deckManager.IsDisplayingCards = true;
+        deckManager.IsDisplayingList = true;
+
         compendiumDisplay.SetActive(true);
         compendiumDisplay.GetComponent<RectTransform>().sizeDelta = new Vector2(compendiumDisplay.GetComponent<RectTransform>().sizeDelta.x, compendiumDisplay.transform.parent.parent.GetComponent<RectTransform>().sizeDelta.y - 100);
         Transform storeTo = compendiumDisplay.transform.Find("Viewport").transform.Find("Content");
@@ -109,51 +182,82 @@ public class CompendiumManager : MonoBehaviour
             displayedList.Add(newCard = Instantiate(card));
             //newCard.GetComponent<Card>().OriginalCard = card;
         }
+        int numberOfCards = displayedList.Count;
+        layout.constraintCount = rowLimit;
+        layout.cellSize = new Vector2(150, 210);
+        layout.spacing = new Vector2(0, 0);
+
+        for (int i = 0; i < displayedList.Count; i++)
+        {
+            GameObject card = displayedList[i];
+            card.SetActive(true);
+            card.transform.localScale = Vector3.zero;
+            card.transform.SetParent(storeTo);
+            yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription(true));
+            if (isDisplayingCards)
+            {
+                deckManager.SetRelativeCardSize(card, 1);
+            }
+        }
+        RefrenceStorage.playerControler.UnmodifiedAction = false;
+    }
+    public IEnumerator DisplayRelics(List<GameObject> displayedObjects, int rowLimit = 7)
+    {
+        isDisplayingRelics = true;
+        deckManager.IsDisplayingList = true;
+
+        compendiumDisplay.SetActive(true);
+        compendiumDisplay.GetComponent<RectTransform>().sizeDelta = new Vector2(compendiumDisplay.GetComponent<RectTransform>().sizeDelta.x, compendiumDisplay.transform.parent.parent.GetComponent<RectTransform>().sizeDelta.y - 100);
+        Transform storeTo = compendiumDisplay.transform.Find("Viewport").transform.Find("Content");
+        GridLayoutGroup layout = storeTo.GetComponent<GridLayoutGroup>();
+
+        //uIManager.IsDisplayingList = true;
+        displayedList.Clear();
+        //displayedListName = cards;
+        foreach (GameObject relic in displayedObjects)
+        {
+            GameObject newRelic;
+            displayedList.Add(newRelic = Instantiate(relic));
+            //newCard.GetComponent<Card>().OriginalCard = card;
+        }
         //float horizontalSpaceBetweenCards = relativeSpaceBetweenCards * RefrenceStorage.cameraScript.widthHeightRatio;
         //float VerticalSpaceBetweenCards = (relativeSpaceBetweenCards + 0.1f) * RefrenceStorage.cameraScript.widthHeightRatio;
-        int numberOfCards = displayedList.Count;
+        int numberOfRelics = displayedList.Count;
         //Debug.Log(spaceBetweenCards + " spaceBetweenCards");
         //Debug.Log(cameraScript.widthHeightRatio + " widthHeightRatio");
         //int rowsCount = Mathf.CeilToInt(displayedList.Count / rowLimit);
         layout.constraintCount = rowLimit;
-        if (type == "card")
+        layout.cellSize = new Vector2(100, 100);
+        layout.spacing = new Vector2(5, 5);
+        foreach (GameObject relic in displayedList)
         {
-            layout.cellSize = new Vector2(150, 210);
-            layout.spacing = new Vector2(0, 0);
-            foreach (GameObject card in displayedList)
-            {
-                card.SetActive(true);
-                card.transform.localScale = Vector3.zero;
-                card.transform.SetParent(storeTo);
-                yield return StartCoroutine(card.GetComponent<Card>().PrepareCardDiscription(true));
-                RefrenceStorage.deckManager.SetRelativeCardSize(card, 1);
-            }
-            RefrenceStorage.playerControler.UnmodifiedAction = false;
+            relic.SetActive(true);
+            relic.transform.SetParent(storeTo);
+            relic.transform.localScale = Vector3.one * 2;
         }
-        else if (type == "relic")
-        {
-            layout.cellSize = new Vector2(100, 100);
-            layout.spacing = new Vector2(5, 5);
-            foreach (GameObject card in displayedList)
-            {
-                card.SetActive(true);
-                card.transform.SetParent(storeTo);
-                card.transform.localScale = Vector3.one * 2;
-            }
-        }
-
+        yield break;
     }
+
     public void StopDisplayingCardsInList()
     {
         isDisplayingCards = false;
-        deckManager.IsDisplayingCards = false;
+        deckManager.IsDisplayingList = false;
         foreach (GameObject card in displayedList)
         {
-            Destroy(card);
+            card.GetComponent<Card>().AttemptToDestroy();
         }
         displayedList.Clear();
         compendiumDisplay.SetActive(false);
-        //uIManager.IsDisplayingList = false;
-        //displayedListName = null;
+    }
+    public void StopDisplayingRelicsInList()
+    {
+        isDisplayingRelics = false;
+        deckManager.IsDisplayingList = false;
+        foreach (GameObject relic in displayedList)
+        {
+            Destroy(relic);
+        }
+        displayedList.Clear();
+        compendiumDisplay.SetActive(false);
     }
 }

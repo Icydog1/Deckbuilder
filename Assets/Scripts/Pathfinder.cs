@@ -29,8 +29,11 @@ public class Pathfinder : MonoBehaviour
     private List<List<Vector2>> elevations = new List<List<Vector2>>();
     private List<Vector2> currentHeight = new List<Vector2>();
     private List<Vector2> checkedTiles = new List<Vector2>();
+    //tiles figue can end their move on
     private List<Vector2> safeTiles = new List<Vector2>();
+    //tile figure can move throug but not end on
     private List<Vector2> unsafeTiles = new List<Vector2>();
+    //tile figure can not move through
     private List<Vector2> impassableTiles = new List<Vector2>();
 
     private List<List<Vector2>> originalElevations = new List<List<Vector2>>();
@@ -227,7 +230,7 @@ public class Pathfinder : MonoBehaviour
         findActualPath(selfPos);
         //Debug.Log("path Found");
     }
-    public List<Vector2>[] PlanposiblePaths(Vector2 selfPos, GameObject self, int newMoveValue, bool jump = false, bool fly = false)
+    public List<Vector2>[] PlanPosiblePaths(Vector2 selfPos, GameObject self, int newMoveValue, bool jump = false, bool fly = false)
     {
         currentFigure = self;
         currentTeam = currentFigure.GetComponent<Figure>().Team;
@@ -242,8 +245,54 @@ public class Pathfinder : MonoBehaviour
         posibleTiles[1] = new List<Vector2>(unsafeTiles);
         return posibleTiles;
     }
+    public List<Vector2> PlanTargetableLocations(List<Vector2> startingLocations, int range)
+    {
+        elevations.Clear();
+        checkedTiles.Clear();
+        safeTiles.Clear();
+        unsafeTiles.Clear();
+        impassableTiles.Clear();
+        pathFound = false;
+        if (range == Variables.gameInfinityValue)
+        {
+            range = Variables.gameMaxValue;
+        }
+        for (int i = 0; i <= range; i++)
+        {
+            currentElevation = i - 1;
+            List<Vector2> currentHeight = new List<Vector2>();
+            elevations.Add(currentHeight);
+            //adds starting tile
+            if (i == 0)
+            {
+                foreach (Vector2 tile in startingLocations)
+                {
+                    GetTileType(tile, 0, true);
+                }
+            }
+            //each tile spreads to other tiles ignoring move costs
+            else
+            {
+                foreach (Vector2 pos in elevations[currentElevation])
+                {
+                    buildElevation(pos, true, false);
+                }
 
-    public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject self)
+            }
+            if (i > Variables.gameMaxValue)
+            {
+                range = i;
+                Debug.Log("range pathfinding timed out");
+            }
+        }
+        List<Vector2> reachableTiles = safeTiles;
+        reachableTiles.AddRange(unsafeTiles);
+        return reachableTiles;
+    }
+
+
+
+public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject self)
     {
         List<Figure> figures = new List<Figure>();
         currentFigure = self;

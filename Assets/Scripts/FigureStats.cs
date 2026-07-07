@@ -201,17 +201,18 @@ public class FigureStats : MonoBehaviour
 
     public void ChangePlan(string action, int newValue)
     {
-        Regex regex = new Regex("([0-9]+)( " + action + ")");
+        //Debug.Log("changed move plan");
+        Regex regex = new Regex("([0-9]+)(" + action + ")");
         planText.text = regex.Replace(planText.text, newValue + "$2",1);
         //planText.text = Regex.Replace(planText.text, "(.+)", "$1");
 
     }
     public virtual void SetLevelAndXP(int Level, int potenialLevel, int XP, int XPThreshold)
     {
-        //levelAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
+        //floorAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
     }
     public virtual void SetTurnCount(int turnCount)
     {
-        //levelAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
+        //floorAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
     }
 }

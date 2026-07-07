@@ -17,6 +17,7 @@ public class DarkRitual : Card
     public override void PrepareTop()
     {
         currentActions.Add(new Action(() => playerControler.Summon(summon)));
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new NextTurnTopEnergy(-1, Variables.gameInfinityValue))));
         currentActions.Add(new Action(() => playerControler.LoseHealth(3)));
     }
 

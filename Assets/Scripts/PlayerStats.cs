@@ -9,19 +9,17 @@ public class PlayerStats : FigureStats
     //private TextMeshProUGUI specialPlayerText;
 
     //List<string> currentCondtions = new List<string>();
-    protected GameObject levelAndXPTextObject;
-    protected TextMeshProUGUI levelAndXPText;
-    private Camera camera;
-    string levelAndXPString, turnCountString;
+    protected GameObject floorAndXPTextObject;
+    protected TextMeshProUGUI floorAndXPText;
+    string floorAndXPString, turnCountString;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Awake()
     {
         isPlayerUI = true;
-        camera = GameObject.Find("Main Camera").GetComponent<Camera>();
-        levelAndXPTextObject = transform.Find("LevelAndXPText").gameObject;
+        floorAndXPTextObject = transform.Find("LevelAndXPText").gameObject;
 
-        levelAndXPText = levelAndXPTextObject.GetComponent<TextMeshProUGUI>();
+        floorAndXPText = floorAndXPTextObject.GetComponent<TextMeshProUGUI>();
 
         base.Awake();
 
@@ -52,18 +50,17 @@ public class PlayerStats : FigureStats
     }
     public override void SetLevelAndXP(int level, int potenialLevel, int XP, int XPThreshold)
     {
-        levelAndXPString = "Level: " + level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold;
-        SetLevelXPAndTurnCount();
+        floorAndXPString = "Level: " + level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold;
+        SetFloorXPAndTurnCount();
     }
     public override void SetTurnCount(int turnCount)
     {
         turnCountString = ", Round: " + turnCount;
-        SetLevelXPAndTurnCount();
-        //levelAndXPText.SetText("Level: " + Level + "(" + potenialLevel + "), XP: " + XP + "/" + XPThreshold);
+        SetFloorXPAndTurnCount();
     }
-    public void SetLevelXPAndTurnCount()
+    public void SetFloorXPAndTurnCount()
     {
-        levelAndXPText.SetText(levelAndXPString + turnCountString);
+        floorAndXPText.SetText(floorAndXPString + turnCountString);
 
     }
 

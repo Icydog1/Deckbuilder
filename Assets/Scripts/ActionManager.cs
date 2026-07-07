@@ -46,12 +46,7 @@ public class ActionManager : MonoBehaviour
         //StartCoroutine(actionCoroutines[0]);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-    public IEnumerator PreformAction(IEnumerator action, List<ActionDescription> planTo = null)
+    public IEnumerator PreformAction(IEnumerator action, List<ActionDescription> planTo = null, Figure actingFigure = null)
     {
         if (!preformingActions)
         {
@@ -59,23 +54,28 @@ public class ActionManager : MonoBehaviour
         }
         if (planTo != null)
         {
+            if (actingFigure == null)
+            {
+                actingFigure = playerControler;
+            }
             planStack.Push(action);
             planToStack.Push(planTo);
-            playerControler.IsPlanning = true;
-            yield return StartCoroutine(planStack.Pop());
+            actingFigure.IsPlanning = true;
+            yield return StartCoroutine(planStack.Peek());
+            planStack.Pop();
             //planStack.RemoveAt(planStack.Count-1);
             planToStack.Pop(); //RemoveAt(planToStack.Count - 1);
             if (planToStack.Count == 0)
             {
-                playerControler.IsPlanning = false;
+                actingFigure.IsPlanning = false;
 
             }
         }
         else
         {
             actionStack.Push(action);
-            yield return StartCoroutine(actionStack.Pop());
-
+            yield return StartCoroutine(actionStack.Peek());
+            actionStack.Pop();
             //actionStack.Add(action);
             //yield return StartCoroutine(actionStack[actionStack.Count - 1]);
             //actionStack.RemoveAt(actionStack.Count - 1);
@@ -107,6 +107,7 @@ public class ActionManager : MonoBehaviour
         }
         else
         {
+            //preformingActions = true;
             //Debug.Log("started queue");
             StartCoroutine(PreformAction(action));
         }

@@ -30,19 +30,22 @@ public class Settings : UIButton
 
     public override void Activate()
     {
-        if (isShown)
+        if (!isShown)
+
         {
-            pauseScreenBlocker.GetComponent<Image>().enabled = false;
+            isShown = true;
+            RefrenceStorage.UIManager.IsPaused = true;
+            //pauseScreenBlocker.GetComponent<Image>().enabled = true;
             //pauseScreenBlocker.GetComponent<RectTransform>().sizeDelta = pauseScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
-            pauseScreenBlocker.transform.Find("Settings").gameObject.SetActive(false);
-            isShown = false;
+            pauseScreenBlocker.transform.Find("Settings").gameObject.SetActive(true);
         }
         else
         {
-            isShown = true;
-            pauseScreenBlocker.GetComponent<Image>().enabled = true;
-            pauseScreenBlocker.GetComponent<RectTransform>().sizeDelta = pauseScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
-            pauseScreenBlocker.transform.Find("Settings").gameObject.SetActive(true);
+            RefrenceStorage.UIManager.IsPaused = false;
+            //pauseScreenBlocker.GetComponent<Image>().enabled = false;
+            //pauseScreenBlocker.GetComponent<RectTransform>().sizeDelta = pauseScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
+            pauseScreenBlocker.transform.Find("Settings").gameObject.SetActive(false);
+            isShown = false;
         }
     }
 }

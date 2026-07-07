@@ -32,7 +32,7 @@ public class AIFigure : Figure
     public override void Awake()
     {
         //figureStorage = GameObject.Find("FigureStorage").GetComponent<FigureStorage>();
-        LevelManager.LevelClearedFuntions += Remove;
+        FloorManager.FloorCleared += Remove;
         figureName = this.name;
         figureName = figureName.Replace("(Clone)", "");
         figureName = Regex.Replace(figureName, "(.)([A-Z,0-9])", "$1 $2");
@@ -47,10 +47,10 @@ public class AIFigure : Figure
 
     public override IEnumerator LoadFigure()
     {
-        if (moveSets.Count == 0)
-        {
-            Debug.Log("Warning no planed movesets on " + gameObject);
-        }
+        //if (moveSets.Count == 0)
+        //{
+        //    Debug.Log("Warning no planed movesets on " + gameObject);
+        //}
         //yield return StartCoroutine(actionManager.PreformAction(GainCondition(new Flight())));
         if (isEnemy && !isBoss)
         {
@@ -70,7 +70,7 @@ public class AIFigure : Figure
             {
                 if (turnManager.TurnOrder[i].GetComponent<Enemy>())
                 {
-                    turnManager.TurnOrder.Insert(i - 1, gameObject);
+                    turnManager.TurnOrder.Insert(i, gameObject);
                     hasTurnOrder = true;
                     break;
                 }
@@ -108,7 +108,10 @@ public class AIFigure : Figure
 
     public IEnumerator GetNewPlan(TurnManager turnManager)
     {
-        //Debug.Log("Geting plan");
+        //if (!isEnemy)
+        //{
+        //    Debug.Log(gameObject + "Getting plan");
+        //}
         oneToOnePos = mapManager.PosToOneToOne(transform.position);
         yield return StartCoroutine(FindFocus());
         distanceToFocus = pathfinder.GetDistanceTo(focusScript.OneToOnePos, oneToOnePos);
@@ -180,7 +183,7 @@ public class AIFigure : Figure
         {
             yield return StartCoroutine(actionManager.PreformAction(GainCondition(new NaturalScaling(OverallStatistics.enemyScaling))));
         }
-        //yield return StartCoroutine(levelManager.GetDifficultyModifier(this));
+        //yield return StartCoroutine(floorManager.GetDifficultyModifier(this));
         yield return StartCoroutine(UpdatePlan());
 
         //UpdatePlan();
@@ -195,14 +198,34 @@ public class AIFigure : Figure
         if (FindValueOfCondition("Stunned") != Variables.gameDoesNotExistIndcator)
         {
             currentPlan = new List<Func<IEnumerator>>();
+            //Debug.Log("is stunned");
         }
         displayedPlan.Clear();
         preferedRange = int.MaxValue;
         isPlanning = true;
+        //if (!isEnemy)
+        //{
+        //    Debug.Log("has " + currentPlan.Count + " actions in plan");
+
+        //}
+
+
         for (int i = 0; i < currentPlan.Count; i++)
         {
-            yield return StartCoroutine(actionManager.PreformAction(currentPlan[i](), displayedPlan));
+            yield return StartCoroutine(actionManager.PreformAction(currentPlan[i](), displayedPlan,this));
         }
+        //if (!isEnemy)
+        //{
+        //    if (displayedPlan.Count > 0)
+        //    {
+        //        Debug.Log("first element in plan " + displayedPlan[0].GetDescription());
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("no plan");
+        //    }
+        //}
+
         enemyStatsDisplayer.Plan(displayedPlan);
         isPlanning = false;
         //Debug.Log("first condition: " + conditions[0].Name);
@@ -241,7 +264,7 @@ public class AIFigure : Figure
                     actionName = "Ability";
                     modifierNum = 0;
                     break;
-                case "Range":
+                case "RangeValue":
                     actionName = "Range";
                     modifierNum = 1;
                     break;
@@ -279,7 +302,7 @@ public class AIFigure : Figure
         GameObject border = transform.Find("Border").gameObject;
         border.GetComponent<SpriteRenderer>().color = Color.white;
         CalculateValues();
-        nextAction = true;
+        //nextAction = true;
     }
 
     public IEnumerator EndTurn()
@@ -332,6 +355,7 @@ public class AIFigure : Figure
     public IEnumerator DisplayMovePosibilities()
     {
         isPreparingMove = true;
+        movePosibilities.Clear();
         for (int i = 0; i < currentPlan.Count; i++)
         {
             yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
@@ -352,7 +376,7 @@ public class AIFigure : Figure
     public override void ActionDone()
     {
         CalculateValues();
-        nextAction = true;
+        //nextAction = true;
     }
     public override void EndAction()
     {
@@ -371,24 +395,26 @@ public class AIFigure : Figure
             StartStopTurn(false);
             turnManager.NextTurn();
         }
-        TurnManager.RoundStarted -= GetNewPlan;
-        LevelManager.LevelClearedFuntions -= Remove;
-        turnManager.RemoveFromTurnOrder(gameObject);
-        Destroy(gameObject);
         yield return gameManager.StartCoroutine(base.Die());
     }
 
-    public override void Remove(LevelManager levelManager = null)
+    public override IEnumerator Remove(FloorManager floorManager = null)
     {
-        Destroy(gameObject);
         if (isMyTurn)
         {
             StartStopTurn(false);
             turnManager.NextTurn();
         }
-        TurnManager.RoundStarted -= GetNewPlan;
-        LevelManager.LevelClearedFuntions -= Remove;
-        turnManager.RemoveFromTurnOrder(gameObject);
-        base.Remove();
+        yield return gameManager.StartCoroutine(base.Remove());
     }
+    public override IEnumerator StopExisting()
+    {
+        TurnManager.RoundStarted -= GetNewPlan;
+        FloorManager.FloorCleared -= Remove;
+        //Debug.Log(gameObject);
+        turnManager.RemoveFromTurnOrder(gameObject);
+        yield return gameManager.StartCoroutine(base.StopExisting());
+    }
+
 }
+

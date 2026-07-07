@@ -9,7 +9,7 @@ public class RefrenceStorage : MonoBehaviour
     public static PlayerControler playerControler;
     public static Pathfinder pathfinder;
     public static DeckManager deckManager;
-    public static LevelManager levelManager;
+    public static FloorManager floorManager;
     public static ActionManager actionManager;
     //public static OverallStatistics overallStatistics;
     public static RoomSpawner roomSpawner;
@@ -18,23 +18,42 @@ public class RefrenceStorage : MonoBehaviour
     public static PlayerStats playerStats;
     public static CompendiumManager compendiumManager;
     public static CameraScript cameraScript;
+    public static Camera camera;
+    public static RelicManager relicManager;
+    public static UIManager UIManager;
 
+    public static GameObject player;
     public static GameObject interactButton;
-    public static GameObject pauseScreenBlocker;
-    public static GameObject deathScreenBlocker;
+    public static GameObject pauseScreenBlocker, deathScreenBlocker, rewardScreenBlocker, listDisplayerScreenBlocker, compendiumScreenBlocker;
+    public static GameObject UI;
     public static GameObject tooltip;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+
+
+        player = GameObject.Find("Player");
+
+        interactButton = GameObject.Find("InteractButton");
+        pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
+        deathScreenBlocker = GameObject.Find("DeathScreenBlocker");
+        rewardScreenBlocker = GameObject.Find("RewardScreenBlocker");
+        listDisplayerScreenBlocker = GameObject.Find("ListDisplayerScreenBlocker");
+        compendiumScreenBlocker = GameObject.Find("CompendiumScreenBlocker");
+
+        UI = GameObject.Find("UI");
+        tooltip = GameObject.Find("Tooltip");
+
+
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
-        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
+        playerControler = player.GetComponent<PlayerControler>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        floorManager = GameObject.Find("FloorManager").GetComponent<FloorManager>();
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
         //overallStatistics = GameObject.Find("OverallStatistics").GetComponent<OverallStatistics>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
@@ -43,11 +62,11 @@ public class RefrenceStorage : MonoBehaviour
         playerStats = GameObject.Find("PlayerStats").GetComponent<PlayerStats>();
         compendiumManager = GameObject.Find("CompendiumScreenBlocker").GetComponent<CompendiumManager>();
         cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
+        camera = GameObject.Find("Main Camera").GetComponent<Camera>();
 
-        interactButton = GameObject.Find("InteractButton");
-        pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
-        deathScreenBlocker = GameObject.Find("DeathScreenBlocker");
-        tooltip = GameObject.Find("Tooltip");
+        relicManager = GameObject.Find("RelicManager").GetComponent<RelicManager>();
+        UIManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+
     }
 
 }

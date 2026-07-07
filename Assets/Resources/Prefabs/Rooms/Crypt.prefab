@@ -8096,11 +8096,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8684686368545874521, guid: a2fb0d9ea8ea3964e8c472bc20dfcfc8, type: 3}
       propertyPath: lockpickDifficulty
-      value: 19
+      value: 63
       objectReference: {fileID: 0}
     - target: {fileID: 8684686368545874521, guid: a2fb0d9ea8ea3964e8c472bc20dfcfc8, type: 3}
       propertyPath: rewards.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8684686368545874521, guid: a2fb0d9ea8ea3964e8c472bc20dfcfc8, type: 3}
       propertyPath: rewards.Array.data[0].rewardType

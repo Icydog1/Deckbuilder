@@ -2,13 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Unity.Burst.Intrinsics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
-using static UnityEngine.GraphicsBuffer;
+
 
 
 public class PlayerControler : Figure
@@ -18,7 +13,6 @@ public class PlayerControler : Figure
     private bool isPlayerTurn, isPlayPhase;
     private GameObject player;
     private RoomSpawner roomSpawner;
-    private GameObject clickedTile, clickedFigure;
     private GameObject playedCard;
     public GameObject PlayedCard { get { return playedCard; } set { playedCard = value; } }
     private VariableDisplayer topEnergyDisplay, bottomEnergyDisplay;
@@ -42,8 +36,11 @@ public class PlayerControler : Figure
 
 
     private bool canPlayCards, canEndTurn, canPreformActions, cardPlayed, gettingReward, preformingAbility, specialPreformingAction, preformingAction, canPreformAbilities;
-    private bool waitUntilVariable;
-    private bool choosingTargets, choosingTile;
+    private bool unskippableAction;
+    private bool choosingTargets, choosingTile, choosingCard;
+    private GameObject clickedTile, clickedFigure, clickedCard;
+    private List<Figure> allowedTargets;
+    private List<GameObject> allowedCards;
     public bool CanPlayCards { get { UpdatePlayer(); return canPlayCards; } }
     public bool CanPreformAbilities { get { UpdatePlayer(); return canPreformAbilities; } }
     public bool CardPlayed { get { return cardPlayed; } set { cardPlayed = value; UpdatePlayer(); } }
@@ -54,32 +51,39 @@ public class PlayerControler : Figure
     public bool GettingReward { get { return gettingReward; } set { gettingReward = value; UpdatePlayer(); } }
     private int attackDamageValue, repeats;
     private Condition[] appliedConditions;
-    private bool canJump, canMove;
-    public bool CanJump { get { UpdatePlayer(); return canMove; } set { canJump = value; UpdateMoveType(); } }
+    private bool canMove;
     public bool CanMove { get { UpdatePlayer(); return canMove; } set { canMove = value; } }
 
     private int range;
     private bool isTargetATile, isTargetAEnemy;
-    private GameObject selectedTile;
+    private GameObject selectedCard;
     private GameObject interactButton;
     private GameObject currentTile;
     public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
 
     //public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
 
-    private List<Figure> allowedTargets;
     private Figure choosenTarget;
 
     private List<ActionDescription> actionsRemaining = new List<ActionDescription>();
     public List<ActionDescription> ActionsRemaining { get { return actionsRemaining; } set { actionsRemaining = value; statsDisplayer.Plan(actionsRemaining); } }
 
+
     private int topEnergy, bottomEnergy;
     public int TopEnergy { get { return topEnergy; } set { topEnergy = value; topEnergyDisplay.DisplayText(topEnergy); } }
     public int BottomEnergy { get { return bottomEnergy; } set { bottomEnergy = value; bottomEnergyDisplay.DisplayText(bottomEnergy); } }
 
-    public bool NextAction { get { return nextAction; } set { nextAction = value; } }
-    public static event Action<PlayerControler> PlayerTurnStartedFuntions;
-    public static event Func<PlayerControler, IEnumerator> PlayerTurnStarted;
+    //baseValus that valuse reset to at the start of the turn
+    private int startingCards, startingTopEnergy, startingBottomEnergy;
+    public int StartingCards { get { return startingCards; } set { startingCards = value;} }
+    public int StartingTopEnergy { get { return startingTopEnergy; } set { startingTopEnergy = value; } }
+    public int StartingBottomEnergy { get { return startingBottomEnergy; } set { startingBottomEnergy = value; } }
+
+    //public bool NextAction { get { return nextAction; } set { nextAction = value; } }
+    public event Action<PlayerControler> PlayerTurnStartedFuntions;
+    public event Func<PlayerControler, IEnumerator> PlayerTurnStarted;
+    public event Func<PlayerControler, IEnumerator> PlayerTurnEnded;
+    public event Action<PlayerControler> PlayerTurnEndedFunc;
 
     public event Action<PlayerControler> OpenedDoorFunc;
 
@@ -137,58 +141,34 @@ public class PlayerControler : Figure
     // Update is called once per frame
     void Update()
     {
-
-        //if (isMoving && !isPreformingAnimation)
-        //{
-        //    if (mouseManager.SelectedObject)
-        //    {
-        //        if (Input.GetMouseButton(0))
-        //        {
-        //            if (selectedTile != mouseManager.SelectedObject)
-        //            {
-        //                selectedTile = mouseManager.SelectedObject;
-        //                if (selectedTile.GetComponent<Tile>())
-        //                {
-        //                    PlanMove(selectedTile);
-        //                }
-        //            }
-        //        }
-        //        //if (Input.GetMouseButtonUp(0))
-        //        //{
-        //        //    if (mouseManager.SelectedObject.GetComponent<Tile>())
-        //        //    {
-        //        //        StartCoroutine(MoveAlongPath());
-        //        //    }
-        //        //}
-        //    }
-
-        //}
         if (Input.GetKeyDown(KeyCode.K))
         {
             //dev mode
             StartCoroutine(CheatMode());
         }
     }
+    //give player overpowerd abilities which helps for debuging
     public IEnumerator CheatMode()
     {
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Move(1000, true, true) })));
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Lockpick(1000, true) })));
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Block(1000, true) })));
-        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 1, 1, null, true) })));
+        yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(1, new List<Func<IEnumerator>>() { () => Attack(1000, 100, 100, 1, null, true) })));
     }
-
+    //resets the block the player has to base at the start of turn
     public override void resetBlock()
     {
         block = Mathf.Min(block, Variables.waxHandRetainedBlock * waxHandCount);
     }
-
-    public IEnumerator GoUpLevel()
+    //moves the player to the correct place when they climb the stairs
+    public IEnumerator GoUpFloor()
     {
         player.transform.position = new Vector3(0, 0, player.transform.position.z);
         playerControler.OneToOnePos = Vector2.zero;
         //yield return StartCoroutine(("Vigor"));
         yield break;
     }
+    //stuff that happens to reset the player to the base state
     public void ResetPlayer(GameManager gameManager)
     {
         //cardPlayed = false;
@@ -198,6 +178,8 @@ public class PlayerControler : Figure
         interactButton.SetActive(true);
         conditions.Clear();
     }
+
+    //stuff that happens to the player when it first spawns in the world
     public IEnumerator PreparePlayer(GameManager gameManager)
     {
         yield return StartCoroutine(actionManager.PreformAction(GainNewAbility(2, new List<Func<IEnumerator>>() { () => Move(1, false, true) })));
@@ -218,24 +200,8 @@ public class PlayerControler : Figure
         //statsDisplayer.SetConditions(new string[0]);
     }
 
-    public void TileClicked(GameObject tile)
-    {
-        if (choosingTile)
-        {
-            clickedTile = tile;
-            choosingTile = false;
-        }
-        //else if (isTargetATile && canPreformActions)
-        //{
-        //    clickedTile = tile;
 
-        //    //Vector2 clickedTileCords = clickedTile.transform.position;
-        //    //if (isMoving)
-        //    //{
-        //    //    //AttemptToMove(tile, clickedTileCords);
-        //    //}
-        //}
-    }
+    //calculates and hilights the path the player would take attemtping to move to a tile
     public void PlanMove(GameObject tile)
     {
         //Debug.Log("moveing twords " + tile + " at " + mapManager.PosToOneToOne(tile.transform.position));
@@ -258,9 +224,8 @@ public class PlayerControler : Figure
                 border.GetComponent<SpriteRenderer>().color = Color.yellow;
             }
         }
-
-
     }
+    //moves player along the planned path
     public IEnumerator MoveAlongPath()
     {
         pathfinder.MoveLeft = moveLeft;
@@ -277,24 +242,10 @@ public class PlayerControler : Figure
             }
         }
         moveLeft = pathfinder.MoveLeft;
-        //actionsRemaining[0] = actionsRemaining[0];
-        //actionsRemaining[0] = Regex.Replace(actionsRemaining[0], "(.)([A-Z,0-9])", "$1 $2");
         if (actionsRemaining.Count > 0)
         {
-            //Debug.Log("Come Back updateing move left while moving");
-            //foreach (ActionModifier actionModifier in actionsRemaining[0].ActionModifiers)
-            //{
-            //    if (actionModifier.Type == "Move")
-            //    {
-            //        actionModifier.ModifiedValue == moveLeft;
-            //        statsDisplayer.Plan(actionsRemaining);
-            //        break;
-            //    }
-            //}
-            statsDisplayer.ChangePlan("<sprite name=Move>", moveLeft);
-            //actionsRemaining[0].GetDescription(); = Regex.Replace(actionsRemaining[0], "(Move)( )([0-9]+)", "$1 " + moveLeft);
+            statsDisplayer.ChangePlan(Variables.moveSprite, moveLeft);
         }
-        //statsDisplayer.Plan(actionsRemaining);
         currentTile = mapManager.GetTileAtHex(oneToOnePos);
         if (currentTile.GetComponent<Interactable>())
         {
@@ -310,18 +261,19 @@ public class PlayerControler : Figure
             roomSpawner.SpawnRoomsNextToDoor(currentTile, currentTile.GetComponent<Door>().RoomNextToCords);
             //updates current tile as it is no longer a door
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
+            OverallStatistics.roomsExplored++;
             if (OpenedDoorFunc != null)
             {
                 OpenedDoorFunc(this);
             }
+            yield return StartCoroutine(actionManager.PreformPreparedActions());
         }
         //way to make it so enemies do spawning stuff without having to go through a long chain of coroutines
         //loads enemies that spawned
         //also preformes all queued actions from moving
-        yield return StartCoroutine(actionManager.PreformPreparedActions());
         if (currentTile.GetComponent<Stair>())
         {
-            yield return StartCoroutine(levelManager.GoUpLevel());
+            yield return StartCoroutine(floorManager.GoUpFloor());
             currentTile = mapManager.GetTileAtHex(oneToOnePos);
             yield return StartCoroutine(actionManager.PreformPreparedActions());
         }
@@ -357,73 +309,7 @@ public class PlayerControler : Figure
         }
     }
 
-
-    public IEnumerator FigureClicked(GameObject figure)
-    {
-        //Debug.Log("clicked" + figure);
-        clickedFigure = figure;
-        Figure clickedFigureScript = figure.GetComponent<Figure>();
-        if (choosingTargets && allowedTargets.Contains(clickedFigureScript))
-        {
-            choosenTarget = clickedFigureScript;
-            choosingTargets = false;
-        }
-        else if (canPreformActions && isAttacking)
-        {
-            if (allowedTargets.Contains(clickedFigureScript) && targetsLeft > 0)
-            {
-                targetsLeft--;
-                allowedTargets.Remove(clickedFigureScript);
-                effectedFigures.Add(clickedFigureScript);
-                if (StartedAttackingEnemyFunc != null)
-                {
-                    StartedAttackingEnemyFunc(this);
-                }
-                yield return gameManager.StartCoroutine(clickedFigureScript.AttackedFor(this, attackDamageValue, repeats, appliedConditions));
-                if (DoneAttackingEnemyFunc != null)
-                {
-                    DoneAttackingEnemyFunc(this);
-                }
-            }
-            if (targetsLeft == 0)
-            {
-                //Debug.Log("ended attack");
-                EndAction();
-            }
-        }
-        else if (canPreformActions && isAppliyingConditions)
-        {
-            if (allowedTargets.Contains(clickedFigureScript) && targetsLeft > 0)
-            {
-                effectedFigures.Add(clickedFigureScript);
-
-                yield return StartCoroutine(clickedFigureScript.GainConditions(appliedConditions));
-                targetsLeft--;
-                allowedTargets.Remove(clickedFigureScript);
-            }
-            if (targetsLeft == 0)
-            {
-                EndAction();
-            }
-        }
-        else if (figure.GetComponent<AIFigure>())
-        {
-            StartCoroutine(figure.GetComponent<AIFigure>().DisplayMovePosibilities());
-        }
-
-    }
-
-    //public IEnumerator ControledMove(int moveValue, bool isJump = false)
-    //{
-    //    actionDone = false;
-    //    isMoving = true;
-    //    isTargetATile = true;
-    //    moveLeft = moveValue;
-    //    CanJump = isJump;
-    //    UpdateMoveCostDisplay();
-    //    yield return new WaitUntil(() => isMoving == false);
-
-    //}
+    //shows/hides numbers on every tile that is their move cost depenting on the player setting
     public void UpdateMoveCostDisplay()
     {
         if (moveCostDisplaySetting == "Always" || (moveCostDisplaySetting == "On Move" && isMoving))
@@ -435,34 +321,44 @@ public class PlayerControler : Figure
             mapManager.showMoveCost(false);
         }
     }
-    //public IEnumerator ControledAttack(int attackValue, int attackRange, int targets, int times, Condition[] attackConditions)
-    //{
-    //    actionDone = false;
-    //    isAttacking = true;
-    //    targetsLeft = targets;
-    //    attackDamageValue = attackValue;
-    //    range = attackRange;
-    //    repeats = times;
-    //    isTargetAEnemy = true;
-    //    appliedConditions = attackConditions;
-    //    allowedTargets = FindPosibleTargets("enemy", attackRange);
-    //    yield return new WaitUntil(() => isAttacking == false);
 
-    //}
+    //runs when a figure is clicked
+    public IEnumerator FigureClicked(GameObject figure)
+    {
+        //Debug.Log("clicked" + figure);
+        clickedFigure = figure;
+        Figure clickedFigureScript = figure.GetComponent<Figure>();
+        if (choosingTargets && allowedTargets.Contains(clickedFigureScript))
+        {
+            choosenTarget = clickedFigureScript;
+            choosingTargets = false;
+        }
+        else if (figure.GetComponent<AIFigure>())
+        {
+            StartCoroutine(figure.GetComponent<AIFigure>().DisplayMovePosibilities());
+        }
+        yield break;
+    }
+    //runs when a tile is clicked
+    public void TileClicked(GameObject tile)
+    {
+        if (choosingTile)
+        {
+            clickedTile = tile;
+            choosingTile = false;
+        }
+    }
+    //runs when a card is clicked
+    public void CardClicked(GameObject card)
+    {
+        if (choosingCard && allowedCards.Contains(card))
+        {
+            clickedCard = card;
+            choosingCard = false;
+        }
+    }
 
-    //public IEnumerator ControledApplyConditions(Condition[] newConditions, string targetType, int conditionsRange, int targets)
-    //{
-    //    actionDone = false;
-    //    isAppliyingConditions = true;
-    //    targetsLeft = targets;
-    //    range = conditionsRange;
-    //    appliedConditions = newConditions;
-    //    allowedTargets = FindPosibleTargets(targetType, conditionsRange);
-    //    //yield return null;
-    //    yield return new WaitUntil(() => isAppliyingConditions == false);
-
-    //    //yield return StartCoroutine(); // select targets
-    //}
+    //waits until a figure from a list is clicked and returns that figure
     public IEnumerator ControledChooseFigures(List<Figure> posibleTargets, System.Action<Figure> callback)
     {
         //actionDone = false;
@@ -472,6 +368,7 @@ public class PlayerControler : Figure
         yield return new WaitUntil(() => choosingTargets == false);
         callback?.Invoke(choosenTarget);
     }
+    //waits until a tile is clicked and returns that tile
     public IEnumerator ControledChooseTile(System.Action<GameObject> callback)
     {
         //actionDone = false;
@@ -480,10 +377,20 @@ public class PlayerControler : Figure
         yield return new WaitUntil(() => choosingTile == false);
         callback?.Invoke(clickedTile);
     }
-
+    //waits until a card from a list is clicked and returns that card
+    public IEnumerator ControledChooseCard(List<GameObject> posibleTargets, System.Action<GameObject> callback)
+    {
+        //actionDone = false;
+        //isAppliyingConditions = true;
+        allowedCards = posibleTargets;
+        choosingCard = true;
+        yield return new WaitUntil(() => choosingCard == false);
+        callback?.Invoke(clickedCard);
+    }
+    //updates player variables based on other variables
     public void UpdatePlayer()
     {
-        if (!cardPlayed && !gettingReward && isPlayPhase && !deckManager.IsDisplayingCards && !isPreformingAnimation && !preformingAbility)
+        if (!cardPlayed && !gettingReward && isPlayPhase && !deckManager.IsDisplayingList && !isPreformingAnimation && !preformingAbility)
         {
             canPlayCards = true;
             canEndTurn = true;
@@ -495,7 +402,7 @@ public class PlayerControler : Figure
             canEndTurn = false;
             canPreformAbilities = false;
         }
-        if (!gettingReward && isPlayerTurn && !deckManager.IsDisplayingCards && !isPreformingAnimation)
+        if (!gettingReward && isPlayerTurn && !deckManager.IsDisplayingList && !isPreformingAnimation)
         {
             canPreformActions = true;
             if (isMoving)
@@ -521,10 +428,13 @@ public class PlayerControler : Figure
             preformingAction = false;
         }
     }
-
+    //runs at the start of the turn
     public IEnumerator StartTurn()
     {
         //Debug.Log("started turn");
+        startingCards = 5;
+        startingTopEnergy = 2;
+        startingBottomEnergy = 2;
         isPlayerTurn = true;
         if (PlayerTurnStartedFuntions != null)
         {
@@ -542,13 +452,18 @@ public class PlayerControler : Figure
             }
             //yield return StartCoroutine(GameStarted(this));
         }
-        yield return StartCoroutine(deckManager.DrawNewHand());
-        TopEnergy = 2;
-        BottomEnergy = 2;
         yield return StartCoroutine(baseStartTurn());
+        startingCards = Mathf.Clamp(startingCards, 0, 10);
+        startingTopEnergy = Mathf.Clamp(startingTopEnergy, 0, Variables.gameMaxValue);
+        startingBottomEnergy = Mathf.Clamp(startingBottomEnergy, 0, Variables.gameMaxValue);
+
+        yield return StartCoroutine(deckManager.DrawCards(startingCards));
+        TopEnergy = startingTopEnergy;
+        BottomEnergy = startingBottomEnergy;
         isPlayPhase = true;
     }
 
+    //forces the player to immediatly end the turn
     public IEnumerator ForceEndTurn()
     {
         UpdatePlayer();
@@ -563,6 +478,7 @@ public class PlayerControler : Figure
         //Debug.Log("ended turn");
         yield return StartCoroutine(EndTurn());
     }
+    //attemts to end the turn if able
     public IEnumerator AtemptToEndTurn()
     {
         UpdatePlayer();
@@ -571,19 +487,37 @@ public class PlayerControler : Figure
             yield return StartCoroutine(EndTurn());
         }
     }
+    //runs when the turn ends
     public IEnumerator EndTurn()
     {
         isPlayPhase = false;
+        if (PlayerTurnEndedFunc != null)
+        {
+            PlayerTurnEndedFunc(this);
+        }
+        if (PlayerTurnEnded != null)
+        {
+            Delegate[] listeners = PlayerTurnEnded.GetInvocationList();
+            foreach (Delegate action in listeners)
+            {
+                //tells computer that action takes a TurnManager and outputs a IEnumerator
+                var callback = (Func<PlayerControler, IEnumerator>)action;
+                //runs action now that it is the correct type
+                yield return StartCoroutine(callback(this));
+            }
+            //yield return StartCoroutine(GameStarted(this));
+        }
         UpdatePlayer();
         yield return StartCoroutine(deckManager.DiscardHand());
         yield return StartCoroutine(pathfinder.BuildPlayerElevationMap());
         yield return StartCoroutine(base.baseEndTurn());
         isPlayerTurn = false;
     }
+    //ends a action before it is complete if able
     public void ManualEnd()
     {
         UpdatePlayer();
-        if (preformingAction && isPlayerTurn)
+        if (preformingAction && isPlayerTurn && !unskippableAction)
         {
             //targetsLeft = 0;
             EndAction();
@@ -609,15 +543,18 @@ public class PlayerControler : Figure
         //nextAction = true;
         Debug.Log("oldsytem");
     }
-
+    //force ends whatever action the player is currently doing
     public void ForceEndAction()
     {
-        EndAction();
-
+        if (!actionEnded)
+        {
+            EndAction();
+        }
         actionsRemaining.Clear();
         statsDisplayer.Plan(actionsRemaining);
-        nextAction = true;
+        //nextAction = true;
     }
+    //the prosses of ending a action
     public override void EndAction()
     {
         actionEnded = true;
@@ -675,6 +612,7 @@ public class PlayerControler : Figure
         actionManager.ActionStackNames.Pop();
         if (actionsRemaining.Count > 0)
         {
+            //Debug.Log("removed action plan");
             actionsRemaining.Remove(actionsRemaining[0]);
             statsDisplayer.Plan(actionsRemaining);
         }
@@ -685,14 +623,13 @@ public class PlayerControler : Figure
         //nextAction = true; //?
         //actionDone = true; //?
     }
-
+    //updates what the plan that is displayed says
     public void UpdatePlan()
     {
         statsDisplayer.Plan(actionsRemaining);
     }
 
-
-
+    //action to gain skill
     public IEnumerator Skill(int skillValue, bool isVariable = false)
     {
         if (isVariable)
@@ -701,11 +638,7 @@ public class PlayerControler : Figure
         }
         if (isPlanning)
         {
-            //string currentDescriptionString = "Skill " + finalSkill;
-            //string currentDescriptionString = finalSkill + "<sprite name=Skill>";
-            //actionManager.PlanToList.Add(currentDescriptionString);
-
-            ActionDescription currentAction = new ActionDescription("Skill", new List<ActionModifier>() { new ActionModifier(this, null, skillValue, " <sprite name=Skill>", "Skill") });
+            ActionDescription currentAction = new ActionDescription("Skill", new List<ActionModifier>() { new ActionModifier(this, null, skillValue, Variables.skillSprite, "Skill") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -717,7 +650,7 @@ public class PlayerControler : Figure
             EndAction();
         }
     }
-
+    //action to gain lockpick
     public IEnumerator Lockpick(int lockpickValue, bool isVariable = false)
     {
         if (isVariable)
@@ -727,9 +660,7 @@ public class PlayerControler : Figure
         //Debug.Log(finalLockpick);
         if (isPlanning)
         {
-            //string currentDescriptionString = finalLockpick + " <sprite name=Lockpick>";
-            //actionManager.PlanToList.Add(currentDescriptionString);
-            ActionDescription currentAction = new ActionDescription("Lockpick", new List<ActionModifier>() { new ActionModifier(this, null, lockpickValue, " <sprite name=Lockpick>", "Lockpick") });
+            ActionDescription currentAction = new ActionDescription("Lockpick", new List<ActionModifier>() { new ActionModifier(this, null, lockpickValue, Variables.lockpickSprite, "Lockpick") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -751,6 +682,7 @@ public class PlayerControler : Figure
         }
         yield break;
     }
+    //action to draw cards
     public IEnumerator Draw(int cardCount, bool isVariable = false)
     {
         if (isVariable)
@@ -760,10 +692,12 @@ public class PlayerControler : Figure
         }
         if (isPlanning)
         {
-            //string currentDescriptionString = "Draw " + cardCount + " card";
-            //actionManager.PlanToList.Add(currentDescriptionString);
-
-            ActionDescription currentAction = new ActionDescription("Draw", new List<ActionModifier>() { new ActionModifier(this, "Draw ", cardCount, " card", "Draw") });
+            string pluralCards = " card";
+            if (cardCount != 1)
+            {
+                pluralCards = " cards";
+            }
+            ActionDescription currentAction = new ActionDescription("Draw", new List<ActionModifier>() { new ActionModifier(this, "Draw ", cardCount, pluralCards, "Draw") });
             actionManager.PlanToList.Add(currentAction);
         }
         else
@@ -773,6 +707,50 @@ public class PlayerControler : Figure
             EndAction();
         }
     }
+    //action to discard cards
+
+    public IEnumerator Discard(int cardCount, bool isVariable = false)
+    {
+        if (isVariable)
+        {
+            cardCount *= variableCardModifier;
+        }
+        if (isPlanning)
+        {
+            string pluralCards = " card";
+            if (cardCount != 1)
+            {
+                pluralCards = " cards";
+            }
+            ActionDescription currentAction = new ActionDescription("Discard", new List<ActionModifier>() { new ActionModifier(this, "Discard ", cardCount, pluralCards, "Discard") });
+            actionManager.PlanToList.Add(currentAction);
+        }
+        else
+        {
+            unskippableAction = true;
+            actionManager.ActionStackNames.Push("Discard");
+            List<GameObject> posibleTargets = deckManager.HandContents;
+            targetsLeft = cardCount;
+            while (targetsLeft > 0)
+            {
+                GameObject selectedCard = null;
+                yield return StartCoroutine(ControledChooseCard(posibleTargets, (result) => { selectedCard = result; }));
+                posibleTargets.Remove(selectedCard);
+                if (targetsLeft > 0)
+                {
+                    targetsLeft--;
+                    yield return StartCoroutine(deckManager.DiscardCard(selectedCard));
+                    if (targetsLeft <= 0 || posibleTargets.Count == 0)
+                    {
+                        EndAction();
+                    }
+                }
+            }
+            unskippableAction = false;
+            //EndAction();
+        }
+    }
+    //action to gain top energy
     public IEnumerator GainTopEnergy(int amount, bool isVariable = false)
     {
         if (isVariable)
@@ -794,6 +772,7 @@ public class PlayerControler : Figure
         }
         yield break;
     }
+    //action to gain bottom energy
     public IEnumerator GainBottomEnergy(int amount, bool isVariable = false)
     {
         if (isVariable)
@@ -814,6 +793,7 @@ public class PlayerControler : Figure
         yield break;
 
     }
+    //action to gain a new ability (constructs ability)
     public IEnumerator GainNewAbility(int cost, List<Func<IEnumerator>> abilities, int duration = -1)
     {
         //Debug.Log("start of gaining ablility");
@@ -822,6 +802,7 @@ public class PlayerControler : Figure
         //Debug.Log("end of gaining ablility");
 
     }
+    //action to gain a new ability (takes constructed ability)
     public IEnumerator GainAbility(Ability ability, int duration = -1)
     {
         if (isPlanning)
@@ -839,7 +820,7 @@ public class PlayerControler : Figure
             unmodifiedAction = true;
             string planString = string.Empty;
             yield return StartCoroutine(GetPlanString(ability.Abilities ,(result) => { planString = result; }));
-            currentDescriptionString += ": " + ability.Cost + " <sprite name=Skill> for " + planString;
+            currentDescriptionString += ": " + ability.Cost + Variables.skillSprite + " for " + planString;
             unmodifiedAction = false;
 
             ActionDescription currentAction = new ActionDescription("GainAbility", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
@@ -847,50 +828,59 @@ public class PlayerControler : Figure
         }
         else
         {
-            actionManager.ActionStackNames.Push("TopEnergy");
+            actionManager.ActionStackNames.Push("GainAbility");
             yield return StartCoroutine(abilityManager.GainAbility(ability));
             EndAction();
             //ActionDone();
         }
         yield break;
     }
+    //action to lose a ability
     public IEnumerator LoseAbility(Ability ability)
     {
-        if (isPlanning)
-        {
-            string planString = string.Empty;
-            yield return StartCoroutine(GetPlanString(ability.Abilities, (result) => { planString = result; }));
-            string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Skill> for " + planString;
-            ActionDescription currentAction = new ActionDescription("Ability", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
-            actionManager.PlanToList.Add(currentAction);
-        }
-        else
-        {
-            abilityManager.LoseAbility(ability);
-            //ActionDone();
-        }
+        //if (isPlanning)
+        //{
+        //    string planString = string.Empty;
+        //    yield return StartCoroutine(GetPlanString(ability.Abilities, (result) => { planString = result; }));
+        //    string currentDescriptionString = "Lose ability: " + ability.Cost + "<sprite name=Skill> for " + planString;
+        //    ActionDescription currentAction = new ActionDescription("Ability", new List<ActionModifier>() { new ActionModifier(this, currentDescriptionString) });
+        //    actionManager.PlanToList.Add(currentAction);
+        //}
+        //else
+        //{
+        //    abilityManager.LoseAbility(ability);
+        //    //ActionDone();
+        //}
+        abilityManager.LoseAbility(ability);
+        yield break;
     }
+    //add keywords to a card
     public IEnumerator AddKeyword(string keyWord, int keyWordValue = 1)
     {
         if (isPlanning)
         {
             playedCardScript.CurrentKeywords[keyWord] = keyWordValue;
-            //if (keyWord == "Augment")
+            if (keyWord == "Augment")
+            {
+                ActionDescription currentAction = new ActionDescription("Augment", new List<ActionModifier>() { new ActionModifier(playerControler, "Augment") });
+                actionManager.PlanToList.Add(currentAction);
+            }
+            //if (keyWord == "Upkeep")
             //{
-            //    effectedFigure = this;
+            //    ActionDescription currentAction = new ActionDescription("Upkeep", new List<ActionModifier>() { new ActionModifier(playerControler, "Upkeep") });
+            //    actionManager.PlanToList.Add(currentAction);
             //}
-
         }
         else
         {
-            actionEnded = false;
+            //actionEnded = false;
             actionManager.ActionStackNames.Push(keyWord);
             if (keyWord == "Augment")
             {
                 effectedFigures = new List<Figure>();
                 List<Figure> posibleTargets = new List<Figure>(currentSummons);
                 targetsLeft = keyWordValue;
-                while (targetsLeft > 0)
+                while (targetsLeft > 0 && posibleTargets.Count > 0)
                 {
                     Figure targetedFigure = null;
                     yield return playerControler.ControledChooseFigures(posibleTargets, (result) => { targetedFigure = result; });
@@ -933,11 +923,11 @@ public class PlayerControler : Figure
             //    //}
             //    //PlayedCardScript.PrepareExhaustAfterPlayed(() => boolList.All(condition => condition()), deckManager.Discard);
             //}
-            if (keyWord == "Exausting")
-            {
-                int currentShuffles = OverallStatistics.shuffles;
-                PlayedCardScript.PrepareExhaustAfterPlayed(() => OverallStatistics.shuffles > currentShuffles + keyWordValue, deckManager.Discard);
-            }
+            //if (keyWord == "Exausting")
+            //{
+            //    int currentShuffles = OverallStatistics.shuffles;
+            //    PlayedCardScript.PrepareExhaustAfterPlayed(() => OverallStatistics.shuffles > currentShuffles + keyWordValue, deckManager.Discard);
+            //}
             if (!actionEnded)
             {
                 EndAction();
@@ -947,6 +937,7 @@ public class PlayerControler : Figure
         //Debug.Log("done with action");
     }
 
+    //action for commanding figures
     //all folowing actiions will have the commanded figures as targets
     public IEnumerator Command(int targets = 1, string targetType = "summon", int range = Variables.gameInfinityValue)
     {
@@ -989,7 +980,7 @@ public class PlayerControler : Figure
             effectedFigures = new List<Figure>();
             List<Figure> posibleTargets = FindPosibleTargets(targetType, range);
             targetsLeft = targets;
-            while (targetsLeft > 0)
+            while (targetsLeft > 0 && posibleTargets.Count > 0)
             {
                 Figure targetedFigure = null;
                 yield return playerControler.ControledChooseFigures(posibleTargets, (result) => { targetedFigure = result; });
@@ -1002,9 +993,8 @@ public class PlayerControler : Figure
             }
             playedCardScript.ActingFigures = new List<Figure>(effectedFigures);
         }
-
-
     }
+
 
     public IEnumerator Augment(Condition conditions, bool isManual = true)
     {
@@ -1055,18 +1045,19 @@ public class PlayerControler : Figure
 
 
     }
-    //int x = 0;
+    //action for exauseting
     public IEnumerator Exhausting(int duration)
     {
         if (isPlanning)
         {
             playedCardScript.CurrentKeywords["Exhausting"] = duration;
-            //ActionDescription currentAction = new ActionDescription("Summon", new List<ActionModifier>() { new ActionModifier(this, "Summon " + summon.name) });
         }
         else if (!isPreparingMove)
         {
+            actionManager.ActionStackNames.Push("Exhausting");
             int currentShuffles = OverallStatistics.shuffles;
-            PlayedCardScript.PrepareExhaustAfterPlayed(() => OverallStatistics.shuffles > currentShuffles + duration, deckManager.Discard);
+            PlayedCardScript.PrepareExhaustAfterPlayed(() => OverallStatistics.shuffles >= currentShuffles + duration, deckManager.Discard);
+            EndAction();
         }
         yield break;
     }
@@ -1188,5 +1179,4 @@ public class PlayerControler : Figure
         statsDisplayer.SetLevelAndXP(level, potentialLevel, XP, XPThreshold);
         yield return StartCoroutine(rewardManager.LevelUpReward());
     }
-
 }

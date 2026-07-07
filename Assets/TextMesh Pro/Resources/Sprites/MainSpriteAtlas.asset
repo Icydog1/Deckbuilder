@@ -221,13 +221,13 @@ MonoBehaviour:
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 36
-    m_Scale: 1
-    m_Name: RpgItems1_36
+    m_Scale: 0.85
+    m_Name: SpecialRoomIcon
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 37
     m_Scale: 0.85
-    m_Name: SpecialRoomIcon
+    m_Name: Target
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 38
@@ -538,7 +538,7 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 13
       m_Height: 13
-      m_HorizontalBearingX: 0.5
+      m_HorizontalBearingX: 0
       m_HorizontalBearingY: 12
       m_HorizontalAdvance: 13
     m_GlyphRect:
@@ -1130,8 +1130,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 14
       m_Height: 14
-      m_HorizontalBearingX: -3
-      m_HorizontalBearingY: 12
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 13
       m_HorizontalAdvance: 14
     m_GlyphRect:
       m_X: 17
@@ -1642,7 +1642,7 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 14
       m_Height: 14
-      m_HorizontalBearingX: -3
+      m_HorizontalBearingX: 0
       m_HorizontalBearingY: 14
       m_HorizontalAdvance: 14
     m_GlyphRect:
@@ -1962,8 +1962,8 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 11
       m_Height: 12
-      m_HorizontalBearingX: -0.5
-      m_HorizontalBearingY: 12
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 11
       m_HorizontalAdvance: 11
     m_GlyphRect:
       m_X: 2

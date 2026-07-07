@@ -6,11 +6,11 @@ public class CripplingPoison : Card
 
     public override void PrepareTop()
     {
-        currentActions.Add( new Action(() => playerControler.ApplyConditions(new Condition[] { new Poison(5) }, "enemy")));
+        currentActions.Add( new Action(() => playerControler.ApplyConditions(new Condition[] { new Poison(6) }, "enemy")));
     }
 
     public override void PrepareBottom()
     {
-        currentActions.Add( new Action(() => playerControler.ApplyConditions(new Condition[] { new Poison(2), new Strength(-2,5), new Speed(-2,5) }, "enemy")));
+        currentActions.Add( new Action(() => playerControler.ApplyConditions(new Condition[] { new Poison(3), new Strength(-2,5), new Speed(-2,5) }, "enemy")));
     }
 }

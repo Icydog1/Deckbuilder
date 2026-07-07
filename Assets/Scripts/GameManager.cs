@@ -11,14 +11,15 @@ public class GameManager : MonoBehaviour
     private MouseManager mouseManager;
     private TurnManager turnManager;
     private RoomSpawner roomSpawner;
-    private LevelManager levelManager;
+    private FloorManager floorManager;
     private GameObject pauseScreenBlocker;
     private GameObject deathScreenBlocker;
-    
+    private UIManager UIManager;
 
+    
     private GameObject settings, restartGameButton, settingsRestartGameButton;
 
-    private bool nextAction;
+    //private bool nextAction;
     public static event Action<GameManager> GameStartedFunctions;
     public static event Action<GameManager> ResetGame;
     public static event Func<GameManager, IEnumerator> GameStarted;
@@ -32,16 +33,16 @@ public class GameManager : MonoBehaviour
         mapManager = RefrenceStorage.mapManager;
         turnManager = RefrenceStorage.turnManager;
         mouseManager = RefrenceStorage.mouseManager;
-        levelManager = RefrenceStorage.levelManager;
+        floorManager = RefrenceStorage.floorManager;
         roomSpawner = RefrenceStorage.roomSpawner;
         pauseScreenBlocker = RefrenceStorage.pauseScreenBlocker;
         deathScreenBlocker = RefrenceStorage.deathScreenBlocker;
-
+        UIManager = RefrenceStorage.UIManager;
         //mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         //mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         //turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         //roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
-        //levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        //floorManager = GameObject.Find("FloorManager").GetComponent<FloorManager>();
         //pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
         restartGameButton = deathScreenBlocker.transform.Find("RestartGameButton").gameObject;
         settings = pauseScreenBlocker.transform.Find("Settings").gameObject;
@@ -84,7 +85,7 @@ public class GameManager : MonoBehaviour
             }
             //yield return StartCoroutine(GameStarted(this));
         }
-        levelManager.StartLevel();
+        floorManager.StartFloor();
         if (LateGameStarted != null)
         {
             Delegate[] listeners = LateGameStarted.GetInvocationList();
@@ -102,8 +103,9 @@ public class GameManager : MonoBehaviour
     }
     public void EndGame()
     {
-        deathScreenBlocker.GetComponent<Image>().enabled = true;
-        deathScreenBlocker.GetComponent<RectTransform>().sizeDelta = deathScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
+        UIManager.IsDead = true;
+        //deathScreenBlocker.GetComponent<Image>().enabled = true;
+        //deathScreenBlocker.GetComponent<RectTransform>().sizeDelta = deathScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
 
         restartGameButton.SetActive(true);
 
@@ -111,14 +113,16 @@ public class GameManager : MonoBehaviour
     public IEnumerator ReStartGame()
     {
         OverallStatistics.ResetStatistics();
-        pauseScreenBlocker.GetComponent<Image>().enabled = false;
-        deathScreenBlocker.GetComponent<Image>().enabled = false;
+        //pauseScreenBlocker.GetComponent<Image>().enabled = false;
+        UIManager.IsPaused = false;
+        UIManager.IsDead = false;
+        //deathScreenBlocker.GetComponent<Image>().enabled = false;
         mouseManager.MouseOffObject(restartGameButton);
         restartGameButton.gameObject.SetActive(false);
         mouseManager.MouseOffObject(settingsRestartGameButton);
         settings.SetActive(false);
         //Debug.Log("ReStarted Game 1");
-        yield return StartCoroutine(levelManager.ResetGame());
+        yield return StartCoroutine(floorManager.ResetGame());
 
         //Debug.Log("ReStarted Game 2");
 

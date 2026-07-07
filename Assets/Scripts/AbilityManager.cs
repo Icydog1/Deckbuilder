@@ -21,16 +21,19 @@ public class AbilityManager : MonoBehaviour
 
     private VariableDisplayer avaliblePowerDisplay, selectedPowerDisplay;
 
+    private PlayerControler playerControler;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playerControler = RefrenceStorage.playerControler;
         abilitiesDescriptions = GameObject.Find("AbilitiesDescriptions");
         avaliblePowerDisplay = abilitiesDescriptions.transform.Find("AvaliblePowerDisplay").GetComponent<VariableDisplayer>();
         selectedPowerDisplay = abilitiesDescriptions.transform.Find("SelectedPowerDisplay").GetComponent<VariableDisplayer>();
         abilityListDisplayer = abilitiesDescriptions.transform.Find("AbilityListDisplayer").gameObject;
         abilityListStorage = abilityListDisplayer.transform.Find("Viewport").transform.Find("Content");
         AbilityPower = 0;
-        PlayerControler.PlayerTurnStarted += ResetAbilityPower;
+        playerControler.PlayerTurnStarted += ResetAbilityPower;
         GameManager.ResetGame += ClearAllAbility;
     }
 
@@ -75,7 +78,7 @@ public class AbilityManager : MonoBehaviour
     public void LoseAbility(Ability ability)
     {
         int abilityIndex = ability.AbilityUI.AbilityNumber;
-        PlayerControler.PlayerTurnStartedFuntions -= ability.ResetAbilityCooldown;
+        playerControler.PlayerTurnStartedFuntions -= ability.ResetAbilityCooldown;
         Destroy(ability.AbilityUI.gameObject);
         abilities.RemoveAt(abilityIndex);
         for(int i = abilityIndex; i < abilities.Count; i++)
@@ -90,7 +93,7 @@ public class AbilityManager : MonoBehaviour
     {
         foreach (Ability ability in abilities)
         {
-            PlayerControler.PlayerTurnStartedFuntions -= ability.ResetAbilityCooldown;
+            playerControler.PlayerTurnStartedFuntions -= ability.ResetAbilityCooldown;
             Destroy(ability.AbilityUI.gameObject);
         }
 

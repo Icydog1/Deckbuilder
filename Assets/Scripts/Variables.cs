@@ -9,9 +9,11 @@ public static class Variables
 
     //relic variables
     public const int kineticBatterySpaces = 2, kineticBatteryVigorDuration = 3;
-    public const int bloodySandalsDamage = 7, bloodySandalsBurstDuration = 3;
+    public const int vampiricBootDamage = 7, vampiricBootBurstDuration = 3;
     public const int adaptiveShieldBlock = 4;
     public const int frozenLensSpeedLoss = 5;
+    public const int shatteredSwordStrengthLoss = 3;
+    public const int toxicTentaclePoison = 1;
     public const int waxHandRetainedBlock = 5;
     public const int mortarDamageIncrease = 1;
     public const int twoTailedNewtMaxTimes = 13;
@@ -20,10 +22,24 @@ public static class Variables
     public const int everlastingFlameCost = 8, everlastingFlameMaxTimes = 1;
     public const int halfFilledPotionHealingPercent = 40;
 
+    //rewards
+    public const int ScrappedCardXP = 1;
     
+
     //colors
     public const string relicIncreaseableNumberColor = "<color=#009f9f>";
 
+    //sprites
+    public const string attackSprite = "<sprite name=Attack>";
+    public const string blockSprite = "<sprite name=Block>";
+    public const string skillSprite = "<sprite name=Skill>";
+    public const string moveSprite = "<sprite name=Move>";
+    public const string lockpickSprite = "<sprite name=Lockpick>";
+
+    public const string rangeSprite = "<sprite name=Range>";
+    public const string targetSprite = "<sprite name=Target>";
+
+    
 
     //spawners
     public const int spawnerActivationDelay = 10;

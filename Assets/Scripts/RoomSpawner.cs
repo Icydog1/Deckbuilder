@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEngine.Rendering.BoolParameter;
 using static UnityEngine.RuleTile.TilingRuleOutput;
@@ -10,7 +11,8 @@ public class RoomSpawner : MonoBehaviour
     private MapManager mapManager;
     private PlayerControler playerControler;
 
-    [SerializeField]
+    //private GameObject[] allRooms = new GameObject[] { };
+    //[SerializeField]
     private List<GameObject> rooms;
     private List<GameObject> specialRooms = new List<GameObject>();
     private List<GameObject> easyRooms = new List<GameObject>();
@@ -34,13 +36,17 @@ public class RoomSpawner : MonoBehaviour
     public List<Vector2Int> BuiltRooms { get { return builtRooms; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         tileWidth = mapManager.TileWidth;
         tileHeight = mapManager.TileHeight;
 
+        GameObject[] allRooms = Resources.LoadAll<GameObject>("Prefabs/Rooms");
+        rooms = allRooms.ToList();
+        rooms.RemoveAll(room => room.GetComponent<RoomScript>() == null);
+        rooms.RemoveAll(card => card.name == "BaseRoom");
         PrepareRooms();
         if (initialRoomWeights.Length != rooms.Count)
         {
@@ -61,7 +67,7 @@ public class RoomSpawner : MonoBehaviour
 
         }
         BuildRoomProbabilities(initialRoomWeights);
-        LevelManager.LevelClearedFuntions += ClearRooms;
+        FloorManager.FloorClearedFuntions += ClearRooms;
     }
 
     // Update is called once per frame
@@ -71,6 +77,7 @@ public class RoomSpawner : MonoBehaviour
     }
     public void PrepareRooms()
     {
+
         foreach (GameObject room in rooms)
         {
             RoomScript roomScript = room.GetComponent<RoomScript>();
@@ -98,7 +105,7 @@ public class RoomSpawner : MonoBehaviour
     }
 
 
-    public void ClearRooms(LevelManager levelManager)
+    public void ClearRooms(FloorManager floorManager)
     {
         foreach (GameObject room in existingRooms)
         {
@@ -146,7 +153,19 @@ public class RoomSpawner : MonoBehaviour
         //Debug.Log("Spawned Starting Room");
 
         realativeRotation = 0;
-        SpawnRoom(Vector2Int.zero, rooms[0]);
+
+        SpawnRoom(Vector2Int.zero, FindSpeicalRoom("StartRoom"));
+    }
+    public GameObject FindSpeicalRoom(string roomName)
+    {
+        foreach (GameObject room in specialRooms)
+        {
+            if (room.name == roomName)
+            {
+                return room;
+            }
+        }
+        return null;
     }
     public int GetRandomRoomType()
     {
@@ -164,7 +183,7 @@ public class RoomSpawner : MonoBehaviour
 
     private void SpawnRandomRoom(Vector2Int oneToOnePos, int roomtype = -1)
     {
-        List<GameObject> roomPool = rooms;
+        List<GameObject> roomPool = null;
         if (roomtype == -1)
         {
             float randomRoomTypeNumber = Random.Range(0, 1f);

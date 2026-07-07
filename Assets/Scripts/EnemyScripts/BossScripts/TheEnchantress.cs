@@ -27,12 +27,12 @@ public class TheEnchantress : Boss
             ,() => Attack(12,3)
         });
         moveSets.Add(new List<Func<IEnumerator>> {
-            () => ApplyConditions(new Condition[]{ new Strength(3),new Speed(2) },"self or ally",Variables.gameInfinityValue,Variables.gameInfinityValue)
+            () => ApplyConditions(new Condition[]{ new Strength(3 + (3 * OverallStatistics.bossDifficulty)),new Speed(2 + (2 * OverallStatistics.bossDifficulty)) },"self or ally",Variables.gameInfinityValue,Variables.gameInfinityValue)
             //,() => ApplyCondition(,"self or ally",Variables.gameInfinityValue,Variables.gameInfinityValue)
         });
         movesSetOrder = new List<int>() { 0, 1, 3, 4, 0, 2, 3, 4 };
 
-        maxHealth = 237;
+        maxHealth = 237 + (133 * OverallStatistics.bossDifficulty);
         XPValue = 30;
 
         base.Awake();

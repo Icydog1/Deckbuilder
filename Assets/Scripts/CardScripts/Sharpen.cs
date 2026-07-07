@@ -18,6 +18,8 @@ public class Sharpen : Card
     {
         currentActions.Add(new Action(() => playerControler.AddKeyword("Augment")));
         currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new Strength(5))));
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new Strength(-2))));
+
         //currentActions.Add(new Action(() => playerControler.Augment(new Strength(5))));
     }
 

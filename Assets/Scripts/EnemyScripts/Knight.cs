@@ -16,14 +16,14 @@ public class Knight : Enemy
             () => Move(13)
             ,() => Attack(13)
             ,() => Block(13)
-            ,() => ApplyCondition(new Strength(7, 2))
+            ,() => ApplyCondition(new Vigor(7))
         });
         moveSets.Add(new List<Func<IEnumerator>> {
 
             () => Move(7)
             ,() => Attack(8)
             ,() => Block(16)
-            ,() => ApplyCondition(new Strength(14, 2))
+            ,() => ApplyCondition(new Vigor(14))
 
         });
 

@@ -8,7 +8,7 @@ public class TwoTailedNewt : Relic
     private Ability ability;
     public override void Awake()
     {
-        relicDesription = "Gain ability: 1 <sprite name=Skill> for 2 <sprite name=Skill>(Max " + Variables.relicIncreaseableNumberColor + Variables.twoTailedNewtMaxTimes + "x</color>)";
+        relicDesription = "Gain ability: 1" + Variables.skillSprite + " for 2" + Variables.skillSprite + "(Max " + Variables.relicIncreaseableNumberColor + Variables.twoTailedNewtMaxTimes + "x</color>)";
         ability = new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Skill(2, true) }, Variables.twoTailedNewtMaxTimes);
         base.Awake();
     }

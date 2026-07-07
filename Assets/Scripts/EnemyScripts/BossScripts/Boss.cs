@@ -6,6 +6,7 @@ public class Boss : Enemy
     public override void Awake()
     {
         transform.position = new Vector3(transform.position.x, transform.position.y, 11);
+        isBoss = true;
         base.Awake();
     }
 
@@ -19,6 +20,6 @@ public class Boss : Enemy
     public override IEnumerator Die()
     {
         yield return gameManager.StartCoroutine(base.Die());
-        levelManager.BossKilled(oneToOnePos);
+        floorManager.BossKilled(oneToOnePos);
     }
 }

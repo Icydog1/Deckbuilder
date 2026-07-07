@@ -19,7 +19,7 @@ public class Tile : MonoBehaviour
 
     void Awake()
     {
-        LevelManager.LevelClearedFuntions += Remove;
+        FloorManager.FloorClearedFuntions += Remove;
         if (moveCost < 1)
         {
             moveCost = 1;
@@ -52,14 +52,14 @@ public class Tile : MonoBehaviour
     {
         
     }
-    public void Remove(LevelManager levelManager)
+    public void Remove(FloorManager floorManager)
     {
         Destroy(gameObject);
     }
 
     public void OnDestroy()
     {
-        LevelManager.LevelClearedFuntions -= Remove;
+        FloorManager.FloorClearedFuntions -= Remove;
 
     }
 }

@@ -18,6 +18,7 @@ public class Repurpose : Card
 
         currentActions.Add(new Action(() => playerControler.AddKeyword("Augment")));
         currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new Speed(4))));
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new Speed(-2))));
         //discard card also
     }
 }

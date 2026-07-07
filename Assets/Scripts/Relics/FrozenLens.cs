@@ -11,7 +11,7 @@ public class FrozenLens : Relic
     }
     public override IEnumerator OnGain()
     {
-        PlayerControler.PlayerTurnStarted += StartOfTurnSlow;
+        playerControler.PlayerTurnStarted += StartOfTurnSlow;
 
         //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new StartOfTurnSlow(Variables.frozenLensSpeedLoss, -1)), relicDescriptionList));
         yield return StartCoroutine(base.OnGain());
@@ -30,12 +30,14 @@ public class FrozenLens : Relic
     }
     public IEnumerator StartOfTurnSlow(PlayerControler playerControler)
     {
-        yield return StartCoroutine(playerControler.ApplyCondition(new Speed(-count * Variables.frozenLensSpeedLoss, 1), "enemy", -1, 1, false, false));
+        //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new Speed(-count * Variables.frozenLensSpeedLoss, 1), "enemy", -1, 1, false, true)));
+        yield return StartCoroutine(playerControler.ApplyCondition(new Speed(-count * Variables.frozenLensSpeedLoss, 1), "enemy", -1, 1, false, true));
+
     }
 
     public void OnDestroy()
     {
-        PlayerControler.PlayerTurnStarted -= StartOfTurnSlow;
+        playerControler.PlayerTurnStarted -= StartOfTurnSlow;
     }
 
 }

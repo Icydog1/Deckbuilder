@@ -18,6 +18,7 @@ public class Plating : Card
 
         currentActions.Add(new Action(() => playerControler.AddKeyword("Augment")));
         currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new StartOfTurnBlock(4, Variables.gameInfinityValue))));
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new Dexterity(-2))));
         //discard card also
     }
 }

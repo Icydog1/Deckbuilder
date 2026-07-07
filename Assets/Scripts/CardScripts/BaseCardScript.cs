@@ -3,12 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using NUnit.Framework;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class Card : MonoBehaviour
 {
@@ -18,6 +15,8 @@ public class Card : MonoBehaviour
     protected CardEffectText topText, bottomText;
     protected VariableDisplayer topCostText, bottomCostText;
     protected ActionManager actionManager;
+    protected GameManager gameManager;
+    
 
     protected GameObject topGlow, bottomGlow;
     public GameObject TopGlow { get { return topGlow; } }
@@ -34,6 +33,7 @@ public class Card : MonoBehaviour
     //public bool NextAction { set { nextAction = value;}}
     protected bool stopPlaying;
     public bool StopPlaying { set { stopPlaying = value; } }
+    private int doingSomething;
 
     protected bool isPreparingTop;
 
@@ -115,10 +115,11 @@ public class Card : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Awake()
     {
-        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
-        deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
+        playerControler = RefrenceStorage.playerControler;
+        mouseManager = RefrenceStorage.mouseManager;
+        deckManager = RefrenceStorage.deckManager;
+        actionManager = RefrenceStorage.actionManager;
+        gameManager = RefrenceStorage.gameManager;
 
         topGlow = transform.Find("TopGlow").gameObject;
         bottomGlow = transform.Find("BottomGlow").gameObject;
@@ -217,6 +218,7 @@ public class Card : MonoBehaviour
 
     public IEnumerator SetPlayed()
     {
+        doingSomething++;
         //Debug.Log("started playing");
         yield return StartCoroutine(deckManager.PlayCard(gameObject));
         isCurrentCard = true;
@@ -236,6 +238,7 @@ public class Card : MonoBehaviour
             bottomGlow.SetActive(true);
             yield return StartCoroutine(PlayBottom());
         }
+        doingSomething--;
     }
 
     public void DonePlaying()
@@ -312,20 +315,31 @@ public class Card : MonoBehaviour
     }
     public IEnumerator PreformAction(Action action, List<ActionDescription> planTo = null)
     {
-
         if (action.multitarget == false)
         {
-            //Debug.Log("standerd action");
-            if (stopPlaying == false)
+            if (planTo != null)
             {
                 yield return StartCoroutine(actionManager.PreformAction(action.preformedAction(), planTo));
             }
+            else
+            {
+                if (stopPlaying == false)
+                {
+                    //Debug.Log("started action");
+                    playerControler.ActionEnded = false;
+                    yield return StartCoroutine(actionManager.PreformAction(action.preformedAction()));
+                    //Debug.Log("finished action");
+                }
+            }
+
         }
         else
         {
             if (planTo != null)
             {
+                playerControler.UnmodifiedAction = true;
                 yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(playerControler), planTo));
+                playerControler.UnmodifiedAction = false;
             }
             else
             {
@@ -349,9 +363,13 @@ public class Card : MonoBehaviour
                     //Debug.Log(target);
                     if (stopPlaying == false)
                     {
+                        playerControler.ActionEnded = false;
                         //currentTarget = target;
                         yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(target), planTo));
-                        playerControler.EndAction();
+                        if (!playerControler.ActionEnded)
+                        {
+                            playerControler.EndAction();
+                        }
                     }
                 }
             }
@@ -374,6 +392,7 @@ public class Card : MonoBehaviour
     }
     public IEnumerator PrepareCardDiscription(bool unmodified = false)
     {
+        doingSomething++;
         //Debug.Log("updated entire card");
         playerControler.PlayedCardScript = this;
         topDescription.Clear();
@@ -435,7 +454,7 @@ public class Card : MonoBehaviour
         {
             bottomText.DisplayDescription(bottomDescription);
         }
-
+        doingSomething--;
     }
 
 
@@ -461,10 +480,10 @@ public class Card : MonoBehaviour
                 //{
                 //    currentDescription.Insert(0, new ActionDescription("Command", new List<ActionModifier>() { new ActionModifier(playerControler, "Command") }));
                 //}
-                if (pair.Key == "Augment")
-                {
-                    currentDescription.Insert(0, new ActionDescription("Augment", new List<ActionModifier>() { new ActionModifier(playerControler, "Augment") }));
-                }
+                //if (pair.Key == "Augment")
+                //{
+                //    currentDescription.Insert(0, new ActionDescription("Augment", new List<ActionModifier>() { new ActionModifier(playerControler, "Augment") }));
+                //}
                 if (pair.Key == "Exhausting")
                 {
                     currentDescription.Add(new ActionDescription("Exhausting", new List<ActionModifier>() { new ActionModifier(playerControler, "Exausting ", pair.Value) }));
@@ -484,6 +503,7 @@ public class Card : MonoBehaviour
 
     public IEnumerator UpdateCardDiscription(string modifiedAction)
     {
+        doingSomething++;
         playerControler.PlayedCardScript = this;
         //Debug.Log("changed card description " + modifiedAction);
         playerControler.UnmodifiedAction = false;
@@ -510,6 +530,10 @@ public class Card : MonoBehaviour
                 actionName = "Skill";
                 modifierNum = 0;
                 break;
+            case "RangeValue":
+                actionName = "Range";
+                modifierNum = 1;
+                break;
             default:
                 Debug.Log("Default");
                 modifierNum = 0;
@@ -531,7 +555,7 @@ public class Card : MonoBehaviour
             }
         }
         bottomText.DisplayDescription(bottomDescription);
-
+        doingSomething--;
         yield break;
     }
 
@@ -543,5 +567,51 @@ public class Card : MonoBehaviour
     public virtual void PrepareBottom()
     {
 
+    }
+
+    public void AttemptToDestroy()
+    {
+        if (doingSomething == 0)
+        {
+            //Debug.Log("destroy immediatly");
+            Destroy(gameObject);
+        }
+        else
+        {
+            transform.parent = RefrenceStorage.UI.transform;
+            transform.localScale = new Vector3(0, 0, 1);
+            //Debug.Log("Destroy wait");
+            StartCoroutine(DestroyWhenReady());
+        }
+    }
+    public IEnumerator DestroyWhenReady()
+    {
+        yield return new WaitUntil(() => doingSomething == 0);
+        //Debug.Log("Destroy wait finished");
+        Destroy(gameObject);
+    }
+    //disables a card if it isnt doing somthing otherwise waits until card is done and 
+    public void AttemptToDisable()
+    {
+        //gameObject.SetActive(false);
+
+        if (doingSomething == 0)
+        {
+            //Debug.Log("disabled immediatly");
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            //Debug.Log("disabled wait");
+            //transform.parent = RefrenceStorage.UI.transform;
+            //transform.localScale = new Vector3(0, 0, 1);
+            StartCoroutine(DisableWhenReady());
+        }
+    }
+    public IEnumerator DisableWhenReady()
+    {
+        yield return new WaitUntil(() => doingSomething == 0);
+        //Debug.Log("disabled wait finished");
+        gameObject.SetActive(false);
     }
 }

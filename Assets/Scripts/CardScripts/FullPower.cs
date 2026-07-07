@@ -7,9 +7,7 @@
 
     public override void PrepareTop()
     {
-        currentActions.Add( new Action(() => playerControler.Attack(20)));
-        currentActions.Add( new Action(() => playerControler.Attack(20)));
-
+        currentActions.Add( new Action(() => playerControler.Attack(20,1,1,2)));
     }
 
     public override void PrepareBottom()

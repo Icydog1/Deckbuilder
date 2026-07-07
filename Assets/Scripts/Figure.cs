@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
-using NUnit.Framework.Interfaces;
-using Unity.VisualScripting;
+using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.GraphicsBuffer;
+
 
 
 
@@ -22,7 +17,7 @@ public class Figure : MonoBehaviour
     protected Pathfinder pathfinder;
     protected ConditionEffects conditionEffects;
     protected DeckManager deckManager;
-    protected LevelManager levelManager;
+    protected FloorManager floorManager;
     protected ActionManager actionManager;
     protected OverallStatistics overallStatistics;
     protected GameManager gameManager;
@@ -39,7 +34,9 @@ public class Figure : MonoBehaviour
 
     protected int preferedRange;
     protected int distanceToFocus;
-    protected bool nextAction, actionEnded;
+    protected bool actionEnded;
+    public bool ActionEnded { set { actionEnded = value; } get { return actionEnded; } }
+
     protected bool isDead, exists = true;
     public bool Exists { set { exists = value; } get { return exists; } }
 
@@ -56,9 +53,10 @@ public class Figure : MonoBehaviour
 
     protected bool canFly = false;
     public bool CanFly { set { canFly = value; } get { return canFly; } }
-    //protected bool canJump;
-    //public bool CanJump { set { canJump = value; } get { return canJump } }
+    protected bool canJump;
+    public bool CanJump { set { canJump = value; } get { return canJump; } }
     protected int targetsLeft, moveLeft;
+    public int TargetsLeft { get { return targetsLeft; } set { targetsLeft = value; } }
     protected bool isMoving;
     public bool IsMoving { set { isMoving = value; } get { return isMoving; } }
 
@@ -91,6 +89,13 @@ public class Figure : MonoBehaviour
     protected GameObject focus;
     protected Figure focusScript;
     protected Vector2 focusPos;
+    protected List<Vector2> movePosibilities = new List<Vector2>();
+
+    //public static event Func<Figure, IEnumerator> Removed;
+    public event Func<IEnumerator> Removed;
+
+    public List<Condition> upkeptConditions = new List<Condition>();
+    public bool hasUpkeep;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public virtual void Awake()
@@ -102,7 +107,7 @@ public class Figure : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
         conditionEffects = GameObject.Find("ConditionEffects").GetComponent<ConditionEffects>();
         deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        floorManager = GameObject.Find("FloorManager").GetComponent<FloorManager>();
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
         overallStatistics = GameObject.Find("OverallStatistics").GetComponent<OverallStatistics>();
         gameManager = RefrenceStorage.gameManager;
@@ -231,8 +236,7 @@ public class Figure : MonoBehaviour
         if (isPlanning)
         {
 
-            //string currentDescriptionString = finalBlock + " <sprite name=Block>";
-            ActionDescription currentAction = new ActionDescription("Block", new List<ActionModifier>() { new ActionModifier(this, null, blockValue, " <sprite name=Block>", "Block") });
+            ActionDescription currentAction = new ActionDescription("Block", new List<ActionModifier>() { new ActionModifier(this, null, blockValue, Variables.blockSprite, "Block") });
             actionManager.PlanToList.Add(currentAction);
         }
         else if (!isPreparingMove)
@@ -264,8 +268,7 @@ public class Figure : MonoBehaviour
         if (isPlanning)
         {
             List<ActionModifier> actionModifiers = new List<ActionModifier>();
-            //ActionModifier attackValueDescription = new ActionModifier(this, null, attackValue, " <sprite name=Attack>", "Attack");
-            actionModifiers.Add(new ActionModifier(this, null, attackValue, " <sprite name=Attack>", "Attack"));
+            actionModifiers.Add(new ActionModifier(this, null, attackValue, Variables.attackSprite, "Attack"));
             //Debug.Log("Planned Attack");
 
             //string currentDescriptionStart = "";
@@ -277,8 +280,7 @@ public class Figure : MonoBehaviour
                     preferedRange = attackRange;
                 }
             }
-            
-            //currentDescriptionStart = finalAttack + " <sprite name=Attack>";
+
 
             //List<string> individualConditionText = new List<string>();
             if (attackConditions.Length != 0)
@@ -311,17 +313,17 @@ public class Figure : MonoBehaviour
             if (targets > 1)
             {
                 //currentDescriptionEnd += " target " + targets;
-                actionModifiers.Add(new ActionModifier(this, " ", targets, " targets", "Targets"));
+                actionModifiers.Add(new ActionModifier(this, " ", targets, Variables.targetSprite, "Targets"));
             }
-            else if (targets == -1)
+            else if (targets == Variables.gameInfinityValue)
             {
-                actionModifiers.Add(new ActionModifier(this, " all targets", valueType: "Targets"));
+                actionModifiers.Add(new ActionModifier(this, " all" + Variables.targetSprite, valueType: "Targets"));
 
             }
             if (attackRange > 1)
             {
                 //currentDescriptionEnd += " " + attackRange + " <sprite name=Range>";
-                actionModifiers.Add(new ActionModifier(this, " ", attackRange, " <sprite name=Range>", "Range"));
+                actionModifiers.Add(new ActionModifier(this, " ", attackRange, Variables.rangeSprite, "Range"));
             }
             //tring separator = ", ";
             //string attackText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
@@ -330,7 +332,27 @@ public class Figure : MonoBehaviour
             ActionDescription currentAction = new ActionDescription("Attack", actionModifiers);
             actionManager.PlanToList.Add(currentAction);
         }
-        else if(!isPreparingMove)
+        else if (isPreparingMove)
+        {
+            if (movePosibilities.Count == 0)
+            {
+                movePosibilities.Add(oneToOnePos);
+                GameObject tile = mapManager.GetTileAtHex(oneToOnePos);
+                GameObject border = tile.transform.Find("Border").gameObject;
+                shownTileBorders.Add(border);
+                border.GetComponent<SpriteRenderer>().color = Color.blue;
+            }
+            List<Vector2> targetableLocations = pathfinder.PlanTargetableLocations(movePosibilities, finalRange);
+            targetableLocations.RemoveAll(item => movePosibilities.Contains(item));
+            foreach (Vector2 pos in targetableLocations)
+            {
+                GameObject tile = mapManager.GetTileAtHex(pos);
+                GameObject border = tile.transform.Find("Border").gameObject;
+                shownTileBorders.Add(border);
+                border.GetComponent<SpriteRenderer>().color = Color.magenta;
+            }
+        }
+        else
         {
             actionManager.ActionStackNames.Push("Attack");
             effectedFigures.Clear();
@@ -339,7 +361,7 @@ public class Figure : MonoBehaviour
             {
                 List<Figure> posibleTargets = FindPosibleTargets("enemy", finalRange);
                 targetsLeft = targets;
-                while (targetsLeft > 0)
+                while (targetsLeft > 0 && posibleTargets.Count > 0)
                 {
                     Figure targetedFigure = null;
                     yield return playerControler.ControledChooseFigures(posibleTargets, (result) => { targetedFigure = result; });
@@ -352,8 +374,19 @@ public class Figure : MonoBehaviour
                         {
                             EndAction();
                         }
+                        else
+                        {
+                            statsDisplayer.ChangePlan(Variables.targetSprite, targetsLeft);
+                        }
                     }
                 }
+                //Debug.Log("done");
+                if (!actionEnded)
+                {
+                    //Debug.Log("ended action");
+                    EndAction();
+                }
+
                 //yield return StartCoroutine(playerControler.ControledAttack(finalAttack, finalRange, targets, repeats, attackConditions));
             }
             else
@@ -373,30 +406,7 @@ public class Figure : MonoBehaviour
         }
         yield return null;
     }
-    public IEnumerator RemoveCondition(string name)
-    {
-        for (int i = 0; i < conditions.Count; i++)
-        {
-            if (conditions[i].ConditionName == name)
-            {
-                string effectedAction = conditions[i].EffectedAction;
-                yield return StartCoroutine(conditions[i].OnLoss(this));
-                conditions.RemoveAt(i);
-                i--;
-                if (isAI)
-                {
-                    yield return StartCoroutine(GetComponent<AIFigure>().UpdatePlanDiscription(effectedAction));
-                }
-                if (isPlayer)
-                {
-                    yield return StartCoroutine(deckManager.UpdateCardsDisplay(effectedAction));
-                }
 
-                yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
-            }
-        }
-
-    }
     public IEnumerator Move(int moveValue, bool isJump = false, bool isVariable = false)
     {
         if (isVariable)
@@ -408,7 +418,7 @@ public class Figure : MonoBehaviour
         if (isPlanning)
         {
             List<ActionModifier> actionModifiers = new List<ActionModifier>();
-            ActionModifier moveValueDescription = new ActionModifier(this, null, moveValue, " <sprite name=Move>", "Move");
+            ActionModifier moveValueDescription = new ActionModifier(this, null, moveValue, Variables.moveSprite, "Move");
             actionModifiers.Add(moveValueDescription);
             //string planString = "Move " + finalMove;
             //string planString = finalMove + " <sprite name=Move>";
@@ -427,9 +437,11 @@ public class Figure : MonoBehaviour
         else if (isPreparingMove)
         {
             int finalMove = conditionEffects.ModifyMove(this, moveValue);
-            List<Vector2>[] posibleTiles = pathfinder.PlanposiblePaths(oneToOnePos, gameObject, finalMove, finalJump, canFly);
+            List<Vector2>[] posibleTiles = pathfinder.PlanPosiblePaths(oneToOnePos, gameObject, finalMove, finalJump, canFly);
+            movePosibilities = posibleTiles[0];
             foreach (Vector2 safeTile in posibleTiles[0])
             {
+                
                 GameObject tile = mapManager.GetTileAtHex(safeTile);
                 GameObject border = tile.transform.Find("Border").gameObject;
                 shownTileBorders.Add(border);
@@ -447,7 +459,7 @@ public class Figure : MonoBehaviour
         }
         else
         {
-            actionEnded = false;
+            //actionEnded = false;
             int finalMove = conditionEffects.ModifyMove(this, moveValue);
             actionManager.ActionStackNames.Push("Move");
 
@@ -456,6 +468,7 @@ public class Figure : MonoBehaviour
             {
                 isMoving = true;
                 moveLeft = finalMove;
+                canJump = finalJump;
                 playerControler.UpdateMoveCostDisplay();
 
                 //List<Figure> posibleTargets = FindPosibleTargets("enemy", finalRange);
@@ -502,13 +515,21 @@ public class Figure : MonoBehaviour
 
     }
 
-    public IEnumerator ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool manualOverride = false)
+    public IEnumerator ApplyCondition(Condition condition, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool manualOverride = false, bool isVariable = false)
     {
-        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget, manualOverride));
+        yield return StartCoroutine(ApplyConditions(new Condition[] { condition }, targetType, range, targets, displayTarget, manualOverride, isVariable));
     }
 
-    public IEnumerator ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool manualOverride = false)
+    public IEnumerator ApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false, bool manualOverride = false, bool isVariable = false)
     {
+        if (isVariable)
+        {
+            foreach (Condition condition in newConditions)
+            {
+                condition.Value *= variableCardModifier;
+
+            }
+        }
         int finalRange = conditionEffects.ModifyRange(this, range);
         if (isPlanning)
         {
@@ -516,6 +537,7 @@ public class Figure : MonoBehaviour
             string currentDescriptionStart = "";
             string currentDescriptionEnd = "";
             bool abnormal = false;
+            List<string> conditionAbnormalities = new List<string>();
             foreach (Condition condition in newConditions)
             {
                 if (condition.Abnormality != null)
@@ -523,11 +545,11 @@ public class Figure : MonoBehaviour
                     foreach (string abnormality in condition.Abnormality)
                     {
                         actionAbnormalities.Add(abnormality);
-
+                        conditionAbnormalities.Add(abnormality);
                     }
                     abnormal = true;
                 }
-                if (actionAbnormalities.Contains("Ability"))
+                if (conditionAbnormalities.Contains("Ability"))
                 {
                     Ability ability;
                     if (condition is GainAbility gainAbilityRef)
@@ -553,7 +575,7 @@ public class Figure : MonoBehaviour
                     {
                         yield return StartCoroutine(actionManager.PreformAction(action(), conditionPlan));
                     }
-                    if (actionAbnormalities.Contains("Delayed Gain"))
+                    if (conditionAbnormalities.Contains("Delayed Gain"))
                     {
                         if (conditionPlan.Count > 0)
                         {
@@ -588,9 +610,9 @@ public class Figure : MonoBehaviour
 
                     }
                 }
-                if (!actionAbnormalities.Contains("Delayed Gain") && !actionAbnormalities.Contains("Ability"))
+                if (!conditionAbnormalities.Contains("Delayed Gain") && !conditionAbnormalities.Contains("Ability"))
                 {
-                    if (actionAbnormalities.Contains("No Value Description"))
+                    if (conditionAbnormalities.Contains("No Value Description"))
                     {
                         currentDescriptionString = condition.ActionName;
                     }
@@ -624,7 +646,7 @@ public class Figure : MonoBehaviour
             }
             if (targetType == "self")
             {
-                if (!actionAbnormalities.Contains("No Self Target Description"))
+                if (!conditionAbnormalities.Contains("No Self Target Description"))
                 {
                     currentDescriptionStart += "Gain ";
                 }
@@ -650,7 +672,7 @@ public class Figure : MonoBehaviour
                 //}
 
             }
-            else if (actionAbnormalities.Contains("Augment"))
+            else if (conditionAbnormalities.Contains("Augment"))
             {
                 currentDescriptionStart += "This summon gains ";
             }
@@ -659,15 +681,16 @@ public class Figure : MonoBehaviour
                 currentDescriptionStart += "Apply ";
                 if (targets != 1)
                 {
-                    currentDescriptionEnd += " target ";
                     if (targets == Variables.gameInfinityValue)
                     {
-                        currentDescriptionEnd += "all";
+                        currentDescriptionEnd += " all";
                     }
                     else
                     {
-                        currentDescriptionEnd += targets;
+                        currentDescriptionEnd += " " + targets;
                     }
+                    currentDescriptionEnd += Variables.targetSprite;
+                    
                 }
                 if (targetType == "ally")
                 {
@@ -720,11 +743,11 @@ public class Figure : MonoBehaviour
                 }
                 if (range == Variables.gameInfinityValue)
                 {
-                    currentDescriptionEnd += " any <sprite name=Range>";
+                    currentDescriptionEnd += " any<sprite name=Range>";
                 }
                 else if (range != 1)
                 {
-                    currentDescriptionEnd += " " + range + " <sprite name=Range>";
+                    currentDescriptionEnd += " " + range + "<sprite name=Range>";
                 }
                 if (!isPlayer)
                 {
@@ -778,7 +801,7 @@ public class Figure : MonoBehaviour
             {
                 List<Figure> posibleTargets = FindPosibleTargets(targetType, finalRange);
                 targetsLeft = targets;
-                while (targetsLeft > 0)
+                while (targetsLeft > 0 && posibleTargets.Count > 0)
                 {
                     Figure targetedFigure = null;
                     yield return playerControler.ControledChooseFigures(posibleTargets, (result) => { targetedFigure = result; });
@@ -786,15 +809,24 @@ public class Figure : MonoBehaviour
                     if (targetsLeft > 0)
                     {
                         targetsLeft--;
-                        foreach (Condition condition in newConditions)
-                        {
-                            yield return gameManager.StartCoroutine(targetedFigure.GainCondition(condition));
-                        }
+                        yield return StartCoroutine(ApplyConditionsTo(newConditions, targetedFigure));
+                        //foreach (Condition condition in newConditions)
+                        //{
+                        //    yield return gameManager.StartCoroutine(targetedFigure.GainCondition(condition));
+                        //}
                         if (targetsLeft <= 0)
                         {
                             EndAction();
                         }
+                        else
+                        {
+                            statsDisplayer.ChangePlan(Variables.targetSprite, targetsLeft);
+                        }
                     }
+                }
+                if (!actionEnded)
+                {
+                    EndAction();
                 }
                 //yield return StartCoroutine(playerControler.ControledApplyConditions(newConditions, targetType, range, targets));
             }
@@ -802,16 +834,8 @@ public class Figure : MonoBehaviour
             {
                 foreach (Figure target in FindTargets(targetType, range, targets))
                 {
-                    foreach (Condition condition in newConditions)
-                    {
-                        //Condition addedCondition = condition.Clone();
+                    yield return StartCoroutine(ApplyConditionsTo(newConditions, target));
 
-                        //Debug.Log("applieing Condition");
-
-                        yield return StartCoroutine(target.GainCondition(condition));
-                        //Debug.Log("applied Condition");
-
-                    }
                 }
                 EndAction();
                 //if (isAction)
@@ -822,6 +846,70 @@ public class Figure : MonoBehaviour
         }
 
     }
+    public IEnumerator RemoveCondition(string name)
+    {
+        for (int i = 0; i < conditions.Count; i++)
+        {
+            if (conditions[i].ConditionName == name)
+            {
+                string effectedAction = conditions[i].EffectedAction;
+                yield return StartCoroutine(conditions[i].OnLoss(this));
+                conditions.RemoveAt(i);
+                i--;
+                if (effectedAction != "None")
+                {
+                    if (isAI)
+                    {
+                        yield return StartCoroutine(GetComponent<AIFigure>().UpdatePlanDiscription(effectedAction));
+                    }
+                    if (isPlayer)
+                    {
+                        yield return StartCoroutine(deckManager.UpdateCardsDisplay(effectedAction));
+                    }
+                }
+                yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
+            }
+        }
+
+    }
+    public IEnumerator ApplyConditionsTo(Condition[] conditions, Figure target)
+    {
+        foreach (Condition condition in conditions)
+        {
+            yield return StartCoroutine(ApplyConditionTo(condition,target));
+        }
+    }
+    public IEnumerator ApplyConditionTo(Condition condition, Figure target)
+    {
+        yield return StartCoroutine(target.GainCondition(condition));
+    }
+    public IEnumerator LoseConditions(List<Condition> newConditions, Figure target = null)
+    {
+        if (target == null)
+        {
+            target = this;
+        }
+        foreach (Condition condition in newConditions)
+        {
+            int conditionValue = condition.Value;
+            if (conditionValue == Variables.gameNullValue)
+            {
+                for (int i = 0; i < target.Conditions.Count; i++)
+                {
+                    if (target.Conditions[i].ConditionName == condition.ConditionName)
+                    {
+                        target.Conditions.RemoveAt(i);
+                    }
+                }
+            }
+            else
+            {
+                condition.Value = -conditionValue;
+                yield return StartCoroutine(target.GainCondition(condition));
+            }
+        }
+    }
+
     public IEnumerator Summon(GameObject summon, int maxSummons = Variables.gameInfinityValue)
     {
         currentSummons.RemoveAll(item => item == null);
@@ -835,8 +923,9 @@ public class Figure : MonoBehaviour
 
                 //Debug.Log("planned " + currentDescriptionString);
                 //actionManager.PlanToList.Add(currentDescriptionString);
-
-                ActionDescription currentAction = new ActionDescription("Summon", new List<ActionModifier>() { new ActionModifier(this, "Summon " + summon.name) });
+                string summonName = summon.name;
+                summonName = Regex.Replace(summonName, "(.)([A-Z,0-9])", "$1 $2");
+                ActionDescription currentAction = new ActionDescription("Summon", new List<ActionModifier>() { new ActionModifier(this, "Summon " + summonName) });
                 actionManager.PlanToList.Add(currentAction);
             }
             else if (!isPreparingMove)
@@ -868,6 +957,7 @@ public class Figure : MonoBehaviour
                         }
                     }
                 }
+                effectedFigures = new List<Figure>();
                 if (canSummon)
                 {
                     GameObject newSummon = Instantiate(summon, new Vector3(summonPos.x, summonPos.y, summon.transform.position.z), Quaternion.identity);
@@ -879,9 +969,16 @@ public class Figure : MonoBehaviour
 
                     if (isPlayer)
                     {
+
                         playerControler.PlayedCardScript.PrepareExhaustAfterPlayed(() => summonScript.exists == false, deckManager.Discard);
+
+                        effectedFigures.Add(summonScript);
                     }
                     //yield return StartCoroutine(actionManager.PreformAction(summonScript.ApplyCondition(new Stunned(2, true))));
+                }
+                if (isPlayer)
+                {
+                    playerControler.PlayedCardScript.ActingFigures = new List<Figure>(effectedFigures);
                 }
                 //ActionDone();
                 EndAction();
@@ -904,6 +1001,33 @@ public class Figure : MonoBehaviour
 
 
     }
+
+    public IEnumerator Upkeep(Condition upkeep)
+    {
+        if (isPlanning)
+        {
+            yield return StartCoroutine(ApplyCondition(upkeep));
+            actionManager.PlanToList[actionManager.PlanToList.Count-1].ActionModifiers.Insert(0, new ActionModifier(this, "Upkeep: "));
+        }
+        else
+        {
+            if (!hasUpkeep)
+            {
+                this.Removed += removeUpkeeps;
+                hasUpkeep = true;
+            }
+            yield return StartCoroutine(summoner.ApplyCondition(upkeep));
+            upkeptConditions.Add(upkeep);
+        }
+    }
+    public IEnumerator removeUpkeeps()
+    {
+        //Debug.Log(summoner);
+        this.Removed -= removeUpkeeps;
+        yield return StartCoroutine(summoner.LoseConditions(upkeptConditions));
+    }
+
+
     /*
     public void DelayedApplyConditions(Condition[] newConditions, string targetType = "self", int range = 1, int targets = 1, bool displayTarget = false)
     {
@@ -1009,7 +1133,77 @@ public class Figure : MonoBehaviour
         }
     }
 
+    //public IEnumerator LoseCondition(Condition removedCondition)
+    //{
+    //    Condition condition = removedCondition.Clone();
+    //    //Debug.Log("GainedCondition");
+    //    bool isDuplicate = false;
+    //    for (int i = 0; i < conditions.Count; i++)
+    //    {
+    //        if (conditions[i].ConditionName == condition.ConditionName)
+    //        {
+    //            //add type 0 = ceat new instance
+    //            //if (condition.AddType == 0)
+    //            //{
 
+    //            //}
+    //            if (condition.AddType == 1 && conditions[i].Duration == condition.Duration)
+    //            {
+    //                conditions[i].Value += condition.Value;
+    //                conditions[i].Value = Mathf.Clamp(conditions[i].Value, Variables.gameMinValue, Variables.gameMaxValue);
+    //                isDuplicate = true;
+    //                if (conditions[i].Value == 0)
+    //                {
+    //                    yield return StartCoroutine(conditions[i].OnLoss(this));
+    //                    conditions.RemoveAt(i);
+    //                }
+    //                break;
+    //            }
+    //            if (condition.AddType == 2 && conditions[i].Value == condition.Value)
+    //            {
+    //                if (conditions[i].Duration == Variables.gameInfinityValue || condition.Duration == Variables.gameInfinityValue)
+    //                {
+    //                    Debug.Log("Warrning gained condtion already had one of");
+    //                }
+    //                else
+    //                {
+    //                    conditions[i].Duration += condition.Duration;
+    //                    conditions[i].Duration = Mathf.Clamp(conditions[i].Duration, 0, Variables.gameMaxValue);
+    //                }
+    //                isDuplicate = true;
+    //                break;
+    //            }
+    //            if (condition.AddType == 3)
+    //            {
+    //                //Debug.Log("removed" + conditions[i].Name);
+    //                conditions.RemoveAt(i);
+    //                i--;
+    //            }
+
+    //        }
+    //    }
+    //    if (isDuplicate == false)
+    //    {
+    //        //Debug.Log("added" + condition.ConditionName);
+
+    //        conditions.Add(condition);
+    //        //Debug.Log("first condition: " + conditions[0].Name);
+
+    //    }
+    //    yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
+    //    if (condition.EffectedAction != "None")
+    //    {
+    //        if (isPlayer)
+    //        {
+    //            yield return StartCoroutine(deckManager.UpdateCardsDisplay(condition.EffectedAction));
+    //        }
+    //        else
+    //        {
+    //            yield return StartCoroutine(GetComponent<AIFigure>().UpdatePlan());
+
+    //        }
+    //    }
+    //}
 
     //returns targets chosen by game (i think priority is closest then arbitrary)
     public List<Figure> FindTargets(string targetType, int range = 1, int targets = 1)
@@ -1206,14 +1400,32 @@ public class Figure : MonoBehaviour
 
     public virtual IEnumerator Die()
     {
-        exists = false;
         //Debug.Log("Base Die ran");
+        yield return gameManager.StartCoroutine(StopExisting());
         yield break;
     }
-    public virtual void Remove(LevelManager levelManager = null)
+    public virtual IEnumerator Remove(FloorManager floorManager = null)
+    {
+        yield return gameManager.StartCoroutine(StopExisting());
+        yield break;
+        //Debug.Log("Base Remove ran");
+    }
+    public virtual IEnumerator StopExisting()
     {
         exists = false;
-        //Debug.Log("Base Remove ran");
+        if (Removed != null)
+        {
+            Delegate[] listeners = Removed.GetInvocationList();
+            foreach (Delegate action in listeners)
+            {
+                //tells computer that action takes a TurnManager and outputs a IEnumerator
+                var callback = (Func<IEnumerator>)action;
+                //runs action now that it is the correct type
+                yield return StartCoroutine(callback());
+            }
+        }
+        Destroy(gameObject);
+        yield break;
     }
 
     public virtual IEnumerator MoveOneSpace()

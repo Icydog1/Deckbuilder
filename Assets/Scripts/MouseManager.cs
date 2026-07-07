@@ -303,6 +303,10 @@ public class MouseManager : MonoBehaviour
                 }
             }
         }
+        if (selectedObject && selectedObject.GetComponent<Card>())
+        {
+            playerControler.CardClicked(clickedObject);
+        }
         if (selectedObject && selectedObject.GetComponent<Tile>())
         {
             playerControler.TileClicked(selectedObject);

@@ -36,7 +36,7 @@ public class Ability//, IEquatable<Ability>
         actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
 
         //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
-        PlayerControler.PlayerTurnStartedFuntions += ResetAbilityCooldown;
+        playerControler.PlayerTurnStartedFuntions += ResetAbilityCooldown;
     }
     //public bool Equals(Ability other)
     //{
@@ -115,7 +115,8 @@ public class Ability//, IEquatable<Ability>
 
                 playerControler.VariableCardModifier = timesPreformed;
                 playerControler.PreformingAbility = true;
-                playerControler.NextAction = false;
+                playerControler.ActionEnded = false;
+                //playerControler.NextAction = false;
                 foreach (Func<IEnumerator> action in abilities)
                 {
                     playerControler.UnmodifiedAction = true;

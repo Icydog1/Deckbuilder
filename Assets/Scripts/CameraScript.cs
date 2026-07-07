@@ -52,9 +52,9 @@ public class CameraScript : MonoBehaviour
             transform.position = new Vector3(player.transform.position.x, player.transform.position.y, transform.position.z);
         }
 
-        if ((Input.GetAxis("Mouse ScrollWheel") != 0 && !deckManager.IsDisplayingCards) || Input.GetAxis("Keyboard ScrollWheel") != 0)
+        if ((Input.GetAxis("Mouse ScrollWheel") != 0 && !deckManager.IsDisplayingList) || Input.GetAxis("Keyboard ScrollWheel") != 0)
         {
-            if (Input.GetAxis("Mouse ScrollWheel") != 0 && !deckManager.IsDisplayingCards)
+            if (Input.GetAxis("Mouse ScrollWheel") != 0 && !deckManager.IsDisplayingList)
             {
                 scrollAmount = Input.GetAxis("Mouse ScrollWheel");
             }
@@ -96,8 +96,10 @@ public class CameraScript : MonoBehaviour
         screenWidth = Screen.width * zoom;
         widthRatio = screenWidth / standardWidth;
         widthHeightRatio = widthRatio / heightRatio * zoom;
+        RefrenceStorage.relicManager.OrderRelics();
+        RefrenceStorage.UIManager.UpdateScreen();
         //Unnesasary?
-        //if (!deckManager.IsDisplayingCards)
+        //if (!deckManager.IsDisplayingList)
         //{
         //    yield return StartCoroutine(deckManager.UpdateHand());
         //}

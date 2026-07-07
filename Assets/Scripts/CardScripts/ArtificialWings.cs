@@ -17,6 +17,10 @@ public class ArtificialWings : Card
     public override void PrepareTop()
     {
         currentActions.Add(new Action(() => playerControler.Summon(clockworkOwl)));
+        //currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new NextTurnCards(-1,Variables.gameInfinityValue))));
+
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new Speed(-2))));
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new Dexterity(-2))));
     }
 
     public override void PrepareBottom()
