@@ -19,32 +19,13 @@ public class MapManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        player = GameObject.Find("Player");
+        gameManager = RefrenceStorage.gameManager;
+        player = RefrenceStorage.player;
         tileWidth = tileSize * 2;
         tileHeight = tileSize * Mathf.Sqrt(3);
         tileXDistance = tileWidth * 3 / 4;
         tileYDistance = tileHeight;
-
-        //        tileXDistance = 3 / 2;
-        //        tileYDistance = Mathf.Sqrt(3);
-        //Debug.Log(GetDisanceInHexCordsTo(Vector2.one * 5,Vector2.zero));
     }
-    //void Start()
-    //{
-    //    showMoveCost(false);
-    //}
-
-    // Update is called once per frame
-    //void Update()
-    //{
-        
-    //}
-
-    //public void Move(GameObject movedObject,)
-
-
-
     public void showMoveCost(bool showOrHide, bool isJump = false, bool isfly = false)
     {
         Tile[] tiles = FindObjectsByType<Tile>(FindObjectsSortMode.None);
@@ -56,7 +37,7 @@ public class MapManager : MonoBehaviour
                 {
                     if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())))
                     {
-                        tileScript.MoveCostDisplay.DisplayText(Mathf.Min(tileScript.MoveCost, baseMoveCost));
+                        tileScript.MoveCostDisplay.DisplayVariable(Mathf.Min(tileScript.MoveCost, baseMoveCost));
                     }
                 }
             }
@@ -66,7 +47,11 @@ public class MapManager : MonoBehaviour
                 {
                     if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())) && !tileScript.gameObject.GetComponent<Obstacle>())
                     {
-                        tileScript.MoveCostDisplay.DisplayText(tileScript.MoveCost);
+                        tileScript.MoveCostDisplay.DisplayVariable(tileScript.MoveCost);
+                    }
+                    else
+                    {
+                        tileScript.MoveCostDisplay.Disable();
                     }
                 }
             }
@@ -79,24 +64,25 @@ public class MapManager : MonoBehaviour
             }
         }
     }
+    //have 
     public void showMoveCostOfTile(Tile tileScript)
     {
         PlayerControler player = RefrenceStorage.playerControler;
         //Tile[] tiles = FindObjectsByType<Tile>(FindObjectsSortMode.None);
-        if (player.MoveCostDisplaySetting == "Always" || (player.MoveCostDisplaySetting == "On Move" && player.IsMoving))
+        if (player.MoveCostDisplaySetting == "Always" || (player.MoveCostDisplaySetting == "On Move" && player.PlanningMove))
         {
             if (player.CanFly || player.CanJump)
             {
                 if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())))
                 {
-                    tileScript.MoveCostDisplay.DisplayText(Mathf.Min(tileScript.MoveCost, baseMoveCost));
+                    tileScript.MoveCostDisplay.DisplayVariable(Mathf.Min(tileScript.MoveCost, baseMoveCost));
                 }
             }
             else
             {
                 if (!(tileScript.gameObject.GetComponent<Wall>() && !(tileScript.gameObject.GetComponent<Stair>() || tileScript.gameObject.GetComponent<Door>())) && !tileScript.gameObject.GetComponent<Obstacle>())
                 {
-                    tileScript.MoveCostDisplay.DisplayText(tileScript.MoveCost);
+                    tileScript.MoveCostDisplay.DisplayVariable(tileScript.MoveCost);
                 }
             }
         }

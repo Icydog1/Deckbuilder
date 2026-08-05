@@ -21,7 +21,7 @@ public class UndeadHunter : Enemy
             ,() => Attack(12, 3)
         });
         maxHealth = 64;
-        XPValue = 3;
+        XPValue = 6;
         base.Awake();
     }
 }

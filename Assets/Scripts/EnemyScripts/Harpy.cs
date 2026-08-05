@@ -24,7 +24,7 @@ public class Harpy : Enemy
 
         //canFly = true;
         maxHealth = 44;
-        XPValue = 3;
+        XPValue = 6;
         base.Awake();
     }
     public override IEnumerator LoadFigure()

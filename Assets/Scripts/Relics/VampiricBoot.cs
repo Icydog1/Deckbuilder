@@ -7,7 +7,7 @@ public class VampiricBoot : Relic
     private int damageDealt, damageDealtTotal;
     public override void Awake()
     {
-        relicDesription = "Every " + Variables.vampiricBootDamage + " attack damage you deal to enemies gain <color=#009f9f>1<color=white> burst for " + Variables.vampiricBootBurstDuration + " turns";
+        relicDesription = "Every " + Var.vampiricBootDamage + " attack damage you deal to enemies gain <color=#009f9f>1<color=white> burst for " + Var.vampiricBootBurstDuration + " turns";
         base.Awake();
     }
     public override IEnumerator OnGain()
@@ -31,11 +31,11 @@ public class VampiricBoot : Relic
         int damageDone = OverallStatistics.damageDealt - damageDealtTotal;
         damageDealt += damageDone;
         //Debug.Log("GotFinalDamage of " + damageDone);
-        if (damageDealt >= Variables.vampiricBootDamage)
+        if (damageDealt >= Var.vampiricBootDamage)
         {
-            int times = damageDealt / Variables.vampiricBootDamage; //integer divition (discards remainder)
-            actionManager.QueueAction(playerControler.ApplyCondition(new Burst(times * count, Variables.vampiricBootBurstDuration), "self", 1, 1, false, false));
-            damageDealt -= times * Variables.vampiricBootDamage;
+            int times = damageDealt / Var.vampiricBootDamage; //integer divition (discards remainder)
+            actionManager.QueueAction(playerControler.ApplyCondition(new Burst(times * count, Var.vampiricBootBurstDuration), "self", 1, 1, false, false));
+            damageDealt -= times * Var.vampiricBootDamage;
         }
     }
     public void OnDestroy()

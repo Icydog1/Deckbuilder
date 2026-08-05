@@ -15,7 +15,9 @@ public class DeckManager : MonoBehaviour
     public GameObject Discard { get { return discard; } }
 
     [SerializeField]
-    private List<GameObject> startingDeck = new List<GameObject>();
+    private List<GameObject> additionalCardsInStartingDeck = new List<GameObject>();
+
+    private List<GameObject> startingDeck;
 
     public List<GameObject> entireDeck = new List<GameObject>();
     public List<GameObject> deckContents = new List<GameObject>(), handContents = new List<GameObject>(), discardContents = new List<GameObject>(), playContents = new List<GameObject>(), exhaustContents = new List<GameObject>();
@@ -74,14 +76,14 @@ public class DeckManager : MonoBehaviour
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
 
         //Debug.Log(deck.transform.childCount);
-        if (startingDeck.Count == 0)
-        {
-            for (int i = 0; i < deck.transform.childCount; i++)
-            {
-                startingDeck.Add(deck.transform.GetChild(i).gameObject);
-                //Debug.Log(deck.transform.GetChild(i).gameObject);
-            }
-        }
+        //if (startingDeck.Count == 0)
+        //{
+        //    for (int i = 0; i < deck.transform.childCount; i++)
+        //    {
+        //        startingDeck.Add(deck.transform.GetChild(i).gameObject);
+        //        //Debug.Log(deck.transform.GetChild(i).gameObject);
+        //    }
+        //}
         //deckContents = new List<GameObject>(startingDeck);
         //entireDeck = new List<GameObject>(startingDeck);
 
@@ -122,6 +124,8 @@ public class DeckManager : MonoBehaviour
     }
     public void SpawnStartingDeck(GameManager gameManager)
     {
+        startingDeck = new List<GameObject>(gameManager.CurrentCharacter.StartingDeck);
+        startingDeck.AddRange(additionalCardsInStartingDeck);
         foreach (GameObject card in startingDeck)
         {
             GameObject newCard = Instantiate(card);
@@ -130,7 +134,7 @@ public class DeckManager : MonoBehaviour
             newCard.transform.SetParent(deck.transform);
             newCard.GetComponent<Card>().AttemptToDisable();
         }
-        cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
+        cardsInEntireDeckDisplay.DisplayVariable(entireDeck.Count);
         Suffle(ref deckContents);
     }
     public IEnumerator DiscardHand()
@@ -156,7 +160,7 @@ public class DeckManager : MonoBehaviour
     public IEnumerator GainCard(GameObject card)
     {
         entireDeck.Add(card);
-        cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
+        cardsInEntireDeckDisplay.DisplayVariable(entireDeck.Count);
         yield return StartCoroutine(MoveTo(card, deck, UnityEngine.Random.Range(0, deckContents.Count + 1)));
     }
     public IEnumerator DestroyCard(GameObject card)
@@ -167,12 +171,12 @@ public class DeckManager : MonoBehaviour
             displayedList.Remove(card);
             yield return StartCoroutine(DestroyCard(cardScript.OriginalCard));
         }
-        cardsInEntireDeckDisplay.DisplayText(entireDeck.Count);
-        yield return StartCoroutine(MoveTo(card, deck, UnityEngine.Random.Range(0, deckContents.Count + 1)));
+        //yield return StartCoroutine(MoveTo(card, deck, UnityEngine.Random.Range(0, deckContents.Count + 1)));
+        //removes the card from list it is in and does stuff to make sure that the thing updates properly
         if (deckContents.Contains(card))
         {
             deckContents.Remove(card);
-            cardsInDeckDisplay.DisplayText(deckContents.Count);
+            cardsInDeckDisplay.DisplayVariable(deckContents.Count);
         }
         if (handContents.Contains(card))
         {
@@ -182,7 +186,7 @@ public class DeckManager : MonoBehaviour
         if (discardContents.Contains(card))
         {
             discardContents.Remove(card);
-            cardsInDiscardDisplay.DisplayText(discardContents.Count);
+            cardsInDiscardDisplay.DisplayVariable(discardContents.Count);
         }
         if (playContents.Contains(card))
         {
@@ -190,13 +194,14 @@ public class DeckManager : MonoBehaviour
             playerControler.PlayedCardScript.StopPlaying = true;
             playerControler.ForceEndAction();
         }
-        if (playContents.Contains(card))
+        if (exhaustContents.Contains(card))
         {
             exhaustContents.Remove(card);
-            cardsInExhaustDisplay.DisplayText(exhaustContents.Count);
+            cardsInExhaustDisplay.DisplayVariable(exhaustContents.Count);
             //add more exaust stuff
         }
         entireDeck.Remove(card);
+        cardsInEntireDeckDisplay.DisplayVariable(entireDeck.Count);
         cardScript.AttemptToDestroy();
     }
     public IEnumerator DrawCards(int count)
@@ -212,6 +217,10 @@ public class DeckManager : MonoBehaviour
     {
         if (deckContents.Count == 0)
         {
+            if (discardContents.Count == 0)
+            {
+                yield break;
+            }
             yield return StartCoroutine(ReSuffle());
         }
         GameObject currentCard = deckContents[0];
@@ -249,7 +258,7 @@ public class DeckManager : MonoBehaviour
     }
 
 
-    public IEnumerator MoveTo(GameObject card, GameObject location, int newIndex = Variables.gameNullValue)
+    public IEnumerator MoveTo(GameObject card, GameObject location, int newIndex = Var.nullValue)
     {
         GameObject cardLocation = card.transform.parent.gameObject;
         string locationName = cardLocation.name.ToLower();
@@ -265,7 +274,7 @@ public class DeckManager : MonoBehaviour
         //    }
         //}
         DeSelectCard(card);
-        if (newIndex != Variables.gameNullValue)
+        if (newIndex != Var.nullValue)
         {
             //GetListByName(location.name.ToLower() + "Contents").Insert(newIndex, card);
             posibleCardLocations[location.name.ToLower()].Insert(newIndex, card);
@@ -297,9 +306,9 @@ public class DeckManager : MonoBehaviour
         }
         card.transform.SetParent(location.transform);
         mouseManager.MouseOffObject(card);
-        cardsInDeckDisplay.DisplayText(deckContents.Count);
-        cardsInDiscardDisplay.DisplayText(discardContents.Count);
-        cardsInExhaustDisplay.DisplayText(exhaustContents.Count);
+        cardsInDeckDisplay.DisplayVariable(deckContents.Count);
+        cardsInDiscardDisplay.DisplayVariable(discardContents.Count);
+        cardsInExhaustDisplay.DisplayVariable(exhaustContents.Count);
 
         yield return StartCoroutine(UpdateHand());
         
@@ -316,16 +325,19 @@ public class DeckManager : MonoBehaviour
         //Debug.Log("waiting");
         yield return new WaitUntil(conditiion);
         //Debug.Log("done");
-        int index = Variables.gameNullValue;
-        if (returnToList == deck)
+        if (card != null)
         {
-            index = UnityEngine.Random.Range(0, deckContents.Count-1);
+            int index = Var.nullValue;
+            if (returnToList == deck)
+            {
+                index = UnityEngine.Random.Range(0, deckContents.Count - 1);
+            }
+            yield return StartCoroutine(MoveTo(card, returnToList, index));
         }
-        yield return StartCoroutine(MoveTo(card, returnToList, index));
     }
     public IEnumerator returnFromExhaust(GameObject card, string returnToList)
     {
-        int index = Variables.gameNullValue;
+        int index = Var.nullValue;
         if (returnToList == "deck")
         {
             index = UnityEngine.Random.Range(0, deckContents.Count);

@@ -27,8 +27,8 @@ public class RoomSpawner : MonoBehaviour
     private float[] roomTypeProbabilities;
 
     //not used right now was how likly each room was to spawn
-    private float[] initialRoomWeights = {0,1,1,1,1,0.3f}; //, 0.6f, 0.05f 
-    private float[] roomProbabilities;
+    //private float[] initialRoomWeights = {0,1,1,1,1,0.3f}; //, 0.6f, 0.05f 
+    //private float[] roomProbabilities;
     private float realativeRotation = 0;
     private List<GameObject> existingRooms = new List<GameObject>();
 
@@ -48,25 +48,25 @@ public class RoomSpawner : MonoBehaviour
         rooms.RemoveAll(room => room.GetComponent<RoomScript>() == null);
         rooms.RemoveAll(card => card.name == "BaseRoom");
         PrepareRooms();
-        if (initialRoomWeights.Length != rooms.Count)
-        {
+        //if (initialRoomWeights.Length != rooms.Count)
+        //{
 
-            float[] baseRoomWeights = new float[rooms.Count];
-            for(int i = 0; i < rooms.Count; i++)
-            {
-                if (initialRoomWeights.Length > i)
-                {
-                    baseRoomWeights[i] = initialRoomWeights[i];
-                }
-                else
-                {
-                    baseRoomWeights[i] = 1f;
-                }
-            }
-            initialRoomWeights = baseRoomWeights;
+        //    float[] baseRoomWeights = new float[rooms.Count];
+        //    for(int i = 0; i < rooms.Count; i++)
+        //    {
+        //        if (initialRoomWeights.Length > i)
+        //        {
+        //            baseRoomWeights[i] = initialRoomWeights[i];
+        //        }
+        //        else
+        //        {
+        //            baseRoomWeights[i] = 1f;
+        //        }
+        //    }
+        //    initialRoomWeights = baseRoomWeights;
 
-        }
-        BuildRoomProbabilities(initialRoomWeights);
+        //}
+        //BuildRoomProbabilities(initialRoomWeights);
         FloorManager.FloorClearedFuntions += ClearRooms;
     }
 
@@ -114,24 +114,24 @@ public class RoomSpawner : MonoBehaviour
         existingRooms.Clear();
         builtRooms.Clear();
     }
-    private void BuildRoomProbabilities(float[] roomWeights)
-    {
-        if (roomWeights.Length != rooms.Count)
-        {
-            Debug.Log("Unequal Rooms And Room Probabilities");
-        }
-        float sumOfRoomWeights = 0;
-        for (int i = 0; i < roomWeights.Length; i++)
-        {
-            sumOfRoomWeights += roomWeights[i];
-        }
-        roomProbabilities = new float[roomWeights.Length];
-        roomProbabilities[0] = roomWeights[0] / sumOfRoomWeights;
-        for (int i = 1; i < roomWeights.Length; i++)
-        {
-            roomProbabilities[i] = roomWeights[i] / sumOfRoomWeights + roomProbabilities[i - 1];
-        }
-    }
+    //private void BuildRoomProbabilities(float[] roomWeights)
+    //{
+    //    if (roomWeights.Length != rooms.Count)
+    //    {
+    //        Debug.Log("Unequal Rooms And Room Probabilities");
+    //    }
+    //    float sumOfRoomWeights = 0;
+    //    for (int i = 0; i < roomWeights.Length; i++)
+    //    {
+    //        sumOfRoomWeights += roomWeights[i];
+    //    }
+    //    roomProbabilities = new float[roomWeights.Length];
+    //    roomProbabilities[0] = roomWeights[0] / sumOfRoomWeights;
+    //    for (int i = 1; i < roomWeights.Length; i++)
+    //    {
+    //        roomProbabilities[i] = roomWeights[i] / sumOfRoomWeights + roomProbabilities[i - 1];
+    //    }
+    //}
     public void SpawnRoomsNextToDoor(GameObject door, Vector2 currentRoom)
     {
         //Debug.Log(mapManager.OneToOneToPos(doorOneToOne - currentRoom));

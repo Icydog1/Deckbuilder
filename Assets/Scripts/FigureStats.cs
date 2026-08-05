@@ -144,11 +144,11 @@ public class FigureStats : MonoBehaviour
                     }
 
                 }
-                if (condition.Value != Variables.gameNullValue)
+                if (condition.Value != Var.nullValue)
                 {
                     currentConditionText += " " + condition.Value + "<sprite name=ConditionPower>";
                 }
-                if (condition.Duration != Variables.gameInfinityValue)
+                if (condition.Duration != Var.infinityValue)
                 {
                     currentConditionText += " " + condition.Duration + "<sprite name=ConditionDuration>";
                 }
@@ -202,8 +202,8 @@ public class FigureStats : MonoBehaviour
     public void ChangePlan(string action, int newValue)
     {
         //Debug.Log("changed move plan");
-        Regex regex = new Regex("([0-9]+)(" + action + ")");
-        planText.text = regex.Replace(planText.text, newValue + "$2",1);
+        Regex regex = new Regex("(" + action + ")([0-9]+)");
+        planText.text = regex.Replace(planText.text, "${1}" + newValue, 1);
         //planText.text = Regex.Replace(planText.text, "(.+)", "$1");
 
     }

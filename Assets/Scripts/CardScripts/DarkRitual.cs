@@ -17,14 +17,14 @@ public class DarkRitual : Card
     public override void PrepareTop()
     {
         currentActions.Add(new Action(() => playerControler.Summon(summon)));
-        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new NextTurnTopEnergy(-1, Variables.gameInfinityValue))));
-        currentActions.Add(new Action(() => playerControler.LoseHealth(3)));
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new NextTurnTopEnergy(-1, Var.infinityValue))));
+        currentActions.Add(new Action(() => playerControler.LoseHealthAction(3)));
     }
 
     public override void PrepareBottom()
     {
         currentActions.Add(new Action(() => playerControler.GainBottomEnergy(2)));
         currentActions.Add(new Action(() => playerControler.GainTopEnergy(2)));
-        currentActions.Add(new Action(() => playerControler.LoseHealth(2)));
+        currentActions.Add(new Action(() => playerControler.LoseHealthAction(2)));
     }
 }

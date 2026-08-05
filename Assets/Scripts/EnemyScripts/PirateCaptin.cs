@@ -28,7 +28,7 @@ public class PirateCaptin : Enemy
         });
         movesSetOrder = new List<int>() { 0, 1, 2, 3 };
         maxHealth = 83;
-        XPValue = 4;
+        XPValue = 8;
         base.Awake();
     }
 }

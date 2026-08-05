@@ -90,30 +90,30 @@ public class Condition
 
 public class Strength : Condition
 {
-    public Strength(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Strength", conditionValue, conditionDuration, 1, false, "AttackValue") {}
+    public Strength(int conditionValue, int conditionDuration = Var.infinityValue) : base("Strength", conditionValue, conditionDuration, 1, false, "AttackValue") {}
 }
 
 public class Dexterity : Condition
 {
-    public Dexterity(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Dexterity", conditionValue, conditionDuration, 1, false, "BlockValue") {}
+    public Dexterity(int conditionValue, int conditionDuration = Var.infinityValue) : base("Dexterity", conditionValue, conditionDuration, 1, false, "BlockValue") {}
 }
 
 public class Speed : Condition
 {
-    public Speed(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Speed", conditionValue, conditionDuration, 1, false, "MoveValue") { }
+    public Speed(int conditionValue, int conditionDuration = Var.infinityValue) : base("Speed", conditionValue, conditionDuration, 1, false, "MoveValue") { }
 }
 
 public class Finesse: Condition
 {
-    public Finesse(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Finesse", conditionValue, conditionDuration, 1, false, "SkillValue") { }
+    public Finesse(int conditionValue, int conditionDuration = Var.infinityValue) : base("Finesse", conditionValue, conditionDuration, 1, false, "SkillValue") { }
 }
 public class Accuracy : Condition
 {
-    public Accuracy(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Accuracy", conditionValue, conditionDuration, 1, false, "RangeValue") { }
+    public Accuracy(int conditionValue, int conditionDuration = Var.infinityValue) : base("Accuracy", conditionValue, conditionDuration, 1, false, "RangeValue") { }
 }
 public class NaturalScaling: Condition
 {
-    public NaturalScaling(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("NaturalScaling", conditionValue, conditionDuration, 3, false, "All", false) { }
+    public NaturalScaling(int conditionValue, int conditionDuration = Var.infinityValue) : base("NaturalScaling", conditionValue, conditionDuration, 3, false, "All", false) { }
 }
 
 public class DistanceSpeedBoost : Condition
@@ -122,17 +122,21 @@ public class DistanceSpeedBoost : Condition
 }
 public class DistanceJump : Condition
 {
-    public DistanceJump(int conditionDuration = 1) : base("DistanceJump", Variables.gameNullValue, conditionDuration, 3, false, "All", false) { }
+    public DistanceJump(int conditionDuration = 1) : base("DistanceJump", Var.nullValue, conditionDuration, 3, false, "All", false) { }
 }
 
 public class Poison : Condition
 {
-    public Poison(int conditionValue) : base("Poison", conditionValue, Variables.gameInfinityValue, 1, true, "None", true) { }
+    public Poison(int conditionValue) : base("Poison", conditionValue, Var.infinityValue, 1, true, "None", true) { }
+}
+public class Thorns : Condition
+{
+    public Thorns(int conditionValue, int conditionDuration = Var.infinityValue) : base("Thorns", conditionValue, conditionDuration, 1, false, "None") { }
 }
 
 public class NextTurns : Condition
 {
-    public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionValue = Variables.gameNullValue, int conditionDuration = 1) : base("NextTurns", conditionValue, conditionDuration, 0, true, "All", true, null, new string[] { "Delayed Gain", "No Self Target Description" }, nextTurnsAction) { }
+    public NextTurns(Func<IEnumerator>[] nextTurnsAction, int conditionDuration = 1) : base("NextTurns", Var.nullValue, conditionDuration, 0, true, "All", true, null, new string[] { "Delayed Gain", "No Self Target Description" }, nextTurnsAction) { }
     public override IEnumerator OnGain(Figure figure)
     {
         planDescription = new List<ActionDescription>();
@@ -169,7 +173,7 @@ public class GainAbility : Condition
 {
     protected Ability gainedAbility;
     public Ability GainedAbility { get { return gainedAbility; } }
-    public GainAbility(Ability conditionAbility, int conditionDuration = 1) : base("Ability", Variables.gameNullValue, conditionDuration, 0, false, "All", true, null, new string[] { "Ability", "No Self Target Description" })
+    public GainAbility(Ability conditionAbility, int conditionDuration = 1) : base("Ability", Var.nullValue, conditionDuration, 0, false, "All", true, null, new string[] { "Ability", "No Self Target Description" })
     {
         //conditionEffects = RefrenceStorage.conditionEffects;
         gainedAbility = conditionAbility;
@@ -186,11 +190,11 @@ public class GainAbility : Condition
 }
 public class Vigor : Condition
 {
-    public Vigor(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Vigor", conditionValue, conditionDuration, 1, false, "AttackValue") { }
+    public Vigor(int conditionValue, int conditionDuration = Var.infinityValue) : base("Vigor", conditionValue, conditionDuration, 1, false, "AttackValue") { }
 }
 public class Burst : Condition
 {
-    public Burst(int conditionValue, int conditionDuration = Variables.gameInfinityValue) : base("Burst", conditionValue, conditionDuration, 1, false, "MoveValue") { }
+    public Burst(int conditionValue, int conditionDuration = Var.infinityValue) : base("Burst", conditionValue, conditionDuration, 1, false, "MoveValue") { }
 }
 public class BlockPerMove : Condition
 {
@@ -202,7 +206,7 @@ public class BlockPerMove : Condition
 
 public class Flight : Condition
 {
-    public Flight(int conditionDuration = Variables.gameInfinityValue) : base("Flight", Variables.gameNullValue, conditionDuration, 2, false, "None", true) { }
+    public Flight(int conditionDuration = Var.infinityValue) : base("Flight", Var.nullValue, conditionDuration, 2, false, "None", true) { }
     public override IEnumerator OnGain(Figure figure)
     {
         //Debug.Log("gained condtion");
@@ -222,12 +226,41 @@ public class Flight : Condition
 
 public class Stunned : Condition
 {
-    public Stunned(int conditionDuration = 1, bool isShown = true) : base("Stunned", Variables.gameNullValue, conditionDuration, 2, false, "All", isShown) { }
+    public Stunned(int conditionDuration = 1) : base("Stunned", Var.nullValue, conditionDuration, 2, false, "All", true) { }
 }
 public class Summon : Condition
 {
-    public Summon() : base("Summon", Variables.gameNullValue, Variables.gameInfinityValue, 3, false, "None") { }
+    public Summon() : base("Summon", Var.nullValue, Var.infinityValue, 3, false, "None") { }
 }
+public class ManaCapacity : Condition
+{
+    public ManaCapacity(int conditionValue, int conditionDuration = Var.infinityValue, bool isShown = true) : base("Mana Capacity", conditionValue, conditionDuration, 1, false, "None")
+    { }
+    public override IEnumerator OnGain(Figure figure)
+    {
+        if (figure is PlayerControler effectedPlayer)
+        {
+            effectedPlayer.ManaCapacity += amount;
+            effectedPlayer.Mana += amount;
+        }
+        yield break;
+    }
+    public override IEnumerator OnLoss(Figure figure)
+    {
+        if (figure is PlayerControler effectedPlayer)
+        {
+            effectedPlayer.ManaCapacity -= amount;
+            //if (effectedPlayer.Mana > effectedPlayer.ManaCapacity)
+            //{
+            //    effectedPlayer.Mana = Mathf.Max(effectedPlayer.Mana-amount, effectedPlayer.ManaCapacity);
+            //}
+            //effectedPlayer.Mana -= amount;
+
+        }
+        yield break;
+    }
+}
+
 //public class StartOfTurnBlock : Condition
 //{
 //    public StartOfTurnBlock(int conditionValue, int conditionDuration = 1) : base("Next Turn Block", conditionValue, conditionDuration, 1, true, false) { }

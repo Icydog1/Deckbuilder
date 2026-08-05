@@ -6,7 +6,7 @@ public class ToxicTentacle : Relic
     protected override int rarity => 2;
     public override void Awake()
     {
-        relicDesription = "At the end of your turn apply " + Variables.relicIncreaseableNumberColor + Variables.toxicTentaclePoison + "</color> poison all" + Variables.targetSprite + " 1" + Variables.rangeSprite;
+        relicDesription = "At the end of your turn apply " + Var.relicIncreaseableNumberColor + Var.toxicTentaclePoison + "</color> poison <sprite name=Target>all <sprite name=Range>1";
         base.Awake();
     }
     public override IEnumerator OnGain()
@@ -22,7 +22,7 @@ public class ToxicTentacle : Relic
     }
     public IEnumerator EndOfTurnPoison(PlayerControler playerControler)
     {
-        yield return StartCoroutine(playerControler.ApplyCondition(new Poison(count * Variables.toxicTentaclePoison), "enemy", 1, Variables.gameInfinityValue, false, true));
+        yield return StartCoroutine(playerControler.ApplyCondition(new Poison(count * Var.toxicTentaclePoison), "enemy", 1, Var.infinityValue));
     }
 
     public void OnDestroy()

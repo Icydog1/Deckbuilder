@@ -6,7 +6,7 @@ public class WaxHand : Relic
     protected override int rarity => 2;
     public override void Awake()
     {
-        relicDesription = "Keep up to " + Variables.relicIncreaseableNumberColor + Variables.waxHandRetainedBlock + "</color> block between turns";
+        relicDesription = "Keep up to " + Var.relicIncreaseableNumberColor + Var.waxHandRetainedBlock + "</color> block between turns";
         base.Awake();
     }
     public override IEnumerator OnGain()

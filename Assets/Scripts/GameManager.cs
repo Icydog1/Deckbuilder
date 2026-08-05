@@ -15,15 +15,21 @@ public class GameManager : MonoBehaviour
     private GameObject pauseScreenBlocker;
     private GameObject deathScreenBlocker;
     private UIManager UIManager;
+    private MainMenuManager mainMenuManager;
 
-    
-    private GameObject settings, restartGameButton, settingsRestartGameButton;
+    private GameObject settings, restartGameButton, endlessModeButton, settingsRestartGameButton;
+    private VariableDisplayer deathText;
+    private Character currentCharacter;
+    public Character CurrentCharacter { get { return currentCharacter; } set { currentCharacter = value; } }
 
     //private bool nextAction;
     public static event Action<GameManager> GameStartedFunctions;
     public static event Action<GameManager> ResetGame;
     public static event Func<GameManager, IEnumerator> GameStarted;
     public static event Func<GameManager, IEnumerator> LateGameStarted;
+
+    private bool isInGame;
+    public bool IsInGame { get { return isInGame; } }
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -38,34 +44,36 @@ public class GameManager : MonoBehaviour
         pauseScreenBlocker = RefrenceStorage.pauseScreenBlocker;
         deathScreenBlocker = RefrenceStorage.deathScreenBlocker;
         UIManager = RefrenceStorage.UIManager;
+        mainMenuManager = RefrenceStorage.mainMenuManager;
         //mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         //mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
         //turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         //roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
         //floorManager = GameObject.Find("FloorManager").GetComponent<FloorManager>();
         //pauseScreenBlocker = GameObject.Find("PauseScreenBlocker");
-        restartGameButton = deathScreenBlocker.transform.Find("RestartGameButton").gameObject;
+        restartGameButton = deathScreenBlocker.transform.Find("EndGameButton").gameObject;
+        endlessModeButton = deathScreenBlocker.transform.Find("EndlessModeButton").gameObject;
         settings = pauseScreenBlocker.transform.Find("Settings").gameObject;
         settingsRestartGameButton = settings.transform.Find("SettingsRestartGameButton").gameObject;
-
+        deathText = deathScreenBlocker.transform.Find("DeathText").GetComponent<VariableDisplayer>();
 
     }
 
-    void Start()
-    {
+    //void Start()
+    //{
 
 
-        StartCoroutine(StartGame());
+    //    StartCoroutine(StartGame());
 
-        //GameObject.Find("ListDisplayerScreenBlocker").GetComponent<Image>().enabled = true;
-        //GameObject.Find("ListDisplayer").SetActive(false);
-    }
+    //    //GameObject.Find("ListDisplayerScreenBlocker").GetComponent<Image>().enabled = true;
+    //    //GameObject.Find("ListDisplayer").SetActive(false);
+    //}
 
-    private IEnumerator StartGame()
+    public IEnumerator StartGame()
     {
         //move out
+        isInGame = true;
         yield return new WaitForEndOfFrame();
-
         //yield return new WaitUntil(() => nextAction == true);
         //nextAction = false;
         if (GameStartedFunctions != null)
@@ -101,39 +109,54 @@ public class GameManager : MonoBehaviour
         //roomSpawner.SpawnStartingRoom();
         yield return StartCoroutine(turnManager.StartTakingTurns());
     }
-    public void EndGame()
+    public void Death()
     {
         UIManager.IsDead = true;
         //deathScreenBlocker.GetComponent<Image>().enabled = true;
         //deathScreenBlocker.GetComponent<RectTransform>().sizeDelta = deathScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
-
+        deathText.DisplayString("Death");
         restartGameButton.SetActive(true);
-
     }
-    public IEnumerator ReStartGame()
+    public void Victory()
+    {
+        UIManager.IsDead = true;
+        //deathScreenBlocker.GetComponent<Image>().enabled = true;
+        //deathScreenBlocker.GetComponent<RectTransform>().sizeDelta = deathScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
+        deathText.DisplayString("Victory");
+        restartGameButton.SetActive(true);
+        endlessModeButton.SetActive(true);
+    }
+    public IEnumerator StopGame()
     {
         OverallStatistics.ResetStatistics();
-        //pauseScreenBlocker.GetComponent<Image>().enabled = false;
         UIManager.IsPaused = false;
         UIManager.IsDead = false;
-        //deathScreenBlocker.GetComponent<Image>().enabled = false;
+        mainMenuManager.GoToMainMenu();
         mouseManager.MouseOffObject(restartGameButton);
-        restartGameButton.gameObject.SetActive(false);
+        restartGameButton.SetActive(false);
+        endlessModeButton.SetActive(false);
+        deathText.Disable();
         mouseManager.MouseOffObject(settingsRestartGameButton);
         settings.SetActive(false);
-        //Debug.Log("ReStarted Game 1");
         yield return StartCoroutine(floorManager.ResetGame());
 
-        //Debug.Log("ReStarted Game 2");
-
-        //yield return new WaitForEndOfFrame();
-        //yield return new WaitUntil(() => nextAction == true);
-        //nextAction = false;
+        //does nothing right now
         if (ResetGame != null)
         {
             ResetGame(this);
         }
-        StartCoroutine(StartGame());
+        isInGame = false;
     }
 
+
+    public IEnumerator ContinueGame()
+    {
+        UIManager.IsPaused = false;
+        UIManager.IsDead = false;
+        mouseManager.MouseOffObject(endlessModeButton);
+        restartGameButton.SetActive(false);
+        endlessModeButton.SetActive(false);
+        deathText.Disable();
+        yield break;
+    }
 }

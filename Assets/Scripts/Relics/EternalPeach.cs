@@ -8,7 +8,7 @@ public class EternalPeach : Relic
     protected override int rarity => 1;
     public override void Awake()
     {
-        relicDesription = "Gain " + Variables.relicIncreaseableNumberColor + 10 + "</color> max health";
+        relicDesription = "Gain " + Var.relicIncreaseableNumberColor + 10 + "</color> max health";
         base.Awake();
     }
     public override IEnumerator OnGain()

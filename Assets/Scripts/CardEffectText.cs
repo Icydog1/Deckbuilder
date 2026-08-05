@@ -18,7 +18,7 @@ public class CardEffectText : MonoBehaviour
         
     }
 
-    //public void DisplayText(List<string> displayedText)
+    //public void DisplayVariable(List<string> displayedText)
     //{
     //    displayedString = "";
     //    foreach (string text in displayedText)

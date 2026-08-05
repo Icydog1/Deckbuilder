@@ -8,8 +8,8 @@ public class PetrifiedScroll : Relic
     private Ability ability;
     public override void Awake()
     {
-        relicDesription = "Gain ability: " + Variables.petrifiedScrollCost  + Variables.skillSprite + " to draw 1 card(Max " + Variables.relicIncreaseableNumberColor + Variables.petrifiedScrollMaxTimes + "x</color>)";
-        ability = new Ability(Variables.petrifiedScrollCost, new List<Func<IEnumerator>>() { () => playerControler.Draw(1, true) }, Variables.petrifiedScrollMaxTimes);
+        relicDesription = "Gain ability: <sprite name=Skill>" + Var.petrifiedScrollCost + " to draw 1 card(Max " + Var.relicIncreaseableNumberColor + Var.petrifiedScrollMaxTimes + "x</color>)";
+        ability = new Ability(Var.petrifiedScrollCost, new List<Func<IEnumerator>>() { () => playerControler.Draw(1, true) }, Var.petrifiedScrollMaxTimes);
         base.Awake();
     }
     public override IEnumerator OnGain()
@@ -20,6 +20,6 @@ public class PetrifiedScroll : Relic
     public override IEnumerator IncreaseCount()
     {
         yield return StartCoroutine(base.IncreaseCount());
-        ability.MaxTimes = Variables.petrifiedScrollMaxTimes * count;
+        ability.MaxTimes = Var.petrifiedScrollMaxTimes * count;
     }
 }

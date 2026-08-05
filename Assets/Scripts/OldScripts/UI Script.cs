@@ -334,7 +334,7 @@
 //        }
 //        else
 //        {
-//            endElevation = int.MaxValue - 1;
+//            endElevation = int.maxValue - 1;
 //        }
 //        for (int i = 0; i <= endElevation + 1; i++)
 //        {
@@ -381,7 +381,7 @@
 //        /*
 //        for (int i = 0; i < elevations.Count; i++)
 //        {
-//            Debug.Log(i + "test");
+//            Debug.Log(i + "MechanicalAutomaton");
 //            foreach (Vector2 pos in elevations[i])
 //            {
 //                mapManager.GetTileAtHex(pos).transform.position += new Vector3(0, 0, i);

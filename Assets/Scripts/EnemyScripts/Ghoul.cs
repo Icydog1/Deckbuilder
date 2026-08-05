@@ -18,7 +18,7 @@ public class Ghoul : Enemy
 
         //movesSetOrder = new List<int>() { 0, 1 };
         maxHealth = 43;
-        XPValue = 4;
+        XPValue = 8;
         base.Awake();
     }
 }

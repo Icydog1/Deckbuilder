@@ -86,16 +86,16 @@ public class Pathfinder : MonoBehaviour
     {
         //elevationsWatcher.Clear();
         //playerElevationsWatcher.Clear();
-        //foreach (List<Vector2> test in elevations)
+        //foreach (List<Vector2> MechanicalAutomaton in elevations)
         //{
         //    ElevationsWatcher test2 = new ElevationsWatcher();
-        //    test2.elevation = test;
+        //    test2.elevation = MechanicalAutomaton;
         //    elevationsWatcher.Add(test2);
         //}
-        //foreach (List<Vector2> test in playerElevations)
+        //foreach (List<Vector2> MechanicalAutomaton in playerElevations)
         //{
         //    ElevationsWatcher test2 = new ElevationsWatcher();
-        //    test2.elevation = test;
+        //    test2.elevation = MechanicalAutomaton;
         //    playerElevationsWatcher.Add(test2);
         //}
         
@@ -253,9 +253,9 @@ public class Pathfinder : MonoBehaviour
         unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
-        if (range == Variables.gameInfinityValue)
+        if (range == Var.infinityValue)
         {
-            range = Variables.gameMaxValue;
+            range = Var.maxValue;
         }
         for (int i = 0; i <= range; i++)
         {
@@ -279,7 +279,7 @@ public class Pathfinder : MonoBehaviour
                 }
 
             }
-            if (i > Variables.gameMaxValue)
+            if (i > Var.maxValue)
             {
                 range = i;
                 Debug.Log("range pathfinding timed out");
@@ -365,7 +365,7 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
 
             }
             //need to add detection when all tiles have bean serched
-            if (i > Variables.gameMaxValue)
+            if (i > Var.maxValue)
             {
                 pathFound = true;
                 //Debug.Log("DistanceTo pathfinding timed out");
@@ -383,9 +383,9 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
         unsafeTiles.Clear();
         impassableTiles.Clear();
         pathFound = false;
-        if (range == Variables.gameInfinityValue)
+        if (range == Var.infinityValue)
         {
-            range = Variables.gameMaxValue;
+            range = Var.maxValue;
         }
         for (int i = 0; i <= range; i++)
         {
@@ -406,7 +406,7 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
                 }
 
             }
-            if (i > Variables.gameMaxValue)
+            if (i > Var.maxValue)
             {
                 range = i;
                 Debug.Log("range pathfinding timed out");
@@ -436,7 +436,7 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
         }
         else
         {
-            endElevation = Variables.gameMaxValue + 1;
+            endElevation = Var.maxValue + 1;
         }
         for (int i = 0; i <= endElevation + 1; i++)
         {
@@ -479,7 +479,7 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
                 }
             }
             //failsafe in case somting fais so it isnt a infinite loop
-            if (i > Variables.gameMaxValue)
+            if (i > Var.maxValue)
             {
                 noMove = true;
                 endElevation = 0;
@@ -489,7 +489,7 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
         /*
         for (int i = 0; i < elevations.Count; i++)
         {
-            Debug.Log(i + "test");
+            Debug.Log(i + "MechanicalAutomaton");
             foreach (Vector2 pos in elevations[i])
             {
                 mapManager.GetTileAtHex(pos).transform.position += new Vector3(0, 0, i);
@@ -540,7 +540,7 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
                 }
             }
             //Debug.Log("furthestPoint " + furthestPoint);
-            if (i > Variables.gameMaxValue)
+            if (i > Var.maxValue)
             {
                 moveValue = i;
                 Debug.Log("posible path pathfinding timed out");
@@ -562,7 +562,7 @@ public List<Figure> GetFiguresInRange(Vector2 selfPos, int range, GameObject sel
             actualPath.Insert(0, currentLocaton);
             currentLocaton = posibleTilesPath[posibleTiles.IndexOf(currentLocaton)];
             killswitch++;
-            if (killswitch > Variables.gameMaxValue)
+            if (killswitch > Var.maxValue)
             {
                 Debug.Log(currentLocaton);
                 currentLocaton = selfPos;

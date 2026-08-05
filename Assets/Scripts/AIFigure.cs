@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class AIFigure : Figure
 {
@@ -23,7 +24,7 @@ public class AIFigure : Figure
     protected int actionNum;
     protected EnemyUi enemyStatsDisplayer;
     //protected FigureStorage figureStorage;
-    protected int XPValue = 5;
+    protected int XPValue;
     protected bool isBoss;
 
 
@@ -80,8 +81,6 @@ public class AIFigure : Figure
                 turnManager.TurnOrder.Add(gameObject);
             }
         }
-
-        //health = maxHealth;
         TurnManager.RoundStarted += GetNewPlan;
         yield return StartCoroutine(GetNewPlan(null));
         //Debug.Log("Finished loading");
@@ -89,7 +88,7 @@ public class AIFigure : Figure
     }
     public IEnumerator FindFocus()
     {
-        List<Figure> posibleTargets = FindTargets("enemy", Variables.gameInfinityValue);
+        List<Figure> posibleTargets = FindTargets("enemy", Var.infinityValue);
         if (posibleTargets.Count > 0)
         {
             focusScript = posibleTargets[0];
@@ -195,7 +194,7 @@ public class AIFigure : Figure
     {
         //Debug.Log("first condition: " + conditions[0].Name);
         //actionManager.PlanToList = displayedPlan;
-        if (FindValueOfCondition("Stunned") != Variables.gameDoesNotExistIndcator)
+        if (FindValueOfCondition("Stunned") != 0 || (turn == 0 && isSummon))
         {
             currentPlan = new List<Func<IEnumerator>>();
             //Debug.Log("is stunned");
@@ -326,30 +325,29 @@ public class AIFigure : Figure
     }
     public IEnumerator TakeTurn()
     {
-        //Debug.Log(gameObject + " started taking turn");
         yield return StartCoroutine(StartOfTurn());
-        //yield return new WaitUntil(() => nextAction == true);
-        //nextAction = false;
-        //Debug.Log(gameObject + " started main action sequence");
-
-        for (int i = 0; i < currentPlan.Count; i++)
+        if (!(turn == 1 && isSummon))
         {
-            yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
-            displayedPlan.RemoveAt(0);
-            enemyStatsDisplayer.Plan(displayedPlan);
-
-            //Debug.Log(gameObject + " toook 1 action");
-
             //yield return new WaitUntil(() => nextAction == true);
             //nextAction = false;
-        }
-        //Debug.Log(gameObject + " ended main action sequence");
-        if (FindValueOfCondition("Stunned") == Variables.gameDoesNotExistIndcator)
-        {
-            currentmove++;
+            //Debug.Log(gameObject + " started main action sequence");
+
+            for (int i = 0; i < currentPlan.Count; i++)
+            {
+                if (exists)
+                {
+                    yield return StartCoroutine(actionManager.PreformAction(currentPlan[i]()));
+                    displayedPlan.RemoveAt(0);
+                    enemyStatsDisplayer.Plan(displayedPlan);
+                }
+            }
+
+            if (FindValueOfCondition("Stunned") == 0)
+            {
+                currentmove++;
+            }
         }
         yield return StartCoroutine(EndTurn());
-        //Debug.Log(gameObject + " ended turn");
 
     }
     public IEnumerator DisplayMovePosibilities()
@@ -378,11 +376,12 @@ public class AIFigure : Figure
         CalculateValues();
         //nextAction = true;
     }
-    public override void EndAction()
-    {
-        //CalculateValues();
-        //nextAction = true;
-    }
+    //public override void EndAction()
+    //{
+    //    //CalculateValues();
+    //    //nextAction = true;
+    //    Debug.Log("ended action");
+    //}
     public void showHideTooltip(bool show)
     {
 
@@ -411,6 +410,7 @@ public class AIFigure : Figure
     {
         TurnManager.RoundStarted -= GetNewPlan;
         FloorManager.FloorCleared -= Remove;
+        //playerControler.PlayedCardScript.ActingFigures.Remove(this);
         //Debug.Log(gameObject);
         turnManager.RemoveFromTurnOrder(gameObject);
         yield return gameManager.StartCoroutine(base.StopExisting());

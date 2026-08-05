@@ -12,7 +12,7 @@ public class SpringLoaded : Card
     public override void PrepareTop()
     {
         currentActions.Add(new Action(() => playerControler.Summon(boltShooter)));
-        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new NextTurnCards(-1, Variables.gameInfinityValue))));
+        currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new NextTurnCards(-1, Var.infinityValue))));
 
     }
 
@@ -20,8 +20,8 @@ public class SpringLoaded : Card
     {
         
         currentActions.Add(new Action(() => playerControler.AddKeyword("Augment")));
-        currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new Strength(2))));
-        currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new Speed(2))));
+        currentActions.Add(new Action((currentTarget) => currentTarget.ApplyConditions(new Condition[] { new Strength(2), new Speed(2) })));
+        //currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new Speed(2))));
         currentActions.Add(new Action((currentTarget) => currentTarget.Upkeep(new Finesse(-2))));
         //currentActions.Add(new Action(() => ref currentTarget.ApplyCondition(new Accuracy(2)), null, ref playerControler.refEffectedFigures));
 

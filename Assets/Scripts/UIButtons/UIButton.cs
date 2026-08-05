@@ -3,10 +3,10 @@ using UnityEngine.UI;
 
 public class UIButton : MonoBehaviour
 {
-    private Color clickedColor = new Color(0.8f, 0.8f, 0.8f);
-    private Color baseColor;
+    protected Color clickedColor = new Color(0.8f, 0.8f, 0.8f);
+    protected Color baseColor;
     public Color ClickedColor { get { return clickedColor; }}
-    public Color BaseColor { get { return baseColor; } }
+    public Color BaseColor { get { return baseColor; } set { baseColor = value; } }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Awake()

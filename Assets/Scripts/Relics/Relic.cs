@@ -99,7 +99,7 @@ public class Relic : MonoBehaviour
             }
             //playerControler.IsPlanning = false;
             //Debug.Log("displayedString: " + displayedString);
-            displayedString = Regex.Replace(displayedString, "(. )([0-9]+)( .)", "$1<color=#009f9f>$2</color>$3");
+            displayedString = Regex.Replace(displayedString, "(. )([0-9]+)( .)", "${1}" + Var.relicIncreaseableNumberColor + "${2}</color>$3");
 
             callback?.Invoke(rarityColor + relicName + "</color>" + "\n" + displayedString);
         }
@@ -117,7 +117,7 @@ public class Relic : MonoBehaviour
             count = 1;
             if (!isUnique)
             {
-                countDisplay.DisplayText(count);
+                countDisplay.DisplayVariable(count);
             }
         }
         yield return null;
@@ -126,7 +126,7 @@ public class Relic : MonoBehaviour
     public virtual IEnumerator IncreaseCount()
     {
         count++;
-        countDisplay.DisplayText(count);
+        countDisplay.DisplayVariable(count);
         yield return null;
     }
 

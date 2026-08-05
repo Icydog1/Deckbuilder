@@ -6,7 +6,11 @@ using UnityEngine;
 {
     public Strike() : base(0, 1, 1) { }
 
-
+    public override void Awake()
+    {
+        cardName = "Strike";
+        base.Awake();
+    }
 
     public override void PrepareTop()
     {

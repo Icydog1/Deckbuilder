@@ -18,7 +18,7 @@ public class Lootable : MonoBehaviour
     //[SerializeField]
     //private List<int[]> rewards = new List<int[]>();
     //[SerializeField]
-    //private List<int> test = new List<int>();
+    //private List<int> MechanicalAutomaton = new List<int>();
     [Serializable]
     public struct Reward
     {
@@ -30,7 +30,7 @@ public class Lootable : MonoBehaviour
     private float rarity = 1;
     [SerializeField]
     private int lockpickDifficulty = 10;
-    public int LockpickDifficulty { get { return lockpickDifficulty; } set { lockpickDifficulty = value; lockpickRemainingDisplay.DisplayText(lockpickDifficulty);}}
+    public int LockpickDifficulty { get { return lockpickDifficulty; } set { lockpickDifficulty = value; lockpickRemainingDisplay.DisplayVariable(lockpickDifficulty);}}
     public float Rarity { get { return rarity; }}
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -42,7 +42,7 @@ public class Lootable : MonoBehaviour
     }
     void Start()
     {
-        lockpickRemainingDisplay.DisplayText(lockpickDifficulty);
+        lockpickRemainingDisplay.DisplayVariable(lockpickDifficulty);
         //if (isCard)
         //{
         //    transform.Find("BaseTileImage").GetComponent<SpriteRenderer>().color = new Color(0.7433963f, 0.496298f, 0);

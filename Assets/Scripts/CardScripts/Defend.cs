@@ -5,6 +5,12 @@ public class Defend : Card
 {
     public Defend() : base(0, 1, 1) { }
 
+    public override void Awake()
+    {
+        cardName = "Defend";
+        base.Awake();
+    }
+
 
     public override void PrepareTop()
     {

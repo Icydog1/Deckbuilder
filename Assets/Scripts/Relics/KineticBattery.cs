@@ -8,7 +8,7 @@ public class KineticBattery : Relic
     private bool isGainingVigor;
     public override void Awake()
     {
-        relicDesription = "Every " + Variables.kineticBatterySpaces + " spaces you move gain <color=#009f9f>1<color=white> Vigor for " + Variables.kineticBatteryVigorDuration + " turns";
+        relicDesription = "Every " + Var.kineticBatterySpaces + " spaces you move gain <color=#009f9f>1<color=white> Vigor for " + Var.kineticBatteryVigorDuration + " turns";
         base.Awake();
     }
     public override IEnumerator OnGain()
@@ -23,7 +23,7 @@ public class KineticBattery : Relic
     public void IncreaseSteps(PlayerControler playerControler)
     {
         steps++;
-        if (!isGainingVigor && steps >= Variables.kineticBatterySpaces)
+        if (!isGainingVigor && steps >= Var.kineticBatterySpaces)
         {
             actionManager.PrepareAction(GainVigor());
             isGainingVigor = true;
@@ -32,8 +32,8 @@ public class KineticBattery : Relic
 
     public IEnumerator GainVigor()
     {
-        int vigor = steps / Variables.kineticBatterySpaces;
-        yield return StartCoroutine(playerControler.ApplyCondition(new Vigor(vigor * count, Variables.kineticBatteryVigorDuration), "self", 1, 1, false, false));
+        int vigor = steps / Var.kineticBatterySpaces;
+        yield return StartCoroutine(playerControler.ApplyCondition(new Vigor(vigor * count, Var.kineticBatteryVigorDuration), "self", 1, 1, false, false));
         steps = 0;
         isGainingVigor = false;
     }

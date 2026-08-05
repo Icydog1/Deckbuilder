@@ -23,7 +23,7 @@ public class Pirate : Enemy
 
         //movesSetOrder = new List<int>() { 0, 1 };
         maxHealth = 17;
-        XPValue = 1;
+        XPValue = 2;
         base.Awake();
     }
 }

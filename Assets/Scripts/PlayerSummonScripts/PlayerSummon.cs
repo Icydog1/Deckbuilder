@@ -6,6 +6,7 @@ public class PlayerSummon : AIFigure
     {
         team = 0;
         isEnemy = false;
+        isPlayerSummon = true;
         base.Awake();
     }
 }

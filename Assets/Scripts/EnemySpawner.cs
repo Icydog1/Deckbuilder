@@ -28,7 +28,7 @@ public class EnemySpawner : MonoBehaviour
 
         TurnManager.RoundEndedFunctions += AttemptToSpawnEnemy;
         FloorManager.FloorClearedFuntions += Remove;
-        tunsTillActive = Variables.spawnerActivationDelay;
+        tunsTillActive = Var.spawnerActivationDelay;
     }
 
     // Update is called once per frame
@@ -40,12 +40,12 @@ public class EnemySpawner : MonoBehaviour
     public void AttemptToSpawnEnemy(TurnManager turnManager)
     {
         tunsTillActive--;
-        if (tunsTillActive <= 0 && Random.Range(0, 1f) <= Variables.spawnerSpawnChance)
+        if (tunsTillActive <= 0 && Random.Range(0, 1f) <= Var.spawnerSpawnChance)
         {
             if (mapManager.GetEntityOnHex(OneToOnePos) == null)
             {
                 SpawnEnemy();
-                tunsTillActive = Variables.spawnerActivationDelay;
+                tunsTillActive = Var.spawnerActivationDelay;
             }
             else
             {
@@ -58,7 +58,7 @@ public class EnemySpawner : MonoBehaviour
 
     public void SpawnEnemy()
     {
-        Instantiate(enemy[Random.Range(0,enemy.Count)], new Vector3(transform.position.x, transform.position.y, Variables.enemySpawnYElevation), Quaternion.identity);
+        Instantiate(enemy[Random.Range(0,enemy.Count)], new Vector3(transform.position.x, transform.position.y, Var.enemySpawnYElevation), Quaternion.identity);
         //yield return null;
     }
     public void OnDestroy()

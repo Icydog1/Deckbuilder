@@ -22,7 +22,7 @@ public class Necromancer : Enemy
         });
         movesSetOrder = new List<int>() { 0, 1, 2 };
         maxHealth = 113;
-        XPValue = 6;
+        XPValue = 12;
         base.Awake();
     }
 }

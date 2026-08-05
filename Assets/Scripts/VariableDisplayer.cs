@@ -15,15 +15,7 @@ public class VariableDisplayer : MonoBehaviour
         textBox = GetComponent<TextMeshProUGUI>();
         //transform.rotation = Quaternion.identity;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
-    public void DisplayText(int variable)
+    public void DisplayVariable(int variable)
     {
         textBox.enabled = true;
         displayedString = addionalText;

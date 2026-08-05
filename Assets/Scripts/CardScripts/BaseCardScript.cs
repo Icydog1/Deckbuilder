@@ -26,6 +26,7 @@ public class Card : MonoBehaviour
 
     protected bool isCurrentCard;
     protected int topCost, bottomCost;
+    protected int topManaCost = 0, bottomManaCost = 0;
     protected bool isTopPlayed, isBottomPlayed;
     protected bool isPlaying;
     //protected int currentStep;
@@ -34,6 +35,8 @@ public class Card : MonoBehaviour
     protected bool stopPlaying;
     public bool StopPlaying { set { stopPlaying = value; } }
     private int doingSomething;
+    //private bool exists = true;
+    //public bool Exists { get { return exists; } }
 
     protected bool isPreparingTop;
 
@@ -94,7 +97,7 @@ public class Card : MonoBehaviour
 
     //[SerializeField]
     protected int rarity = 1;
-    protected string cardName;
+    protected string cardName = "";
     public Card(int baseRarity, int initialTopCost, int initialBottomCost)
     {
         rarity = baseRarity;
@@ -127,9 +130,13 @@ public class Card : MonoBehaviour
         bottomText = transform.Find("BottomEffects").GetComponent<CardEffectText>();
         topCostText = transform.Find("TopCost").GetComponent<VariableDisplayer>();
         bottomCostText = transform.Find("BottomCost").GetComponent<VariableDisplayer>();
-        cardName = this.name;
-        cardName = cardName.Replace("(Clone)", "");
-        cardName = Regex.Replace(cardName, "(.)([A-Z,0-9])", "$1 $2");
+        if (cardName == "")
+        {
+            cardName = this.name;
+            cardName = cardName.Replace("(Clone)", "");
+            cardName = Regex.Replace(cardName, "(.)([A-Z,0-9])", "$1 $2");
+
+        }
         transform.Find("CardName").gameObject.GetComponent<TextMeshProUGUI>().SetText(cardName);
 
         deckManager.SetRelativeCardSize(gameObject, 1);
@@ -145,7 +152,7 @@ public class Card : MonoBehaviour
                 }
             case 1:
                 {
-                    rarityGlow.color = new Color(0, 0, 0, 0f);
+                    rarityGlow.color = new Color(0, 0, 0, 0.5f);
                     break;
                 }
             case 2:
@@ -243,6 +250,7 @@ public class Card : MonoBehaviour
 
     public void DonePlaying()
     {
+        StopCommanding();
         isPlaying = false;
         isTopPlayed = false;
         isBottomPlayed = false;
@@ -253,7 +261,6 @@ public class Card : MonoBehaviour
         if (returnToList == null)
         {
             StartCoroutine(deckManager.DiscardCard(gameObject));
-
         }
         else
         {
@@ -326,7 +333,7 @@ public class Card : MonoBehaviour
                 if (stopPlaying == false)
                 {
                     //Debug.Log("started action");
-                    playerControler.ActionEnded = false;
+                    actionManager.ActionEnded = false;
                     yield return StartCoroutine(actionManager.PreformAction(action.preformedAction()));
                     //Debug.Log("finished action");
                 }
@@ -352,28 +359,44 @@ public class Card : MonoBehaviour
                 {
                     for (int i = 1; i < actingFigures.Count; i++)
                     {
-                        Debug.Log("not tested");
+                        //Debug.Log("not tested");
                         playerControler.ActionsRemaining.Insert(i, playerControler.ActionsRemaining[0]); //copyDescription.Clone()
                     }
                 }
                 playerControler.UpdatePlan();
                 //Debug.Log(actingFigures.Count);
-                foreach (Figure target in actingFigures)
+                foreach (Figure target in actingFigures.ToArray())
                 {
                     //Debug.Log(target);
                     if (stopPlaying == false)
                     {
-                        playerControler.ActionEnded = false;
-                        //currentTarget = target;
-                        yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(target), planTo));
-                        if (!playerControler.ActionEnded)
+                        actionManager.ActionEnded = false;
+                        if (target.Exists)
                         {
-                            playerControler.EndAction();
+                            actionManager.ActiveFigure = target;
+                            //currentTarget = target;
+                            yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(target), planTo));
                         }
+                        else
+                        {
+                            actingFigures.Remove(target);
+                        }
+
+                        playerControler.EndAction();
                     }
                 }
+                actionManager.ActiveFigure = playerControler;
+
             }
         }
+    }
+    public void StopCommanding()
+    {
+        foreach (Figure figure in actingFigures)
+        {
+            figure.Controled = false;
+        }
+        actingFigures.Clear();
     }
 
     public void PrepareExhaustAfterPlayed(Func<bool> conditiion, GameObject list = null)
@@ -429,8 +452,23 @@ public class Card : MonoBehaviour
 
         PrepareCardKeywords(true);
         PrepareCardKeywords(false);
-        topCostText.DisplayString("<color=red>" + topCost);
-        bottomCostText.DisplayString("<color=#008000>" + bottomCost);
+        if (topManaCost == 0)
+        {
+            topCostText.DisplayString("<color=red>" + topCost);
+        }
+        else
+        {
+            topCostText.DisplayString("<color=red>" + topCost + " <color=#D000D0>(" + topManaCost + ")");
+        }
+        if (bottomManaCost == 0)
+        {
+            bottomCostText.DisplayString("<color=#008000>" + bottomCost);
+        }
+        else
+        {
+            bottomCostText.DisplayString("<color=#008000>" + bottomCost + " <color=#D000D0>(" + bottomManaCost + ")");
+        }
+        //topCostText.DisplayString("<color=red>" + topCost);
 
         if (additionalTopDescription != null)
         {
@@ -454,10 +492,12 @@ public class Card : MonoBehaviour
         {
             bottomText.DisplayDescription(bottomDescription);
         }
+        OtherDescriptionPreperation();
         doingSomething--;
     }
-
-
+    //does nothing innatly is for if indivitual cards want to modify description
+    public virtual void OtherDescriptionPreperation()
+    {}
 
     public void PrepareCardKeywords(bool isTop)
     {
@@ -571,6 +611,7 @@ public class Card : MonoBehaviour
 
     public void AttemptToDestroy()
     {
+        //exists = false;
         if (doingSomething == 0)
         {
             //Debug.Log("destroy immediatly");

@@ -16,18 +16,12 @@ public class ConditionEffects : MonoBehaviour
         actionManager = RefrenceStorage.actionManager;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public int ModifyAttack(Figure effectedFigure, int initalAttack)
     {
         //Debug.Log("Modifing Attack");
         if (effectedFigure.UnmodifiedAction)
         {
-            initalAttack = Mathf.Clamp(initalAttack, 0, Variables.gameMaxValue);
+            initalAttack = Global.Clamp(initalAttack,0);
             return initalAttack;
         }
         float modifiedAttack = initalAttack;
@@ -36,7 +30,7 @@ public class ConditionEffects : MonoBehaviour
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedAttack *= (1 + Variables.naturalScalingIncrease * (float)condition.Value);
+                modifiedAttack *= (1 + Var.naturalScalingIncrease * (float)condition.Value);
             }
         }
         foreach (Condition condition in conditions)
@@ -50,7 +44,7 @@ public class ConditionEffects : MonoBehaviour
         }
 
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
-        finalAttack = Mathf.Clamp(finalAttack, 0, Variables.gameMaxValue);
+        finalAttack = Global.Clamp(finalAttack, 0);
         return finalAttack;
     }
 
@@ -58,7 +52,7 @@ public class ConditionEffects : MonoBehaviour
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initalBlock = Mathf.Clamp(initalBlock, 0, Variables.gameMaxValue);
+            initalBlock = Global.Clamp(initalBlock, 0);
             return initalBlock;
         }
         float modifiedBlock = initalBlock;
@@ -71,7 +65,7 @@ public class ConditionEffects : MonoBehaviour
             }
         }
         int finalBlock = Mathf.FloorToInt(modifiedBlock);
-        finalBlock = Mathf.Clamp(finalBlock, 0, Variables.gameMaxValue);
+        finalBlock = Global.Clamp(finalBlock, 0);
 
         return finalBlock;
     }
@@ -80,7 +74,7 @@ public class ConditionEffects : MonoBehaviour
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initalMove = Mathf.Clamp(initalMove, 0, Variables.gameMaxValue);
+            initalMove = Global.Clamp(initalMove, 0);
             return initalMove;
         }
         float modifiedMove = initalMove;
@@ -89,7 +83,7 @@ public class ConditionEffects : MonoBehaviour
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedMove *= (1 + Variables.naturalScalingIncrease * (float)condition.Value);
+                modifiedMove *= (1 + Var.naturalScalingIncrease * (float)condition.Value);
             }
             if (condition.ConditionName == "DistanceSpeedBoost")
             {
@@ -105,7 +99,7 @@ public class ConditionEffects : MonoBehaviour
         }
 
         int finalMove = Mathf.FloorToInt(modifiedMove);
-        finalMove = Mathf.Clamp(finalMove, 0, Variables.gameMaxValue);
+        finalMove = Global.Clamp(finalMove, 0);
 
         return finalMove;
     }
@@ -114,7 +108,7 @@ public class ConditionEffects : MonoBehaviour
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initalSkill = Mathf.Clamp(initalSkill, 0, Variables.gameMaxValue);
+            initalSkill = Global.Clamp(initalSkill, 0);
             return initalSkill;
         }
         float modifiedSkill = initalSkill;
@@ -127,19 +121,19 @@ public class ConditionEffects : MonoBehaviour
             }
         }
         int finalSkill = Mathf.FloorToInt(modifiedSkill);
-        finalSkill = Mathf.Clamp(finalSkill, 0, Variables.gameMaxValue);
+        finalSkill = Global.Clamp(finalSkill, 0);
 
         return finalSkill;
     }
     public int ModifyRange(Figure effectedFigure, int initalRange)
     {
-        if (initalRange == Variables.gameInfinityValue)
+        if (initalRange == Var.infinityValue)
         {
             return initalRange;
         }
         if (effectedFigure.UnmodifiedAction)
         {
-            initalRange = Mathf.Clamp(initalRange, 1, Variables.gameMaxValue);
+            initalRange = Global.Clamp(initalRange, 1);
             return initalRange;
         }
         float modifiedRange = initalRange;
@@ -155,7 +149,7 @@ public class ConditionEffects : MonoBehaviour
             }
         }
         int finalRange = Mathf.FloorToInt(modifiedRange);
-        finalRange = Mathf.Clamp(finalRange, 1, Variables.gameMaxValue);
+        finalRange = Global.Clamp(finalRange, 1);
         return finalRange;
     }
     public bool ModifyJump(Figure effectedFigure, bool initalJump)
@@ -181,20 +175,29 @@ public class ConditionEffects : MonoBehaviour
     {
         if (effectedFigure.UnmodifiedAction)
         {
-            initialMaxHealth = Mathf.Clamp(initialMaxHealth, 0, Variables.gameMaxValue);
+            initialMaxHealth = Global.Clamp(initialMaxHealth, 0);
             return initialMaxHealth;
         }
         float modifiedMaxHealth = initialMaxHealth;
+        if (effectedFigure.IsPlayerSummon)
+        {
+            if (effectedFigure.Summoner is PlayerControler effectedPlayer)
+            {
+                // Access SubClassA specific methods or fields here
+                effectedPlayerControler = effectedPlayer;
+            }
+            modifiedMaxHealth += effectedPlayerControler.EnchantedBoltsCount * Var.enchantedBoltsMaxHealth;
+        }
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedMaxHealth *= (1 + Variables.naturalScalingIncrease * (float)condition.Value);
+                modifiedMaxHealth *= (1 + Var.naturalScalingIncrease * (float)condition.Value);
             }
         }
         int finalMaxHealth = Mathf.FloorToInt(modifiedMaxHealth);
-        finalMaxHealth = Mathf.Clamp(finalMaxHealth, 0, Variables.gameMaxValue);
+        finalMaxHealth = Global.Clamp(finalMaxHealth, 0);
 
         return finalMaxHealth;
     }

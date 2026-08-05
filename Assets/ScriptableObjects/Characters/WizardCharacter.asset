@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9716a8edaf0069245a3a25b01156facd, type: 3}
+  m_Name: WizardCharacter
+  m_EditorClassIdentifier: 
+  characterName: Wizard
+  startingDeck:
+  - {fileID: 8271466304683541403, guid: f84e496d6bb563048b8a5dd1f253d754, type: 3}
+  - {fileID: 8271466304683541403, guid: f84e496d6bb563048b8a5dd1f253d754, type: 3}
+  - {fileID: 8271466304683541403, guid: f84e496d6bb563048b8a5dd1f253d754, type: 3}
+  - {fileID: 8271466304683541403, guid: f84e496d6bb563048b8a5dd1f253d754, type: 3}
+  - {fileID: 5122998695411200134, guid: 2de9ddc413da8e64eb6918ea1783d79e, type: 3}
+  - {fileID: 5122998695411200134, guid: 2de9ddc413da8e64eb6918ea1783d79e, type: 3}
+  - {fileID: 5122998695411200134, guid: 2de9ddc413da8e64eb6918ea1783d79e, type: 3}
+  - {fileID: 5122998695411200134, guid: 2de9ddc413da8e64eb6918ea1783d79e, type: 3}
+  - {fileID: 3592285097297562448, guid: 1619a900ff6f41040878eccca12f5153, type: 3}
+  - {fileID: 7060549323241630618, guid: 5cbdbc1fd83d1ed4ab05a487ef71d4e4, type: 3}

@@ -49,11 +49,6 @@ public class FloorManager : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void StartFloor()
     {
         OverallStatistics.floor = 1;
@@ -71,7 +66,6 @@ public class FloorManager : MonoBehaviour
         yield return StartCoroutine(ClearFloor());
         yield return StartCoroutine(playerControler.GoUpFloor());
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
-        OverallStatistics.floor++;
         if (!isBossFloor)
         {
             isBossFloor = true;
@@ -80,6 +74,7 @@ public class FloorManager : MonoBehaviour
         }
         else
         {
+            OverallStatistics.floor++;
             isBossFloor = false;
             roomSpawner.SpawnStartingRoom();
             RefrenceStorage.interactButton.SetActive(true);
@@ -150,11 +145,15 @@ public class FloorManager : MonoBehaviour
 
     public void BossKilled(Vector2 bossCords)
     {
+        //Debug.Log(OverallStatistics.floor);
+        if (OverallStatistics.floor == 3)
+        {
+            RefrenceStorage.gameManager.Victory();
+        }
         OverallStatistics.bossDifficulty++;
         rewardManager.BossReward();
         playerControler.HealDamage(playerControler.MaxHealth);
         Destroy(mapManager.GetTileAtHex(bossCords));
         floorSpecific.Add(Instantiate(stair, mapManager.OneToOneToPos(bossCords), Quaternion.identity));
-
     }
 }

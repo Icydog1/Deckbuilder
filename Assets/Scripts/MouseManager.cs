@@ -30,6 +30,8 @@ public class MouseManager : MonoBehaviour
     private DeckManager deckManager;
     private RewardManager rewardManager;
     private TooltipManager tooltipManager;
+    private ActionManager actionManager;
+
 
     private float selectedCardHeightIncrease = 0.25f;
 
@@ -38,14 +40,14 @@ public class MouseManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        cameraScript = GameObject.Find("Main Camera").GetComponent<CameraScript>();
-        deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        rewardManager = GameObject.Find("RewardManager").GetComponent<RewardManager>();
-        tooltipManager = GameObject.Find("Tooltip").GetComponent<TooltipManager>();
-
+        mapManager = RefrenceStorage.mapManager;
+        gameManager = RefrenceStorage.gameManager;
+        playerControler = RefrenceStorage.playerControler;
+        cameraScript = RefrenceStorage.cameraScript;
+        deckManager = RefrenceStorage.deckManager;
+        rewardManager = RefrenceStorage.rewardManager;
+        tooltipManager = RefrenceStorage.tooltipManager;
+        actionManager = RefrenceStorage.actionManager;
 
     }
 
@@ -97,11 +99,6 @@ public class MouseManager : MonoBehaviour
             Debug.Log("same object");
         }
         float newheight = transform.position.z;
-
-        if (mouseOver.Count == 0)
-        {
-            //Debug.Log(newObject + "on");
-        }
         mouseOver.Add(newObject);
         mouseOverHeights.Add(newheight);
         foreach (GameObject item in mouseOver)
@@ -135,9 +132,9 @@ public class MouseManager : MonoBehaviour
             hoveredObject = selectedObject;
             StartCoroutine(tooltipManager.StartHoveringOver(hoveredObject));
         }
-        if (playerControler.IsMoving && selectedObject.GetComponent<Tile>() && mouseDown)
+        if (playerControler.PlanningMove && selectedObject.GetComponent<Tile>() && mouseDown)
         {
-            playerControler.PlanMove(selectedObject);
+            RefrenceStorage.actionManager.ActiveFigure.PlanMove(selectedObject);
         }
 
     }
@@ -188,9 +185,9 @@ public class MouseManager : MonoBehaviour
                     }
                 }
             }
-            if (playerControler.IsMoving && selectedObject == null && mouseDown)
+            if (playerControler.PlanningMove && selectedObject == null && mouseDown)
             {
-                playerControler.PlanMove(mapManager.GetTileAtHex(playerControler.OneToOnePos));
+                actionManager.ActiveFigure.PlanMove(mapManager.GetTileAtHex(playerControler.OneToOnePos));
             }
 
         }
@@ -213,9 +210,9 @@ public class MouseManager : MonoBehaviour
         clickedObject = selectedObject;
         if (clickedObject)
         {
-            if (playerControler.IsMoving && selectedObject.GetComponent<Tile>())
+            if (playerControler.PlanningMove && selectedObject.GetComponent<Tile>())
             {
-                playerControler.PlanMove(selectedObject);
+                actionManager.ActiveFigure.PlanMove(selectedObject);
             }
             if (clickedObject.GetComponent<UIButton>())
             {
@@ -240,7 +237,7 @@ public class MouseManager : MonoBehaviour
     }
     private IEnumerator ShortFirstClick()
     {
-        //Debug.Log("test");
+        //Debug.Log("MechanicalAutomaton");
         shortClick = true;
         yield return new WaitForSeconds(0.25f);
         shortClick = false;
@@ -253,11 +250,6 @@ public class MouseManager : MonoBehaviour
         }
         if (clickedObject)
         {
-            if (clickedObject.GetComponent<UIButton>())
-            {
-                GameObject image = clickedObject.transform.Find("Image").gameObject;
-                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
-            }
             if (dragableClicked && !shortClick)
             {
                 //Debug.Log("stoped draging");
@@ -301,6 +293,11 @@ public class MouseManager : MonoBehaviour
                 {
                     StartCoroutine(rewardManager.RewardSelected(clickedObject));
                 }
+            }
+            if (clickedObject.GetComponent<UIButton>())
+            {
+                GameObject image = clickedObject.transform.Find("Image").gameObject;
+                image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
             }
         }
         if (selectedObject && selectedObject.GetComponent<Card>())

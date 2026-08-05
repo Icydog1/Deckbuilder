@@ -6,14 +6,14 @@ public class FrozenLens : Relic
     protected override int rarity => 1;
     public override void Awake()
     {
-        relicDesription = "At the start of your turn the closest enemy loses " + Variables.relicIncreaseableNumberColor + Variables.frozenLensSpeedLoss + "</color> speed this turn";
+        relicDesription = "At the start of your turn the closest enemy loses " + Var.relicIncreaseableNumberColor + Var.frozenLensSpeedLoss + "</color> speed this turn";
         base.Awake();
     }
     public override IEnumerator OnGain()
     {
         playerControler.PlayerTurnStarted += StartOfTurnSlow;
 
-        //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new StartOfTurnSlow(Variables.frozenLensSpeedLoss, -1)), relicDescriptionList));
+        //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new StartOfTurnSlow(Var.frozenLensSpeedLoss, -1)), relicDescriptionList));
         yield return StartCoroutine(base.OnGain());
         
         //if (relicDescriptionList != null && relicDescriptionList.Count > 0)
@@ -24,14 +24,14 @@ public class FrozenLens : Relic
     }
     public override IEnumerator IncreaseCount()
     {
-        //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new StartOfTurnSlow(Variables.frozenLensSpeedLoss, -1)), relicDescriptionList));
+        //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new StartOfTurnSlow(Var.frozenLensSpeedLoss, -1)), relicDescriptionList));
         yield return StartCoroutine(base.IncreaseCount());
 
     }
     public IEnumerator StartOfTurnSlow(PlayerControler playerControler)
     {
-        //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new Speed(-count * Variables.frozenLensSpeedLoss, 1), "enemy", -1, 1, false, true)));
-        yield return StartCoroutine(playerControler.ApplyCondition(new Speed(-count * Variables.frozenLensSpeedLoss, 1), "enemy", -1, 1, false, true));
+        //yield return StartCoroutine(actionManager.PreformAction(playerControler.ApplyCondition(new Speed(-count * Var.frozenLensSpeedLoss, 1), "enemy", -1, 1, false, true)));
+        yield return StartCoroutine(playerControler.ApplyCondition(new Speed(-count * Var.frozenLensSpeedLoss, 1), "enemy", -1, 1, false, true));
 
     }
 

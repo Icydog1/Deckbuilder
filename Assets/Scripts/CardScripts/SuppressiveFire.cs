@@ -5,7 +5,7 @@ public class SuppressiveFire : Card
 
     public override void PrepareTop()
     {
-        currentActions.Add( new Action(() => playerControler.Attack(13, 5, 2)));
+        currentActions.Add( new Action(() => playerControler.Attack(13, 5, 2, 1, new Condition[] { new Strength(-12, 1) })));
 
     }
 

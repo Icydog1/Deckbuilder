@@ -14,7 +14,6 @@ public class ActionManager : MonoBehaviour
     private Stack<string> actionStackNames = new Stack<string>();
     public Stack<string> ActionStackNames { get { return actionStackNames; } set { actionStackNames = value;} }
 
-
     private Stack<IEnumerator> planStack = new Stack<IEnumerator>();
     private Queue<IEnumerator> actionQueue = new Queue<IEnumerator>();
     private Queue<IEnumerator> preparedQueue = new Queue<IEnumerator>();
@@ -23,8 +22,13 @@ public class ActionManager : MonoBehaviour
     //public List<string> planToList = new List<string>();
     public List<ActionDescription> PlanToList { get { return planToStack.Peek(); } }//set { planToStack[planToStack.Count - 1] = value; } }
     private bool preformingActions;
+    private bool actionEnded;
 
-    //private IEnumerator test;
+    public bool ActionEnded { get { return actionEnded; } set { actionEnded = value; } }
+
+    private Figure activeFigure;
+    public Figure ActiveFigure { get { return activeFigure; } set { activeFigure = value; } }
+    //private IEnumerator MechanicalAutomaton;
     //private Func<IEnumerator> test2;
 
     //public List<Func<IEnumerator>> ActionStack { get { return actionStack; } set { actionStack = value;} }
@@ -33,8 +37,8 @@ public class ActionManager : MonoBehaviour
     {
         playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
 
-        //test = Test();
-        //test = Test();
+        //MechanicalAutomaton = Test();
+        //MechanicalAutomaton = Test();
         //test2 = Test;
         //test2 = () => Test(2);
 
@@ -215,9 +219,9 @@ public class ActionManager : MonoBehaviour
     //    yield return null;
 
     //}
-    //public void test()
+    //public void MechanicalAutomaton()
     //{
-    //    Action test = new Action("Attack",new List<ActionModifier>() { new ActionModifier("start ",1, " end") });
+    //    Action MechanicalAutomaton = new Action("Attack",new List<ActionModifier>() { new ActionModifier("start ",1, " end") });
     //}
 
 }
@@ -274,11 +278,11 @@ public class ActionModifier
     private Figure figure;
     public ActionModifier(Figure actingFigure, string startDescription = null, int value = 1000000, string endDescription = null, string valueType = null)
     {
+        figure = actingFigure;
         initialDescription = startDescription;
         finalDescription = endDescription;
         baseValue = value;
         type = valueType;
-        figure = actingFigure;
         UpdateValue();
 
     }

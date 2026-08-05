@@ -8,10 +8,10 @@ public class ClockworkOwl : PlayerSummon
         moveSets.Add(new List<Func<IEnumerator>> {
             () => Move(21)
             ,() => Attack(12)
-            ,() => Block(7)
+            ,() => Block(3)
         });
 
-        maxHealth = 25;
+        maxHealth = 15;
         base.Awake();
     }
     public override IEnumerator LoadFigure()

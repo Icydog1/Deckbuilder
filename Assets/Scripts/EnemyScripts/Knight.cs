@@ -28,7 +28,7 @@ public class Knight : Enemy
         });
 
         maxHealth = 68;
-        XPValue = 5;
+        XPValue = 10;
         base.Awake();
     }
 }

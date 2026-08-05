@@ -58,7 +58,7 @@ public class Ability//, IEquatable<Ability>
         }
     }
 
-    public Ability(int abilityCost, List<Func<IEnumerator>> preformedAbilities, int maxUses = Variables.gameMaxValue)
+    public Ability(int abilityCost, List<Func<IEnumerator>> preformedAbilities, int maxUses = Var.maxValue)
     {
         abilities = preformedAbilities;
         cost = abilityCost;
@@ -85,7 +85,7 @@ public class Ability//, IEquatable<Ability>
             //{
             //    Debug.Log("description null");
             //}
-            //IEnumerator test = actionManager.PreformAction(action(), description);
+            //IEnumerator MechanicalAutomaton = actionManager.PreformAction(action(), description);
             //Debug.Log(actionManager);
             yield return abilityManager.StartCoroutine(actionManager.PreformAction(action(), description));
 
@@ -115,7 +115,7 @@ public class Ability//, IEquatable<Ability>
 
                 playerControler.VariableCardModifier = timesPreformed;
                 playerControler.PreformingAbility = true;
-                playerControler.ActionEnded = false;
+                actionManager.ActionEnded = false;
                 //playerControler.NextAction = false;
                 foreach (Func<IEnumerator> action in abilities)
                 {

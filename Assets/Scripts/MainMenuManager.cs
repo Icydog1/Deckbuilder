@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -5,41 +6,85 @@ using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
-    //private Image mainMenuScreenBlocker;
-    //[SerializeField]
-    //private GameObject mainMenu;
-    //private TextMeshProUGUI mainMenuText;
-    //private GameObject mainMenuDisplay;
-    //private DeckManager deckManager;
-    //private UIManager UIManager;
+    private GameObject mainMenu;
+    private DeckManager deckManager;
+    private UIManager UIManager;
+    private GameObject characterSelectScreenBlocker;
+    private GameObject characterSelect;
+    private GameManager gameManager;
 
-    //private bool isShown;
-    //private bool isDisplayingCards, isDisplayingRelics;
-    //private List<GameObject> displayedList = new List<GameObject>();
-    //private string currentTab;
-    //private GameObject openedTab;
+    [SerializeField]
+    private SelectCharacter baseCharacterButton;
+    private SelectCharacter selectedCharacterButton;
+
+    private bool isShown;
+    public bool IsShown {  get { return isShown; } }
+
 
     void Awake()
     {
         //mainMenuScreenBlocker = gameObject.GetComponent<Image>();
-        ////mainMenu = transform.Find("MainMenu").gameObject;
+        mainMenu = RefrenceStorage.mainMenu;
         //mainMenuText = mainMenu.transform.Find("MainMenuText").GetComponent<TextMeshProUGUI>();
         //mainMenuDisplay = mainMenu.transform.Find("MainMenuListDisplayer").gameObject;
-        //deckManager = RefrenceStorage.deckManager;
-        //UIManager = RefrenceStorage.UIManager;
+        deckManager = RefrenceStorage.deckManager;
+        UIManager = RefrenceStorage.UIManager;
+        gameManager = RefrenceStorage.gameManager;
+        characterSelectScreenBlocker = RefrenceStorage.characterSelectScreenBlocker;
+        characterSelect = characterSelectScreenBlocker.transform.Find("CharacterSelect").gameObject;
+    }
+    private void Start()
+    {
+        GoToMainMenu();
     }
 
-    public void ShowMainMenu()
+    public void GoToMainMenu()
     {
-        //isShown = true;
-        //UIManager.IsOnMainMenu = true;
-        ////mainMenuScreenBlocker.enabled = true;
-        //mainMenu.SetActive(true);
-        //currentTab = "card";
+        isShown = true;
+        mainMenu.SetActive(true);
+        UIManager.IsOnMainMenu = true;
     }
-    public void HideMainMenu()
+    public void CharacterSelect()
     {
-        //isShown = false;
+        if (!gameManager.IsInGame)
+        {
+            characterSelect.SetActive(true);
+            UIManager.IsSelectingCharacter = true;
+            SelectCharacter(baseCharacterButton);
+            selectedCharacterButton.transform.Find("Image").GetComponent<Image>().color = Color.red;
+        }
+    }
+    public void SelectCharacter(SelectCharacter button)
+    {
+        if (!gameManager.IsInGame)
+        {
+            if (selectedCharacterButton != null)
+            {
+                selectedCharacterButton.transform.Find("Image").GetComponent<Image>().color = selectedCharacterButton.BackupBaseColor;
+            }
+            selectedCharacterButton = button;
+            selectedCharacterButton.BaseColor = Color.red;
+            gameManager.CurrentCharacter = button.SelectedCharacter;
+        }
+
+    }
+    public void StartGame()
+    {
+        if (!gameManager.IsInGame)
+        {
+            LeaveMainMenu();
+            StartCoroutine(gameManager.StartGame());
+        }
+
+
+    }
+    public void LeaveMainMenu()
+    {
+        isShown = false;
+        mainMenu.SetActive(false);
+        characterSelect.SetActive(false);
+        UIManager.IsSelectingCharacter = false;
+        UIManager.IsOnMainMenu = false;
         //if (isDisplayingCards)
         //{
         //    StopDisplayingCardsInList();
@@ -48,39 +93,9 @@ public class MainMenuManager : MonoBehaviour
         //{
         //    StopDisplayingRelicsInList();
         //}
-        //DisplayText("");
+        //DisplayVariable("");
         //mainMenu.SetActive(false);
-        //UIManager.IsOnMainMenu = false;
-        ////mainMenuScreenBlocker.enabled = false;
+        //mainMenuScreenBlocker.enabled = false;
 
-    }
-
-    public void OpenTab(string tabName, GameObject tab)
-    {
-        //if (currentTab != tabName)
-        //{
-        //    currentTab = tabName;
-        //    if (isDisplayingCards)
-        //    {
-        //        StopDisplayingCardsInList();
-        //    }
-        //    else if (isDisplayingRelics)
-        //    {
-        //        StopDisplayingRelicsInList();
-        //    }
-        //    DisplayText("");
-        //    if (tabName == "card")
-        //    {
-        //        OpenCardTab();
-        //    }
-        //    else if (tabName == "relic")
-        //    {
-        //        OpenRelicTab();
-        //    }
-        //    else
-        //    {
-        //        DisplayText(tab.GetComponent<Text>().text);
-        //    }
-        //}
     }
 }

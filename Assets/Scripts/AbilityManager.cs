@@ -7,12 +7,14 @@ using static UnityEngine.Rendering.DebugUI;
 public class AbilityManager : MonoBehaviour
 {
     private int abilityPower;
-    public int AbilityPower {  get { return abilityPower; } set { abilityPower = value; avaliblePowerDisplay.DisplayText(abilityPower); } }
+    public int AbilityPower { get { return abilityPower; } set { abilityPower = value; avaliblePowerDisplay.DisplayVariable(abilityPower); } }
 
     private int selectedPower = 0;
     public int SelectedPower { get { return selectedPower; } }
 
     private List<Ability> abilities = new List<Ability>();
+    public List<Ability> Abilities { get { return abilities; } }
+
     [SerializeField]
     private GameObject abilityUIObject;
     private GameObject abilitiesDescriptions;
@@ -47,7 +49,7 @@ public class AbilityManager : MonoBehaviour
         selectedPower = Mathf.Clamp(power, 0, abilityPower);
         //Debug.Log("Set power");
         yield return StartCoroutine(UpdateAbilitiesDescription());
-        selectedPowerDisplay.DisplayText(selectedPower);
+        selectedPowerDisplay.DisplayVariable(selectedPower);
     }
 
 
