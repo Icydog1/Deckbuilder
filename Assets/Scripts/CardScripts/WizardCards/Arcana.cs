@@ -1,6 +1,6 @@
 public class Arcana : WizardCard
 {
-    public Arcana() : base(0, 1, 1, 8) { }
+    public Arcana() : base(0, 1, 2, 8) { }
 
 
 
@@ -12,7 +12,7 @@ public class Arcana : WizardCard
 
     public override void PrepareBottom()
     {
-        currentActions.Add(new Action(() => playerControler.GainMana(7)));
+        currentActions.Add(new Action(() => playerControler.Skill(26)));
 
 
     }

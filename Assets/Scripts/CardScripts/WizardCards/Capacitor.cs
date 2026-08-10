@@ -16,6 +16,5 @@ using UnityEngine;
     public override void PrepareBottom()
     {
         currentActions.Add(new Action(() => playerControler.ApplyCondition(new ManaCapacity(8, 3))));
-
     }
 }

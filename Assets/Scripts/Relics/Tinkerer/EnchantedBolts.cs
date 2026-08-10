@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnchantedBolts : Relic
 {
-    protected override int rarity => 2;
+    protected override int rarity => 1;
     public override void Awake()
     {
         relicDesription = "Your summons have " + Var.relicIncreaseableNumberColor + Var.enchantedBoltsMaxHealth + "</color> extra max health";

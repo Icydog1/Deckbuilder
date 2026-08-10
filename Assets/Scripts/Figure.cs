@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Humanizer;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 
 
@@ -32,8 +34,8 @@ public class Figure : MonoBehaviour
     protected bool isPlanning, isPreparingMove;
     public bool IsPlanning { set { isPlanning = value; } get { return isPlanning; } }
 
-    protected Vector2 oneToOnePos;
-    public Vector2 OneToOnePos { get { return oneToOnePos; } set { oneToOnePos = value; } }
+    protected Vector2 hexPos;
+    public Vector2 HexPos { get { return hexPos; } set { hexPos = value; } }
     protected GameObject currentTile;
     public GameObject CurrentTile { get { return currentTile; } set { currentTile = value; } }
     protected int preferedRange;
@@ -72,8 +74,6 @@ public class Figure : MonoBehaviour
     protected List<Condition> conditions = new List<Condition>();
     public List<Condition> Conditions { set { conditions = value; } get { return conditions; } }
 
-    protected int variableCardModifier;
-    public int VariableCardModifier { get { return variableCardModifier; } set { variableCardModifier = value; } }
 
     protected List<GameObject> shownTileBorders = new List<GameObject>();
     protected List<string> actionAbnormalities = new List<string>();
@@ -145,15 +145,14 @@ public class Figure : MonoBehaviour
         statsDisplayer.SetHealthAndBlock(health, maxHealth, block);
         yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
 
-        yield return null;
+        yield break;
     }
 
-    public IEnumerator baseStartTurn()
+    public virtual IEnumerator BaseStartTurn()
     {
         //Debug.Log(gameObject + " is takeing turn");
         turn++;
-        resetBlock();
-        statsDisplayer.SetHealthAndBlock(health, maxHealth, block);
+        ResetBlock();
         yield return StartCoroutine(conditionEffects.StartOfTurnConditions(this));
         for (int i = 0; i < conditions.Count; i++)
         {
@@ -172,11 +171,12 @@ public class Figure : MonoBehaviour
         }
         yield return StartCoroutine(statsDisplayer.DisplayConditions(conditions));
     }
-    public virtual void resetBlock()
+    public virtual void ResetBlock()
     {
         block = 0;
+        statsDisplayer.SetHealthAndBlock(health, maxHealth, block);
     }
-    public IEnumerator baseEndTurn()
+    public IEnumerator BaseEndTurn()
     {
         for (int i = 0; i < conditions.Count; i++)
         {
@@ -250,12 +250,14 @@ public class Figure : MonoBehaviour
     }
 
 
-    public IEnumerator GetPlanString(List<Func<IEnumerator>> actions, System.Action<string> callback)
+    public IEnumerator GetPlanString(List<Action> actions, System.Action<string> callback, Ability ability)
     {
         List<ActionDescription> planDescription = new List<ActionDescription>();
-        foreach (Func<IEnumerator> action in actions)
+        foreach (Action action in actions)
         {
-            yield return StartCoroutine(actionManager.PreformAction(action(), planDescription));
+            yield return StartCoroutine(action.PreformAction(ability, planDescription));
+
+            //yield return StartCoroutine(actionManager.PreformAction(action(), planDescription));
         }
         string displayedString = "";
         foreach (ActionDescription text in planDescription)
@@ -279,7 +281,7 @@ public class Figure : MonoBehaviour
     {
         if (isVariable)
         {
-            blockValue *= variableCardModifier;
+            blockValue *= playerControler.VariableCardModifier;
         }
         if (isPlanning)
         {
@@ -304,7 +306,7 @@ public class Figure : MonoBehaviour
     {
         if (isVariable)
         {
-            attackValue *= variableCardModifier;
+            attackValue *= playerControler.VariableCardModifier;
         }
         if (attackConditions == null)
         {
@@ -401,8 +403,8 @@ public class Figure : MonoBehaviour
         {
             if (movePosibilities.Count == 0)
             {
-                movePosibilities.Add(oneToOnePos);
-                GameObject tile = mapManager.GetTileAtHex(oneToOnePos);
+                movePosibilities.Add(hexPos);
+                GameObject tile = mapManager.GetTileAtHex(hexPos);
                 GameObject border = tile.transform.Find("Border").gameObject;
                 shownTileBorders.Add(border);
                 border.GetComponent<SpriteRenderer>().color = Color.blue;
@@ -422,7 +424,7 @@ public class Figure : MonoBehaviour
             actionManager.ActionStackNames.Push("Attack");
             effectedFigures.Clear();
             //^ is xor
-            if ((isPlayer || controled) ^ manualOverride)
+            if (((isPlayer || controled) && targets != Var.infinityValue) ^ manualOverride)
             {
                 List<Figure> posibleTargets = FindPosibleTargets(targetType, finalRange);
                 targetsLeft = targets;
@@ -469,7 +471,7 @@ public class Figure : MonoBehaviour
     {
         if (isVariable)
         {
-            moveValue *= variableCardModifier;
+            moveValue *= playerControler.VariableCardModifier;
         }
         bool finalJump = conditionEffects.ModifyJump(this, isJump);
         if (isPlanning)
@@ -490,7 +492,7 @@ public class Figure : MonoBehaviour
         else if (isPreparingMove)
         {
             int finalMove = conditionEffects.ModifyMove(this, moveValue);
-            List<Vector2>[] posibleTiles = pathfinder.PlanPosiblePaths(oneToOnePos, gameObject, finalMove, finalJump, canFly);
+            List<Vector2>[] posibleTiles = pathfinder.PlanPosiblePaths(hexPos, gameObject, finalMove, finalJump, canFly);
             movePosibilities = posibleTiles[0];
             unsafeMovePosibilities = posibleTiles[1];
             foreach (Vector2 safeTile in posibleTiles[0])
@@ -560,12 +562,12 @@ public class Figure : MonoBehaviour
                 if (distanceToFocus < 50)
                 {
                     //Debug.Log("old pathfining");
-                    yield return StartCoroutine(pathfinder.PathfindTowards(oneToOnePos, focusScript.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
+                    yield return StartCoroutine(pathfinder.PathfindTowards(hexPos, focusScript.HexPos, gameObject, finalMove, preferedRange, finalJump, canFly));
                 }
                 else
                 {
                     //Debug.Log("new pathfining");
-                    yield return StartCoroutine(pathfinder.NewPathfindTowards(oneToOnePos, focusScript.OneToOnePos, gameObject, finalMove, preferedRange, finalJump, canFly));
+                    yield return StartCoroutine(pathfinder.FarPathfindTowards(hexPos, focusScript.HexPos, gameObject, finalMove, preferedRange, finalJump, canFly));
 
                 }
                 //Debug.Log(gameObject + " finished pathfinding");
@@ -582,7 +584,7 @@ public class Figure : MonoBehaviour
     //calculates and hilights the path the player would take attemtping to move to a tile
     public virtual void PlanMove(GameObject tile)
     {
-        //Debug.Log("moveing twords " + tile + " at " + mapManager.PosToOneToOne(tile.transform.position));
+        //Debug.Log("moveing twords " + tile + " at " + mapManager.RectToHex(tile.transform.position));
         if (!isPreformingAnimation)
         {
             foreach (Vector2 tileCords in pathfinder.ActualPath)
@@ -594,7 +596,7 @@ public class Figure : MonoBehaviour
                     border.GetComponent<SpriteRenderer>().color = Color.black;
                 }
             }
-            pathfinder.PlanPathToTile(oneToOnePos, mapManager.PosToOneToOne(tile.transform.position), gameObject, moveLeft, canJump, canFly);
+            pathfinder.PlanPathToTile(hexPos, mapManager.RectToHex(tile.transform.position), gameObject, moveLeft, canJump, canFly);
             foreach (Vector2 tileCords in pathfinder.ActualPath)
             {
                 GameObject newTile = mapManager.GetTileAtHex(tileCords);
@@ -607,7 +609,7 @@ public class Figure : MonoBehaviour
     public virtual IEnumerator MoveAlongPath()
     {
         pathfinder.MoveLeft = moveLeft;
-        yield return StartCoroutine(pathfinder.MoveAlongPath(gameObject, oneToOnePos));
+        yield return StartCoroutine(pathfinder.MoveAlongPath(gameObject, hexPos));
         //yield return new WaitUntil(() => pathfinder.DoneMoving == true);
         pathfinder.DoneMoving = false;
         foreach (Vector2 tileCords in pathfinder.ActualPath)
@@ -624,7 +626,7 @@ public class Figure : MonoBehaviour
         {
             playerControler.statsDisplayer.ChangePlan("<sprite name=Move>", moveLeft);
         }
-        //currentTile = mapManager.GetTileAtHex(oneToOnePos);
+        //currentTile = mapManager.GetTileAtHex(hexPos);
         if (moveLeft <= 0)
         {
             isMoving = false;
@@ -638,12 +640,12 @@ public class Figure : MonoBehaviour
             {
                 switch (i)
                 {
-                    case 0: checkpos = oneToOnePos + Vector2.up; break;
-                    case 1: checkpos = oneToOnePos + Vector2.down; break;
-                    case 2: checkpos = oneToOnePos + Vector2.right; break;
-                    case 3: checkpos = oneToOnePos + Vector2.left; break;
-                    case 4: checkpos = oneToOnePos + Vector2.up + Vector2.right; break;
-                    case 5: checkpos = oneToOnePos + Vector2.down + Vector2.left; break;
+                    case 0: checkpos = hexPos + Vector2.up; break;
+                    case 1: checkpos = hexPos + Vector2.down; break;
+                    case 2: checkpos = hexPos + Vector2.right; break;
+                    case 3: checkpos = hexPos + Vector2.left; break;
+                    case 4: checkpos = hexPos + Vector2.up + Vector2.right; break;
+                    case 5: checkpos = hexPos + Vector2.down + Vector2.left; break;
                 }
                 //later add enemy obstical and wall detection
                 if (mapManager.GetTileAtHex(checkpos).GetComponent<Tile>().MoveCost <= moveLeft)
@@ -670,7 +672,7 @@ public class Figure : MonoBehaviour
         {
             foreach (Condition condition in newConditions)
             {
-                condition.Value *= variableCardModifier;
+                condition.Value *= playerControler.VariableCardModifier;
 
             }
         }
@@ -701,7 +703,7 @@ public class Figure : MonoBehaviour
                         //List<string> conditionPlan = new List<string>();
                         //Debug.Log("About to gain ablility");
                         ability = gainAbilityRef.GainedAbility;
-                        yield return StartCoroutine(actionManager.PreformAction(playerControler.GainNewAbility(ability.Cost, ability.Abilities, condition.Duration), individualConditionText));
+                        yield return StartCoroutine(actionManager.PreformAction(playerControler.GainNewAbility(ability.Cost, ability.Actions, condition.Duration), individualConditionText));
                         //Debug.Log("finished gaining ablility");
 
                         //individualConditionText.Add(currentDescriptionString);
@@ -838,25 +840,29 @@ public class Figure : MonoBehaviour
                 }
                 if (targetType == "ally")
                 {
-                    if (targets == 1)
-                    {
-                        currentDescriptionEnd += " ally";
-                    }
-                    else
-                    {
-                        currentDescriptionEnd += " allies";
-                    }
+                    currentDescriptionEnd += targetType.ToQuantity(targets, ShowQuantityAs.None);
+
+                    //if (targets == 1)
+                    //{
+                    //    currentDescriptionEnd += " ally";
+                    //}
+                    //else
+                    //{
+                    //    currentDescriptionEnd += " allies";
+                    //}
                 }
                 else if (targetType == "summon")
                 {
-                    if (targets == 1)
-                    {
-                        currentDescriptionEnd += " summon";
-                    }
-                    else
-                    {
-                        currentDescriptionEnd += " summons";
-                    }
+                    currentDescriptionEnd += targetType.ToQuantity(targets, ShowQuantityAs.None);
+
+                    //if (targets == 1)
+                    //{
+                    //    currentDescriptionEnd += " summon";
+                    //}
+                    //else
+                    //{
+                    //    currentDescriptionEnd += " summons";
+                    //}
                 }
                 else if (targetType == "any")
                 {
@@ -871,35 +877,38 @@ public class Figure : MonoBehaviour
                 }
                 if (displayTarget)
                 {
-                    if (targetType == "enemy")
-                    {
-                        if (targets == 1)
-                        {
-                            currentDescriptionEnd += " enemy";
-                        }
-                        else
-                        {
-                            currentDescriptionEnd += " enemies";
-                        }
+                    currentDescriptionEnd += targetType.ToQuantity(targets, ShowQuantityAs.None);
 
-                    }
-                    if (targetType == "friendly")
-                    {
-                        if (targets == 1)
-                        {
-                            currentDescriptionEnd += " ally or self";
-                        }
-                        else
-                        {
-                            currentDescriptionEnd += " allies or self";
-                        }
-                    }
+                    //if (targetType == "enemy")
+                    //{
+                    //    if (targets == 1)
+                    //    {
+                    //        currentDescriptionEnd += " enemy";
+                    //    }
+                    //    else
+                    //    {
+                    //        currentDescriptionEnd += " enemies";
+                    //    }
+
+                    //}
+                    //if (targetType == "friendly")
+                    //{
+                    //    if (targets == 1)
+                    //    {
+                    //        currentDescriptionEnd += " friendly";
+                    //    }
+                    //    else
+                    //    {
+                    //        currentDescriptionEnd += " friendly";
+                    //    }
+                    //}
                 }
                 if (range == Var.infinityValue)
                 {
                     currentDescriptionEnd += " any<sprite name=Range>";
                 }
-                else if (range != 1)
+                else
+                    //if (range != 1)
                 {
                     currentDescriptionEnd += " <sprite name=Range>" + range;
                 }
@@ -942,7 +951,7 @@ public class Figure : MonoBehaviour
             //string conditionText = currentDescriptionStart + string.Join(separator, individualConditionText) + currentDescriptionEnd;
             //actionManager.PlanToList.Add(conditionText);
 
-            ActionDescription currentAction = new ActionDescription("Ability", new List<ActionModifier>() { new ActionModifier(this, conditionText) });
+            ActionDescription currentAction = new ActionDescription("Condition", new List<ActionModifier>() { new ActionModifier(this, conditionText) });
             actionManager.PlanToList.Add(currentAction);
             if (abnormal)
             {
@@ -1100,12 +1109,12 @@ public class Figure : MonoBehaviour
                 {
                     switch (i)
                     {
-                        case 0: checktile = oneToOnePos + Vector2.up; break;
-                        case 1: checktile = oneToOnePos + Vector2.down; break;
-                        case 2: checktile = oneToOnePos + Vector2.right; break;
-                        case 3: checktile = oneToOnePos + Vector2.left; break;
-                        case 4: checktile = oneToOnePos + Vector2.up + Vector2.right; break;
-                        case 5: checktile = oneToOnePos + Vector2.down + Vector2.left; break;
+                        case 0: checktile = hexPos + Vector2.up; break;
+                        case 1: checktile = hexPos + Vector2.down; break;
+                        case 2: checktile = hexPos + Vector2.right; break;
+                        case 3: checktile = hexPos + Vector2.left; break;
+                        case 4: checktile = hexPos + Vector2.up + Vector2.right; break;
+                        case 5: checktile = hexPos + Vector2.down + Vector2.left; break;
                     }
                     GameObject tile = mapManager.GetTileAtHex(checktile);
                     GameObject entity = mapManager.GetEntityOnHex(checktile);
@@ -1113,7 +1122,7 @@ public class Figure : MonoBehaviour
                     {
                         if (!tile.GetComponent<Wall>() && !tile.GetComponent<Obstacle>())
                         {
-                            summonPos = mapManager.OneToOneToPos(checktile);
+                            summonPos = mapManager.HexToRect(checktile);
                             canSummon = true;
                             break;
                         }
@@ -1156,13 +1165,6 @@ public class Figure : MonoBehaviour
             }
         }
         yield break;
-        //if (isVariable)
-        //{
-        //    blockValue *= variableCardModifier;
-        //}
-        //int finalBlock = conditionEffects.ModifyBlock(this, blockValue);
-
-
     }
     public IEnumerator Upkeep(Condition upkeep)
     {
@@ -1319,7 +1321,6 @@ public class Figure : MonoBehaviour
             }
         }
     }
-    
     //returns targets chosen by game (i think priority is closest then arbitrary)
     public List<Figure> FindTargets(string targetType, int range = 1, int targets = 1)
     {
@@ -1328,7 +1329,7 @@ public class Figure : MonoBehaviour
     public List<Figure> FindPosibleTargets(string targetType, int range = 1)
     {
         List<Figure> targetableFigures = new List<Figure>();
-        List<Figure> posibleTargets = pathfinder.GetFiguresInRange(oneToOnePos, range, gameObject);
+        List<Figure> posibleTargets = pathfinder.GetFiguresInRange(hexPos, range, gameObject);
         if (targetType == "self")
         {
             targetableFigures.Add(this);
@@ -1378,6 +1379,10 @@ public class Figure : MonoBehaviour
         {
             targetableFigures = new List<Figure>(posibleTargets);
         }
+        else
+        {
+            Debug.Log("target type dosnt exist");
+        }
         return targetableFigures;
     }
 
@@ -1388,17 +1393,40 @@ public class Figure : MonoBehaviour
             return posibleTargets;
         }
         List<Figure> targetedFigures = new List<Figure>();
-        foreach (Figure posibletarget in posibleTargets)
+        //sets targets to min of itself and the abilible number of targets
+        if (posibleTargets.Count < targets)
         {
-            if (targets > 0)
+            targets = posibleTargets.Count;
+        }
+        for (int i = 0; i < targets; i++)
+        //foreach (Figure posibletarget in posibleTargets)
+        {
+            Figure target = posibleTargets[i];
+            //if target is player and there is a summon equal range prioritize the summon
+            if (target == playerControler && posibleTargets.Count > targets)
             {
-                targetedFigures.Add(posibletarget);
-                targets--;
+                int distanceToPlayer;
+                int distanceToSummon;
+
+                distanceToPlayer = pathfinder.GetDistanceTo(hexPos, target.hexPos);
+                distanceToSummon = pathfinder.GetDistanceTo(hexPos, posibleTargets[targets].hexPos);
+                if (distanceToPlayer == distanceToSummon)
+                {
+                    targetedFigures.Add(posibleTargets[targets]);
+                }
+                else
+                {
+                    targetedFigures.Add(target);
+                }
+            }
+            else
+            {
+                targetedFigures.Add(target);
             }
         }
         return targetedFigures;
     }
-    public int FindValueOfCondition(string conditionName)
+    public int GetValueOfCondition(string conditionName)
     {
         int value = 0;
         foreach (Condition condition in conditions)
@@ -1433,7 +1461,7 @@ public class Figure : MonoBehaviour
     {
         if (attacker == playerControler)
         {
-            attackValue += playerControler.MinutureMortarCount * (pathfinder.GetDistanceTo(playerControler.OneToOnePos, oneToOnePos) - 1);
+            attackValue += playerControler.MinutureMortarCount * (pathfinder.GetDistanceTo(playerControler.HexPos, hexPos) - 1);
         }
         for (int i = 0; i < repeats; i++)
         {
@@ -1444,7 +1472,7 @@ public class Figure : MonoBehaviour
 				{
 					yield return StartCoroutine(GainConditions(newConditions));
 				}
-				yield return gameManager.StartCoroutine(attacker.TakeDamage(FindValueOfCondition("Thorns")));
+				yield return gameManager.StartCoroutine(attacker.TakeDamage(GetValueOfCondition("Thorns")));
 			}
 		}
 
@@ -1478,7 +1506,7 @@ public class Figure : MonoBehaviour
         else
         {
             actionManager.ActionStackNames.Push("LoseHealth");
-            yield return StartCoroutine(LoseHealth(amount));
+            yield return gameManager.StartCoroutine(LoseHealth(amount));
             EndAction();
 
         }

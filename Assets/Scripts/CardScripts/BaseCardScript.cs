@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Card : MonoBehaviour
+public class Card : ActionPreformer
 {
     protected PlayerControler playerControler;
     protected MouseManager mouseManager;
@@ -32,41 +32,16 @@ public class Card : MonoBehaviour
     //protected int currentStep;
     //protected bool nextAction;
     //public bool NextAction { set { nextAction = value;}}
-    protected bool stopPlaying;
-    public bool StopPlaying { set { stopPlaying = value; } }
+
     private int doingSomething;
     //private bool exists = true;
     //public bool Exists { get { return exists; } }
 
     protected bool isPreparingTop;
 
-    protected List<Figure> actingFigures = new List<Figure>();
-    public List<Figure> ActingFigures { get { return actingFigures; } set { actingFigures = value; } }
+    protected List<string> updateDescriptionKeywords = new List<string>();
 
-    public class Action
-    {
-        public Func<IEnumerator> preformedAction;
-        public Func<Figure, IEnumerator> preformedAction2;
-        public string description = null;
-        public bool multitarget;
 
-        public Action(Func<Figure, IEnumerator> action, string descriptionOverride = null)
-        {
-            preformedAction2 = action;
-            description = descriptionOverride;
-            multitarget = true;
-            //Debug.Log(targets.Count);
-            //RefrenceStorage.playerControler.EffectedFigures.Add(RefrenceStorage.playerControler);
-            //Debug.Log(targets.Count);
-            //Debug.Log(targets[0]);
-        }
-        public Action(Func<IEnumerator> action, string descriptionOverride = null)
-        {
-            preformedAction = action;
-            description = descriptionOverride;
-            multitarget = false;
-        }
-    }
 
 	//protected List<Func<IEnumerator>> topActions = new List<Func<IEnumerator>>();
 	//protected List<Func<IEnumerator>> bottomActions = new List<Func<IEnumerator>>();
@@ -232,6 +207,7 @@ public class Card : MonoBehaviour
         playerControler.CardPlayed = true;
         playerControler.PlayedCard = gameObject;
         playerControler.PlayedCardScript = this;
+        playerControler.ActiveActionPreformer = this;
         playerControler.UpdatePlayer();
         //currentStep = 0;
         mouseManager.ClickedObject = null;
@@ -278,7 +254,7 @@ public class Card : MonoBehaviour
         //playerControler.NextAction = false;
         foreach (Action action in topActions)
         {
-            yield return StartCoroutine(PreformAction(action));
+            yield return StartCoroutine(action.PreformAction(this, null));
 
             //if (stopPlaying == false)
             //{
@@ -298,7 +274,7 @@ public class Card : MonoBehaviour
         foreach (Action action in bottomActions)
         {
             //Debug.Log("doing 1 action");
-            yield return StartCoroutine(PreformAction(action));
+            yield return StartCoroutine(action.PreformAction(this, null));
             //if (action.targets == null)
             //{
             //    yield return StartCoroutine(actionManager.PreformAction(action.preformedAction()));
@@ -320,84 +296,8 @@ public class Card : MonoBehaviour
         }
         DonePlaying();
     }
-    public IEnumerator PreformAction(Action action, List<ActionDescription> planTo = null)
-    {
-        if (action.multitarget == false)
-        {
-            if (planTo != null)
-            {
-                yield return StartCoroutine(actionManager.PreformAction(action.preformedAction(), planTo));
-            }
-            else
-            {
-                if (stopPlaying == false)
-                {
-                    //Debug.Log("started action");
-                    actionManager.ActionEnded = false;
-                    yield return StartCoroutine(actionManager.PreformAction(action.preformedAction()));
-                    //Debug.Log("finished action");
-                }
-            }
 
-        }
-        else
-        {
-            if (planTo != null)
-            {
-                playerControler.UnmodifiedAction = true;
-                yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(playerControler), planTo));
-                playerControler.UnmodifiedAction = false;
-            }
-            else
-            {
-                //ActionDescription copyDescription = playerControler.ActionsRemaining[0];
-                if (actingFigures.Count == 0)
-                {
-                    playerControler.ActionsRemaining.RemoveAt(0);
-                }
-                else if(actingFigures.Count > 1)
-                {
-                    for (int i = 1; i < actingFigures.Count; i++)
-                    {
-                        //Debug.Log("not tested");
-                        playerControler.ActionsRemaining.Insert(i, playerControler.ActionsRemaining[0]); //copyDescription.Clone()
-                    }
-                }
-                playerControler.UpdatePlan();
-                //Debug.Log(actingFigures.Count);
-                foreach (Figure target in actingFigures.ToArray())
-                {
-                    //Debug.Log(target);
-                    if (stopPlaying == false)
-                    {
-                        actionManager.ActionEnded = false;
-                        if (target.Exists)
-                        {
-                            actionManager.ActiveFigure = target;
-                            //currentTarget = target;
-                            yield return StartCoroutine(actionManager.PreformAction(action.preformedAction2(target), planTo));
-                        }
-                        else
-                        {
-                            actingFigures.Remove(target);
-                        }
 
-                        playerControler.EndAction();
-                    }
-                }
-                actionManager.ActiveFigure = playerControler;
-
-            }
-        }
-    }
-    public void StopCommanding()
-    {
-        foreach (Figure figure in actingFigures)
-        {
-            figure.Controled = false;
-        }
-        actingFigures.Clear();
-    }
 
     public void PrepareExhaustAfterPlayed(Func<bool> conditiion, GameObject list = null)
     {
@@ -426,7 +326,7 @@ public class Card : MonoBehaviour
         {
             if (action.description == null)
             {
-                yield return StartCoroutine(PreformAction(action, topDescription));
+                yield return StartCoroutine(action.PreformAction(this, topDescription));
                 //yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), topDescription));
             }
             else
@@ -440,7 +340,7 @@ public class Card : MonoBehaviour
         {
             if (action.description == null)
             {
-                yield return StartCoroutine(PreformAction(action, bottomDescription));
+                yield return StartCoroutine(action.PreformAction(this, bottomDescription));
 
                 //yield return StartCoroutine(actionManager.PreformAction(action.preformedAbility(), bottomDescription));
             }
@@ -548,6 +448,7 @@ public class Card : MonoBehaviour
         //Debug.Log("changed card description " + modifiedAction);
         playerControler.UnmodifiedAction = false;
         string actionName = null;
+        bool singleAction = true;
         int modifierNum = 0;
         switch (modifiedAction)
         {
@@ -572,6 +473,7 @@ public class Card : MonoBehaviour
                 break;
             case "RangeValue":
                 actionName = "Range";
+                singleAction = false;
                 modifierNum = 1;
                 break;
             default:
@@ -579,22 +481,64 @@ public class Card : MonoBehaviour
                 modifierNum = 0;
                 break;
         }
-        foreach (ActionDescription action in topDescription)
+        if (updateDescriptionKeywords.Contains(modifiedAction))
         {
-            if (action.ActionName == actionName)
-            {
-                action.ActionModifiers[modifierNum].UpdateValue();
-            }
+            yield return StartCoroutine(PrepareCardDiscription());
         }
-        topText.DisplayDescription(topDescription);
-        foreach (ActionDescription action in bottomDescription)
+        else
         {
-            if (action.ActionName == actionName)
+            if (singleAction)
             {
-                action.ActionModifiers[modifierNum].UpdateValue();
+                foreach (ActionDescription action in topDescription)
+                {
+                    if (action.ActionName == actionName)
+                    {
+                        action.ActionModifiers[modifierNum].UpdateValue();
+                    }
+                }
+
             }
+            else
+            {
+                foreach (ActionDescription action in topDescription)
+                {
+                    if (action.ActionModifiers.Count - 1 >= modifierNum && action.ActionModifiers[modifierNum].Type == actionName)
+                    {
+                        action.ActionModifiers[modifierNum].UpdateValue();
+                    }
+                }
+            }
+            topText.DisplayDescription(topDescription);
+            if (singleAction)
+            {
+                foreach (ActionDescription action in bottomDescription)
+                {
+                    if (action.ActionName == actionName)
+                    {
+                        action.ActionModifiers[modifierNum].UpdateValue();
+                    }
+                }
+
+            }
+            else
+            {
+                foreach (ActionDescription action in bottomDescription)
+                {
+                    if (action.ActionModifiers.Count - 1 >= modifierNum && action.ActionModifiers[modifierNum].Type == actionName)
+                    {
+                        action.ActionModifiers[modifierNum].UpdateValue();
+                    }
+                }
+            }
+            //foreach (ActionDescription action in bottomDescription)
+            //{
+            //    if (action.ActionName == actionName)
+            //    {
+            //        action.ActionModifiers[modifierNum].UpdateValue();
+            //    }
+            //}
+            bottomText.DisplayDescription(bottomDescription);
         }
-        bottomText.DisplayDescription(bottomDescription);
         doingSomething--;
         yield break;
     }

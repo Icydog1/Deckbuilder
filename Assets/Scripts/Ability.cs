@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ability//, IEquatable<Ability>
+public class Ability : ActionPreformer//, IEquatable<Ability>
 {
 
     protected int cost;
@@ -14,8 +14,10 @@ public class Ability//, IEquatable<Ability>
     public int MaxTimes { get { return maxTimes; } set { maxTimes = value; } }
 
     private bool isUsed;
-    private List<Func<IEnumerator>> abilities = new List<Func<IEnumerator>>();
-    public List<Func<IEnumerator>> Abilities { get { return abilities; } }
+    //private List<Func<IEnumerator>> abilities = new List<Func<IEnumerator>>();
+    //public List<Func<IEnumerator>> Abilities { get { return abilities; } }
+    private List<Action> actions = new List<Action>();
+    public List<Action> Actions { get { return actions; } }
 
     protected List<ActionDescription> description = new List<ActionDescription>();
 
@@ -27,28 +29,14 @@ public class Ability//, IEquatable<Ability>
     protected AbilityManager abilityManager;
     protected ActionManager actionManager;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Gained()
     {
-        playerControler = GameObject.Find("Player").GetComponent<PlayerControler>();
-        mouseManager = GameObject.Find("MouseManager").GetComponent<MouseManager>();
-        abilityManager = GameObject.Find("AbilityManager").GetComponent<AbilityManager>();
-        actionManager = GameObject.Find("ActionManager").GetComponent<ActionManager>();
-
-        //abilityUI = transform.Find("AbilityUI").GetComponent<AbilityUI>();
+        playerControler = RefrenceStorage.playerControler;
+        mouseManager = RefrenceStorage.mouseManager;
+        abilityManager = RefrenceStorage.abilityManager;
+        actionManager = RefrenceStorage.actionManager;
         playerControler.PlayerTurnStartedFuntions += ResetAbilityCooldown;
     }
-    //public bool Equals(Ability other)
-    //{
-    //    if (other.Abilities == this.abilities && other.Cost == this.Cost)
-    //    {
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        return false;
-    //    }
-    //}
     public void ResetAbilityCooldown(PlayerControler playerControler)
     {
         if (isUsed)
@@ -57,44 +45,28 @@ public class Ability//, IEquatable<Ability>
             abilityUI.DisplayUsed(false);
         }
     }
-
-    public Ability(int abilityCost, List<Func<IEnumerator>> preformedAbilities, int maxUses = Var.maxValue)
+    public Ability(int abilityCost, List<Action> preformedActions, int maxUses = Var.maxValue)
     {
-        abilities = preformedAbilities;
+        actions = preformedActions;
         cost = abilityCost;
         maxTimes = maxUses;
     }
     
     public IEnumerator UpdateDiscription(int abilitiesPointsSpent)
     {
-
         description.Clear();
-        //playerControler.IsPlanning = true;
-        //actionManager.PlanToList = description;
         int potentialTimesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
         potentialTimesPreformed = Mathf.Min(potentialTimesPreformed, maxTimes);
         playerControler.VariableCardModifier = potentialTimesPreformed;
         playerControler.UnmodifiedAction = true;
-        foreach (Func<IEnumerator> action in abilities)
+        foreach (Action action in actions)
         {
-            //if (!(action != null))
-            //{
-            //    Debug.Log("action null");
-            //}
-            //if (description == null)
-            //{
-            //    Debug.Log("description null");
-            //}
-            //IEnumerator MechanicalAutomaton = actionManager.PreformAction(action(), description);
-            //Debug.Log(actionManager);
-            yield return abilityManager.StartCoroutine(actionManager.PreformAction(action(), description));
+            yield return abilityManager.StartCoroutine(action.PreformAction(this, description));
 
         }
         playerControler.UnmodifiedAction = false;
 
         abilityUI.DisplayText(description);
-        //playerControler.IsPlanning = false;
-        //yield return null;
     }
 
     public IEnumerator PreformAbility(int abilitiesPointsSpent)
@@ -115,17 +87,20 @@ public class Ability//, IEquatable<Ability>
 
                 playerControler.VariableCardModifier = timesPreformed;
                 playerControler.PreformingAbility = true;
+                playerControler.ActiveActionPreformer = this;
                 actionManager.ActionEnded = false;
                 //playerControler.NextAction = false;
-                foreach (Func<IEnumerator> action in abilities)
+                foreach (Action action in actions)
                 {
                     playerControler.UnmodifiedAction = true;
-                    yield return abilityManager.StartCoroutine(actionManager.PreformAction(action()));
+                    //yield return abilityManager.StartCoroutine(actionManager.PreformAction(action()));
+                    yield return abilityManager.StartCoroutine(action.PreformAction(this, null));
+
                     playerControler.UnmodifiedAction = false;
                     //yield return new WaitUntil(() => playerControler.NextAction == true);
                     //playerControler.NextAction = false;
                 }
-
+                StopCommanding();
                 //Debug.Log("done");
                 playerControler.PreformingAbility = false;
             }
@@ -135,22 +110,3 @@ public class Ability//, IEquatable<Ability>
 
 
 }
-
-/*
-public class LockpickAbility : Ability
-{
-    public override void Awake()
-    {
-        base.Awake();
-        cost = 1;
-        baseValue = 1;
-    }
-    public void PreformAbility(int abilitiesPointsSpent)
-    {
-        timesPreformed = Mathf.FloorToInt((float)abilitiesPointsSpent / (float)cost);
-        abilityValue = timesPreformed * baseValue;
-        playerControler.Lockpick(abilityValue);
-    }
-}
-
-*/

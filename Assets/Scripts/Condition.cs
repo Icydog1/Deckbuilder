@@ -113,7 +113,7 @@ public class Accuracy : Condition
 }
 public class NaturalScaling: Condition
 {
-    public NaturalScaling(int conditionValue, int conditionDuration = Var.infinityValue) : base("NaturalScaling", conditionValue, conditionDuration, 3, false, "All", false) { }
+    public NaturalScaling() : base("NaturalScaling", Var.nullValue, Var.infinityValue, 3, false, "All", false) { }
 }
 
 public class DistanceSpeedBoost : Condition
@@ -198,7 +198,7 @@ public class Burst : Condition
 }
 public class BlockPerMove : Condition
 {
-    public BlockPerMove(int conditionValue, int conditionDuration = 1) : base("Untouchable", conditionValue, conditionDuration, 1, true, "None", true, null, new string[] { "No Value Description", "No Self Target Description" } )
+    public BlockPerMove(int conditionValue, int conditionDuration = 1) : base("Untouchable", conditionValue, conditionDuration, 1, false, "None", true, null, new string[] { "No Value Description", "No Self Target Description" } )
     {
         actionName = "Whenever you move a space gain " + conditionValue + " block";
     }

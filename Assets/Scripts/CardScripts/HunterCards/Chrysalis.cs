@@ -14,6 +14,6 @@ public class Chrysalis : Card
 
     public override void PrepareBottom()
     {
-        currentActions.Add( new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Move(1, isVariable: true) }), 3))));
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Action>() { new Action(() => playerControler.Move(1, isVariable: true)) }), 3))));
     }
 }

@@ -134,12 +134,12 @@ public class RoomSpawner : MonoBehaviour
     //}
     public void SpawnRoomsNextToDoor(GameObject door, Vector2 currentRoom)
     {
-        //Debug.Log(mapManager.OneToOneToPos(doorOneToOne - currentRoom));
+        //Debug.Log(mapManager.HexToRect(doorHex - currentRoom));
         //Debug.Log(realativeRotation);
-        Vector2 doorOneToOne = mapManager.PosToOneToOne(door.transform.position);
-        realativeRotation = Vector2.SignedAngle(new Vector2(1, 0), mapManager.OneToOneToPos(doorOneToOne - currentRoom));
+        Vector2 doorHex = mapManager.RectToHex(door.transform.position);
+        realativeRotation = Vector2.SignedAngle(new Vector2(1, 0), mapManager.HexToRect(doorHex - currentRoom));
         realativeRotation = Mathf.RoundToInt(realativeRotation / 60) * 60;
-        Vector2 newRoomPos = 2 * doorOneToOne - currentRoom;
+        Vector2 newRoomPos = 2 * doorHex - currentRoom;
         Vector2Int roundednewRoomPos = Vector2Int.RoundToInt(newRoomPos);
         if (!builtRooms.Contains(roundednewRoomPos))
         {
@@ -181,7 +181,7 @@ public class RoomSpawner : MonoBehaviour
 
     }
 
-    private void SpawnRandomRoom(Vector2Int oneToOnePos, int roomtype = -1)
+    private void SpawnRandomRoom(Vector2Int hexPos, int roomtype = -1)
     {
         List<GameObject> roomPool = null;
         if (roomtype == -1)
@@ -200,7 +200,7 @@ public class RoomSpawner : MonoBehaviour
         {
             roomPool = roomTypes[roomtype];
         }
-        SpawnRoom(oneToOnePos, roomPool[Random.Range(0, roomPool.Count)]);
+        SpawnRoom(hexPos, roomPool[Random.Range(0, roomPool.Count)]);
 
         /*
         float randomNumber = Random.Range(0, 1f);
@@ -209,18 +209,18 @@ public class RoomSpawner : MonoBehaviour
         {
             if (randomNumber < roomProbabilities[i])
             {
-                SpawnRoom(oneToOnePos, roomPool[i]);
+                SpawnRoom(hexPos, roomPool[i]);
                 break;
             }
         }
         */
     }
 
-    private void SpawnRoom(Vector2Int oneToOnePos, GameObject room)
+    private void SpawnRoom(Vector2Int hexPos, GameObject room)
     {
-        //Debug.Log(oneToOnePos + "roompos");
-        builtRooms.Add(oneToOnePos);
-        Vector2 pos = mapManager.OneToOneToPos(oneToOnePos);
+        //Debug.Log(hexPos + "roompos");
+        builtRooms.Add(hexPos);
+        Vector2 pos = mapManager.HexToRect(hexPos);
         int rotation = room.GetComponent<RoomScript>().GetSpawnRotation();
         transform.localEulerAngles = new Vector3(0, 0, realativeRotation + rotation);
         existingRooms.Add(Instantiate(room, new Vector3(pos.x, pos.y, zLayer), transform.rotation));

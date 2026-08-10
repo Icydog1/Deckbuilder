@@ -9,7 +9,7 @@ public class PetrifiedScroll : Relic
     public override void Awake()
     {
         relicDesription = "Gain ability: <sprite name=Skill>" + Var.petrifiedScrollCost + " to draw 1 card(Max " + Var.relicIncreaseableNumberColor + Var.petrifiedScrollMaxTimes + "x</color>)";
-        ability = new Ability(Var.petrifiedScrollCost, new List<Func<IEnumerator>>() { () => playerControler.Draw(1, true) }, Var.petrifiedScrollMaxTimes);
+        ability = new Ability(Var.petrifiedScrollCost, new List<Action>() { new Action(() => playerControler.Draw(1, true)) }, Var.petrifiedScrollMaxTimes);
         base.Awake();
     }
     public override IEnumerator OnGain()

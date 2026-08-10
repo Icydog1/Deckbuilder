@@ -9,7 +9,7 @@ public class Mastery : Card
 
     public override void PrepareTop()
     {
-        currentActions.Add( new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Attack(1, isVariable: true) }), 3))));
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Action>() { new Action(() => playerControler.Attack(1, isVariable: true)) }), 3))));
     }
 
     public override void PrepareBottom()

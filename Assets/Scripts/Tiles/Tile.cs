@@ -9,6 +9,8 @@ public class Tile : MonoBehaviour
     [SerializeField]
     private bool isSpawner;
     private int zHeight = 1000;
+    private Vector2 hexPos;
+    public Vector2 HexPos { get { return hexPos; } set { hexPos = value; } }
 
     //public int distance;
 
@@ -25,7 +27,8 @@ public class Tile : MonoBehaviour
             moveCost = 1;
         }
         transform.Find("TileUI").rotation = Quaternion.identity;
-
+        hexPos = RefrenceStorage.mapManager.RectToHex(transform.position);
+        RefrenceStorage.pathfinder.Tiles[hexPos] = this;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

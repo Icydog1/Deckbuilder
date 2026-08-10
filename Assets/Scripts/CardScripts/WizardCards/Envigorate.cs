@@ -9,7 +9,7 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        currentActions.Add(new Action(() => playerControler.Command(1, "enemy", 5)));
+        currentActions.Add(new Action(() => playerControler.Command("enemy", 5, 1)));
         currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new Vigor(18))));
         currentActions.Add(new Action((currentTarget) => currentTarget.ApplyCondition(new Burst(16))));
     }

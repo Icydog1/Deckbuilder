@@ -33,7 +33,7 @@ public class Catalyst : Card
             if (playerControler.TargetsLeft > 0)
             {
                 playerControler.TargetsLeft--;
-                yield return StartCoroutine(playerControler.ApplyConditionTo(new Poison(targetedFigure.FindValueOfCondition("Poison")), targetedFigure));
+                yield return StartCoroutine(playerControler.ApplyConditionTo(new Poison(targetedFigure.GetValueOfCondition("Poison")), targetedFigure));
                 //foreach (Condition condition in newConditions)
                 //{
                 //    yield return gameManager.StartCoroutine(targetedFigure.GainCondition(condition));

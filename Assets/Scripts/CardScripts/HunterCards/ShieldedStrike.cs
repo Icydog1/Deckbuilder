@@ -16,7 +16,7 @@ public class ShieldedStrike : Card
     public override void PrepareBottom()
     {
         currentActions.Add( new Action(() => playerControler.Skill(10)));
-        currentActions.Add( new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Block(1, true) })))));
+        currentActions.Add( new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Action>() { new Action(() => playerControler.Block(1, true)) })))));
         
     }
 }

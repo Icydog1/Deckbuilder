@@ -14,10 +14,10 @@ public class FloorManager : MonoBehaviour
     private PlayerControler playerControler;
     private TurnManager turnManager;
 
-    private bool isBossFloor;
-    //private int level;
-    private int difficulty;
-    private int floorRoundNumber;
+    //private bool isBossFloor;
+    ////private int level;
+    //private int difficulty;
+    //private int floorRoundNumber;
 
     [SerializeField]
     private GameObject[] bossRooms;
@@ -52,10 +52,9 @@ public class FloorManager : MonoBehaviour
     public void StartFloor()
     {
         OverallStatistics.floor = 1;
-        isBossFloor = false;
         //player.transform.position = new Vector3(0, 0, player.transform.position.z);
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
-        //playerControler.OneToOnePos = Vector2.zero;
+        //playerControler.HexPos = Vector2.zero;
         roomSpawner.SpawnStartingRoom();
         //Debug.Log("Started Level Room");
 
@@ -66,16 +65,17 @@ public class FloorManager : MonoBehaviour
         yield return StartCoroutine(ClearFloor());
         yield return StartCoroutine(playerControler.GoUpFloor());
         camera.transform.position = new Vector3(0, 0, camera.transform.position.z);
-        if (!isBossFloor)
+        if (!OverallStatistics.bossFloor)
         {
-            isBossFloor = true;
+            OverallStatistics.bossFloor = true;
             //Debug.Log("went up level");
             floorSpecific.Add(Instantiate(bossRooms[UnityEngine.Random.Range(0, bossRooms.Length)]));
         }
         else
         {
             OverallStatistics.floor++;
-            isBossFloor = false;
+            OverallStatistics.bossFloor = false;
+            OverallStatistics.difficultyRound = OverallStatistics.difficultyRound/2;
             roomSpawner.SpawnStartingRoom();
             RefrenceStorage.interactButton.SetActive(true);
         }
@@ -84,8 +84,8 @@ public class FloorManager : MonoBehaviour
 
     public void IncreaseRoundNumber()
     {
-        difficulty++;
-        floorRoundNumber++;
+        //difficulty++;
+        //floorRoundNumber++;
     }
     //public IEnumerator GetDifficultyModifier(Enemy enemy)
     //{
@@ -93,7 +93,7 @@ public class FloorManager : MonoBehaviour
     //}
     public IEnumerator ResetGame()
     {
-        difficulty = 0;
+        //difficulty = 0;
         yield return StartCoroutine(ClearFloor());
         //Debug.Log("ResetGame");
     }
@@ -154,6 +154,6 @@ public class FloorManager : MonoBehaviour
         rewardManager.BossReward();
         playerControler.HealDamage(playerControler.MaxHealth);
         Destroy(mapManager.GetTileAtHex(bossCords));
-        floorSpecific.Add(Instantiate(stair, mapManager.OneToOneToPos(bossCords), Quaternion.identity));
+        floorSpecific.Add(Instantiate(stair, mapManager.HexToRect(bossCords), Quaternion.identity));
     }
 }

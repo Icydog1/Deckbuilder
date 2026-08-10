@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
+//runs the mouse and what is it seleceting
 public class MouseManager : MonoBehaviour
 {
     private bool mouseDown, shortClick, dragableClicked;
@@ -54,9 +53,11 @@ public class MouseManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //find mouse position
         mousePos = Input.mousePosition;
         worldMousePos = new Vector2(Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0)).x, Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0)).y);
 
+        //detect if the mouse is clicked
         if (Input.GetMouseButtonDown(0))
         {
             mouseDown = true;
@@ -67,10 +68,12 @@ public class MouseManager : MonoBehaviour
             mouseDown = false;
             MouseReleased();
         }
+        //if there is a clicked card
         if (clickedObject && clickedObject.GetComponent<Dragable>() && playerControler.CanPlayCards == true && clickedObject.GetComponent<Card>() != null)
         {
-            //Debug.Log(worldMousePos);
+            //move clicked card to mouse pos
             clickedObject.transform.position = new Vector3(worldMousePos.x, worldMousePos.y, clickedObject.transform.position.z);
+            //update card glow
             if (mousePos.y > topPlayLine * Screen.height)
             {
                 clickedObject.GetComponent<Card>().TopGlow.SetActive(true);
@@ -91,9 +94,10 @@ public class MouseManager : MonoBehaviour
 
 
     }
+    //make the mouse count as being over a object
     public void MouseOnObject(GameObject newObject)
     {
-        //Debug.Log("new object " + newObject);
+        //do varius thing to select the object
         if (newObject == selectedObject)
         {
             Debug.Log("same object");
@@ -138,12 +142,13 @@ public class MouseManager : MonoBehaviour
         }
 
     }
+    //make the mouse stop counting a object as one it is on
     public void MouseOffObject(GameObject removedObject)
     {
-        //Debug.Log("old object " + removedObject);
-
+        //if the mouse is achualy over the object
         if (mouseOver.Contains(removedObject))
         {
+            //do varius things to make the bject deselect correctly
             if (selectedObject.GetComponent<Selectable>())
             {
                 if (selectedObject.GetComponent<Selectable>().IsUI || selectedObject.GetComponent<UIButton>())
@@ -187,11 +192,12 @@ public class MouseManager : MonoBehaviour
             }
             if (playerControler.PlanningMove && selectedObject == null && mouseDown)
             {
-                actionManager.ActiveFigure.PlanMove(mapManager.GetTileAtHex(playerControler.OneToOnePos));
+                actionManager.ActiveFigure.PlanMove(mapManager.GetTileAtHex(playerControler.HexPos));
             }
 
         }
     }
+    //update tooltip based on what you are currently hovering over
     public IEnumerator UpdateTooltip()
     {
         yield return new WaitForEndOfFrame();
@@ -204,7 +210,7 @@ public class MouseManager : MonoBehaviour
 
     }
 
-
+    //whenmouse button is clicked down
     public void MouseClicked()
     {
         clickedObject = selectedObject;
@@ -235,6 +241,7 @@ public class MouseManager : MonoBehaviour
             }
         }
     }
+    //detect if player is holding down button or just clicked it
     private IEnumerator ShortFirstClick()
     {
         //Debug.Log("MechanicalAutomaton");
@@ -242,27 +249,27 @@ public class MouseManager : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         shortClick = false;
     }
+    //when mouse button is released
     public void MouseReleased()
     {
         if (heldButtonRoutine != null)
         {
             StopCoroutine(heldButtonRoutine);
         }
+        //if a object was clicked
         if (clickedObject)
         {
+            //if the clicked object is a card play it or return it to hand if it wasnt a short click to pick the card up
             if (dragableClicked && !shortClick)
             {
-                //Debug.Log("stoped draging");
                 if (clickedObject.GetComponent<Card>() != null)
                 {
                     if (mousePos.y > topPlayLine * Screen.height)
                     {
-                        //Debug.Log(clickedObject + "top was played");
                         clickedObject.GetComponent<Card>().AttemptToPlayTop();
                     }
                     else if (mousePos.y > bottomPlayLine * Screen.height)
                     {
-                        //Debug.Log(clickedObject + "bottom was played");
                         clickedObject.GetComponent<Card>().AttemptToPlayBottom();
                     }
                     else
@@ -270,13 +277,13 @@ public class MouseManager : MonoBehaviour
                         MouseOffObject(clickedObject);
                         StartCoroutine(deckManager.UpdateHand());
                     }
-                    //deckManager.DeSelectCard(clickedObject);
-                    //deckManager.Hand.transform.SetAsFirstSibling();
                 }
                 dragableClicked = false;
             }
+            //if the object clicked when the mouse went down is the same as the one that is currently selected
             if (clickedObject == selectedObject)
             {
+                //do varius things depending on what you clicked
                 if (clickedObject.GetComponent<Card>() && deckManager.IsChoosingCard)
                 {
                     deckManager.SelectedCard = clickedObject;
@@ -294,12 +301,14 @@ public class MouseManager : MonoBehaviour
                     StartCoroutine(rewardManager.RewardSelected(clickedObject));
                 }
             }
+            //if the object is a ui button do return it to it's base color
             if (clickedObject.GetComponent<UIButton>())
             {
                 GameObject image = clickedObject.transform.Find("Image").gameObject;
                 image.GetComponent<Image>().color = clickedObject.GetComponent<UIButton>().BaseColor;
             }
         }
+
         if (selectedObject && selectedObject.GetComponent<Card>())
         {
             playerControler.CardClicked(clickedObject);
@@ -308,11 +317,6 @@ public class MouseManager : MonoBehaviour
         {
             playerControler.TileClicked(selectedObject);
         }
-        //if (selectedObject && selectedObject.GetComponent<Tile>() && playerControler.CanMove)
-        //{
-        //    playerControler.PlanMove(selectedObject);
-        //    StartCoroutine(playerControler.MoveAlongPath());
-        //}
         if (!dragableClicked)
         {
             clickedObject = null;

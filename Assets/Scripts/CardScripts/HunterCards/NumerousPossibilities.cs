@@ -9,8 +9,8 @@ public class NumerousPossibilities : Card
 
     public override void PrepareTop()
     {
-        currentActions.Add(new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Block(1, isVariable: true) }), 2))));
-        currentActions.Add(new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(2, new List<Func<IEnumerator>>() { () => playerControler.Attack(1,3, isVariable: true) }), 2))));
+        currentActions.Add(new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(1, new List<Action>() { new Action(() => playerControler.Block(1, isVariable: true)) }), 2))));
+        currentActions.Add(new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(2, new List<Action>() { new Action(() => playerControler.Attack(1,3, isVariable: true)) }), 2))));
     }
 
     public override void PrepareBottom()

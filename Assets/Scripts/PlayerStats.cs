@@ -10,7 +10,7 @@ public class PlayerStats : FigureStats
 
     //List<string> currentCondtions = new List<string>();
     protected GameObject floorAndXPTextObject;
-    protected TextMeshProUGUI floorAndXPText;
+    protected TextMeshProUGUI floorAndXPText, difficultyText;
     string floorAndXPString, turnCountString;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -20,7 +20,7 @@ public class PlayerStats : FigureStats
         floorAndXPTextObject = transform.Find("LevelAndXPText").gameObject;
 
         floorAndXPText = floorAndXPTextObject.GetComponent<TextMeshProUGUI>();
-
+        difficultyText = transform.Find("DifficultyText").GetComponent<TextMeshProUGUI>();
         base.Awake();
 
 
@@ -57,6 +57,10 @@ public class PlayerStats : FigureStats
     {
         turnCountString = ", Round: " + turnCount;
         SetFloorXPAndTurnCount();
+    }
+    public void SetDifficulty(float difficulty)
+    {
+        difficultyText.SetText("Enemy difficulty: x" + difficulty);
     }
     public void SetFloorXPAndTurnCount()
     {

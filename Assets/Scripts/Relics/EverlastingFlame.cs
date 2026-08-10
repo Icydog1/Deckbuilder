@@ -9,7 +9,7 @@ public class EverlastingFlame : Relic
     public override void Awake()
     {
         relicDesription = "Gain ability: <sprite name=Skill>" + Var.everlastingFlameCost + " to gain 1 top energy(Max " + Var.relicIncreaseableNumberColor + Var.everlastingFlameMaxTimes + "x</color>)";
-        ability = new Ability(Var.everlastingFlameCost, new List<Func<IEnumerator>>() { () => playerControler.GainTopEnergy(1, true) }, Var.everlastingFlameMaxTimes);
+        ability = new Ability(Var.everlastingFlameCost, new List<Action>() { new Action(() => playerControler.GainTopEnergy(1, true)) }, Var.everlastingFlameMaxTimes);
         base.Awake();
     }
     public override IEnumerator OnGain()

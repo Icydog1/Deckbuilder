@@ -58,17 +58,7 @@ public class GameManager : MonoBehaviour
         deathText = deathScreenBlocker.transform.Find("DeathText").GetComponent<VariableDisplayer>();
 
     }
-
-    //void Start()
-    //{
-
-
-    //    StartCoroutine(StartGame());
-
-    //    //GameObject.Find("ListDisplayerScreenBlocker").GetComponent<Image>().enabled = true;
-    //    //GameObject.Find("ListDisplayer").SetActive(false);
-    //}
-
+    //Start the game for the first time
     public IEnumerator StartGame()
     {
         //move out
@@ -109,23 +99,8 @@ public class GameManager : MonoBehaviour
         //roomSpawner.SpawnStartingRoom();
         yield return StartCoroutine(turnManager.StartTakingTurns());
     }
-    public void Death()
-    {
-        UIManager.IsDead = true;
-        //deathScreenBlocker.GetComponent<Image>().enabled = true;
-        //deathScreenBlocker.GetComponent<RectTransform>().sizeDelta = deathScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
-        deathText.DisplayString("Death");
-        restartGameButton.SetActive(true);
-    }
-    public void Victory()
-    {
-        UIManager.IsDead = true;
-        //deathScreenBlocker.GetComponent<Image>().enabled = true;
-        //deathScreenBlocker.GetComponent<RectTransform>().sizeDelta = deathScreenBlocker.transform.parent.GetComponent<RectTransform>().sizeDelta;
-        deathText.DisplayString("Victory");
-        restartGameButton.SetActive(true);
-        endlessModeButton.SetActive(true);
-    }
+
+    //stop the game
     public IEnumerator StopGame()
     {
         OverallStatistics.ResetStatistics();
@@ -147,8 +122,22 @@ public class GameManager : MonoBehaviour
         }
         isInGame = false;
     }
-
-
+    //display restart game button, doesnt stop the game until restart game button is presed
+    public void Death()
+    {
+        UIManager.IsDead = true;
+        deathText.DisplayString("Death");
+        restartGameButton.SetActive(true);
+    }
+    //display restart game button and endless mode button
+    public void Victory()
+    {
+        UIManager.IsDead = true;
+        deathText.DisplayString("Victory");
+        restartGameButton.SetActive(true);
+        endlessModeButton.SetActive(true);
+    }
+    //resumes game after endless mode button is presed
     public IEnumerator ContinueGame()
     {
         UIManager.IsPaused = false;

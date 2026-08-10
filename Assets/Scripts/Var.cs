@@ -1,5 +1,5 @@
 using UnityEngine;
-
+//stores all constants in the game where they can be easly accesed and modified(in editor)
 public static class Var
 {
     //global variables
@@ -23,8 +23,9 @@ public static class Var
     public const int phantomLockpicksMaxTimes = 10;
     public const int everlastingFlameCost = 8, everlastingFlameMaxTimes = 1;
     public const int halfFilledPotionHealingPercent = 40;
-    public const int enchantedBoltsMaxHealth = 5;
+    public const int enchantedBoltsMaxHealth = 4;
     public const int boneShardBlock = 3;
+    public const int arcaneRemoteMove = 5;
 
     //player stuff
     public const float manaRegenPercentage = 0.2f;

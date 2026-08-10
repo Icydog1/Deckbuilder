@@ -6,7 +6,7 @@ public class RoomScript : MonoBehaviour
     private MapManager mapManager;
     private RoomSpawner roomSpawner;
 
-    private Vector2Int oneToOneCords;
+    private Vector2Int hexCords;
     private int roomSize = 8;
     //[SerializeField]
     public int roomType = 1;
@@ -34,34 +34,34 @@ public class RoomScript : MonoBehaviour
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         roomSpawner = GameObject.Find("RoomSpawner").GetComponent<RoomSpawner>();
 
-        oneToOneCords = Vector2Int.RoundToInt(mapManager.PosToOneToOne(transform.position));
+        hexCords = Vector2Int.RoundToInt(mapManager.RectToHex(transform.position));
     }
     void Start()
     {
 
-        Vector2Int checktile = oneToOneCords;
-        Vector2Int checkRoom = oneToOneCords;
+        Vector2Int checktile = hexCords;
+        Vector2Int checkRoom = hexCords;
         for (int i = 0; i < 6; i++)
         {
             switch (i)
             {
-                case 0: checktile = oneToOneCords + new Vector2Int(roomSize/2, -roomSize/2);
-                    checkRoom = oneToOneCords + new Vector2Int(roomSize, -roomSize); break;
-                case 1: checktile = oneToOneCords + new Vector2Int(roomSize, roomSize/2);
-                    checkRoom = oneToOneCords + new Vector2Int(roomSize * 2, roomSize); break;
-                case 2: checktile = oneToOneCords + new Vector2Int(roomSize/2, roomSize);
-                    checkRoom = oneToOneCords + new Vector2Int(roomSize, roomSize * 2); break;
-                case 3: checktile = oneToOneCords + new Vector2Int(-roomSize/2, roomSize/2);
-                    checkRoom = oneToOneCords + new Vector2Int(-roomSize, roomSize); break;
-                case 4: checktile = oneToOneCords + new Vector2Int(-roomSize, -roomSize/2);
-                    checkRoom = oneToOneCords + new Vector2Int(-roomSize * 2, -roomSize); break;
-                case 5: checktile = oneToOneCords + new Vector2Int(-roomSize / 2, -roomSize);
-                    checkRoom = oneToOneCords + new Vector2Int(-roomSize, -roomSize * 2); break;
+                case 0: checktile = hexCords + new Vector2Int(roomSize/2, -roomSize/2);
+                    checkRoom = hexCords + new Vector2Int(roomSize, -roomSize); break;
+                case 1: checktile = hexCords + new Vector2Int(roomSize, roomSize/2);
+                    checkRoom = hexCords + new Vector2Int(roomSize * 2, roomSize); break;
+                case 2: checktile = hexCords + new Vector2Int(roomSize/2, roomSize);
+                    checkRoom = hexCords + new Vector2Int(roomSize, roomSize * 2); break;
+                case 3: checktile = hexCords + new Vector2Int(-roomSize/2, roomSize/2);
+                    checkRoom = hexCords + new Vector2Int(-roomSize, roomSize); break;
+                case 4: checktile = hexCords + new Vector2Int(-roomSize, -roomSize/2);
+                    checkRoom = hexCords + new Vector2Int(-roomSize * 2, -roomSize); break;
+                case 5: checktile = hexCords + new Vector2Int(-roomSize / 2, -roomSize);
+                    checkRoom = hexCords + new Vector2Int(-roomSize, -roomSize * 2); break;
             }
             GameObject checkedObject = mapManager.GetTileAtHex(checktile);
             if (checkedObject && checkedObject.GetComponent<Door>())
             {
-                checkedObject.GetComponent<Door>().AddRoom(gameObject, oneToOneCords);
+                checkedObject.GetComponent<Door>().AddRoom(gameObject, hexCords);
                 //Debug.Log(checktile + "Door Cords");
                 //Debug.Log(checkRoom + "Other Room Cords");
                 if (roomSpawner.BuiltRooms.Contains(checkRoom))

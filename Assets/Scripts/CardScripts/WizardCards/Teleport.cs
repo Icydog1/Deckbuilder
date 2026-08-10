@@ -9,7 +9,7 @@ using UnityEngine;
 
     public override void PrepareTop()
     {
-        currentActions.Add(new Action(() => playerControler.Command(1,"enemy",4)));
+        currentActions.Add(new Action(() => playerControler.Command("enemy", 4, 1)));
         currentActions.Add(new Action((currentTarget) => currentTarget.Move(30,true)));
 
     }

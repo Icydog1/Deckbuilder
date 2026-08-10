@@ -41,11 +41,15 @@ public class AbilityUI : UIButton
     public void DisplayText(List<ActionDescription> description)
     {
         string displayedString = "";
-        foreach (ActionDescription text in description)
+        for (int i = 0; i < description.Count; i++)
+        //foreach (ActionDescription text in description)
         {
             //Debug.Log("Come Back to this");
-            displayedString += text.GetDescription();
-            displayedString += "\n";
+            if (i > 0)
+            {
+                displayedString += " ";
+            }
+            displayedString += description[i].GetDescription();
         }
         abilityText.text = displayedString;
     }

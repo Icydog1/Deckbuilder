@@ -501,7 +501,7 @@ public class DeckManager : MonoBehaviour
             SetRelativeCardSize(card, 1);
             //int row = Mathf.FloorToInt(displayedList.IndexOf(card) / rowLimit);
             //int column = displayedList.IndexOf(card) % rowLimit;
-            //card.transform.position = new Vector3(pos.x + (column - (rowLimit/2)) * horizontalSpaceBetweenCards, pos.y - row * VerticalSpaceBetweenCards, card.transform.position.z);
+            //card.transform.position = new Vector3(hexPos.x + (column - (rowLimit/2)) * horizontalSpaceBetweenCards, hexPos.y - row * VerticalSpaceBetweenCards, card.transform.position.z);
         }
     }
 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5457433300647786641}
   - component: {fileID: 8807127623400506260}
   m_Layer: 0
-  m_Name: Shattered Peaks
+  m_Name: ShatteredPeaks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

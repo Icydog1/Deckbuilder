@@ -25,23 +25,30 @@ public class ConditionEffects : MonoBehaviour
             return initalAttack;
         }
         float modifiedAttack = initalAttack;
+        int addedAttack = 0;
         List<Condition> conditions = effectedFigure.Conditions;
         foreach (Condition condition in conditions)
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedAttack *= (1 + Var.naturalScalingIncrease * (float)condition.Value);
+                modifiedAttack *= OverallStatistics.difficulty;
             }
-        }
-        foreach (Condition condition in conditions)
-        {
-            //Debug.Log("checked " + condition.ConditionName);
-            if (condition.ConditionName == "Strength" || condition.ConditionName == "Vigor")
+            else if (condition.ConditionName == "Strength" || condition.ConditionName == "Vigor")
             {
-                //Debug.Log("Added Attack");
-                modifiedAttack += condition.Value;
+                addedAttack += condition.Value;
             }
+
         }
+        modifiedAttack += addedAttack;
+        //foreach (Condition condition in conditions)
+        //{
+        //    //Debug.Log("checked " + condition.ConditionName);
+        //    if (condition.ConditionName == "Strength" || condition.ConditionName == "Vigor")
+        //    {
+        //        //Debug.Log("Added Attack");
+        //        modifiedAttack += condition.Value;
+        //    }
+        //}
 
         int finalAttack = Mathf.FloorToInt(modifiedAttack);
         finalAttack = Global.Clamp(finalAttack, 0);
@@ -79,24 +86,32 @@ public class ConditionEffects : MonoBehaviour
         }
         float modifiedMove = initalMove;
         List<Condition> conditions = effectedFigure.Conditions;
+        int addedMove = 0;
+        float multipliedMove = 1;
         foreach (Condition condition in conditions)
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedMove *= (1 + Var.naturalScalingIncrease * (float)condition.Value);
+                modifiedMove *= OverallStatistics.difficulty;
             }
-            if (condition.ConditionName == "DistanceSpeedBoost")
+            else if (condition.ConditionName == "DistanceSpeedBoost")
             {
-                modifiedMove *= (1 + 0.03f * (float)condition.Value);
+                multipliedMove *= (1 + 0.03f * (float)condition.Value);
+            }
+            else if(condition.ConditionName == "Speed" || condition.ConditionName == "Burst")
+            {
+                addedMove += condition.Value;
             }
         }
-        foreach (Condition condition in conditions)
-        {
-            if (condition.ConditionName == "Speed" || condition.ConditionName == "Burst")
-            {
-                modifiedMove += condition.Value;
-            }
-        }
+        modifiedMove += addedMove;
+        modifiedMove *= multipliedMove;
+        //foreach (Condition condition in conditions)
+        //{
+        //    if (condition.ConditionName == "Speed" || condition.ConditionName == "Burst")
+        //    {
+        //        modifiedMove += condition.Value;
+        //    }
+        //}
 
         int finalMove = Mathf.FloorToInt(modifiedMove);
         finalMove = Global.Clamp(finalMove, 0);
@@ -193,7 +208,7 @@ public class ConditionEffects : MonoBehaviour
         {
             if (condition.ConditionName == "NaturalScaling")
             {
-                modifiedMaxHealth *= (1 + Var.naturalScalingIncrease * (float)condition.Value);
+                modifiedMaxHealth *= OverallStatistics.difficulty;
             }
         }
         int finalMaxHealth = Mathf.FloorToInt(modifiedMaxHealth);

@@ -7,7 +7,7 @@ public class Suggestion : WizardCard
 
     public override void PrepareTop()
     {
-        currentActions.Add(new Action(() => playerControler.Command(1, "enemy",1)));
+        currentActions.Add(new Action(() => playerControler.Command("enemy", 3, 1)));
         currentActions.Add(new Action((currentTarget) => currentTarget.Move(11)));
     }
 

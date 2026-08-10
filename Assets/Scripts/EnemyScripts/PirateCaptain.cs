@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class PirateCaptin : Enemy
+public class PirateCaptain : Enemy
 {
     [SerializeField]
     GameObject summon;

@@ -31,7 +31,7 @@ public class TheEnchantress : Boss
         });
         movesSetOrder = new List<int>() { 0, 1, 3, 4, 0, 2, 3, 4 };
 
-        maxHealth = 237 + (133 * OverallStatistics.bossDifficulty);
+        maxHealth = 237 + (237 * OverallStatistics.bossDifficulty);
         XPValue = 90;
 
         base.Awake();

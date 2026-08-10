@@ -9,14 +9,14 @@ public class EnemySpawner : MonoBehaviour
     private int tunsTillActive;
     private TurnManager turnManager;
     private MapManager mapManager;
-    private Vector2 OneToOnePos;
+    private Vector2 HexPos;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         turnManager = GameObject.Find("TurnManager").GetComponent<TurnManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
-        OneToOnePos = mapManager.PosToOneToOne(transform.position);
+        HexPos = mapManager.RectToHex(transform.position);
         //transform.position = new Vector3(transform.position.x, transform.position.y, spawnHeight);
 
         SpawnEnemy();
@@ -42,7 +42,7 @@ public class EnemySpawner : MonoBehaviour
         tunsTillActive--;
         if (tunsTillActive <= 0 && Random.Range(0, 1f) <= Var.spawnerSpawnChance)
         {
-            if (mapManager.GetEntityOnHex(OneToOnePos) == null)
+            if (mapManager.GetEntityOnHex(HexPos) == null)
             {
                 SpawnEnemy();
                 tunsTillActive = Var.spawnerActivationDelay;

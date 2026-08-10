@@ -53,9 +53,9 @@ public class AIFigure : Figure
         //    Debug.Log("Warning no planed movesets on " + gameObject);
         //}
         //yield return StartCoroutine(actionManager.PreformAction(GainCondition(new Flight())));
-        if (isEnemy && !isBoss)
+        if (isEnemy && !OverallStatistics.bossFloor)
         {
-            yield return StartCoroutine(actionManager.PreformAction(GainCondition(new NaturalScaling(OverallStatistics.enemyScaling))));
+            yield return StartCoroutine(actionManager.PreformAction(GainCondition(new NaturalScaling())));
         }
         maxHealth = conditionEffects.ModifyMaxHealth(this, maxHealth);
 
@@ -111,9 +111,9 @@ public class AIFigure : Figure
         //{
         //    Debug.Log(gameObject + "Getting plan");
         //}
-        oneToOnePos = mapManager.PosToOneToOne(transform.position);
+        hexPos = mapManager.RectToHex(transform.position);
         yield return StartCoroutine(FindFocus());
-        distanceToFocus = pathfinder.GetDistanceTo(focusScript.OneToOnePos, oneToOnePos);
+        distanceToFocus = pathfinder.GetDistanceTo(focusScript.HexPos, hexPos);
         if (distanceToFocus >= 20 && isEnemy)
         {
             yield return StartCoroutine(actionManager.PreformAction(GainCondition(new DistanceSpeedBoost(distanceToFocus - 20))));
@@ -178,10 +178,10 @@ public class AIFigure : Figure
         }
         currentPlan = new List<Func<IEnumerator>>(plannedMoveSet);
         //Debug.Log("gotInitialPlan");
-        if (isEnemy && !isBoss)
-        {
-            yield return StartCoroutine(actionManager.PreformAction(GainCondition(new NaturalScaling(OverallStatistics.enemyScaling))));
-        }
+        //if (isEnemy && !isBoss)
+        //{
+        //    yield return StartCoroutine(actionManager.PreformAction(GainCondition(new NaturalScaling())));
+        //}
         //yield return StartCoroutine(floorManager.GetDifficultyModifier(this));
         yield return StartCoroutine(UpdatePlan());
 
@@ -194,7 +194,7 @@ public class AIFigure : Figure
     {
         //Debug.Log("first condition: " + conditions[0].Name);
         //actionManager.PlanToList = displayedPlan;
-        if (FindValueOfCondition("Stunned") != 0 || (turn == 0 && isSummon))
+        if (GetValueOfCondition("Stunned") != 0 || (turn == 0 && isSummon))
         {
             currentPlan = new List<Func<IEnumerator>>();
             //Debug.Log("is stunned");
@@ -293,7 +293,7 @@ public class AIFigure : Figure
             yield return StartCoroutine(actionManager.PreformAction(GainCondition(new DistanceJump())));
             //GainCondition(new DistanceJump());
         }
-        yield return StartCoroutine(baseStartTurn());
+        yield return StartCoroutine(BaseStartTurn());
         if (preferedRange == int.MaxValue)
         {
             preferedRange = 1;
@@ -309,7 +309,7 @@ public class AIFigure : Figure
         GameObject border = transform.Find("Border").gameObject;
         border.GetComponent<SpriteRenderer>().color = Color.black;
         //Debug.Log(gameObject + " ended turn");
-        yield return StartCoroutine(baseEndTurn());
+        yield return StartCoroutine(BaseEndTurn());
     }
     public void StartStopTurn(bool isStart)
     {
@@ -342,7 +342,7 @@ public class AIFigure : Figure
                 }
             }
 
-            if (FindValueOfCondition("Stunned") == 0)
+            if (GetValueOfCondition("Stunned") == 0)
             {
                 currentmove++;
             }
@@ -368,8 +368,8 @@ public class AIFigure : Figure
     }
     public void CalculateValues()
     {
-        oneToOnePos = mapManager.PosToOneToOne(transform.position);
-        distanceToFocus = pathfinder.GetDistanceTo(focusScript.OneToOnePos, oneToOnePos);
+        hexPos = mapManager.RectToHex(transform.position);
+        distanceToFocus = pathfinder.GetDistanceTo(focusScript.HexPos, hexPos);
     }
     public override void ActionDone()
     {

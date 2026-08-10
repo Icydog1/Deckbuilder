@@ -10,6 +10,7 @@ public class TurnManager : MonoBehaviour
     //private List<GameObject> enemies = new List<GameObject>();
     private PlayerControler playerControler;
     private DeckManager deckManager;
+    private PlayerStats playerStats;
     private GameObject player;
     private GameObject newRoundMarker;
     private GameObject currentTurn;
@@ -31,18 +32,17 @@ public class TurnManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        player = GameObject.Find("Player");
-        playerControler = player.GetComponent<PlayerControler>();
-        deckManager = GameObject.Find("DeckManager").GetComponent<DeckManager>();
-        floorManager = GameObject.Find("FloorManager").GetComponent<FloorManager>();
+        player = RefrenceStorage.player;
+        playerControler = RefrenceStorage.playerControler;
+        deckManager = RefrenceStorage.deckManager;
+        playerStats = RefrenceStorage.playerStats;
+        floorManager = RefrenceStorage.floorManager;
         newRoundMarker = GameObject.Find("NewRoundMarker");
         turnOrder.Add(newRoundMarker);
         turnOrder.Add(player);
         FloorManager.FloorCleared += ResetTurnOrder;
     }
-    private void Start()
-    {
-    }
+    //enable the turn order
     public IEnumerator StartTakingTurns()
     {
         takingTurns = true;
@@ -50,17 +50,7 @@ public class TurnManager : MonoBehaviour
         currentTurn = turnOrder[0];
         yield return StartCoroutine(StartOfRound());
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-    //public void AddToTurnOrder(GameObject addedObject)
-    //{
-    //    turnOrder.Add(addedObject);
-    //}
-
+    //remove a object from the turn order
     public void RemoveFromTurnOrder(GameObject removedObject)
     {
         if (currentTurn == removedObject)
@@ -74,6 +64,7 @@ public class TurnManager : MonoBehaviour
             turnOrder.Remove(removedObject);
         }
     }
+    //take the next turn
     public void NextTurn()
     {
         if (takingTurns)
@@ -108,13 +99,14 @@ public class TurnManager : MonoBehaviour
             }
         }
     }
-
+    //preform next round
     public IEnumerator NextRound()
     {
         yield return StartCoroutine(EndOfRound());
         yield return StartCoroutine(StartOfRound());
 
     }
+    //run end of round stuff
     public IEnumerator EndOfRound()
     {
         //Debug.Log("Round ended");
@@ -138,12 +130,23 @@ public class TurnManager : MonoBehaviour
             //yield return StartCoroutine(RoundEnded(this));
         }
     }
+    //run start of round stuff
     public IEnumerator StartOfRound()
     {
         OverallStatistics.round++;
-        OverallStatistics.enemyScaling++;
-        
-        RefrenceStorage.playerStats.SetTurnCount(OverallStatistics.round);
+        playerStats.SetTurnCount(OverallStatistics.round);
+        OverallStatistics.difficultyRound++;
+
+        //the * floor is a temerary thing to make the enemies harder
+
+        OverallStatistics.difficulty = Mathf.Pow(1.001f, OverallStatistics.difficultyRound) * (1 + (float)(OverallStatistics.floor-1) * 0.5f);
+        //OverallStatistics.difficulty += 0.001f * OverallStatistics.difficulty;
+        OverallStatistics.enemyScaling = Mathf.RoundToInt(OverallStatistics.difficulty*1000) - 1000;
+        float difficulty = 1 + (float)OverallStatistics.enemyScaling / 1000;
+        //Debug.Log((float)OverallStatistics.enemyScaling);
+        //Debug.Log(difficulty);
+        playerStats.SetDifficulty(difficulty);
+
         floorManager.IncreaseRoundNumber();
         if (RoundStartedFunctions != null)
         {
@@ -165,7 +168,7 @@ public class TurnManager : MonoBehaviour
         //Debug.Log("Round started");
         NextTurn();
     }
-
+    //Reset turn order to just the player and stop taking turns
     public IEnumerator ResetTurnOrder(FloorManager floorManager = null)
     {
         takingTurns = false;
@@ -180,14 +183,4 @@ public class TurnManager : MonoBehaviour
         turnOrder.Add(player);
         currentTurn = turnOrder[0];
     }
-    //public IEnumerator EndRound()
-    //{
-    //    takingTurns = false;
-    //    if (currentTurn == player)
-    //    {
-    //        yield return StartCoroutine(playerControler.ForceEndTurn());
-    //    }
-    //    yield return StartCoroutine(EndOfRound());
-    //    takingTurns = true;
-    //}
 }

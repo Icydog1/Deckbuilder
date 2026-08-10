@@ -9,7 +9,7 @@ public class PhantomLockpicks : Relic
     public override void Awake()
     {
         relicDesription = "Gain ability: <sprite name=Skill>1 for <sprite name=Lockpick>2(Max " + Var.relicIncreaseableNumberColor + Var.phantomLockpicksMaxTimes + "x</color>)";
-        ability = new Ability(1, new List<Func<IEnumerator>>() { () => playerControler.Lockpick(2, true) }, Var.phantomLockpicksMaxTimes);
+        ability = new Ability(1, new List<Action>() { new Action(() => playerControler.Lockpick(2, true)) }, Var.phantomLockpicksMaxTimes);
         base.Awake();
     }
     public override IEnumerator OnGain()

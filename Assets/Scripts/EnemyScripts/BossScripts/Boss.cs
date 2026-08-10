@@ -20,6 +20,6 @@ public class Boss : Enemy
     public override IEnumerator Die()
     {
         yield return gameManager.StartCoroutine(base.Die());
-        floorManager.BossKilled(oneToOnePos);
+        floorManager.BossKilled(hexPos);
     }
 }

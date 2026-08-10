@@ -20,7 +20,7 @@ public class Wall : MonoBehaviour
             GameObject otherTile = Physics2D.OverlapPoint(transform.position, 64).gameObject;
             if (!otherTile.GetComponent<Door>())
             {
-                //Debug.Log(mapManager.PosToOneToOne(transform.position));
+                //Debug.Log(mapManager.RectToHex(transform.position));
                 Destroy(gameObject);
             }
             else if (!gameObject.GetComponent<Door>())
@@ -30,7 +30,7 @@ public class Wall : MonoBehaviour
             }
             else
             {
-                //Debug.Log(mapManager.PosToOneToOne(transform.position));
+                //Debug.Log(mapManager.RectToHex(transform.position));
                 Instantiate(openDoor, transform.position, transform.rotation);
                 Destroy(otherTile);
                 Destroy(gameObject);

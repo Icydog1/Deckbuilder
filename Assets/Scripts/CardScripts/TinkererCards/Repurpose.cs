@@ -8,9 +8,9 @@ public class Repurpose : Card
     public override void PrepareTop()
     {
         currentActions.Add(new Action(() => playerControler.Command()));
-        currentActions.Add(new Action((currentTarget) => playerControler.Sacrifice(currentTarget)));
         currentActions.Add(new Action((currentTarget) => playerControler.GainTopEnergy(3)));
         currentActions.Add(new Action((currentTarget) => playerControler.GainBottomEnergy(3)));
+        currentActions.Add(new Action((currentTarget) => playerControler.Sacrifice(currentTarget)));
     }
 
     public override void PrepareBottom()

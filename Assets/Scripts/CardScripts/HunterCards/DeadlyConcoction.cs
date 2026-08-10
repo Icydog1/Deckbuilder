@@ -10,7 +10,7 @@ public class DeadlyConcoction : Card
     public override void PrepareTop()
     {
         currentActions.Add(new Action(() => playerControler.Skill(10)));
-        currentActions.Add(new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(5, new List<Func<IEnumerator>>() { () => playerControler.ApplyCondition(new Poison(1),"enemy", isVariable: true) }), 2))));
+        currentActions.Add(new Action(() => playerControler.ApplyCondition(new GainAbility(new Ability(5, new List<Action>() { new Action(() => playerControler.ApplyCondition(new Poison(1),"enemy", isVariable: true)) }), 2))));
 
     }
 

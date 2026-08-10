@@ -33,17 +33,25 @@ public class MoveCostDisplay : UIButton
         if (displayType == "On Move" && changed == false)
         {
             displayType = "Always";
-            changed = true;
+            //changed = true;
         }
-        if (displayType == "Always" && changed == false)
+        else if (displayType == "Always" && changed == false)
+        {
+            displayType = "Move Field";
+
+            //changed = true;
+        }
+        else if (displayType == "Move Field" && changed == false)
         {
             displayType = "Never";
-            changed = true;
+            //changed = true;
         }
-        if (displayType == "Never" && changed == false)
+
+        else if (displayType == "Never")
         {
             displayType = "On Move";
-            changed = true;
+
+            //DisplayMoveField
         }
         playerControler.MoveCostDisplaySetting = displayType;
         typeText.DisplayString(displayType);

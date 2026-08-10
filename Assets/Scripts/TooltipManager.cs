@@ -17,6 +17,10 @@ public class TooltipManager : MonoBehaviour
         {
             yield return StartCoroutine(gameObject.GetComponent<Relic>().GetRelicDescription((result) => { SetText(result); }));
         }
+        //else if (gameObject.GetComponent<Tile>())
+        //{
+        //    SetText();
+        //}
     }
 
     public void StopHoveringOver()
